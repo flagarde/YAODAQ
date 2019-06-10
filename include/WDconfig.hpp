@@ -17,8 +17,8 @@
 #ifndef _WDCONFIG__H
 #define _WDCONFIG__H
 
-#include "WaveDump.h"
-#include "flash.h"
+#include "WaveDump.hpp"
+#include "flash.hpp"
 
 /* ###########################################################################
 *  Functions

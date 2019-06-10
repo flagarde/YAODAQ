@@ -14,7 +14,7 @@
 * software, documentation and results solely at his own risk.
 ******************************************************************************/
 
-#include "X742CorrectionRoutines.h"
+#include "X742CorrectionRoutines.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "fft.h"
+#include "fft.hpp"
 
 #ifndef M_PI
 #define M_PI 3.141592653
@@ -145,8 +145,8 @@ int FFT (void *wave, double *fft, int ns, int WindowType, int SampleType)
     }
 
     // allocate the memory buffers for the real and imaginary parts of the fft
-    x = malloc(n * sizeof(double));
-    y = malloc(n * sizeof(double));
+    x = static_cast<double*>(malloc(n * sizeof(double)));
+    y =static_cast<double*>( malloc(n * sizeof(double)));
 
     // apply the windowing to the input vector
     if(SampleType==SAMPLETYPE_UINT8)

@@ -61,11 +61,16 @@ link_libraries(CAENVME CAENComm pthread)
 
 
 
+list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 
 
 
 
+#---Locate the ROOT package and defines a number of variables (e.g. ROOT_INCLUDE_DIRS)
+find_package(ROOT REQUIRED)
 
+#---Define useful ROOT functions and macros (e.g. ROOT_GENERATE_DICTIONARY)
+include(${ROOT_USE_FILE})
 
 
 
@@ -80,27 +85,12 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 
 ## Sources
 
-add_library( libb STATIC src/flash.c src/WDconfig.c src/WDplot.c src/fft.c src/keyb.c src/X742CorrectionRoutines.c src/spi.c)
+add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/WDplot.cpp src/fft.cpp src/keyb.cpp src/X742CorrectionRoutines.cpp src/spi.cpp)
 add_dependencies(libb CAENlibs)
-add_executable(WaveDump src/WaveDump.c)
-link_libraries(WaveDump libb CAENlibs CAENDigitizer m)
+add_executable(WaveDump src/WaveDump.cpp)
+link_libraries(WaveDump libb ${ROOT_LIBRARIES} CAENlibs CAENDigitizer m)
 
-target_link_libraries(WaveDump CAENDigitizer libb m)
+target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m)
 
 ## Install executable
 install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-
-
-
-#find_package(ROOT)
-#if(ROOT_FOUND)
-#include_directories(${ROOT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-# add_executable(IvsU IvsU.cpp)
-# if(CAEN_DRIVER)
-#   add_dependencies(IvsU drivers)
-#   endif()
-# include_directories(${MariaDBClient_INCLUDE_DIRS})
-#  target_link_libraries(IvsU ${MariaDBClient_LIBRARIES} pthread ${ROOT_LIBRARIES} ${Boost_LIBRARIES} Sauron )
-#  install(TARGETS IvsU RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-
-

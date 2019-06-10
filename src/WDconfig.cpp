@@ -19,7 +19,7 @@
 
 
 #include <CAENDigitizerType.h>
-#include "WDconfig.h"
+#include "WDconfig.hpp"
 
 int dc_file[MAX_CH];
 float dc_8file[8];
@@ -41,10 +41,10 @@ static void SetDefaultConfiguration(WaveDumpConfig_t *WDcfg) {
     WDcfg->InterruptNumEvents = 0;
     WDcfg->TestPattern = 0;
 	WDcfg->DecimationFactor = 1;
-    WDcfg->DesMode = 0;
-	WDcfg->FastTriggerMode = 0; 
+    WDcfg->DesMode = CAEN_DGTZ_EnaDis_t(0);
+	WDcfg->FastTriggerMode = CAEN_DGTZ_TriggerMode_t(0); 
     WDcfg->FastTriggerEnabled = 0; 
-	WDcfg->FPIOtype = 0;
+	WDcfg->FPIOtype = CAEN_DGTZ_IOLevel_t(0);
 
 	strcpy(WDcfg->GnuPlotPath, GNUPLOT_DEFAULT_PATH);
 	for(i=0; i<MAX_SET; i++) {
@@ -298,19 +298,19 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 		if (strstr(str, "ENABLE_DES_MODE")!=NULL) {
             read = fscanf(f_ini, "%s", str1);
 			if (strcmp(str1, "YES")==0)
-				WDcfg->DesMode = 1;
+				WDcfg->DesMode = CAEN_DGTZ_EnaDis_t(1);
 			else if (strcmp(str1, "NO")!=0)
 				printf("%s: invalid option\n", str);
             if(PrevDesMode != WDcfg->DesMode)
                 ret |= (0x1 << CFGRELOAD_DESMODE_BIT);
 			continue;
 		}
-
+        int toto=WDcfg->OutFileFlags;
 		// Output file format (BINARY or ASCII)
 		if (strstr(str, "OUTPUT_FILE_FORMAT")!=NULL) {
 			read = fscanf(f_ini, "%s", str1);
 			if (strcmp(str1, "BINARY")==0)
-				WDcfg->OutFileFlags|= OFF_BINARY;
+				toto|= OFF_BINARY;
 			else if (strcmp(str1, "ASCII")!=0)
 				printf("%s: invalid output file format\n", str1);
 			continue;
@@ -320,12 +320,12 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 		if (strstr(str, "OUTPUT_FILE_HEADER")!=NULL) {
 			read = fscanf(f_ini, "%s", str1);
 			if (strcmp(str1, "YES")==0)
-				WDcfg->OutFileFlags|= OFF_HEADER;
+				toto|= OFF_HEADER;
 			else if (strcmp(str1, "NO")!=0)
 				printf("%s: invalid option\n", str);
 			continue;
 		}
-
+        WDcfg->OutFileFlags=OUTFILE_FLAGS(toto);
         // Interrupt settings (request interrupt when there are at least N events to read; 0=disable interrupts (polling mode))
 		if (strstr(str, "USE_INTERRUPT")!=NULL) {
 			read = fscanf(f_ini, "%d", &WDcfg->InterruptNumEvents);
@@ -527,7 +527,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 		if (strstr(str, "FPIO_LEVEL")!=NULL) {
 			read = fscanf(f_ini, "%s", str1);
 			if (strcmp(str1, "TTL")==0)
-				WDcfg->FPIOtype = 1;
+				WDcfg->FPIOtype = CAEN_DGTZ_IOLevel_t(1);
 			else if (strcmp(str1, "NIM")!=0)
 				printf("%s: invalid option\n", str);
 			continue;

@@ -42,12 +42,12 @@
 #define DBG_TIME
 
 #include <CAENDigitizer.h>
-#include "WaveDump.h"
-#include "WDconfig.h"
-#include "WDplot.h"
-#include "fft.h"
-#include "keyb.h"
-#include "X742CorrectionRoutines.h"
+#include "WaveDump.hpp"
+#include "WDconfig.hpp"
+#include "WDplot.hpp"
+#include "fft.hpp"
+#include "keyb.hpp"
+#include "X742CorrectionRoutines.hpp"
 
 extern int dc_file[MAX_CH];
 extern int thr_file[MAX_CH];
@@ -295,7 +295,7 @@ int ProgramDigitizer(int handle, WaveDumpConfig_t WDcfg, CAEN_DGTZ_BoardInfo_t B
         ret |= CAEN_DGTZ_WriteRegister(handle, CAEN_DGTZ_BROAD_CH_CONFIGBIT_SET_ADD, 1<<3);
     // custom setting for X742 boards
     if (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
-        ret |= CAEN_DGTZ_SetFastTriggerDigitizing(handle,WDcfg.FastTriggerEnabled);
+        ret |= CAEN_DGTZ_SetFastTriggerDigitizing(handle,CAEN_DGTZ_EnaDis_t(WDcfg.FastTriggerEnabled));
         ret |= CAEN_DGTZ_SetFastTriggerMode(handle,WDcfg.FastTriggerMode);
     }
     if ((BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE) || (BoardInfo.FamilyCode == CAEN_DGTZ_XX731_FAMILY_CODE)) {
@@ -351,7 +351,7 @@ int ProgramDigitizer(int handle, WaveDumpConfig_t WDcfg, CAEN_DGTZ_BoardInfo_t B
                     ret |= CAEN_DGTZ_SetGroupTriggerThreshold(handle, i, WDcfg.Threshold[i]);
                     ret |= CAEN_DGTZ_SetChannelGroupMask(handle, i, WDcfg.GroupTrgEnableMask[i]);
                 } 
-                ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i, WDcfg.PulsePolarity[i]); //.TriggerEdge
+                ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i,CAEN_DGTZ_TriggerPolarity_t( WDcfg.PulsePolarity[i])); //.TriggerEdge
 
             }
         }
@@ -367,7 +367,7 @@ int ProgramDigitizer(int handle, WaveDumpConfig_t WDcfg, CAEN_DGTZ_BoardInfo_t B
                     BoardInfo.FamilyCode != CAEN_DGTZ_XX725_FAMILY_CODE)
                     ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, WDcfg.ChannelTriggerMode[i], (1<<i));
                 ret |= CAEN_DGTZ_SetChannelTriggerThreshold(handle, i, WDcfg.Threshold[i]);
-                ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i, WDcfg.PulsePolarity[i]); //.TriggerEdge
+                ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i, CAEN_DGTZ_TriggerPolarity_t(WDcfg.PulsePolarity[i])); //.TriggerEdge
             }
         }
         if (BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE ||
@@ -505,7 +505,7 @@ void Calibrate_XX740_DC_Offset(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_Bo
 	int i = 0, acq = 0, k = 0, p=0, g = 0;
 	for (i = 0; i < MAX_CH; i++)
 		cal[i] = 1;
-	CAEN_DGTZ_ErrorCode ret;
+	int ret;
 	CAEN_DGTZ_AcqMode_t mem_mode;
 	uint32_t  AllocatedSize;
 
@@ -560,7 +560,7 @@ void Calibrate_XX740_DC_Offset(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_Bo
 
 	for (p = 0; p < NPOINTS; p++){
 		for (i = 0; i < (int32_t)BoardInfo.Channels; i++) { //BoardInfo.Channels is number of groups for x740 boards
-				ret = CAEN_DGTZ_SetGroupDCOffset(handle, (uint32_t)i, (uint32_t)((float)(abs(dc[p] - 100))*(655.35)));
+				ret = CAEN_DGTZ_SetGroupDCOffset(handle, (uint32_t)i, (uint32_t)((float)(fabs(dc[p] - 100))*(655.35)));
 				if (ret)
 					printf("Error setting group %d test offset\n", i);
 		}
@@ -614,7 +614,7 @@ void Calibrate_XX740_DC_Offset(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_Bo
 			int max = 0;
 			int mpp = 0;
 			int size = (int)pow(2, (double)BoardInfo.ADC_NBits);
-			int *freq = calloc(size, sizeof(int));
+			int *freq = static_cast<int*>(calloc(size, sizeof(int)));
 			//find the most probable value mpp
 			for (k = 0; k < NACQS; k++) {
 				if (value[k][g] > 0 && value[k][g] < size) {
@@ -950,7 +950,7 @@ void Calibrate_DC_Offset(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInf
 	int i = 0, k = 0, p = 0, acq = 0, ch = 0;
 	for (i = 0; i < MAX_CH; i++)
 		cal[i] = 1;
-	CAEN_DGTZ_ErrorCode ret;
+	int ret;
 	CAEN_DGTZ_AcqMode_t mem_mode;
 	uint32_t  AllocatedSize;
 
@@ -1013,7 +1013,7 @@ void Calibrate_DC_Offset(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInf
 	for (p = 0; p < NPOINTS; p++){
 		//set new dco  test value to all channels
 		for (ch = 0; ch < (int32_t)BoardInfo.Channels; ch++) {
-				ret = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)ch, (uint32_t)((float)(abs(dc[p] - 100))*(655.35)));
+				ret = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)ch, (uint32_t)((float)(fabs(dc[p] - 100))*(655.35)));
 				if (ret)
 					printf("Error setting ch %d test offset\n", ch);
 		}
@@ -1075,7 +1075,7 @@ void Calibrate_DC_Offset(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInf
 				int max = 0, ok = 0;
 				int mpp = 0;
 				int size = (int)pow(2, (double)BoardInfo.ADC_NBits);
-				int *freq = calloc(size, sizeof(int));
+				int *freq = static_cast<int*>(calloc(size, sizeof(int)));
 
 				//find most probable value mpp
 				for (k = 0; k < NACQS; k++) {
@@ -1679,7 +1679,7 @@ int main(int argc, char *argv[])
 {
     WaveDumpConfig_t   WDcfg;
     WaveDumpRun_t      WDrun;
-    CAEN_DGTZ_ErrorCode ret = CAEN_DGTZ_Success;
+    int ret = CAEN_DGTZ_Success;
     int  handle = -1;
     ERROR_CODES ErrCode= ERR_NONE;
     int i, ch, Nb=0, Ne=0;
@@ -1733,7 +1733,7 @@ int main(int argc, char *argv[])
     /* *************************************************************************************** */
     isVMEDevice = WDcfg.BaseAddress ? 1 : 0;
 
-    ret = CAEN_DGTZ_OpenDigitizer(WDcfg.LinkType, WDcfg.LinkNum, WDcfg.ConetNode, WDcfg.BaseAddress, &handle);
+    ret = CAEN_DGTZ_OpenDigitizer(CAEN_DGTZ_ConnectionType(WDcfg.LinkType), WDcfg.LinkNum, WDcfg.ConetNode, WDcfg.BaseAddress, &handle);
     if (ret) {
         ErrCode = ERR_DGZ_OPEN;
         goto QuitProgram;
@@ -2092,7 +2092,7 @@ InterruptTimeout:
                         if (!(EventInfo.ChannelMask & (1<<chmask)))
                             continue;
                         if (WDrun.Histogram[ch] == NULL) {
-                            if ((WDrun.Histogram[ch] = malloc((uint64_t)(1<<WDcfg.Nbit) * sizeof(uint32_t))) == NULL) {
+                            if ((WDrun.Histogram[ch] = static_cast<uint32_t*>(malloc((uint64_t)(1<<WDcfg.Nbit) * sizeof(uint32_t)))) == NULL) {
                                 ErrCode = ERR_HISTO_MALLOC;
                                 goto QuitProgram;
                             }
@@ -2219,13 +2219,13 @@ InterruptTimeout:
                                 int FFTns;
                                 PlotVar->DataType = PLOT_DATA_DOUBLE;
                                 if(WDcfg.Nbit == 8)
-                                    FFTns = FFT(Event8->DataChannel[absCh], PlotVar->TraceData[Tn], Event8->ChSize[absCh], HANNING_FFT_WINDOW, SAMPLETYPE_UINT8);
+                                    FFTns = FFT(Event8->DataChannel[absCh], static_cast<double*>(PlotVar->TraceData[Tn]), Event8->ChSize[absCh], HANNING_FFT_WINDOW, SAMPLETYPE_UINT8);
                                 else if (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
-                                    FFTns = FFT(Event742->DataGroup[WDrun.GroupPlotIndex].DataChannel[ch], PlotVar->TraceData[Tn],
+                                    FFTns = FFT(Event742->DataGroup[WDrun.GroupPlotIndex].DataChannel[ch], static_cast<double*>(PlotVar->TraceData[Tn]),
                                         Event742->DataGroup[WDrun.GroupPlotIndex].ChSize[ch], HANNING_FFT_WINDOW, SAMPLETYPE_FLOAT);
                                 }
                                 else
-                                    FFTns = FFT(Event16->DataChannel[absCh], PlotVar->TraceData[Tn], Event16->ChSize[absCh], HANNING_FFT_WINDOW, SAMPLETYPE_UINT16);
+                                    FFTns = FFT(Event16->DataChannel[absCh],static_cast<double*>( PlotVar->TraceData[Tn]), Event16->ChSize[absCh], HANNING_FFT_WINDOW, SAMPLETYPE_UINT16);
                                 PlotVar->Xscale = (1000/WDcfg.Ts)/(2*FFTns);
                                 PlotVar->TraceSize[Tn] = FFTns;
                             } else if (WDrun.PlotType == PLOT_HISTOGRAM) {
