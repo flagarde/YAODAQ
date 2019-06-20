@@ -50,10 +50,8 @@
 #endif
 
 #ifdef LINUX
-#define DEFAULT_CONFIG_FILE  "/etc/wavedump/WaveDumpConfig.txt"
 #define GNUPLOT_DEFAULT_PATH "/usr/bin/"
 #else
-#define DEFAULT_CONFIG_FILE  "WaveDumpConfig.txt"  /* local directory */
 #define GNUPLOT_DEFAULT_PATH ".\\"
 #endif
 

@@ -33,7 +33,7 @@ ExternalProject_Add(
                     GIT_REPOSITORY ${CAENlibs_repository}
                     GIT_TAG ${CAENlibs_version}
                     GIT_PROGRESS TRUE
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCAENHVWrapper_demo=ON
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCAENHVWrapper_demo=ON -DINSTALL_ALL=ON
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs-prefix
                     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
