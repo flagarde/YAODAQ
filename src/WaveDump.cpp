@@ -1652,6 +1652,8 @@ int WriteOutputFilesx742(WaveDumpConfig_t *WDcfg, WaveDumpRun_t *WDrun, CAEN_DGT
 /* ########################################################################### */
 int main(int argc, char *argv[])
 {
+    file.setName("/home/rpclab/data/toto.root");
+    file.createFile();
     WaveDumpConfig_t   WDcfg;
     WaveDumpRun_t      WDrun;
     int ret = CAEN_DGTZ_Success;
