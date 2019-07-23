@@ -29,8 +29,7 @@ int thr_file[MAX_CH] = { 0 };
 *            
 *   \param   WDcfg:   Pointer to the WaveDumpConfig data structure
 */
-static void SetDefaultConfiguration(WaveDumpConfig_t *WDcfg) 
-{
+static void SetDefaultConfiguration(WaveDumpConfig_t *WDcfg) {
     int i, j;
 
     WDcfg->RecordLength = (1024*16);
