@@ -16,13 +16,13 @@
 #          USB 0 BA     VME digitizer through USB-V1718 (BA = BaseAddress of the VME board, 32 bit hex)
 #          PCI 0 0 0    Desktop/NIM/VME through CONET (optical link) 
 #          PCI 0 0 BA   VME digitizer through V2718 (BA = BaseAddress of the VME board, 32 bit hex)
-OPEN USB 0 0
-#OPEN USB 0 32100000
+#OPEN USB 0 0
+OPEN USB 0 32100000
 #OPEN PCI 0 0 0
 #OPEN PCI 0 0 32100000
 
 # RECORD_LENGTH = number of samples in the acquisition window
-RECORD_LENGTH  1024
+RECORD_LENGTH  128
 
 # DECIMATION_FACTOR: ONLY FOR 740 and 724 MODELS. change the decimation factor for the acquisition.
 # options: 1 2 4 8 16 32 64 128  
@@ -37,7 +37,7 @@ POST_TRIGGER  50
 #PULSE_POLARITY: input signal polarity.
 #options: POSITIVE, NEGATIVE
 #
-PULSE_POLARITY  POSITIVE
+PULSE_POLARITY  NEGATIVE
 
 # EXTERNAL_TRIGGER: external trigger input settings. When enabled, the ext. trg. can be either 
 # propagated (ACQUISITION_AND_TRGOUT) or not (ACQUISITION_ONLY) through the TRGOUT
@@ -55,11 +55,11 @@ OUTPUT_FILE_FORMAT  ASCII
 
 # OUTPUT_FILE_HEADER: if enabled, the header is included in the output file data
 # options: YES, NO
-OUTPUT_FILE_HEADER  NO
+OUTPUT_FILE_HEADER  YES
 
 # TEST_PATTERN: if enabled, data from ADC are replaced by test pattern (triangular wave)
 # options: YES, NO
-TEST_PATTERN   NO
+TEST_PATTERN   YES
 
 # WRITE_REGISTER: generic write register access. This command allows the user to have a direct write access
 # to the registers of the board. NOTE: all the direct write accesses are executed AFTER the other settings,
@@ -84,7 +84,7 @@ TEST_PATTERN   NO
 
 # ENABLE_INPUT: enable/disable one channel
 # options: YES, NO
-ENABLE_INPUT          NO
+ENABLE_INPUT          YES
 
 #BASELINE_LEVEL: baseline position in percent of the Full Scale. 
 # POSITIVE PULSE POLARITY (Full Scale = from 0 to + Vpp)

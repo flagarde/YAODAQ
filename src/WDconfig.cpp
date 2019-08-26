@@ -1,23 +1,3 @@
-/******************************************************************************
-* 
-* CAEN SpA - Front End Division
-* Via Vetraia, 11 - 55049 - Viareggio ITALY
-* +390594388398 - www.caen.it
-*
-***************************************************************************//**
-* \note TERMS OF USE:
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU General Public License as published by the Free Software
-* Foundation. This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The user relies on the 
-* software, documentation and results solely at his own risk.
-* -----------------------------------------------------------------------------
-* WDconfig contains the functions for reading the configuration file and 
-* setting the parameters in the WDcfg structure
-******************************************************************************/
-
-
 #include <CAENDigitizerType.h>
 #include "WDconfig.h"
 
@@ -41,10 +21,10 @@ static void SetDefaultConfiguration(WaveDumpConfig_t *WDcfg) {
     WDcfg->InterruptNumEvents = 0;
     WDcfg->TestPattern = 0;
 	WDcfg->DecimationFactor = 1;
-    WDcfg->DesMode = 0;
-	WDcfg->FastTriggerMode = 0; 
+    WDcfg->DesMode = CAEN_DGTZ_EnaDis_t(0);
+	WDcfg->FastTriggerMode = CAEN_DGTZ_TriggerMode_t(0); 
     WDcfg->FastTriggerEnabled = 0; 
-	WDcfg->FPIOtype = 0;
+	WDcfg->FPIOtype = CAEN_DGTZ_IOLevel_t(0);
 
 	strcpy(WDcfg->GnuPlotPath, GNUPLOT_DEFAULT_PATH);
 	for(i=0; i<MAX_SET; i++) {
@@ -298,7 +278,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 		if (strstr(str, "ENABLE_DES_MODE")!=NULL) {
             read = fscanf(f_ini, "%s", str1);
 			if (strcmp(str1, "YES")==0)
-				WDcfg->DesMode = 1;
+				WDcfg->DesMode = CAEN_DGTZ_EnaDis_t(1);
 			else if (strcmp(str1, "NO")!=0)
 				printf("%s: invalid option\n", str);
             if(PrevDesMode != WDcfg->DesMode)
@@ -307,10 +287,15 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 		}
 
 		// Output file format (BINARY or ASCII)
-		if (strstr(str, "OUTPUT_FILE_FORMAT")!=NULL) {
+		if (strstr(str, "OUTPUT_FILE_FORMAT")!=NULL) 
+		{
+			int toto=WDcfg->OutFileFlags;
 			read = fscanf(f_ini, "%s", str1);
 			if (strcmp(str1, "BINARY")==0)
-				WDcfg->OutFileFlags|= OFF_BINARY;
+			{
+				toto|= OFF_BINARY;
+                                WDcfg->OutFileFlags=OUTFILE_FLAGS(toto);
+			}
 			else if (strcmp(str1, "ASCII")!=0)
 				printf("%s: invalid output file format\n", str1);
 			continue;
@@ -318,9 +303,13 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 
 		// Header into output file (YES or NO)
 		if (strstr(str, "OUTPUT_FILE_HEADER")!=NULL) {
+			int toto=WDcfg->OutFileFlags;
 			read = fscanf(f_ini, "%s", str1);
 			if (strcmp(str1, "YES")==0)
-				WDcfg->OutFileFlags|= OFF_HEADER;
+			{
+				toto|= OFF_HEADER;
+				WDcfg->OutFileFlags=OUTFILE_FLAGS(toto);
+			}
 			else if (strcmp(str1, "NO")!=0)
 				printf("%s: invalid option\n", str);
 			continue;
@@ -527,7 +516,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 		if (strstr(str, "FPIO_LEVEL")!=NULL) {
 			read = fscanf(f_ini, "%s", str1);
 			if (strcmp(str1, "TTL")==0)
-				WDcfg->FPIOtype = 1;
+				WDcfg->FPIOtype = CAEN_DGTZ_IOLevel_t(1);
 			else if (strcmp(str1, "NIM")!=0)
 				printf("%s: invalid option\n", str);
 			continue;

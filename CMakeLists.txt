@@ -25,6 +25,10 @@ set(CMAKE_EXE_LINKER_FLAGS  "-fPIC ${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
 
+set(Websocket_repository "https://gitlab.com/eidheim/Simple-WebSocket-Server.git")
+set(Websocket_version "master")
+
+
 include(ExternalProject)
 
 # ----- CAENlibs package -----
@@ -33,11 +37,24 @@ ExternalProject_Add(
                     GIT_REPOSITORY ${CAENlibs_repository}
                     GIT_TAG ${CAENlibs_version}
                     GIT_PROGRESS TRUE
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCAENHVWrapper_demo=ON
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DINSTALL_ALL_DEMO=OFF -DRASPBERRY=ON -DINSTALL_CAENVME=ON -DINSTALL_CAENComm=ON -DINSTALL_CAENHVWrapper=ON -DINSTALL_CAENDigitizer=ON
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs-prefix
                     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
                     )                       
+
+
+# ----- CAENlibs package -----
+ExternalProject_Add(
+                    WebSocket
+                    GIT_REPOSITORY ${Websocket_repository}
+                    GIT_TAG ${Websocket_version}
+                    GIT_PROGRESS TRUE
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/WebSocket-prefix
+                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/WebSocket
+                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+                    )
 
 
 
@@ -53,6 +70,7 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 add_definitions(${CAEN_FLAGS})
 include_directories("${CMAKE_INSTALL_PREFIX}/include")
 include_directories("${CMAKE_INSTALL_PREFIX}/include/CAEN")
+include_directories("${CMAKE_INSTALL_PREFIX}/include/simple-websocket-server")
 
 link_libraries(CAENVME CAENComm pthread)
 
@@ -64,7 +82,9 @@ link_libraries(CAENVME CAENComm pthread)
 
 
 
-
+list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
+find_package(ROOT REQUIRED)
+include(${ROOT_USE_FILE})
 
 
 
@@ -80,27 +100,12 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 
 ## Sources
 
-add_library( libb STATIC src/flash.c src/WDconfig.c src/WDplot.c src/fft.c src/keyb.c src/X742CorrectionRoutines.c src/spi.c)
+add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/WDplot.cpp src/fft.cpp src/keyb.cpp src/X742CorrectionRoutines.cpp src/spi.cpp)
 add_dependencies(libb CAENlibs)
-add_executable(WaveDump src/WaveDump.c)
-link_libraries(WaveDump libb CAENlibs CAENDigitizer m)
+add_executable(WaveDump src/WaveDump.cpp)
+link_libraries(WaveDump libb ${ROOT_LIBRARIES} CAENlibs CAENDigitizer m crypto INTERFACE Simple-WebSocket-Server)
 
-target_link_libraries(WaveDump CAENDigitizer libb m)
+target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto)
 
 ## Install executable
 install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-
-
-
-#find_package(ROOT)
-#if(ROOT_FOUND)
-#include_directories(${ROOT_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
-# add_executable(IvsU IvsU.cpp)
-# if(CAEN_DRIVER)
-#   add_dependencies(IvsU drivers)
-#   endif()
-# include_directories(${MariaDBClient_INCLUDE_DIRS})
-#  target_link_libraries(IvsU ${MariaDBClient_LIBRARIES} pthread ${ROOT_LIBRARIES} ${Boost_LIBRARIES} Sauron )
-#  install(TARGETS IvsU RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-
-
