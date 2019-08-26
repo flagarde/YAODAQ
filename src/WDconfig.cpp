@@ -1,5 +1,5 @@
 #include <CAENDigitizerType.h>
-#include "WDconfig.h"
+#include "WDconfig.hpp"
 
 int dc_file[MAX_CH];
 float dc_8file[8];
@@ -285,7 +285,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
                 ret |= (0x1 << CFGRELOAD_DESMODE_BIT);
 			continue;
 		}
-
+        int toto=WDcfg->OutFileFlags;
 		// Output file format (BINARY or ASCII)
 		if (strstr(str, "OUTPUT_FILE_FORMAT")!=NULL) 
 		{
@@ -314,7 +314,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 				printf("%s: invalid option\n", str);
 			continue;
 		}
-
+        WDcfg->OutFileFlags=OUTFILE_FLAGS(toto);
         // Interrupt settings (request interrupt when there are at least N events to read; 0=disable interrupts (polling mode))
 		if (strstr(str, "USE_INTERRUPT")!=NULL) {
 			read = fscanf(f_ini, "%d", &WDcfg->InterruptNumEvents);

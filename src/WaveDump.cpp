@@ -3,12 +3,12 @@
 #define DBG_TIME
 
 #include <CAENDigitizer.h>
-#include "WaveDump.h"
-#include "WDconfig.h"
-#include "WDplot.h"
-#include "fft.h"
-#include "keyb.h"
-#include "X742CorrectionRoutines.h"
+#include "WaveDump.hpp"
+#include "WDconfig.hpp"
+#include "WDplot.hpp"
+#include "fft.hpp"
+#include "keyb.hpp"
+#include "X742CorrectionRoutines.hpp"
 
 extern int dc_file[MAX_CH];
 extern int thr_file[MAX_CH];
@@ -2186,7 +2186,7 @@ InterruptTimeout:
                                         Event742->DataGroup[WDrun.GroupPlotIndex].ChSize[ch], HANNING_FFT_WINDOW, SAMPLETYPE_FLOAT);
                                 }
                                 else
-                                    FFTns = FFT(Event16->DataChannel[absCh], static_cast<double*>(PlotVar->TraceData[Tn]), Event16->ChSize[absCh], HANNING_FFT_WINDOW, SAMPLETYPE_UINT16);
+                                    FFTns = FFT(Event16->DataChannel[absCh],static_cast<double*>( PlotVar->TraceData[Tn]), Event16->ChSize[absCh], HANNING_FFT_WINDOW, SAMPLETYPE_UINT16);
                                 PlotVar->Xscale = (1000/WDcfg.Ts)/(2*FFTns);
                                 PlotVar->TraceSize[Tn] = FFTns;
                             } else if (WDrun.PlotType == PLOT_HISTOGRAM) {

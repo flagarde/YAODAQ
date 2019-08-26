@@ -40,7 +40,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "fft.h"
+#include "fft.hpp"
 
 #ifndef M_PI
 #define M_PI 3.141592653

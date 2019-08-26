@@ -5,9 +5,9 @@
  *      Author: Luca
  */
 
-#include "flash.h"
-#include "spi.h"
-#include "flash_opcodes.h"
+#include "flash.hpp"
+#include "spi.hpp"
+#include "flash_opcodes.hpp"
 #include <CAENComm.h>
 
 static uint8_t DeviceID;

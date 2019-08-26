@@ -30,7 +30,7 @@
 	#include <pthread.h>
 #endif
 
-#include "WDplot.h"
+#include "WDplot.hpp"
 
 
 /* Defines */

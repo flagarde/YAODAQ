@@ -5,7 +5,7 @@
  *      Author: Luca
  */
 
-#include "spi.h"
+#include "spi.hpp"
 
 //extern int handle;
 
