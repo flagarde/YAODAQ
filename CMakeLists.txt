@@ -107,15 +107,11 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/WDplot.cpp src/fft.cpp src/keyb.cpp src/X742CorrectionRoutines.cpp src/spi.cpp)
 add_dependencies(libb CAENlibs)
 add_executable(WaveDump src/WaveDump.cpp)
-<<<<<<< HEAD
+
 link_libraries(WaveDump libb ${ROOT_LIBRARIES} CAENlibs CAENDigitizer m crypto INTERFACE Simple-WebSocket-Server)
 
 target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto)
-=======
-link_libraries(WaveDump libb ${ROOT_LIBRARIES} CAENlibs CAENDigitizer m)
 
-target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m)
->>>>>>> a2034bd76869a6cfbf1dff4aa4cbab4eae391b40
 
 ## Install executable
 install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
