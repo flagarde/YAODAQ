@@ -160,8 +160,6 @@ typedef struct WaveDumpRun_t {
     uint32_t *Histogram[MAX_CH];
     FILE *fout[MAX_CH];
 } WaveDumpRun_t;
-
-/* Function prototypes */
 int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg);
 void Set_relative_Threshold(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo);
 void Calibrate_DC_Offset(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo);
