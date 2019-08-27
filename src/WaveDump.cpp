@@ -7,13 +7,16 @@
 #include "WDconfig.hpp"
 #include "WDplot.hpp"
 #include "fft.hpp"
-#include "keyb.hpp"
 #include "X742CorrectionRoutines.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
-
+#include <thread>
+#include <memory>
+#include <chrono>
+#include "server_ws.hpp"
+using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];
 /* ###########################################################################
 *  Functions
@@ -1195,11 +1198,7 @@ void Set_relative_Threshold(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_Board
 	}
 
 	CAEN_DGTZ_SWStartAcquisition(handle);
-#ifdef _WIN32
-	Sleep(300);
-#else
-	usleep(300000);
-#endif
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
 
 	ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, buffer, &BufferSize);
 	if (ret) {
@@ -1615,222 +1614,182 @@ int Set_calibrated_DCO(int handle, int ch, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_Bo
 *   \param   WDcfg:   Pointer to the WaveDumpConfig_t data structure
 *   \param   BoardInfo: structure with the board info
 */
-void CheckKeyboardCommands(int handle, WaveDumpRun_t *WDrun, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo)
+void CheckKeyboardCommands(int handle,std::string& command, WaveDumpRun_t *WDrun, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo)
 {
-    int c = 0;
 	uint8_t percent;
-    if(!kbhit())
-        return;
-
-    c = getch();
-    if ((c < '9') && (c >= '0')) {
-        int ch = c-'0';
-        if ((BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)){
-            if ( (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && (WDcfg->FastTriggerEnabled == 0) && (ch == 8)) WDrun->ChannelPlotMask = WDrun->ChannelPlotMask ;
+  if(command=="0"||command=="1"||command=="2"||command=="3"||command=="4"||command=="5"||command=="6"||command=="7"||command=="8") 
+  {
+		int ch=std::atoi(command.c_str());
+    if ((BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE))
+		{
+    	if ( (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && (WDcfg->FastTriggerEnabled == 0) && (ch == 8)) WDrun->ChannelPlotMask = WDrun->ChannelPlotMask ;
 			else WDrun->ChannelPlotMask ^= (1 << ch);
-            
+           
 			if ((BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) && (ch == 8)) printf("Channel %d belongs to a different group\n", ch + WDrun->GroupPlotIndex * 8);
-			else
-			if (WDrun->ChannelPlotMask & (1 << ch))
-                printf("Channel %d enabled for plotting\n", ch + WDrun->GroupPlotIndex*8);
-            else
-                printf("Channel %d disabled for plotting\n", ch + WDrun->GroupPlotIndex*8);
-        } 
-		else if((BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE) || (BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE) && (WDcfg->Nch>8)) {
-		ch = ch + 8 * WDrun->GroupPlotSwitch;
-		if(ch!= 8 && WDcfg->EnableMask & (1 << ch)){		
-		WDrun->ChannelPlotMask ^= (1 << ch);
-		if (WDrun->ChannelPlotMask & (1 << ch))
-		printf("Channel %d enabled for plotting\n", ch);
-		else
-		printf("Channel %d disabled for plotting\n", ch);
-		}
-		else printf("Channel %d not enabled for acquisition\n",ch);
+			else if (WDrun->ChannelPlotMask & (1 << ch)) printf("Channel %d enabled for plotting\n", ch + WDrun->GroupPlotIndex*8);
+      else printf("Channel %d disabled for plotting\n", ch + WDrun->GroupPlotIndex*8);
+    } 
+		else if((BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE) || (BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE) && (WDcfg->Nch>8)) 
+		{
+			ch = ch + 8 * WDrun->GroupPlotSwitch;
+			if(ch!= 8 && WDcfg->EnableMask & (1 << ch))
+			{		
+				WDrun->ChannelPlotMask ^= (1 << ch);
+				if (WDrun->ChannelPlotMask & (1 << ch))
+				printf("Channel %d enabled for plotting\n", ch);
+				else printf("Channel %d disabled for plotting\n", ch);
+			}
+			else printf("Channel %d not enabled for acquisition\n",ch);
 		}			
-		else {
-            WDrun->ChannelPlotMask ^= (1 << ch);
-            if (WDrun->ChannelPlotMask & (1 << ch))
-                printf("Channel %d enabled for plotting\n", ch);
-            else
-                printf("Channel %d disabled for plotting\n", ch);
-        }
-    } else {
-        switch(c) {
-        case 'g' :
-			//for boards with >8 channels
+		else 
+		{
+   		WDrun->ChannelPlotMask ^= (1 << ch);
+      if (WDrun->ChannelPlotMask & (1 << ch)) printf("Channel %d enabled for plotting\n", ch);
+      else printf("Channel %d disabled for plotting\n", ch);
+    }
+  } 
+	else
+	{
+    if(command=="g")
+		{
 			if ((BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE) || (BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE) && (WDcfg->Nch > 8))
 			{
-				if (WDrun->GroupPlotSwitch == 0) {
+				if (WDrun->GroupPlotSwitch == 0) 
+				{
 					WDrun->GroupPlotSwitch = 1;
 					printf("Channel group set to %d: use numbers 0-7 for channels 8-15\n", WDrun->GroupPlotSwitch);
 				}
-				else if(WDrun->GroupPlotSwitch == 1)	{
+				else if(WDrun->GroupPlotSwitch == 1)	
+				{
 					WDrun->GroupPlotSwitch = 0;
 					printf("Channel group set to %d: use numbers 0-7 for channels 0-7\n", WDrun->GroupPlotSwitch);
 				}
 			}
-			else
-            // Update the group plot index
-            if ((WDcfg->EnableMask) && (WDcfg->Nch>8))
-                GoToNextEnabledGroup(WDrun, WDcfg);
-            break;
-        case 'q' :
-            WDrun->Quit = 1;
-            break;
-        case 't' :
-            if (!WDrun->ContinuousTrigger) {
-                CAEN_DGTZ_SendSWtrigger(handle);
-                printf("Single Software Trigger issued\n");
-            }
-            break;
-        case 'T' :
-            WDrun->ContinuousTrigger ^= 1;
-            if (WDrun->ContinuousTrigger)
-                printf("Continuous trigger is enabled\n");
-            else
-                printf("Continuous trigger is disabled\n");
-            break;
-        case 'P' :
-            if (WDrun->ChannelPlotMask == 0)
-                printf("No channel enabled for plotting\n");
-            else
-                WDrun->ContinuousPlot ^= 1;
-            break;
-        case 'p' :
-            if (WDrun->ChannelPlotMask == 0)
-                printf("No channel enabled for plotting\n");
-            else
-                WDrun->SinglePlot = 1;
-            break;
-        case 'f' :
-            WDrun->PlotType = (WDrun->PlotType == PLOT_FFT) ? PLOT_WAVEFORMS : PLOT_FFT;
-            WDrun->SetPlotOptions = 1;
-            break;
-        case 'h' :
-            WDrun->PlotType = (WDrun->PlotType == PLOT_HISTOGRAM) ? PLOT_WAVEFORMS : PLOT_HISTOGRAM;
-            WDrun->RunHisto = (WDrun->PlotType == PLOT_HISTOGRAM);
-            WDrun->SetPlotOptions = 1;
-            break;
-        case 'w' :
-            if (!WDrun->ContinuousWrite)
-                WDrun->SingleWrite = 1;
-            break;
-        case 'W' :
-            WDrun->ContinuousWrite ^= 1;
-            if (WDrun->ContinuousWrite)
-                printf("Continuous writing is enabled\n");
-            else
-                printf("Continuous writing is disabled\n");
-            break;
-        case 's' :
-            if (WDrun->AcqRun == 0) {
-
-				if (BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)//XX742 not considered
-					Set_relative_Threshold(handle, WDcfg, BoardInfo);
-
-				if (BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE || BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE)
-					WDrun->GroupPlotSwitch = 0;
-				
-                printf("Acquisition started\n");
-
-                CAEN_DGTZ_SWStartAcquisition(handle);
-
-                WDrun->AcqRun = 1;
-
-            } else {
-                printf("Acquisition stopped\n");
-                CAEN_DGTZ_SWStopAcquisition(handle);
-                WDrun->AcqRun = 0;
-            }
-            break;
-        case 'm' :
-            if (BoardSupportsTemperatureRead(BoardInfo)) {
-                if (WDrun->AcqRun == 0) {
-                    int32_t ch;
-                    for (ch = 0; ch < (int32_t)BoardInfo.Channels; ch++) {
-                        uint32_t temp;
-                        int32_t ret = CAEN_DGTZ_ReadTemperature(handle, ch, &temp);
-                        printf("CH%02d: ", ch);
-                        if (ret == CAEN_DGTZ_Success)
-                            printf("%u C\n", temp);
-                        else
-                            printf("CAENDigitizer ERR %d\n", ret);
-                    }
-                    printf("\n");
-                }
-                else {
-                    printf("Can't run temperature monitor while acquisition is running.\n");
-                }
-            }
-            else {
-                printf("Board Family doesn't support ADC Temperature Monitor.\n");
-            }
-            break;
-        case 'c' :
-            calibrate(handle, WDrun, BoardInfo);
-            break;
-		case 'D':
-			if (WDrun->AcqRun == 0) {
-				printf("Disconnect input signal from all channels and press any key to start.\n");
-				getch();
-				if (BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE)//XX740 specific
-					Calibrate_XX740_DC_Offset(handle, WDcfg, BoardInfo);
-				else if (BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)//XX742 not considered
-					Calibrate_DC_Offset(handle, WDcfg, BoardInfo);
-
-				int i = 0;
-				CAEN_DGTZ_ErrorCode err;
-				//set new dco values using calibration data
-				for (i = 0; i < BoardInfo.Channels; i++) {
-					if (WDcfg->EnableMask & (1 << i)) {
-						if(WDcfg->Version_used[i] == 1)
-							Set_calibrated_DCO(handle, i, WDcfg, BoardInfo);
-						else {
-							err = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)i, WDcfg->DCoffset[i]);
-							if (err)
-								printf("Error setting channel %d offset\n", i);
+			else /* Update the group plot index*/ if ((WDcfg->EnableMask) && (WDcfg->Nch>8)) GoToNextEnabledGroup(WDrun, WDcfg);
+		}
+    else if(command=="Quit")
+		{
+			WDrun->Quit = 1;
+		}
+    else if(command=="Trigger")
+		{
+				if (!WDrun->ContinuousTrigger) 
+				{
+        	CAEN_DGTZ_SendSWtrigger(handle);
+          std::cout<<"Single Software Trigger issued"<<std::endl;
+          command="Where";
+        }
+		}
+		else if(command=="Continuous Trigger")
+		{
+			WDrun->ContinuousTrigger ^= 1;
+			if (WDrun->ContinuousTrigger) std::cout<<"Continuous trigger is enabled"<<std::endl;
+      else std::cout<<"Continuous trigger is disabled"<<std::endl;
+		}
+    else if(command=="Continuous Plotting")
+		{
+			if (WDrun->ChannelPlotMask == 0) std::cout<<"No channel enabled for plotting"<<std::endl;
+      else WDrun->ContinuousPlot ^= 1;
+		}
+    else if(command=="Plot")
+		{
+			 if (WDrun->ChannelPlotMask == 0) std::cout<<"No channel enabled for plotting"<<std::endl;
+       else WDrun->SinglePlot = 1;
+		}
+    else if(command=="f")
+		{
+				WDrun->PlotType = (WDrun->PlotType == PLOT_FFT) ? PLOT_WAVEFORMS : PLOT_FFT;
+        WDrun->SetPlotOptions = 1;
+		}
+		else if(command=="h")
+		{
+			WDrun->PlotType = (WDrun->PlotType == PLOT_HISTOGRAM) ? PLOT_WAVEFORMS : PLOT_HISTOGRAM;
+      WDrun->RunHisto = (WDrun->PlotType == PLOT_HISTOGRAM);
+      WDrun->SetPlotOptions = 1;
+		}
+		else if(command=="Write")
+		{
+			if (!WDrun->ContinuousWrite) WDrun->SingleWrite = 1;
+		}
+		else if(command=="Continuous Write")
+		{
+				WDrun->ContinuousWrite ^= 1;
+        if (WDrun->ContinuousWrite) std::cout<<"Continuous writing is enabled"<<std::endl;
+        else std::cout<<"Continuous writing is disabled"<<std::endl;
+		}
+		else if(command=="Start")
+		{
+			if (WDrun->AcqRun == 0) 
+			{
+				if (BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)/*XX742 not considered*/ Set_relative_Threshold(handle, WDcfg, BoardInfo);
+				if (BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE || BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE) WDrun->GroupPlotSwitch = 0;
+				std::cout<<"Acquisition started"<<std::endl;
+       	CAEN_DGTZ_SWStartAcquisition(handle);
+				WDrun->AcqRun = 1;
+			}
+		}
+		else if(command=="Stop")
+		{
+			if (WDrun->AcqRun == 1)
+			{
+				 std::cout<<"Acquisition stopped"<<std::endl;
+         CAEN_DGTZ_SWStopAcquisition(handle);
+         WDrun->AcqRun = 0;
+			}
+		}
+		else if(command=="Temperature")
+		{
+			if (BoardSupportsTemperatureRead(BoardInfo)) 
+			{
+      	if (WDrun->AcqRun == 0) 
+				{
+        	int32_t ch;
+          for (ch = 0; ch < (int32_t)BoardInfo.Channels; ch++) 
+					{
+          	uint32_t temp;
+            int32_t ret = CAEN_DGTZ_ReadTemperature(handle, ch, &temp);
+            std::cout<<"CH"<<ch<<": ";
+            if (ret == CAEN_DGTZ_Success) std::cout<<temp<<" C"<<std::endl;
+						else std::cout<<"CAENDigitizer ERR"<<ret<<std::endl;
+          }
+					std::cout<<std::endl;
+        }
+        else std::cout<<"Can't run temperature monitor while acquisition is running."<<std::endl;
+			}
+			else std::cout<<"Board Family doesn't support ADC Temperature Monitor."<<std::endl;
+		}
+		else if(command=="Calibrate") calibrate(handle, WDrun, BoardInfo);
+		else if(command=="D")
+		{
+				if (WDrun->AcqRun == 0) 
+				{
+					std::cout<<"Disconnect input signal from all channels and press any key to start."<<std::endl;
+					///FIX ME
+					if (BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE)/*XX740 specific*/Calibrate_XX740_DC_Offset(handle, WDcfg, BoardInfo);
+					else if (BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)/*XX742 not considered*/ Calibrate_DC_Offset(handle, WDcfg, BoardInfo);
+					//set new dco values using calibration data
+					for (std::size_t i = 0; i < BoardInfo.Channels; i++) 
+					{
+						if (WDcfg->EnableMask & (1 << i)) 
+						{
+							if(WDcfg->Version_used[i] == 1)	Set_calibrated_DCO(handle, i, WDcfg, BoardInfo);
+							else 
+							{
+								CAEN_DGTZ_ErrorCode err = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)i, WDcfg->DCoffset[i]);
+								if (err) std::cout<<"Error setting channel "<<i<<" offset"<<std::endl;
+							}
 						}
 					}
+					std::this_thread::sleep_for(std::chrono::milliseconds(200));
+					std::cout<<"DAC calibration ready!!"<<std::endl;
 				}
-#ifdef _WIN32
-				Sleep(200);
-#else
-				usleep(200000);
-#endif
-				printf("DAC calibration ready!!\n");
+				else std::cout<<"Acquisition is running. Stop acquisition to start DAC calibration."<<std::endl;
 			}
-			else {
-				printf("Acquisition is running. Stop acquisition to start DAC calibration.\n");
-			}
-			break;
-        case ' ' :
-            printf("\n                            Bindkey help                                \n");
-            printf("--------------------------------------------------------------------------\n");;
-            printf("  [q]   Quit\n");
-            printf("  [s]   Start/Stop acquisition\n");
-            printf("  [t]   Send a software trigger (single shot)\n");
-            printf("  [T]   Enable/Disable continuous software trigger\n");
-            printf("  [w]   Write one event to output file\n");
-            printf("  [W]   Enable/Disable continuous writing to output file\n");
-            printf("  [p]   Plot one event\n");
-            printf("  [P]   Enable/Disable continuous plot\n");
-            printf("  [f]   Toggle between FFT and Waveform plot\n");
-            printf("  [h]   Toggle between Histogram and Waveform plot\n");
-            printf("  [g]   Change the index of the group to plot (XX740 family)\n");
-            printf("  [m]   Single ADC temperature monitor (XX751/30/25 only)\n");
-            printf("  [c]   ADC Calibration (XX751/30/25 only)\n");
-			printf("  [D]   DAC offset calibration\n");
-            printf(" [0-7]  Enable/Disable one channel on the plot\n");
-            printf("        For x740 family this is the plotted group's relative channel index\n");
-            printf("[SPACE] This help\n");
-            printf("--------------------------------------------------------------------------\n");
-            printf("Press a key to continue\n");
-            getch();
-            break;
-        default :   break;
-        }
-    }
+	}
 }
+
+
+
 
 
 /* ########################################################################### */
@@ -1838,6 +1797,32 @@ void CheckKeyboardCommands(int handle, WaveDumpRun_t *WDrun, WaveDumpConfig_t *W
 /* ########################################################################### */
 int main(int argc, char *argv[])
 {
+    std::string where="Release";
+    WsServer server;
+    server.config.port = 9876;
+    auto &echo_all = server.endpoint["^/Rack/?$"];
+  echo_all.on_message = [&server,&where](std::shared_ptr<WsServer::Connection> /*connection*/, std::shared_ptr<WsServer::InMessage> in_message) {
+    auto out_message = in_message->string();
+    std::cout<<out_message<<std::endl;
+    if(out_message=="Where")
+    {
+        for(auto &a_connection : server.get_connections())
+        a_connection->send(where);
+    }
+    else
+    {
+        std::string toto=out_message;
+        where=toto;
+    // echo_all.get_connections() can also be used to solely receive connections on this endpoint
+    for(auto &a_connection : server.get_connections())
+      a_connection->send(out_message);
+    }
+  };
+
+  std::thread server_thread([&server]() {
+    // Start WS-server
+    server.start();
+  });
     WaveDumpConfig_t   WDcfg;
     WaveDumpRun_t      WDrun;
     int ret = CAEN_DGTZ_Success;
@@ -2080,7 +2065,7 @@ int main(int argc, char *argv[])
     /* *************************************************************************************** */
     while(!WDrun.Quit) {		
         // Check for keyboard commands (key pressed)
-        CheckKeyboardCommands(handle, &WDrun, &WDcfg, BoardInfo);
+        CheckKeyboardCommands(handle,where, &WDrun, &WDcfg, BoardInfo);
         if (WDrun.AcqRun == 0)
             continue;
 
@@ -2161,5 +2146,6 @@ int main(int argc, char *argv[])
 
 InterruptTimeout(handle,BufferSize,PrevRateTime,NumEvents,PlotVar,Event8,Event16,Event742,buffer,WDcfg,WDrun,BoardInfo,EventInfo,EventPtr );
     }
+    server_thread.join();
     return 0;
 }
