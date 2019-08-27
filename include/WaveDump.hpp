@@ -155,7 +155,6 @@ typedef struct WaveDumpRun_t {
     int GroupPlotIndex;
 	int GroupPlotSwitch;
     int ChannelPlotMask;
-    int Restart;
     int RunHisto;
     uint32_t *Histogram[MAX_CH];
     FILE *fout[MAX_CH];

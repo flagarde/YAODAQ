@@ -55,7 +55,6 @@ typedef enum  {
     ERR_INVALID_BOARD_TYPE,
     ERR_DGZ_PROGRAM,
     ERR_MALLOC,
-    ERR_RESTART,
     ERR_INTERRUPT,
     ERR_READOUT,
     ERR_EVENT_BUILD,
@@ -76,7 +75,7 @@ typedef enum  {
 
 void Quit(const int& error)
 {
-    static std::vector<std::string> ErrMsg{"No Error","Configuration File not found","Can't open the digitizer","Can't read the Board Info","Can't run WaveDump for this digitizer","Can't program the digitizer","Can't allocate the memory for the readout buffer","Restarting Error","Interrupt Error","Readout Error","Event Build Error","Can't allocate the memory for the histograms","Unhandled board type","Output file write error","Over Temperature","UNKNOWN"};
+    static std::vector<std::string> ErrMsg{"No Error","Configuration File not found","Can't open the digitizer","Can't read the Board Info","Can't run WaveDump for this digitizer","Can't program the digitizer","Can't allocate the memory for the readout buffer","Interrupt Error","Readout Error","Event Build Error","Can't allocate the memory for the histograms","Unhandled board type","Output file write error","Over Temperature","UNKNOWN"};
 		if (error!=0) 
 		{
 			std::cout<<ErrMsg[error]<<std::endl;
@@ -1678,9 +1677,6 @@ void CheckKeyboardCommands(int handle, WaveDumpRun_t *WDrun, WaveDumpConfig_t *W
         case 'q' :
             WDrun->Quit = 1;
             break;
-        case 'R' :
-            WDrun->Restart = 1;
-            break;
         case 't' :
             if (!WDrun->ContinuousTrigger) {
                 CAEN_DGTZ_SendSWtrigger(handle);
@@ -1745,7 +1741,6 @@ void CheckKeyboardCommands(int handle, WaveDumpRun_t *WDrun, WaveDumpConfig_t *W
                 printf("Acquisition stopped\n");
                 CAEN_DGTZ_SWStopAcquisition(handle);
                 WDrun->AcqRun = 0;
-				//WDrun->Restart = 1;
             }
             break;
         case 'm' :
@@ -1812,7 +1807,6 @@ void CheckKeyboardCommands(int handle, WaveDumpRun_t *WDrun, WaveDumpConfig_t *W
             printf("\n                            Bindkey help                                \n");
             printf("--------------------------------------------------------------------------\n");;
             printf("  [q]   Quit\n");
-            printf("  [R]   Reload configuration file and restart\n");
             printf("  [s]   Start/Stop acquisition\n");
             printf("  [t]   Send a software trigger (single shot)\n");
             printf("  [T]   Enable/Disable continuous software trigger\n");
@@ -1978,7 +1972,6 @@ int main(int argc, char *argv[])
     if (WDcfg.StartupCalibration)
         calibrate(handle, &WDrun, BoardInfo);
 
-Restart:
     // mask the channels not available for this model
     if ((BoardInfo.FamilyCode != CAEN_DGTZ_XX740_FAMILY_CODE) && (BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)){
         WDcfg.EnableMask &= (1<<WDcfg.Nch)-1;
@@ -2080,21 +2073,7 @@ Restart:
         QuitMain(ERR_MALLOC,handle,PlotVar,Event8,Event16,Event742,buffer,WDcfg,WDrun);
     }
 
-	if (WDrun.Restart && WDrun.AcqRun) 
-	{
-#ifdef _WIN32
-		Sleep(300);
-#else
-		usleep(300000);
-#endif
-		if (BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)//XX742 not considered
-			Set_relative_Threshold(handle, &WDcfg, BoardInfo);
-
-		CAEN_DGTZ_SWStartAcquisition(handle);
-	}
-    else
-        printf("[s] start/stop the acquisition, [q] quit, [SPACE] help\n");
-    WDrun.Restart = 0;
+    std::cout<<"[s] start/stop the acquisition, [q] quit, [SPACE] help"<<std::endl;
     PrevRateTime = get_time();
     /* *************************************************************************************** */
     /* Readout Loop                                                                            */
@@ -2102,25 +2081,6 @@ Restart:
     while(!WDrun.Quit) {		
         // Check for keyboard commands (key pressed)
         CheckKeyboardCommands(handle, &WDrun, &WDcfg, BoardInfo);
-        if (WDrun.Restart) {
-            CAEN_DGTZ_SWStopAcquisition(handle);
-            CAEN_DGTZ_FreeReadoutBuffer(&buffer);
-            ClosePlotter();
-            PlotVar = NULL;
-            if(WDcfg.Nbit == 8)
-                CAEN_DGTZ_FreeEvent(handle, (void**)&Event8);
-            else
-                if (BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) {
-                    CAEN_DGTZ_FreeEvent(handle, (void**)&Event16);
-                }
-                else {
-                    CAEN_DGTZ_FreeEvent(handle, (void**)&Event742);
-                }
-                f_ini = fopen(ConfigFileName, "r");
-                ReloadCfgStatus = ParseConfigFile(f_ini, &WDcfg);
-                fclose(f_ini);
-                goto Restart;
-        }
         if (WDrun.AcqRun == 0)
             continue;
 
