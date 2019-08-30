@@ -17,25 +17,9 @@
 #include "Digitizer.hpp"
 #include "Plotter.hpp"
 
-
-
-
-
-
-
-
-
 using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 
-/* ###########################################################################
-*  Functions
-*  ########################################################################### */
-
-
-
-int cal_ok[MAX_CH] = { 0 };
-
-
+//int cal_ok[MAX_CH] = { 0 };
 
 /*! \fn      void CheckKeyboardCommands(WaveDumpRun_t *WDrun)
 *   \brief   check if there is a key pressed and execute the relevant command
@@ -117,15 +101,12 @@ void CheckKeyboardCommands(Digitizer& digi,Plotter& plot,std::string& command)
 }
 
 
-
-
-
 /* ########################################################################### */
 /* MAIN                                                                        */
 /* ########################################################################### */
 int main(int argc, char *argv[])
 {
-		Data dat;
+    Data dat;
     WsServer server;
     Digitizer digi(dat);
     Plotter a(dat,server);
@@ -155,23 +136,18 @@ int main(int argc, char *argv[])
     server.start();
   });
 	
-
   std::string ConfigFileName{""};
-    int MajorNumber;
-    int nCycles= 0;
-    FILE *f_ini;
-    
-
-
-    printf("\n");
-    printf("**************************************************************\n");
-    printf("                        Wave Dump %s\n", WaveDump_Release);
-    printf("**************************************************************\n");
+  int MajorNumber;
+  int nCycles= 0;
+  FILE *f_ini;
+   
+  std::cout<<"**************************************************************"<<std::endl;
+  std::cout<<"                        Wave Dump "<<WaveDump_Release<<std::endl;
+  std::cout<<"**************************************************************"<<std::endl;
 
 	/* *************************************************************************************** */
 	/* Open and parse default configuration file                                                       */
 	/* *************************************************************************************** */
-
 
 	if (argc > 1) ConfigFileName=argv[1];
 	std::cout<<"Opening Configuration File "<<ConfigFileName<<std::endl;
@@ -184,73 +160,68 @@ int main(int argc, char *argv[])
 	ParseConfigFile(f_ini,&dat.WDcfg);
 	fclose(f_ini);
 
-    /* *************************************************************************************** */
-    /* Open the digitizer and read the board information                                       */
-    /* *************************************************************************************** */
-    digi.Connect();
+  /* *************************************************************************************** */
+  /* Open the digitizer and read the board information                                       */
+  /* *************************************************************************************** */
+  digi.Connect();
 
-    digi.GetInfos();
-		std::cout<<"Connected to CAEN Digitizer Model "<<dat.BoardInfo.ModelName<<std::endl;
-    std::cout<<"ROC FPGA Release is "<<dat.BoardInfo.ROC_FirmwareRel<<std::endl;
-    std::cout<<"AMC FPGA Release is "<<dat.BoardInfo.AMC_FirmwareRel<<std::endl;
+  digi.GetInfos();
+	std::cout<<"Connected to CAEN Digitizer Model "<<dat.BoardInfo.ModelName<<std::endl;
+  std::cout<<"ROC FPGA Release is "<<dat.BoardInfo.ROC_FirmwareRel<<std::endl;
+  std::cout<<"AMC FPGA Release is "<<dat.BoardInfo.AMC_FirmwareRel<<std::endl;
 
 
-    // Check firmware rivision (DPP firmwares cannot be used with WaveDump */
-    sscanf(dat.BoardInfo.AMC_FirmwareRel, "%d", &MajorNumber);
-    if (MajorNumber >= 128) {
-        printf("This digitizer has a DPP firmware\n");
-        digi.Quit(ERR_INVALID_BOARD_TYPE);
-    }
-
-    // Get Number of Channels, Number of bits, Number of Groups of the board */
-    digi.GetMoreBoardInfo();
-
-	//load DAC calibration data (if present in flash)
+  // Check firmware rivision (DPP firmwares cannot be used with WaveDump */
+  sscanf(dat.BoardInfo.AMC_FirmwareRel, "%d", &MajorNumber);
+  if (MajorNumber >= 128) 
+  {
+    std::cout<<"This digitizer has a DPP firmware"<<std::endl;
+    digi.Quit(ERR_INVALID_BOARD_TYPE);
+  }
+  // Get Number of Channels, Number of bits, Number of Groups of the board */
+  digi.GetMoreBoardInfo();
+  //load DAC calibration data (if present in flash)
   digi.LoadDACCalibration();
-
-
-    // Perform calibration (if needed).
-    digi.PerformCalibration();
-
-
-    // mask the channels not available for this model
-    digi.MaskChannels();
-    // Set plot mask
-		digi.SetPlotMask();
-    /* *************************************************************************************** */
-    /* program the digitizer                                                                   */
-    /* *************************************************************************************** */
-    digi.ProgramDigitizer2();
+  // Perform calibration (if needed).
+  digi.PerformCalibration();
+  // mask the channels not available for this model
+  digi.MaskChannels();
+  // Set plot mask
+  digi.SetPlotMask();
+  /* *************************************************************************************** */
+  /* program the digitizer                                                                   */
+  /* *************************************************************************************** */
+  digi.ProgramDigitizer2();
 
   digi.Ugly();
-    // Allocate memory for the event data and readout buffer
-    digi.Allocate();
+  // Allocate memory for the event data and readout buffer
+  digi.Allocate();
 
-    std::cout<<"Waiting for command !"<<std::endl;
-    digi.setPrevRateTime();
-    /* *************************************************************************************** */
-    /* Readout Loop                                                                            */
-    /* *************************************************************************************** */
-    while(!dat.WDrun.Quit) {		
-        // Check for keyboard commands (key pressed)
-        CheckKeyboardCommands(digi,a,where);
-        if (dat. WDrun.AcqRun == 0) continue;
+  std::cout<<"Waiting for command !"<<std::endl;
+  digi.setPrevRateTime();
+  /* *************************************************************************************** */
+  /* Readout Loop                                                                            */
+  /* *************************************************************************************** */
+  while(!dat.WDrun.Quit) 
+  {		
+      // Check for keyboard commands (key pressed)
+      CheckKeyboardCommands(digi,a,where);
+      if (dat. WDrun.AcqRun == 0) continue;
 
-        /* Send a software trigger */
-        if (dat.WDrun.ContinuousTrigger) digi.SoftwareTrigger();
+      /* Send a software trigger */
+      if (dat.WDrun.ContinuousTrigger) digi.SoftwareTrigger();
 
-        /* Wait for interrupt (if enabled) */
-        if (dat.WDcfg.InterruptNumEvents > 0)
-				{
-					digi.Interrupt();
-					continue;
-				}
+      /* Wait for interrupt (if enabled) */
+      if (dat.WDcfg.InterruptNumEvents > 0)
+			{
+			  digi.Interrupt();
+				continue;
+			}
+      /* Read data from the board */
+      digi.Read();
 
-        /* Read data from the board */
-        digi.Read();
-
-digi.InterruptTimeout();
-    }
-    server_thread.join();
-    return 0;
+      digi.InterruptTimeout();
+  }
+  server_thread.join();
+  return 0;
 }
