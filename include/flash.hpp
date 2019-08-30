@@ -1,10 +1,3 @@
-/*
- * flash.h
- *
- *  Created on: 19/feb/2015
- *      Author: Luca
- */
-
 #ifndef FLASH_H_
 #define FLASH_H_
 

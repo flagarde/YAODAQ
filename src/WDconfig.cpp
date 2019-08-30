@@ -1,5 +1,6 @@
 #include <CAENDigitizerType.h>
 #include "WDconfig.hpp"
+#include "Data.hpp"
 
 int dc_file[MAX_CH];
 float dc_8file[8];

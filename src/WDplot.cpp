@@ -1,24 +1,3 @@
-/******************************************************************************
-* 
-* CAEN SpA - Front End Division
-* Via Vetraia, 11 - 55049 - Viareggio ITALY
-* +390594388398 - www.caen.it
-*
-***************************************************************************//**
-* \note TERMS OF USE:
-* This program is free software; you can redistribute it and/or modify it under
-* the terms of the GNU General Public License as published by the Free Software
-* Foundation. This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The user relies on the 
-* software, documentation and results solely at his own risk.
-*
-* WDplot is a library that allows WaveDump to plot the waveforms.
-* It saves the data read from the digitizer into a text file and sends the 
-* plotting commands to gnuplot through a pipe. Thus, WDplot is just a simple 
-* server that transfers the data and the commands from WaveDump to gnuplot, 
-* which is the actual plotting tool.
-******************************************************************************/
 #ifdef WIN32
     #include <sys/timeb.h>
     #include <time.h>
@@ -111,31 +90,38 @@ int PlotWaveforms(void)
 {
 	int i, s=0, ntr, comma=0, c, npts=0, WaitTime;
 	FILE *fplot;
-
-	Busy = 1;	
-    if (SetOption)
-	    SetPlotOptions();
+	Busy = 1;	if (SetOption)
+	SetPlotOptions();
 	fplot = fopen(PLOT_DATA_FILE, "w");
-    if (fplot == NULL) {
-        Busy = 0;
+  if (fplot == NULL) 
+	{
+    Busy = 0;
 		return -1;
-    }
-
+  }
 	ntr = PlotVar.NumTraces;
-	while(ntr > 0) {
+	while(ntr > 0) 
+	{
 		fprintf(fplot, "%d\t", s);
-		for(i=0; i<PlotVar.NumTraces; i++) {
-			if (s < PlotVar.TraceSize[i]) {
-                if (PlotVar.DataType == PLOT_DATA_UINT8) {
+		for(i=0; i<PlotVar.NumTraces; i++) 
+		{
+			if (s < PlotVar.TraceSize[i]) 
+			{
+            if (PlotVar.DataType == PLOT_DATA_UINT8) 
+						{
                     uint8_t *data = (uint8_t *)PlotVar.TraceData[i];
 				    fprintf(fplot, "%d\t", data[s]);
-                } else if (PlotVar.DataType == PLOT_DATA_UINT16) {
+            } 
+						else if (PlotVar.DataType == PLOT_DATA_UINT16) 
+						{
                     uint16_t *data = (uint16_t *)PlotVar.TraceData[i];
 				    fprintf(fplot, "%d\t", data[s]);
-                } else if (PlotVar.DataType == PLOT_DATA_UINT32) {
+            } 
+						else if (PlotVar.DataType == PLOT_DATA_UINT32) 
+						{
                     uint32_t *data = (uint32_t *)PlotVar.TraceData[i];
 				    fprintf(fplot, "%d\t", data[s]);
-                } else if (PlotVar.DataType == PLOT_DATA_DOUBLE) {
+            } 
+						else if (PlotVar.DataType == PLOT_DATA_DOUBLE) {
                     double *data = (double *)PlotVar.TraceData[i];
                     fprintf(fplot, "%f\t", data[s]);
                } else if (PlotVar.DataType == PLOT_DATA_FLOAT) {
@@ -144,8 +130,7 @@ int PlotWaveforms(void)
                 }
 				npts++;
 			}
-			if (PlotVar.TraceSize[i] == (s-1))
-				ntr--;
+			if (PlotVar.TraceSize[i] == (s-1)) ntr--;
 		}
 		s++;
 		fprintf(fplot, "\n");

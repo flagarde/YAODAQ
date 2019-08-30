@@ -104,7 +104,7 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 
 ## Sources
 
-add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/WDplot.cpp src/fft.cpp src/X742CorrectionRoutines.cpp src/spi.cpp)
+add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/WDplot.cpp src/fft.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp)
 add_dependencies(libb CAENlibs)
 add_executable(WaveDump src/WaveDump.cpp)
 
