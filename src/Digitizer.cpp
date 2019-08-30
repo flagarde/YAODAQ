@@ -1076,7 +1076,8 @@ Digitizer::~Digitizer()
     if(dat.Event8) CAEN_DGTZ_FreeEvent(handle, (void**)&dat.Event8);
     if(dat.Event16) CAEN_DGTZ_FreeEvent(handle, (void**)&dat.Event16);
     if(dat.Event742) CAEN_DGTZ_FreeEvent(handle, (void**)&dat.Event742);
-    CAEN_DGTZ_FreeReadoutBuffer(&dat.buffer);
+    CAEN_DGTZ_FreeReadoutBuffer(&buffer);
+    if(buffer!=nullptr) delete buffer;
     CAEN_DGTZ_CloseDigitizer(handle);
 }
 
@@ -1260,7 +1261,7 @@ void Digitizer::InterruptTimeout()
         for(std::size_t i = 0; i < (int)NumEvents; i++) {
 
             /* Get one event from the readout buffer */
-            ret = CAEN_DGTZ_GetEventInfo(handle, dat.buffer, BufferSize, i, &dat.EventInfo, &dat.EventPtr);
+            ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, i, &dat.EventInfo, &dat.EventPtr);
             if (ret) {
                 Quit(ERR_EVENT_BUILD);
             }

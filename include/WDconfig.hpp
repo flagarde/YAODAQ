@@ -1,7 +1,6 @@
 #ifndef _WDCONFIG__H
 #define _WDCONFIG__H
 #include <cstdio>
-#include "WaveDump.hpp"
 #include "flash.hpp"
 #include "Data.hpp"
 

@@ -108,13 +108,13 @@ if(ReloadCfgStatus > 0) {
 void Read()
 {
 int ret{0};
-ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, dat.buffer, &BufferSize);
+ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT,buffer, &BufferSize);
         if (ret) {
             Quit(ERR_READOUT);
         }
         NumEvents = 0;
         if (BufferSize != 0) {
-            ret = CAEN_DGTZ_GetNumEvents(handle, dat.buffer, BufferSize, &NumEvents);
+            ret = CAEN_DGTZ_GetNumEvents(handle,buffer, BufferSize, &NumEvents);
             if (ret) {
                 Quit(ERR_READOUT);
             }
@@ -218,7 +218,7 @@ if(dat.WDcfg.Nbit == 8)
     if (ret != CAEN_DGTZ_Success) {
         Quit(ERR_MALLOC);
     }
-    ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &dat.buffer,&AllocatedSize); /* WARNING: This malloc must be done after the digitizer programming */
+    ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &buffer,&AllocatedSize); /* WARNING: This malloc must be done after the digitizer programming */
     if (ret) {
         Quit(ERR_MALLOC);
     }
@@ -446,6 +446,7 @@ private:
  uint32_t BufferSize{0};
  uint32_t NumEvents{0};
  uint64_t PrevRateTime{0};
+  char *buffer{nullptr};
  const static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE{CAEN_DGTZ_IRQ_MODE_ROAK};
  int WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
  CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];

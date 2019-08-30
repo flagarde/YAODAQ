@@ -3,7 +3,6 @@
 #define DBG_TIME
 
 #include <CAENDigitizer.h>
-#include "WaveDump.hpp"
 #include "WDconfig.hpp"
 #include "fft.hpp"
 #include <iostream>

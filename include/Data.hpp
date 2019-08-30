@@ -101,15 +101,13 @@ public:
 	}
   ~Data()
   {
-	if(buffer!=nullptr) delete buffer;
-	if(EventPtr!=nullptr) delete buffer;
+        if(EventPtr!=nullptr) delete EventPtr;
 	if(Event8!=nullptr) delete Event8;
 	if(Event16!=nullptr) delete Event16;
 	if(Event742!=nullptr) delete Event742;
   }
   CAEN_DGTZ_UINT16_EVENT_t  *Event16{nullptr};
   CAEN_DGTZ_UINT8_EVENT_t   *Event8{nullptr};
-  char *buffer{nullptr};
   char *EventPtr{nullptr};
   CAEN_DGTZ_BoardInfo_t       BoardInfo;
   CAEN_DGTZ_EventInfo_t       EventInfo;
