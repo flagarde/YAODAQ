@@ -1,11 +1,19 @@
 #include "Digitizer.hpp"
 #include <iostream>
 #include <cmath>
-#include "WDconfig.hpp"
 #include "fft.hpp"
 #include "X742CorrectionRoutines.hpp"
 #include <thread>
 #include <chrono>
+
+
+
+#define NPOINTS 2
+#define NACQS   50
+#define VME_INTERRUPT_LEVEL      1
+#define VME_INTERRUPT_STATUS_ID  0xAAAA
+#define INTERRUPT_TIMEOUT        200  // ms
+
 
 
 /*! \fn      int WriteRegisterBitmask(int32_t handle, uint32_t address, uint32_t data, uint32_t mask)

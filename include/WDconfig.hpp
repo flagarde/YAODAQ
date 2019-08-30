@@ -4,6 +4,10 @@
 #include "WaveDump.hpp"
 #include "flash.hpp"
 #include "Data.hpp"
+
+
+#define CFGRELOAD_CORRTABLES_BIT (0)
+
 /* ###########################################################################
 *  Functions
 *  ########################################################################### */

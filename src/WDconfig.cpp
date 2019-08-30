@@ -5,6 +5,12 @@
 #include <cstdlib>
 #include<cmath>
 
+
+
+#define CFGRELOAD_DESMODE_BIT (1)
+
+
+
 int dc_file[MAX_CH];
 float dc_8file[8];
 int thr_file[MAX_CH] = { 0 };
