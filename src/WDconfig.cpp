@@ -27,7 +27,6 @@ static void SetDefaultConfiguration(WaveDumpConfig_t *WDcfg) {
     WDcfg->FastTriggerEnabled = 0; 
 	WDcfg->FPIOtype = CAEN_DGTZ_IOLevel_t(0);
 
-	strcpy(WDcfg->GnuPlotPath, GNUPLOT_DEFAULT_PATH);
 	for(i=0; i<MAX_SET; i++) {
 		WDcfg->PulsePolarity[i] = CAEN_DGTZ_PulsePolarityPositive;
 		WDcfg->Version_used[i] = 0;
@@ -263,11 +262,6 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 			continue;
 		}
 
-		// GNUplot path
-		if (strstr(str, "GNUPLOT_PATH")!=NULL) {
-			read = fscanf(f_ini, "%s", WDcfg->GnuPlotPath);
-			continue;
-		}
 
 		// Post Trigger (percent of the acquisition window)
 		if (strstr(str, "POST_TRIGGER")!=NULL) {

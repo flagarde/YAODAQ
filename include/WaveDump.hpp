@@ -33,12 +33,6 @@
 
 #endif
 
-#ifdef LINUX
-#define GNUPLOT_DEFAULT_PATH "/usr/bin/"
-#else
-#define GNUPLOT_DEFAULT_PATH ".\\"
-#endif
-
 #define OUTFILENAME "wave"  /* The actual file name is wave_n.txt, where n is the channel */
 
 

@@ -5,7 +5,6 @@
 #include <CAENDigitizer.h>
 #include "WaveDump.hpp"
 #include "WDconfig.hpp"
-#include "WDplot.hpp"
 #include "fft.hpp"
 #include <iostream>
 #include <string>
@@ -78,7 +77,7 @@ void CheckKeyboardCommands(Digitizer& digi,Plotter& plot,std::string& command)
     else if(command=="Plot")
 		{
 			digi.Plot();
-			plot.Plot();
+			plot.PlotWaveform();
 			plot.Save();
       command="Where";
       

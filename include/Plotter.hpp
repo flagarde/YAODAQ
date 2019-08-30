@@ -12,7 +12,7 @@ class Plotter
 {
 public:
   Plotter(Data& da,WsServer& ser);
-  void Plot();
+  void PlotWaveform();
 	void Save();
 private:
   int FindMaxBin()

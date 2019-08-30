@@ -1,7 +1,6 @@
 #include "Digitizer.hpp"
 #include <iostream>
 #include <cmath>
-#include "WDplot.hpp"
 #include "WDconfig.hpp"
 #include "fft.hpp"
 #include "X742CorrectionRoutines.hpp"
@@ -226,7 +225,6 @@ void Digitizer::GoToNextEnabledGroup()
 				while( !((1 << dat.WDrun.GroupPlotIndex)& dat.WDcfg.EnableMask));
         if( dat.WDrun.GroupPlotIndex != orgPlotIndex) std::cout<<"Plot group set to "<<dat.WDrun.GroupPlotIndex<<std::endl;
     }
-    ClearPlot();
 }
 
 
@@ -1060,8 +1058,6 @@ Digitizer::~Digitizer()
 {
     /* stop the acquisition */
     CAEN_DGTZ_SWStopAcquisition(handle);
-    /* close the plotter */
-    if(dat.PlotVar!=nullptr) ClosePlotter();
     /* close the output files and free histograms*/
     for(std::size_t ch = 0; ch < dat.WDcfg.Nch; ch++) 
     {
@@ -1292,7 +1288,7 @@ void Digitizer::InterruptTimeout()
                         if (dat.WDrun.Histogram[ch] == nullptr) 
 												{
                             if ((dat.WDrun.Histogram[ch] = static_cast<uint32_t*>(malloc((uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t)))) == nullptr) Quit(ERR_HISTO_MALLOC);
-                            memset(dat.WDrun.Histogram[ch], 0, (uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t));
+                            //memset(dat.WDrun.Histogram[ch], 0, (uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t));
                         }
                         if (dat.WDcfg.Nbit == 8) for(std::size_t i=0; i<(int)dat.Event8->ChSize[ch]; i++) dat.WDrun.Histogram[ch][dat.Event8->DataChannel[ch][i]]++;
                         else {
@@ -1302,7 +1298,7 @@ void Digitizer::InterruptTimeout()
                             else {
                                 printf("Can't build samples histogram for this board: it has float samples.\n");
                                 dat.WDrun.RunHisto = 0;
-			        dat.WDrun.PlotType = PLOT_WAVEFORMS;
+			       // dat.WDrun.PlotType = PLOT_WAVEFORMS;
                                 break;
                             }
                         }
@@ -1331,7 +1327,7 @@ void Digitizer::InterruptTimeout()
                 }
 
                 /* Plot Waveforms */
-                if ((dat.WDrun.ContinuousPlot || dat.WDrun.SinglePlot) && !IsPlotterBusy()) 
+                if ((dat.WDrun.ContinuousPlot || dat.WDrun.SinglePlot) ) 
 								{
                    /* int Ntraces = (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) ? 8 : dat.WDcfg.Nch;
                     if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) Ntraces = 9;
@@ -1392,35 +1388,12 @@ void Digitizer::InterruptTimeout()
                         }
    			
                         for(std::size_t ch=0; ch<Ntraces; ch++) 
-												{
+			{
                             int absCh = dat.WDrun.GroupPlotIndex * 8 + ch;
                             if (!((dat.WDrun.ChannelPlotMask >> ch) & 1)) continue;
                             if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (absCh % 8) == 0)) sprintf(dat.PlotVar->TraceName[Tn], "TR %d", (int)((absCh-1) / 16));
                             else sprintf(dat.PlotVar->TraceName[Tn], "CH %d", absCh);
-                            if (dat.WDrun.PlotType == PLOT_WAVEFORMS) 
-														{
-                                if (dat.WDcfg.Nbit == 8) 
-																{
-                                    dat.PlotVar->TraceSize[Tn] = dat.Event8->ChSize[absCh];
-                                    memcpy(dat.PlotVar->TraceData[Tn], dat.Event8->DataChannel[absCh], dat.Event8->ChSize[absCh]);
-                                    dat.PlotVar->DataType = PLOT_DATA_UINT8;
-                                } 
-																else if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) 
-																{
-                                    if (dat.Event742->GrPresent[dat.WDrun.GroupPlotIndex]) 
-																		{ 
-                                        dat.PlotVar->TraceSize[Tn] = dat.Event742->DataGroup[dat.WDrun.GroupPlotIndex].ChSize[ch];
-                                        memcpy(dat.PlotVar->TraceData[Tn], dat.Event742->DataGroup[dat.WDrun.GroupPlotIndex].DataChannel[ch], dat.Event742->DataGroup[dat.WDrun.GroupPlotIndex].ChSize[ch] * sizeof(float));
-                                        dat.PlotVar->DataType = PLOT_DATA_FLOAT;
-                                    }
-                                }
-                                else 
-																{
-                                    dat.PlotVar->TraceSize[Tn] = dat.Event16->ChSize[absCh];
-                                    memcpy(dat.PlotVar->TraceData[Tn], dat.Event16->DataChannel[absCh], dat.Event16->ChSize[absCh] * 2);
-                                    dat.PlotVar->DataType = PLOT_DATA_UINT16;
-                                }  
-                            } else if (dat.WDrun.PlotType == PLOT_FFT) {
+                   else if (dat.WDrun.PlotType == PLOT_FFT) {
                                 int FFTns;
                                 dat.PlotVar->DataType = PLOT_DATA_DOUBLE;
                                 if(dat.WDcfg.Nbit == 8)

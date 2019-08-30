@@ -6,7 +6,7 @@
   }
 
 
-void Plotter::Plot()
+void Plotter::PlotWaveform()
 	{
 		int NbrBins=FindMaxBin();
     float maxValue{0};
@@ -34,7 +34,19 @@ void Plotter::Plot()
 			histos.push_back(TH1D(title.c_str(),title.c_str(),NbrBins,0,maxValue));
 			if(ch==dat.WDcfg.Nch-1) erasetrigger=0;
 		}
-		if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)
+		if (dat.WDcfg.Nbit == 8) 
+		{
+		  for(std::size_t ch=0;ch!=dat.WDcfg.Nch;++ch)
+		  {
+		    int Size = dat.Event8->ChSize[ch];
+        if (Size <= 0) continue;
+        for(int j=0; j<Size; j++)
+		    {
+			        histos[ch].Fill(j,dat.Event8->DataChannel[ch][j]);
+		    }
+		  }
+    } 
+		else if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)
 		{
 			for(std::size_t gr=0;gr<(dat.WDcfg.Nch/8);gr++) 
 			{
@@ -42,17 +54,35 @@ void Plotter::Plot()
 				{
         	for(std::size_t ch=0; ch<9; ch++) 
 					{
-                int Size = dat.Event742->DataGroup[gr].ChSize[ch];
-                if (Size <= 0) continue;
-                for(int j=0; j<Size; j++)
-		{
-			histos[gr*9+ch].Fill(j,dat.Event742->DataGroup[gr].DataChannel[ch][j]);
-			//std::cout<<j<<" "<<dat.Event742->DataGroup[gr].DataChannel[ch][j]<<std::endl;
-		}
+            int Size = dat.Event742->DataGroup[gr].ChSize[ch];
+            if (Size <= 0) continue;
+            for(int j=0; j<Size; j++)
+		        {
+			        histos[gr*9+ch].Fill(j,dat.Event742->DataGroup[gr].DataChannel[ch][j]);
+		        }
           }
        	}
     	}
 		}
+		else
+		{
+		  for(std::size_t ch=0;ch!=dat.WDcfg.Nch;++ch)
+		  {
+		    int Size = dat.Event16->ChSize[ch];
+        if (Size <= 0) continue;
+        for(int j=0; j<Size; j++)
+		    {
+			        histos[ch].Fill(j,dat.Event16->DataChannel[ch][j]);
+		    }
+		  }
+		}
+		
+		
+		
+		
+		
+		
+		
   }
 
 

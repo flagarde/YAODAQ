@@ -3,7 +3,6 @@
 
 #include "CAENDigitizer.h"
 #include "CAENDigitizerType.h"
-#include "WDplot.hpp"
 #define MAX_GW  1000        /* max. number of generic write commads */
 #define MAX_CH  64          /* max. number of channels */
 #define MAX_SET 16           /* max. number of independent settings */
@@ -40,7 +39,6 @@ public :
     CAEN_DGTZ_IOLevel_t FPIOtype;
     CAEN_DGTZ_TriggerMode_t ExtTriggerMode;
     uint16_t EnableMask;
-    char GnuPlotPath[1000];
     CAEN_DGTZ_TriggerMode_t ChannelTriggerMode[MAX_SET];
 	CAEN_DGTZ_PulsePolarity_t PulsePolarity[MAX_SET];
     uint32_t DCoffset[MAX_SET];
@@ -94,8 +92,8 @@ class Data
 public:
   Data()
 	{
-			memset(&WDrun, 0, sizeof(WDrun));
-			memset(&WDcfg, 0, sizeof(WDcfg));
+			//memset(&WDrun, 0, sizeof(WDrun));
+			//memset(&WDcfg, 0, sizeof(WDcfg));
 	for (std::size_t i = 0; i < MAX_SET; i++) {
 		WDcfg.DAC_Calib.cal[i] = 1;
 		WDcfg.DAC_Calib.offset[i] = 0;
@@ -105,7 +103,6 @@ public:
   {
 	if(buffer!=nullptr) delete buffer;
 	if(EventPtr!=nullptr) delete buffer;
-	if(PlotVar!=nullptr) ClosePlotter();
 	if(Event8!=nullptr) delete Event8;
 	if(Event16!=nullptr) delete Event16;
 	if(Event742!=nullptr) delete Event742;
@@ -117,7 +114,6 @@ public:
   CAEN_DGTZ_BoardInfo_t       BoardInfo;
   CAEN_DGTZ_EventInfo_t       EventInfo;
   CAEN_DGTZ_X742_EVENT_t       *Event742{nullptr};  /* custom event struct with 8 bit data (only for 8 bit digitizers) */
-  WDPlot_t                    *PlotVar{nullptr};
   WaveDumpConfig_t   WDcfg;
   WaveDumpRun_t      WDrun;
 };

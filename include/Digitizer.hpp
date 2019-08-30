@@ -4,12 +4,10 @@
 #include <string>
 #include "Data.hpp"
 #include <iostream>
-#include "WDplot.hpp"
 #include <thread>
 #include <chrono>
 #include <iostream>
 #include <cmath>
-#include "WDplot.hpp"
 #include "WDconfig.hpp"
 #include "fft.hpp"
 #include "X742CorrectionRoutines.hpp"
