@@ -14,6 +14,7 @@ public:
   Plotter(Data& da,WsServer& ser);
   void PlotWaveform();
 	void Save();
+  void SaveFFT();
 private:
   int FindMaxBin()
 	{

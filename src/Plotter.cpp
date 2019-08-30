@@ -76,17 +76,39 @@ void Plotter::PlotWaveform()
 		    }
 		  }
 		}
-		
-		
-		
-		
-		
-		
-		
   }
 
 
-
+void Plotter::SaveFFT()
+{
+  auto &echo_all = server.endpoint["^/Rack/?$"];
+  TH1* toto{nullptr};
+  TString json;
+  for(std::size_t i=0;i!=histos.size();++i)
+		{
+		   toto=histos[i].FFT(nullptr,"RE R2C EX");
+		   toto->SetTitle(("FFT Real Part "+std::string(histos[i].GetName())).c_str()); 
+		   toto->SetName(("RE"+std::string(histos[i].GetName())).c_str()); 
+		   json = TBufferJSON::ToJSON(toto);
+			 for(auto &a_connection : echo_all.get_connections()) a_connection->send(json.Data());
+		   toto=histos[i].FFT(nullptr,"IM R2C EX");
+		   toto->SetTitle(("FFT Imaginary Part "+std::string(histos[i].GetName())).c_str()); 
+		   toto->SetName(("IM"+std::string(histos[i].GetName())).c_str()); 
+		   json = TBufferJSON::ToJSON(toto);
+			 for(auto &a_connection : echo_all.get_connections()) a_connection->send(json.Data());
+			 toto=histos[i].FFT(nullptr,"MAG R2C EX");
+		   toto->SetTitle(("FFT Magnitude "+std::string(histos[i].GetName())).c_str()); 
+		   toto->SetName(("MAG"+std::string(histos[i].GetName())).c_str()); 
+		   json = TBufferJSON::ToJSON(toto);
+			 for(auto &a_connection : echo_all.get_connections()) a_connection->send(json.Data());
+			 toto=histos[i].FFT(nullptr,"PH R2C EX");
+		   toto->SetTitle(("FFT Phase "+std::string(histos[i].GetName())).c_str()); 
+		   toto->SetName(("PH"+std::string(histos[i].GetName())).c_str()); 
+		   json = TBufferJSON::ToJSON(toto);
+			 for(auto &a_connection : echo_all.get_connections()) a_connection->send(json.Data());
+			 
+		}
+}
 
 
 	void Plotter::Save()
@@ -99,6 +121,7 @@ void Plotter::PlotWaveform()
 			auto &echo_all = server.endpoint["^/Rack/?$"];
 			for(auto &a_connection : echo_all.get_connections()) a_connection->send(json.Data());
 		}
+		SaveFFT();
 		/*for(std::size_t i=0;i!=histos.size();++i)
 		{
  			histos[i].SetMarkerStyle(kFullSquare);
