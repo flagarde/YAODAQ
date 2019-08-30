@@ -1,6 +1,9 @@
 #include <CAENDigitizerType.h>
 #include "WDconfig.hpp"
 #include "Data.hpp"
+#include <cstring>
+#include <cstdlib>
+#include<cmath>
 
 int dc_file[MAX_CH];
 float dc_8file[8];
@@ -403,7 +406,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 					WDcfg->Version_used[i] = 1;
 					dc_file[i] = dc;
 					if (WDcfg->PulsePolarity[i] == CAEN_DGTZ_PulsePolarityPositive)					
-						WDcfg->DCoffset[i] = (uint32_t)((float)(fabs(dc - 100))*(655.35));
+						WDcfg->DCoffset[i] = (uint32_t)((float)(std::fabs(dc - 100))*(655.35));
 					
 					else if (WDcfg->PulsePolarity[i] == CAEN_DGTZ_PulsePolarityNegative)					
 						WDcfg->DCoffset[i] = (uint32_t)((float)(dc)*(655.35));					
@@ -415,7 +418,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t *WDcfg)
 				dc_file[ch] = dc;
 				if (WDcfg->PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityPositive)
 				{
-					WDcfg->DCoffset[ch] = (uint32_t)((float)(fabs(dc - 100))*(655.35));
+					WDcfg->DCoffset[ch] = (uint32_t)((float)(std::fabs(dc - 100))*(655.35));
 					//printf("ch %d positive, offset %d\n",ch, WDcfg->DCoffset[ch]);
 				}
 					
