@@ -6,6 +6,42 @@
   }
 
 
+  
+void Plotter::PlotHistograms()
+{
+    for(std::size_t ch=0; ch<dat.WDcfg.Nch; ch++) 
+    {
+        uint64_t Nbrbins=(uint64_t)(1<<dat.WDcfg.Nbit);
+        std::string title="HistosChannel"+std::to_string(ch);
+        histos_histos.push_back(TH1D(title.c_str(),title.c_str(),Nbrbins,0,Nbrbins));
+        int chmask = ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) )? (ch/8) : ch;
+        if (!(dat.EventInfo.ChannelMask & (1<<chmask))) continue;
+       /* if (dat.WDrun.Histogram[ch] == nullptr) 
+        {*/
+           /* if ((dat.WDrun.Histogram[ch] = static_cast<uint32_t*>(malloc((uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t)))) == nullptr) Quit(ERR_HISTO_MALLOC);*/
+                            //memset(dat.WDrun.Histogram[ch], 0, (uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t));
+       /* }*/
+        if (dat.WDcfg.Nbit == 8) 
+        {
+            for(std::size_t i=0; i<(int)dat.Event8->ChSize[ch]; i++) histos_histos[ch].Fill(dat.Event8->DataChannel[ch][i]);
+        }
+        else 
+        {
+            if (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) 
+            {
+                for(std::size_t i=0; i<(int)dat.Event16->ChSize[ch]; i++) histos_histos[ch].Fill(dat.Event16->DataChannel[ch][i]);
+            }
+            else 
+            {
+                for(std::size_t i=0; i<(int)dat.Event16->ChSize[ch]; i++) histos_histos[ch].Fill(dat.Event16->DataChannel[ch][i]);
+            }
+        }
+    }
+    
+}
+  
+  
+  
 void Plotter::PlotWaveform()
 	{
 		int NbrBins=FindMaxBin();

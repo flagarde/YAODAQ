@@ -1071,7 +1071,7 @@ Digitizer::~Digitizer()
     for(std::size_t ch = 0; ch < dat.WDcfg.Nch; ch++) 
     {
         if (dat.WDrun.fout[ch]) fclose(dat.WDrun.fout[ch]);
-        if (dat.WDrun.Histogram[ch]) free(dat.WDrun.Histogram[ch]);
+        //if (dat.WDrun.Histogram[ch]) free(dat.WDrun.Histogram[ch]);
     }
     /* close the device and free the buffers */
     if(dat.Event8) CAEN_DGTZ_FreeEvent(handle, (void**)&dat.Event8);
@@ -1291,7 +1291,7 @@ void Digitizer::InterruptTimeout()
                 /* Update Histograms */
                 if (dat.WDrun.RunHisto) 
                 {
-                    for(std::size_t ch=0; ch<dat.WDcfg.Nch; ch++) 
+                   /* for(std::size_t ch=0; ch<dat.WDcfg.Nch; ch++) 
 										{
                         int chmask = ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) )? (ch/8) : ch;
                         if (!(dat.EventInfo.ChannelMask & (1<<chmask))) continue;
@@ -1312,7 +1312,7 @@ void Digitizer::InterruptTimeout()
                                 break;
                             }
                         }
-                    }
+                    }*/
                 }
 
                 /* Write Event data to file */

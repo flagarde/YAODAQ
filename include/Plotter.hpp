@@ -13,6 +13,7 @@ class Plotter
 public:
   Plotter(Data& da,WsServer& ser);
   void PlotWaveform();
+  void PlotHistograms();
 	void Save();
 private:
   int FindMaxBin()
@@ -87,6 +88,7 @@ private:
 THStack hs;
 TCanvas can;
 std::vector<TH1D> histos;
+std::vector<TH1D> histos_histos;
 public:
 Data& dat;
 
