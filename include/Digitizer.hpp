@@ -231,7 +231,7 @@ void LoadDACCalibration()
 {
 
 if (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)//XX742 not considered
-		::Load_DAC_Calibration_From_Flash(handle, &dat.WDcfg, dat.BoardInfo);
+		Load_DAC_Calibration_From_Flash();
 
 }
 
@@ -436,6 +436,33 @@ void D()
 
 
 }
+
+
+
+
+
+/*! \fn      void Load_DAC_Calibration_From_Flash(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo)
+*   \brief   look for DAC calibration in flash and load it
+*
+*   \param   handle   Digitizer handle
+*   \param   WDcfg:   Pointer to WaveDumpConfig data structure
+*	\param   BoardInfo 
+*/
+void Load_DAC_Calibration_From_Flash();
+
+/*! \fn      void Save_DAC_Calibration_To_Flash(int handle, WaveDumpConfig_t WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo)
+*   \brief   save DAC calibration to flash 
+*
+*   \param   handle   Digitizer handle
+*   \param   WDcfg:   WaveDumpConfig data structure
+*	\param   BoardInfo
+*/
+void Save_DAC_Calibration_To_Flash();
+
+
+
+
+
 
 
 private:

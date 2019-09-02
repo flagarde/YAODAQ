@@ -22,7 +22,24 @@ public:
 
 class WaveDumpConfig_t
 {
-public :
+    public :
+    WaveDumpConfig_t()
+    {
+        for(std::size_t i=0; i<MAX_SET; i++) 
+        {
+            PulsePolarity[i] = CAEN_DGTZ_PulsePolarityPositive;
+            Version_used[i] = 0;
+            DCoffset[i] = 0;
+            Threshold[i] = 0;
+            ChannelTriggerMode[i] = CAEN_DGTZ_TRGMODE_DISABLED;
+            GroupTrgEnableMask[i] = 0;
+            for(std::size_t j=0; j<MAX_SET; j++) DCoffsetGrpCh[i][j] = -1;
+            FTThreshold[i] = 0;
+            FTDCoffset[i] =0;
+        }
+        for(std::size_t i=0; i<MAX_X742_GROUP_SIZE; i++)
+        sprintf(TablesFilenames[i], "Tables_gr%d", i);
+    }
     int LinkType;
     int LinkNum;
     int ConetNode;
@@ -30,15 +47,15 @@ public :
     int Nch;
     int Nbit;
     float Ts;
-    int NumEvents;
-    uint32_t RecordLength;
-    int PostTrigger;
-    int InterruptNumEvents;
-    int TestPattern;
-    CAEN_DGTZ_EnaDis_t DesMode;
-    CAEN_DGTZ_IOLevel_t FPIOtype;
-    CAEN_DGTZ_TriggerMode_t ExtTriggerMode;
-    uint16_t EnableMask;
+    int NumEvents{1023};
+    uint32_t RecordLength{1024*16};
+    int PostTrigger{50};
+    int InterruptNumEvents{0};
+    int TestPattern{0};
+    CAEN_DGTZ_EnaDis_t DesMode{CAEN_DGTZ_EnaDis_t(0)};
+    CAEN_DGTZ_IOLevel_t FPIOtype{CAEN_DGTZ_IOLevel_t(0)};
+    CAEN_DGTZ_TriggerMode_t ExtTriggerMode{CAEN_DGTZ_TRGMODE_ACQ_ONLY};
+    uint16_t EnableMask{0xFFFF};
     CAEN_DGTZ_TriggerMode_t ChannelTriggerMode[MAX_SET];
 	CAEN_DGTZ_PulsePolarity_t PulsePolarity[MAX_SET];
     uint32_t DCoffset[MAX_SET];
@@ -50,19 +67,19 @@ public :
 	
 	uint32_t FTDCoffset[MAX_SET];
 	uint32_t FTThreshold[MAX_SET];
-	CAEN_DGTZ_TriggerMode_t	FastTriggerMode;
-	uint32_t	 FastTriggerEnabled;
-    int GWn;
+	CAEN_DGTZ_TriggerMode_t	FastTriggerMode{CAEN_DGTZ_TriggerMode_t(0)};
+	uint32_t	 FastTriggerEnabled{0};
+    int GWn{0};
     uint32_t GWaddr[MAX_GW];
     uint32_t GWdata[MAX_GW];
 	uint32_t GWmask[MAX_GW];
 	OUTFILE_FLAGS OutFileFlags;
-	uint16_t DecimationFactor;
-    int useCorrections;
-    int UseManualTables;
+	uint16_t DecimationFactor{1};
+    int useCorrections{-1};
+    int UseManualTables{-1};
     char TablesFilenames[MAX_X742_GROUP_SIZE][1000];
-    CAEN_DGTZ_DRS4Frequency_t DRS4Frequency;
-    int StartupCalibration;
+    CAEN_DGTZ_DRS4Frequency_t DRS4Frequency{CAEN_DGTZ_DRS4_5GHz};
+    int StartupCalibration{1};
 	DAC_Calibration_data DAC_Calib;
 };
 

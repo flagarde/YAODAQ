@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
   {
 		digi.Quit(ERR_CONF_FILE_NOT_FOUND);
 	}
-	ParseConfigFile(f_ini,&dat.WDcfg);
+	ParseConfigFile(f_ini,dat.WDcfg);
 	fclose(f_ini);
 
   /* *************************************************************************************** */
