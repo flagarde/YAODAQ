@@ -7,8 +7,6 @@
 #include <chrono>
 #include <cstring>
 
-
-
 #define NPOINTS 2
 #define NACQS   50
 #define VME_INTERRUPT_LEVEL      1
@@ -1454,18 +1452,9 @@ void Digitizer::InterruptTimeout()
 */
 long Digitizer::get_time()
 {
-    long time_ms;
-#ifdef WIN32
-    struct _timeb timebuffer;
-    _ftime( &timebuffer );
-    time_ms = (long)timebuffer.time * 1000 + (long)timebuffer.millitm;
-#else
-    struct timeval t1;
-    struct timezone tz;
-    gettimeofday(&t1, &tz);
-    time_ms = (t1.tv_sec) * 1000 + t1.tv_usec / 1000;
-#endif
-    return time_ms;
+ return std::chrono::duration_cast<std::chrono::milliseconds>(
+                   std::chrono::system_clock::now().time_since_epoch()).count() ;
+    
 }
 
 

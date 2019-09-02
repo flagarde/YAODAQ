@@ -109,6 +109,7 @@ int main(int argc, char *argv[])
     Data dat;
     WsServer server;
     Digitizer digi(dat);
+    std::cout<<digi.get_time()<<std::endl;
     Plotter a(dat,server);
     std::string where="Release";
     server.config.port = 9876;

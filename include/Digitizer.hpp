@@ -460,7 +460,7 @@ void Load_DAC_Calibration_From_Flash();
 void Save_DAC_Calibration_To_Flash();
 
 
-
+ static long get_time();
 
 
 
@@ -477,7 +477,7 @@ private:
  const static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE{CAEN_DGTZ_IRQ_MODE_ROAK};
  int WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
  CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];
- static long get_time();
+
  Digitizer()=delete;
  int  handle{-1};
  int ReloadCfgStatus{0x7FFFFFFF}; // Init to the bigger positive number
