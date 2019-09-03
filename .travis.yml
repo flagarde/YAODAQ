@@ -1,0 +1,41 @@
+language: cpp
+sudo: required
+dist: trusty
+compiler:
+  - gcc
+os:
+  - linux
+  - osx
+  - windows
+before_install:
+  - $CXX --version
+  - $CC --version
+
+  - if [ $TRAVIS_OS_NAME == linux ]; then wget https://root.cern/download/root_v6.18.02.Linux-ubuntu18-x86_64-gcc7.4.tar.gz && tar -xvf root_v6.18.02.Linux-ubuntu18-x86_64-gcc7.4.tar.gz && source root/bin/thisroot.sh; fi  
+
+  - if [ $TRAVIS_OS_NAME == osx ]; then wget https://root.cern/download/root_v6.18.02.macosx64-10.14-clang100.tar.gz && tar -xvf root_v6.18.02.macosx64-10.14-clang100.tar.gz && source root/bin/thisroot.sh; fi  
+  
+  - if [ $TRAVIS_OS_NAME == windows ]; then wget https://root.cern/download/root_v6.18.02.win32.vc16.debug.zip && tar -xvf https://root.cern/download/root_v6.18.02.win32.vc16.debug.zip && source root/bin/thisroot.sh; fi 
+
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get -qq update; fi
+ 
+  
+install:
+  # Install package dependencies for Linux:
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -y libusb-1.0-0 libusb-1.0-0-dev python python-numpy cmake ; fi
+  # Install package dependencies for Mac OS X:
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew unlink cmake; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then brew install python libusb qt; fi
+  # Install numpy via pip:
+  - if [ $TRAVIS_OS_NAME == osx ]; then easy_install pip && pip install numpy; fi
+before_script:
+  
+  # For Mac OS X we still need to source the root environment:
+  # - if [ $TRAVIS_OS_NAME == osx ]; then source $(brew --prefix root)/libexec/thisroot.sh; fi
+  - $CXX --version
+  - $CC --version
+  - mkdir build
+  - cd build
+script:
+  - cmake ..
+  - make install
