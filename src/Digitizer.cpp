@@ -1,7 +1,6 @@
 #include "Digitizer.hpp"
 #include <iostream>
 #include <cmath>
-#include "fft.hpp"
 #include "X742CorrectionRoutines.hpp"
 #include <thread>
 #include <chrono>
@@ -1402,20 +1401,7 @@ void Digitizer::InterruptTimeout()
                             if (!((dat.WDrun.ChannelPlotMask >> ch) & 1)) continue;
                             if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (absCh % 8) == 0)) sprintf(dat.PlotVar->TraceName[Tn], "TR %d", (int)((absCh-1) / 16));
                             else sprintf(dat.PlotVar->TraceName[Tn], "CH %d", absCh);
-                   else if (dat.WDrun.PlotType == PLOT_FFT) {
-                                int FFTns;
-                                dat.PlotVar->DataType = PLOT_DATA_DOUBLE;
-                                if(dat.WDcfg.Nbit == 8)
-                                    FFTns = ::FFT(dat.Event8->DataChannel[absCh], static_cast<double*>(dat.PlotVar->TraceData[Tn]), dat.Event8->ChSize[absCh], HANNING_FFT_WINDOW, SAMPLETYPE_UINT8);
-                                else if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
-                                    FFTns = ::FFT(dat.Event742->DataGroup[dat.WDrun.GroupPlotIndex].DataChannel[ch], static_cast<double*>(dat.PlotVar->TraceData[Tn]),
-                                        dat.Event742->DataGroup[dat.WDrun.GroupPlotIndex].ChSize[ch], HANNING_FFT_WINDOW, SAMPLETYPE_FLOAT);
-                                }
-                                else
-                                    FFTns = ::FFT(dat.Event16->DataChannel[absCh], static_cast<double*>(dat.PlotVar->TraceData[Tn]), dat.Event16->ChSize[absCh], HANNING_FFT_WINDOW, SAMPLETYPE_UINT16);
-                                dat.PlotVar->Xscale = (1000/dat.WDcfg.Ts)/(2*FFTns);
-                                dat.PlotVar->TraceSize[Tn] = FFTns;
-                            } else if (dat.WDrun.PlotType == PLOT_HISTOGRAM) {
+			    else if (dat.WDrun.PlotType == PLOT_HISTOGRAM) {
                                 dat.PlotVar->DataType = PLOT_DATA_UINT32;
                                 strcpy(dat.PlotVar->Title, "Histogram");
                                 dat.PlotVar->TraceSize[Tn] = 1<<dat.WDcfg.Nbit;

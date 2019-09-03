@@ -9,7 +9,6 @@
 #include <iostream>
 #include <cmath>
 #include "WDconfig.hpp"
-#include "fft.hpp"
 #include "X742CorrectionRoutines.hpp"
 #include <thread>
 #include <chrono>

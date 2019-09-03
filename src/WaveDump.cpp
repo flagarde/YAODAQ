@@ -1,25 +1,13 @@
-#define WaveDump_Release        "3.9.0"
-#define WaveDump_Release_Date   "October 2018"
-#define DBG_TIME
-
-#include <CAENDigitizer.h>
 #include "WDconfig.hpp"
-#include "fft.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <thread>
-#include <memory>
-#include <chrono>
 #include "server_ws.hpp"
 #include "Data.hpp"
 #include "Digitizer.hpp"
 #include "Plotter.hpp"
 
 using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
-
-//int cal_ok[MAX_CH] = { 0 };
 
 /*! \fn      void CheckKeyboardCommands(WaveDumpRun_t *WDrun)
 *   \brief   check if there is a key pressed and execute the relevant command
@@ -106,6 +94,8 @@ void CheckKeyboardCommands(Digitizer& digi,Plotter& plot,std::string& command)
 /* ########################################################################### */
 int main(int argc, char *argv[])
 {
+    const std::string WaveDump_Release{"3.9.0"};
+    const std::string WaveDump_Release_Date{"October 2018"};
     Data dat;
     WsServer server;
     Digitizer digi(dat);
