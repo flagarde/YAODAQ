@@ -230,7 +230,7 @@ void LoadDACCalibration()
 {
 
 if (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)//XX742 not considered
-		::Load_DAC_Calibration_From_Flash(handle, &dat.WDcfg, dat.BoardInfo);
+		Load_DAC_Calibration_From_Flash();
 
 }
 
@@ -437,6 +437,33 @@ void D()
 }
 
 
+
+
+
+/*! \fn      void Load_DAC_Calibration_From_Flash(int handle, WaveDumpConfig_t *WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo)
+*   \brief   look for DAC calibration in flash and load it
+*
+*   \param   handle   Digitizer handle
+*   \param   WDcfg:   Pointer to WaveDumpConfig data structure
+*	\param   BoardInfo 
+*/
+void Load_DAC_Calibration_From_Flash();
+
+/*! \fn      void Save_DAC_Calibration_To_Flash(int handle, WaveDumpConfig_t WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo)
+*   \brief   save DAC calibration to flash 
+*
+*   \param   handle   Digitizer handle
+*   \param   WDcfg:   WaveDumpConfig data structure
+*	\param   BoardInfo
+*/
+void Save_DAC_Calibration_To_Flash();
+
+
+ static long get_time();
+
+
+
+
 private:
  bool isVMEDevice()
  {	return dat.WDcfg.BaseAddress ? 1 : 0;
@@ -449,7 +476,7 @@ private:
  const static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE{CAEN_DGTZ_IRQ_MODE_ROAK};
  int WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
  CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];
- static long get_time();
+
  Digitizer()=delete;
  int  handle{-1};
  int ReloadCfgStatus{0x7FFFFFFF}; // Init to the bigger positive number

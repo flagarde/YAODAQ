@@ -99,6 +99,7 @@ int main(int argc, char *argv[])
     Data dat;
     WsServer server;
     Digitizer digi(dat);
+    std::cout<<digi.get_time()<<std::endl;
     Plotter a(dat,server);
     std::string where="Release";
     server.config.port = 9876;
@@ -147,7 +148,7 @@ int main(int argc, char *argv[])
   {
 		digi.Quit(ERR_CONF_FILE_NOT_FOUND);
 	}
-	ParseConfigFile(f_ini,&dat.WDcfg);
+	ParseConfigFile(f_ini,dat.WDcfg);
 	fclose(f_ini);
 
   /* *************************************************************************************** */

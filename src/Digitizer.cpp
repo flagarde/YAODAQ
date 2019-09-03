@@ -4,8 +4,7 @@
 #include "X742CorrectionRoutines.hpp"
 #include <thread>
 #include <chrono>
-
-
+#include <cstring>
 
 #define NPOINTS 2
 #define NACQS   50
@@ -384,7 +383,7 @@ void Digitizer::Calibrate_XX740_DC_Offset()
 			ret |= CAEN_DGTZ_SetGroupSelfTrigger(handle, dat.WDcfg.ChannelTriggerMode[i], (1 << i));
 	}
 	if (ret) std::cout<<"Error setting recorded parameters"<<std::endl;
-	::Save_DAC_Calibration_To_Flash(handle, dat.WDcfg, dat.BoardInfo);
+	Save_DAC_Calibration_To_Flash();
 }
 
 
@@ -814,7 +813,7 @@ void Digitizer::Calibrate_DC_Offset()
 		}
 	}
 	if (ret) std::cout<<"Error resetting self trigger mode after DAC calibration"<<std::endl;
-	Save_DAC_Calibration_To_Flash(handle, dat.WDcfg, dat.BoardInfo);
+	Save_DAC_Calibration_To_Flash();
 }
 
 
@@ -1069,7 +1068,7 @@ Digitizer::~Digitizer()
     for(std::size_t ch = 0; ch < dat.WDcfg.Nch; ch++) 
     {
         if (dat.WDrun.fout[ch]) fclose(dat.WDrun.fout[ch]);
-        if (dat.WDrun.Histogram[ch]) free(dat.WDrun.Histogram[ch]);
+        //if (dat.WDrun.Histogram[ch]) free(dat.WDrun.Histogram[ch]);
     }
     /* close the device and free the buffers */
     if(dat.Event8) CAEN_DGTZ_FreeEvent(handle, (void**)&dat.Event8);
@@ -1289,7 +1288,7 @@ void Digitizer::InterruptTimeout()
                 /* Update Histograms */
                 if (dat.WDrun.RunHisto) 
                 {
-                    for(std::size_t ch=0; ch<dat.WDcfg.Nch; ch++) 
+                   /* for(std::size_t ch=0; ch<dat.WDcfg.Nch; ch++) 
 										{
                         int chmask = ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) || (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) )? (ch/8) : ch;
                         if (!(dat.EventInfo.ChannelMask & (1<<chmask))) continue;
@@ -1310,7 +1309,7 @@ void Digitizer::InterruptTimeout()
                                 break;
                             }
                         }
-                    }
+                    }*/
                 }
 
                 /* Write Event data to file */
@@ -1439,18 +1438,9 @@ void Digitizer::InterruptTimeout()
 */
 long Digitizer::get_time()
 {
-    long time_ms;
-#ifdef WIN32
-    struct _timeb timebuffer;
-    _ftime( &timebuffer );
-    time_ms = (long)timebuffer.time * 1000 + (long)timebuffer.millitm;
-#else
-    struct timeval t1;
-    struct timezone tz;
-    gettimeofday(&t1, &tz);
-    time_ms = (t1.tv_sec) * 1000 + t1.tv_usec / 1000;
-#endif
-    return time_ms;
+ return std::chrono::duration_cast<std::chrono::milliseconds>(
+                   std::chrono::system_clock::now().time_since_epoch()).count() ;
+    
 }
 
 
@@ -1614,6 +1604,86 @@ void Digitizer::EnableChannelForPloting(const int& ch)
 
 
 
+
+void Digitizer::Load_DAC_Calibration_From_Flash() 
+{
+	FLASH_API_ERROR_CODES err = FLASH_API_SUCCESS;
+	uint8_t *buffer;
+	int ch = 0;
+	float calibration_data[2 * MAX_SET];
+
+	err = SPIFlash_init(handle);// init flash
+	if (err != FLASH_API_SUCCESS) 
+    {
+		std::cout<<"Error in flash init"<<std::endl;
+		return;
+	}
+
+	//buffer = (uint8_t*)malloc(1 + VIRTUAL_PAGE_SIZE * sizeof(uint8_t));
+	//memset(buffer, 0, 1 + VIRTUAL_PAGE_SIZE * sizeof(uint8_t));
+	
+	err = SPIFlash_read_virtual_page(handle, OFFSET_CALIBRATION_VIRTUAL_PAGE, buffer);
+	if (err != FLASH_API_SUCCESS) 
+    {
+		std::cout<<"Error reading flash page size"<<std::endl;
+		return;
+	}
+	if (buffer[0] != 0xD) 
+    {
+		std::cout<<"\nNo DAC Calibration data found in board flash. Use option 'D' to calibrate DAC.\n"<<std::endl;
+		//free(buffer);
+		return;
+	}
+	else 
+    {
+		memcpy(calibration_data, buffer, 2 * MAX_SET * sizeof(float));
+		for (std::size_t ch = 0; ch < (int)dat.BoardInfo.Channels; ch++) {
+			dat.WDcfg.DAC_Calib.cal[ch] = calibration_data[2 * ch];
+			dat.WDcfg.DAC_Calib.offset[ch] = calibration_data[1 + 2 * ch];
+		}
+	}
+
+	//free(buffer);
+	std::cout<<"DAC calibration correctly loaded from board flash."<<std::endl;
+}
+
+
+void Digitizer::Save_DAC_Calibration_To_Flash() 
+{
+	FLASH_API_ERROR_CODES err = FLASH_API_SUCCESS;
+	uint8_t *buffer;
+	int ch = 0;
+	float calibration_data[2*MAX_SET];
+
+	for(std::size_t ch = 0; ch < (int)dat.BoardInfo.Channels; ch++) 
+    {
+		calibration_data[2*ch] = dat.WDcfg.DAC_Calib.cal[ch];
+		calibration_data[1 + 2 * ch] = dat.WDcfg.DAC_Calib.offset[ch];
+	}
+
+	err = SPIFlash_init(handle);// init flash
+	if (err != FLASH_API_SUCCESS) 
+    {
+		std::cout<<"Error in flash init."<<std::endl;
+		return;
+	}
+
+	buffer = (uint8_t*)malloc(1 + VIRTUAL_PAGE_SIZE * sizeof(uint8_t));
+	memset(buffer, 0, 1 + VIRTUAL_PAGE_SIZE * sizeof(uint8_t));
+
+	buffer[0] = 0xD;
+	memcpy((buffer +1), calibration_data, VIRTUAL_PAGE_SIZE * sizeof(uint8_t));//copy cal vector to buffer
+	
+	err = SPIFlash_write_virtual_page(handle, OFFSET_CALIBRATION_VIRTUAL_PAGE,buffer);
+	if (err != FLASH_API_SUCCESS) 
+    {
+		std::cout<<"Error writing flash page"<<std::endl;
+		return;
+	}
+
+	free(buffer);
+	std::cout<<"DAC calibration correctly saved on flash."<<std::endl;
+}
 
 
 
