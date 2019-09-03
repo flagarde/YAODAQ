@@ -41,6 +41,8 @@ typedef enum  {
 class Digitizer
 {
 public:
+ void GetEvent(std::size_t i);
+ void DecodeEvent();
  void EnableChannelForPloting(const int& ch);
  void NextGroup();
  void Quit()

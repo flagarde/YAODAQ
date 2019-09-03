@@ -997,14 +997,46 @@ void Digitizer::GetMoreBoardInfo()
 }
 
 
+void Digitizer::GetEvent(std::size_t i)
+{
+int ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, i, &dat.EventInfo, &dat.EventPtr);
+if (ret) 
+{
+                Quit(ERR_EVENT_BUILD);
+}
+}
+
+void Digitizer::DecodeEvent()
+{
+int ret{0};
+            if (dat.WDcfg.Nbit == 8) 
+                ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void**)&dat.Event8);
+            else
+                if (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) {
+                    ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void**)&dat.Event16);
+                }
+                else {
+                    ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void**)&dat.Event742);
+                    if (dat.WDcfg.useCorrections != -1) { // if manual corrections
+                        uint32_t gr;
+                        for (gr = 0; gr < dat.WDcfg.MaxGroupNumber; gr++) {
+                            if ( ((dat.WDcfg.EnableMask >> gr) & 0x1) == 0)
+                                continue;
+                            ::ApplyDataCorrection( &(X742Tables[gr]), dat.WDcfg.DRS4Frequency, dat.WDcfg.useCorrections, &(dat.Event742->DataGroup[gr]));
+                        }
+                    }
+                }
+                if (ret) {
+                    Quit(ERR_EVENT_BUILD);
+                }
 
 
 
+}
 
 
 void Digitizer::InterruptTimeout()
 {
-	int ret{0};
 	static uint64_t CurrentTime{0};
 	static uint64_t ElapsedTime{0};
     int nCycles= 0;
@@ -1032,31 +1064,9 @@ void Digitizer::InterruptTimeout()
         for(std::size_t i = 0; i < (int)NumEvents; i++) {
 
             /* Get one event from the readout buffer */
-            ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, i, &dat.EventInfo, &dat.EventPtr);
-            if (ret) {
-                Quit(ERR_EVENT_BUILD);
-            }
+	GetEvent(i);
             /* decode the event */
-            if (dat.WDcfg.Nbit == 8) 
-                ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void**)&dat.Event8);
-            else
-                if (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) {
-                    ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void**)&dat.Event16);
-                }
-                else {
-                    ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void**)&dat.Event742);
-                    if (dat.WDcfg.useCorrections != -1) { // if manual corrections
-                        uint32_t gr;
-                        for (gr = 0; gr < dat.WDcfg.MaxGroupNumber; gr++) {
-                            if ( ((dat.WDcfg.EnableMask >> gr) & 0x1) == 0)
-                                continue;
-                            ::ApplyDataCorrection( &(X742Tables[gr]), dat.WDcfg.DRS4Frequency, dat.WDcfg.useCorrections, &(dat.Event742->DataGroup[gr]));
-                        }
-                    }
-                }
-                if (ret) {
-                    Quit(ERR_EVENT_BUILD);
-                }
+DecodeEvent();
 
                 /* Update Histograms */
                 if (dat.WDrun.RunHisto) 
