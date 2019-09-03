@@ -22,7 +22,7 @@ before_install:
   
 install:
   # Install package dependencies for Linux:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -y python-dev dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -y git dpkg-dev cmake g++ gcc binutis libx11-dev libxpm-dev libxft-dev libxext-dev libpng libjpeg python gfortran openssl-dev libpcre3-dev xlibmesa-glu-dev libglew1.5-dev libftgl-dev libmysqlclient-dev libfftw3-dev python-numpy-dev libgsl0-dev; fi
   # Install package dependencies for Mac OS X:
   - if [ $TRAVIS_OS_NAME == osx ]; then brew unlink cmake; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew install python libusb qt; fi
