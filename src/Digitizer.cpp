@@ -830,231 +830,11 @@ void Digitizer::Calibrate_DC_Offset()
 
 
 
-std::vector<std::string> Digitizer::ErrMsg{"No Error","Configuration File not found","Can't open the digitizer","Can't read the Board Info","Can't run WaveDump for this digitizer","Can't program the digitizer","Can't allocate the memory for the readout buffer","Interrupt Error","Readout Error","Event Build Error","Can't allocate the memory for the histograms","Unhandled board type","Output file write error","Over Temperature","UNKNOWN"};
-
-
-/*! \brief   Write the event data into the output files
-*
-
-*   \param   WDrun Pointer to the WaveDumpRun data structure
-*   \param   WDcfg Pointer to the WaveDumpConfig data structure
-*   \param   EventInfo Pointer to the EventInfo data structure
-*   \param   Event Pointer to the Event to write
-*/
-int Digitizer::WriteOutputFiles(void *Event)
-{
-    int ch, j, ns;
-    CAEN_DGTZ_UINT16_EVENT_t  *Event16 = nullptr;
-    CAEN_DGTZ_UINT8_EVENT_t   *Event8 = nullptr;
-    if (dat.WDcfg.Nbit == 8) Event8 = (CAEN_DGTZ_UINT8_EVENT_t *)Event;
-    else Event16 = (CAEN_DGTZ_UINT16_EVENT_t *)Event;
-
-    for (std::size_t ch = 0; ch < dat.WDcfg.Nch; ch++) 
-    {
-        int Size = (dat. WDcfg.Nbit == 8) ? Event8->ChSize[ch] : Event16->ChSize[ch];
-        if (Size <= 0) continue;
-        // Check the file format type
-        if( dat.WDcfg.OutFileFlags& OFF_BINARY) 
-				{
-            // Binary file format
-            uint32_t BinHeader[6];
-            BinHeader[0] = (dat.WDcfg.Nbit == 8) ? Size + 6*sizeof(*BinHeader) : Size*2 + 6*sizeof(*BinHeader);
-            BinHeader[1] = dat.EventInfo.BoardId;
-            BinHeader[2] = dat.EventInfo.Pattern;
-            BinHeader[3] = ch;
-            BinHeader[4] = dat.EventInfo.EventCounter;
-            BinHeader[5] = dat.EventInfo.TriggerTimeTag;
-            if (!dat.WDrun.fout[ch]) {
-                char fname[100];
-                sprintf(fname, "wave%d.dat", ch);
-                if ((dat.WDrun.fout[ch] = fopen(fname, "wb")) == nullptr)
-                    return -1;
-            }
-            if( dat.WDcfg.OutFileFlags & OFF_HEADER) {
-                // Write the Channel Header
-                if(fwrite(BinHeader, sizeof(*BinHeader), 6, dat.WDrun.fout[ch]) != 6) {
-                    // error writing to file
-                    fclose(dat.WDrun.fout[ch]);
-                    dat.WDrun.fout[ch]= nullptr;
-                    return -1;
-                }
-            }
-            if (dat.WDcfg.Nbit == 8)
-                ns = (int)fwrite(Event8->DataChannel[ch], 1, Size, dat.WDrun.fout[ch]);
-            else
-                ns = (int)fwrite(Event16->DataChannel[ch] , 1 , Size*2, dat.WDrun.fout[ch]) / 2;
-            if (ns != Size) {
-                // error writing to file
-                fclose(dat.WDrun.fout[ch]);
-                dat.WDrun.fout[ch]= nullptr;
-                return -1;
-            }
-        } else {
-            // Ascii file format
-            if (!dat.WDrun.fout[ch]) {
-                char fname[100];
-                sprintf(fname, "wave%d.txt", ch);
-                if ((dat.WDrun.fout[ch] = fopen(fname, "w")) == nullptr)
-                    return -1;
-            }
-            if( dat.WDcfg.OutFileFlags & OFF_HEADER) {
-                // Write the Channel Header
-                fprintf(dat.WDrun.fout[ch], "Record Length: %d\n", Size);
-                fprintf(dat.WDrun.fout[ch], "BoardID: %2d\n", dat.EventInfo.BoardId);
-                fprintf(dat.WDrun.fout[ch], "Channel: %d\n", ch);
-                fprintf(dat.WDrun.fout[ch], "Event Number: %d\n", dat.EventInfo.EventCounter);
-                fprintf(dat.WDrun.fout[ch], "Pattern: 0x%04X\n", dat.EventInfo.Pattern & 0xFFFF);
-                fprintf(dat.WDrun.fout[ch], "Trigger Time Stamp: %u\n", dat.EventInfo.TriggerTimeTag);
-                fprintf(dat.WDrun.fout[ch], "DC offset (DAC): 0x%04X\n", dat.WDcfg.DCoffset[ch] & 0xFFFF);
-            }
-            for(std::size_t j=0; j<Size; j++) {
-                if (dat.WDcfg.Nbit == 8) fprintf(dat.WDrun.fout[ch], "%d\n", Event8->DataChannel[ch][j]);
-                else fprintf(dat.WDrun.fout[ch], "%d\n", Event16->DataChannel[ch][j]);
-            }
-        }
-        if (dat.WDrun.SingleWrite) {
-            fclose(dat.WDrun.fout[ch]);
-            dat.WDrun.fout[ch]= nullptr;
-        }
-    }
-    return 0;
-
-}
+std::vector<std::string> Digitizer::ErrMsg{"No Error","Configuration File not found","Can't open the digitizer","Can't read the Board Info","Can't run WaveDump for this digitizer","Can't program the digitizer","Can't allocate the memory for the readout buffer","Interrupt Error","Readout Error","Event Build Error","Unhandled board type","Over Temperature","UNKNOWN"};
 
 
 
-/*! \brief   Write the event data on x742 boards into the output files
-*
-*   \param   WDrun Pointer to the WaveDumpRun data structure
-*   \param   WDcfg Pointer to the WaveDumpConfig data structure
-*   \param   EventInfo Pointer to the EventInfo data structure
-*   \param   Event Pointer to the Event to write
-*/
-int Digitizer::WriteOutputFilesx742(CAEN_DGTZ_X742_EVENT_t *Event)
-{
-    int gr,ch, j, ns;
-    char trname[10], flag = 0; 
-    for (std::size_t gr=0;gr<(dat.WDcfg.Nch/8);gr++) {
-        if (Event->GrPresent[gr]) {
-            for(ch=0; ch<9; ch++) {
-                int Size = Event->DataGroup[gr].ChSize[ch];
-                if (Size <= 0) continue;
 
-                // Check the file format type
-                if( dat.WDcfg.OutFileFlags& OFF_BINARY) {
-                    // Binary file format
-                    uint32_t BinHeader[6];
-                    BinHeader[0] = (dat.WDcfg.Nbit == 8) ? Size + 6*sizeof(*BinHeader) : Size*4 + 6*sizeof(*BinHeader);
-                    BinHeader[1] = dat.EventInfo.BoardId;
-                    BinHeader[2] = dat.EventInfo.Pattern;
-                    BinHeader[3] = ch;
-                    BinHeader[4] = dat.EventInfo.EventCounter;
-                    BinHeader[5] = dat.EventInfo.TriggerTimeTag;
-                    if (!dat.WDrun.fout[(gr*9+ch)]) {
-                        char fname[100];
-                        if ((gr*9+ch) == 8) {
-                            sprintf(fname, "TR_%d_0.dat", gr);
-                            sprintf(trname,"TR_%d_0",gr);
-                            flag = 1;
-                        }
-                        else if ((gr*9+ch) == 17) {
-                            sprintf(fname, "TR_0_%d.dat", gr);
-                            sprintf(trname,"TR_0_%d",gr);
-                            flag = 1;
-                        }
-                        else if ((gr*9+ch) == 26) {
-                            sprintf(fname, "TR_0_%d.dat", gr);
-                            sprintf(trname,"TR_0_%d",gr);
-                            flag = 1;
-                        }
-                        else if ((gr*9+ch) == 35) {
-                            sprintf(fname, "TR_1_%d.dat", gr);
-                            sprintf(trname,"TR_1_%d",gr);
-                            flag = 1;
-                        }
-                        else 	{
-                            sprintf(fname, "wave_%d.dat", (gr*8)+ch);
-                            flag = 0;
-                        }
-                        if ((dat.WDrun.fout[(gr*9+ch)] = fopen(fname, "wb")) ==nullptr)
-                            return -1;
-                    }
-                    if( dat.WDcfg.OutFileFlags & OFF_HEADER) {
-                        // Write the Channel Header
-                        if(fwrite(BinHeader, sizeof(*BinHeader), 6, dat.WDrun.fout[(gr*9+ch)]) != 6) {
-                            // error writing to file
-                            fclose(dat.WDrun.fout[(gr*9+ch)]);
-                            dat.WDrun.fout[(gr*9+ch)]= nullptr;
-                            return -1;
-                        }
-                    }
-                    ns = (int)fwrite( Event->DataGroup[gr].DataChannel[ch] , 1 , Size*4, dat.WDrun.fout[(gr*9+ch)]) / 4;
-                    if (ns != Size) {
-                        // error writing to file
-                        fclose(dat.WDrun.fout[(gr*9+ch)]);
-                        dat.WDrun.fout[(gr*9+ch)]= nullptr;
-                        return -1;
-                    }
-                } else {
-                    // Ascii file format
-                    if (!dat.WDrun.fout[(gr*9+ch)]) {
-                        char fname[100];
-                        if ((gr*9+ch) == 8) {
-                            sprintf(fname, "TR_%d_0.txt", gr);
-                            sprintf(trname,"TR_%d_0",gr);
-                            flag = 1;
-                        }
-                        else if ((gr*9+ch) == 17) {
-                            sprintf(fname, "TR_0_%d.txt", gr);
-                            sprintf(trname,"TR_0_%d",gr);
-                            flag = 1;
-                        }
-                        else if ((gr*9+ch) == 26) {
-                            sprintf(fname, "TR_0_%d.txt", gr);
-                            sprintf(trname,"TR_0_%d",gr);
-                            flag = 1;
-                        }
-                        else if ((gr*9+ch) == 35) {
-                            sprintf(fname, "TR_1_%d.txt", gr);
-                            sprintf(trname,"TR_1_%d",gr);
-                            flag = 1;
-                        }
-                        else 	{
-                            sprintf(fname, "wave_%d.txt", (gr*8)+ch);
-                            flag = 0;
-                        }
-                        if ((dat.WDrun.fout[(gr*9+ch)] = fopen(fname, "w")) == nullptr)
-                            return -1;
-                    }
-                    if( dat.WDcfg.OutFileFlags & OFF_HEADER) {
-                        // Write the Channel Header
-                        fprintf(dat.WDrun.fout[(gr*9+ch)], "Record Length: %d\n", Size);
-                        fprintf(dat.WDrun.fout[(gr*9+ch)], "BoardID: %2d\n", dat.EventInfo.BoardId);
-                        if (flag)
-                            fprintf(dat.WDrun.fout[(gr*9+ch)], "Channel: %s\n",  trname);
-                        else
-                            fprintf(dat.WDrun.fout[(gr*9+ch)], "Channel: %d\n",  (gr*8)+ ch);
-                        fprintf(dat.WDrun.fout[(gr*9+ch)], "Event Number: %d\n", dat.EventInfo.EventCounter);
-                        fprintf(dat.WDrun.fout[(gr*9+ch)], "Pattern: 0x%04X\n", dat.EventInfo.Pattern & 0xFFFF);
-                        fprintf(dat.WDrun.fout[(gr*9+ch)], "Trigger Time Stamp: %u\n", Event->DataGroup[gr].TriggerTimeTag);
-                        fprintf(dat.WDrun.fout[(gr*9+ch)], "DC offset (DAC): 0x%04X\n", dat.WDcfg.DCoffset[ch] & 0xFFFF);
-                        fprintf(dat.WDrun.fout[(gr*9+ch)], "Start Index Cell: %d\n", Event->DataGroup[gr].StartIndexCell);
-                        flag = 0;
-                    }
-                    for(std::size_t j=0; j<Size; j++) {
-                        fprintf(dat.WDrun.fout[(gr*9+ch)], "%f\n", Event->DataGroup[gr].DataChannel[ch][j]);
-                    }
-                }
-                if (dat.WDrun.SingleWrite) {
-                    fclose(dat.WDrun.fout[(gr*9+ch)]);
-                    dat.WDrun.fout[(gr*9+ch)]= nullptr;
-                }
-            }
-        }
-    }
-    return 0;
-
-}
 
 
 
@@ -1064,12 +844,6 @@ Digitizer::~Digitizer()
 {
     /* stop the acquisition */
     CAEN_DGTZ_SWStopAcquisition(handle);
-    /* close the output files and free histograms*/
-    for(std::size_t ch = 0; ch < dat.WDcfg.Nch; ch++) 
-    {
-        if (dat.WDrun.fout[ch]) fclose(dat.WDrun.fout[ch]);
-        //if (dat.WDrun.Histogram[ch]) free(dat.WDrun.Histogram[ch]);
-    }
     /* close the device and free the buffers */
     if(dat.Event8) CAEN_DGTZ_FreeEvent(handle, (void**)&dat.Event8);
     if(dat.Event16) CAEN_DGTZ_FreeEvent(handle, (void**)&dat.Event16);
@@ -1228,7 +1002,6 @@ void Digitizer::GetMoreBoardInfo()
 
 
 
-
 void Digitizer::InterruptTimeout()
 {
 	int ret{0};
@@ -1313,111 +1086,20 @@ void Digitizer::InterruptTimeout()
                 }
 
                 /* Write Event data to file */
-                if (dat.WDrun.ContinuousWrite || dat.WDrun.SingleWrite) {
-                    // Note: use a thread here to allow parallel readout and file writing
-                    if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {	
-                        ret = WriteOutputFilesx742(dat.Event742); 
-                    }
-                    else if (dat.WDcfg.Nbit == 8) {
-                        ret = WriteOutputFiles(dat.Event8);
-                    }
-                    else {
-                        ret = WriteOutputFiles(dat.Event16);
-                    }
-                    if (ret) {
-                        Quit(ERR_OUTFILE_WRITE);
-                    }
-                    if (dat.WDrun.SingleWrite) {
-                        printf("Single Event saved to output files\n");
+                if (dat.WDrun.ContinuousWrite || dat.WDrun.SingleWrite) 
+		{
+		    file.addEvent();
+                    if (dat.WDrun.SingleWrite) 
+		    {
+                        std::cout<<"Single Event saved to output files"<<std::endl;
                         dat.WDrun.SingleWrite = 0;
                     }
                 }
 
                 /* Plot Waveforms */
                 if ((dat.WDrun.ContinuousPlot || dat.WDrun.SinglePlot) ) 
-								{
-                   /* int Ntraces = (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) ? 8 : dat.WDcfg.Nch;
-                    if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) Ntraces = 9;
-                    if (dat.PlotVar == nullptr) 
-		    						{
-                        int TraceLength = std::max(dat.WDcfg.RecordLength, (uint32_t)(1 << dat.WDcfg.Nbit));
-                        dat.PlotVar = OpenPlotter(dat.WDcfg.GnuPlotPath, Ntraces, TraceLength);
-                        dat.WDrun.SetPlotOptions = 1;
-                    }
-                    if (dat.PlotVar == nullptr) 
-		    						{
-                        printf("Can't open the plotter\n");
-                        dat.WDrun.ContinuousPlot = 0;
-                        dat.WDrun.SinglePlot = 0;
-                    } 
-		    						else 
-		    						{
-                        int Tn = 0;
-                        if (dat.WDrun.SetPlotOptions) 
-												{
-                            if ((dat.WDrun.PlotType == PLOT_WAVEFORMS) && (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)) 
-			    									{
-                                strcpy(dat.PlotVar->Title, "Waveform");
-                                dat.PlotVar->Xscale = dat.WDcfg.Ts;
-                                strcpy(dat.PlotVar->Xlabel, "ns");
-                                strcpy(dat.PlotVar->Ylabel, "ADC counts");
-                                dat.PlotVar->Yautoscale = 0;
-                                dat.PlotVar->Ymin = 0;
-                                dat.PlotVar->Ymax = (float)(1<<dat.WDcfg.Nbit);
-                                dat.PlotVar->Xautoscale = 1;
-                            } else if (dat.WDrun.PlotType == PLOT_WAVEFORMS) {
-                                strcpy(dat.PlotVar->Title, "Waveform");
-                                dat.PlotVar->Xscale = dat.WDcfg.Ts * dat.WDcfg.DecimationFactor/1000;
-                                strcpy(dat.PlotVar->Xlabel, "us");
-                                strcpy(dat.PlotVar->Ylabel, "ADC counts");
-                                dat.PlotVar->Yautoscale = 0;
-                                dat.PlotVar->Ymin = 0;
-                                dat.PlotVar->Ymax = (float)(1<<dat.WDcfg.Nbit);
-                                dat.PlotVar->Xautoscale = 1;
-                            }  else if (dat.WDrun.PlotType == PLOT_FFT) {
-                                strcpy(dat.PlotVar->Title, "FFT");
-                                strcpy(dat.PlotVar->Xlabel, "MHz");
-                                strcpy(dat.PlotVar->Ylabel, "dB");
-                                dat.PlotVar->Yautoscale = 1;
-                                dat.PlotVar->Ymin = -160;
-                                dat.PlotVar->Ymax = 0;
-                                dat.PlotVar->Xautoscale = 1;
-                            } else if (dat.WDrun.PlotType == PLOT_HISTOGRAM) {
-                                dat.PlotVar->Xscale = 1.0;
-								strcpy(dat.PlotVar->Title, "Histogram");
-                                strcpy(dat.PlotVar->Xlabel, "ADC channels");
-                                strcpy(dat.PlotVar->Ylabel, "Counts");
-                                dat.PlotVar->Yautoscale = 1;
-                                dat.PlotVar->Xautoscale = 1;
-                            }
-                            SetPlotOptions();
-                            dat.WDrun.SetPlotOptions = 0;
-                        }
-   			
-                        for(std::size_t ch=0; ch<Ntraces; ch++) 
-			{
-                            int absCh = dat.WDrun.GroupPlotIndex * 8 + ch;
-                            if (!((dat.WDrun.ChannelPlotMask >> ch) & 1)) continue;
-                            if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (absCh % 8) == 0)) sprintf(dat.PlotVar->TraceName[Tn], "TR %d", (int)((absCh-1) / 16));
-                            else sprintf(dat.PlotVar->TraceName[Tn], "CH %d", absCh);
-			    else if (dat.WDrun.PlotType == PLOT_HISTOGRAM) {
-                                dat.PlotVar->DataType = PLOT_DATA_UINT32;
-                                strcpy(dat.PlotVar->Title, "Histogram");
-                                dat.PlotVar->TraceSize[Tn] = 1<<dat.WDcfg.Nbit;
-                                memcpy(dat.PlotVar->TraceData[Tn], dat.WDrun.Histogram[absCh], (uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t));
-                            }
-                            Tn++;
-                            if (Tn >= MAX_NUM_TRACES)
-                                break;
-                        }
-                        dat.PlotVar->NumTraces = Tn;
-                        if( PlotWaveforms() < 0) 
-												{
-                            dat.WDrun.ContinuousPlot = 0;
-                            printf("Plot Error\n");
-                        }
-                        dat.WDrun.SinglePlot = 0;
-                    }*/
+		{
+            
                 }
 }
 
@@ -1438,9 +1120,7 @@ void Digitizer::InterruptTimeout()
 */
 long Digitizer::get_time()
 {
- return std::chrono::duration_cast<std::chrono::milliseconds>(
-                   std::chrono::system_clock::now().time_since_epoch()).count() ;
-    
+ return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 

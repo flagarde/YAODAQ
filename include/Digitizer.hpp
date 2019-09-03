@@ -10,6 +10,7 @@
 #include <cmath>
 #include "WDconfig.hpp"
 #include "X742CorrectionRoutines.hpp"
+#include "FileManager.hpp"
 #include <thread>
 #include <chrono>
 
@@ -31,9 +32,7 @@ typedef enum  {
     ERR_INTERRUPT,
     ERR_READOUT,
     ERR_EVENT_BUILD,
-    ERR_HISTO_MALLOC,
     ERR_UNHANDLED_BOARD,
-    ERR_OUTFILE_WRITE,
 	ERR_OVERTEMP,
 
     ERR_DUMMY_LAST,
@@ -68,7 +67,7 @@ void Interrupt();
  void InterruptTimeout();
  void Quit(const int& error);
  int Set_calibrated_DCO(const int& ch);
- Digitizer(Data& da):dat(da){;}
+ Digitizer(Data& da,FileManager& fil):dat(da),file(fil){;}
  int WriteOutputFiles(void *Event);
  int WriteOutputFilesx742(CAEN_DGTZ_X742_EVENT_t *Event);
  void calibrate();
@@ -476,7 +475,7 @@ private:
  const static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE{CAEN_DGTZ_IRQ_MODE_ROAK};
  int WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
  CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];
-
+ FileManager& file;
  Digitizer()=delete;
  int  handle{-1};
  int ReloadCfgStatus{0x7FFFFFFF}; // Init to the bigger positive number

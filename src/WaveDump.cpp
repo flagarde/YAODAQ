@@ -6,6 +6,7 @@
 #include "Data.hpp"
 #include "Digitizer.hpp"
 #include "Plotter.hpp"
+#include "FileManager.hpp"
 
 using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 
@@ -98,8 +99,11 @@ int main(int argc, char *argv[])
     const std::string WaveDump_Release_Date{"October 2018"};
     Data dat;
     WsServer server;
-    Digitizer digi(dat);
-    std::cout<<digi.get_time()<<std::endl;
+    
+
+    FileManager file(dat,"Toto.root",0,36,0);
+    file.OpenFile();
+Digitizer digi(dat,file);
     Plotter a(dat,server);
     std::string where="Release";
     server.config.port = 9876;
@@ -213,6 +217,7 @@ int main(int argc, char *argv[])
 
       digi.InterruptTimeout();
   }
+  file.CloseFile();
   server_thread.join();
   return 0;
 }

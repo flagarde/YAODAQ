@@ -103,15 +103,30 @@ include_directories(include)
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 
 ## Sources
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/fft.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp)
-add_dependencies(libb CAENlibs)
+
+ROOT_GENERATE_DICTIONARY(G__Channel Channel.hpp LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/include/LinkDef.hpp)
+
+#---Create a shared library with geneated dictionary
+add_library(Channel SHARED src/Channel.cpp G__Channel.cxx)
+target_link_libraries(Channel ${ROOT_LIBRARIES})
+
+
+add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp)
+
+add_dependencies(libb CAENlibs Channel)
 add_executable(WaveDump src/WaveDump.cpp)
 
 link_libraries(WaveDump libb ${ROOT_LIBRARIES} CAENlibs CAENDigitizer m crypto INTERFACE Simple-WebSocket-Server)
 
-target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto)
+target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto Channel)
 
 
 ## Install executable
 install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+##add_subdirectory(Analysis)
+
+
+

@@ -3,10 +3,11 @@
 #include <CAENDigitizer.h>
 #include <CAENDigitizerType.h>
 #include "util.h"
-#include "WaveDump.h"
 #include "TFile.h"
 #include "TTree.h"
-
+#include "Channel.hpp"
+#include "Data.hpp"
+#include <iostream>
 //#include "CAENdaq.h"
 
 
@@ -17,25 +18,23 @@
 const double rolloverAdd=8e-9*2147483647;
 
 
-class fileManager
+class FileManager
 {
     public:
-    fileManager()
+    FileManager(Data& data):dat(data)
     {
         initialized=false;
     }
-    fileManager(std::string filename, uint16_t EnableMask, int nbrChannels, double xinc)
+    FileManager(Data& data,std::string filename, uint16_t EnableMask, int nbrChannels, double xinc):dat(data)
     {
         setNbrChannels(nbrChannels);
         setTick(xinc);
-        init(filename, EnableMask);
+        Init(filename, EnableMask);
     }
-    ~fileManager(){}
+    ~FileManager(){}
     
-    void init(std::string filename, uint16_t EnableMask);
+    void Init(std::string filename, uint16_t EnableMask);
     void OpenFile();
-    void addEvent(CAEN_DGTZ_EventInfo_t* EventInfo, CAEN_DGTZ_UINT16_EVENT_t* Event16);
-    void addEvent(CAEN_DGTZ_EventInfo_t* EventInfo, CAEN_DGTZ_UINT8_EVENT_t* Event8);
     void CloseFile();
     void setVerbose(bool v)
     {
@@ -59,21 +58,32 @@ class fileManager
         nbrChannels=i;
         lastTrigTime.resize(i);
         nRollover.resize(i);
-        data.resize(i);
+        Channels.resize(i);
     }
     void setTick(double i)
     {
         xinc=i;
     }
+    void addEvent()
+    {
+	if(dat.Event16!=nullptr)  addEvent16();
+	else if(dat.Event8!=nullptr)  addEvent8();
+	else if(dat.Event742!=nullptr)  addEvent742();
+
+
+    }
     private:
+    void addEvent16();
+    void addEvent8();
+    void addEvent742();
     unsigned int nbrChannels{0};
     bool verbose{false};
     bool initialized{false};
     std::string fname{""};
-    TFile *f{nullptr};
-    TTree *t{nullptr};
-    std::vector<std::vector<double>>data;
-    std::bitset<MAX_CH> mask;
+    std::string path{"."};
+    TFile* f{nullptr};
+    TTree* t{nullptr};
+    std::bitset<64> mask;
     double RunStartTime{0};
     double eventTime{0};
     bool isOpen{false};
@@ -81,5 +91,29 @@ class fileManager
     std::vector<int> nRollover;
     double xinc{0};
     std::string finalFilename{""};
+
+
+    //Per Event
+    
+    double BoardID{0};
+    double EventNumber{0};
+    double Pattern{0};
+    
+
+    
+    std::vector<Channel>Channels;
+    
+
+	Data& dat;
+
+
+
+
+
+
+
+
+
+
 };
 #endif
