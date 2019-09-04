@@ -9,7 +9,6 @@ void FileManager::Init(const std::string filename,uint16_t EnableMask)
 
 
 
-
 void FileManager::CloseFile()
 {
 t->Write();

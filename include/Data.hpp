@@ -20,6 +20,7 @@ public:
 };
 
 
+
 class WaveDumpConfig_t
 {
     public :

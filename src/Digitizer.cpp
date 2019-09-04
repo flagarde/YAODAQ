@@ -13,7 +13,6 @@
 #define INTERRUPT_TIMEOUT        200  // ms
 
 
-
 /*! \fn      int WriteRegisterBitmask(int32_t handle, uint32_t address, uint32_t data, uint32_t mask)
 *   \brief   writes 'data' on register at 'address' using 'mask' as bitmask
 *
