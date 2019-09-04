@@ -8,7 +8,7 @@
 #define SPI_API CAENComm_ErrorCode
 
 #define SPI_SELECT_REG_ADDR 0xEF2C
-#define SPI_DATA_REG_ADDR   0xEF30
+#define SPI_DATA_REG_ADDR 0xEF30
 
 #define __MULTIWRITE_SUPPORT__
 #define __MULTIREAD_SUPPORT__
