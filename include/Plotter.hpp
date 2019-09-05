@@ -13,12 +13,21 @@ public:
   Plotter(Data &da, WsServer &ser);
   void PlotWaveform();
   void PlotHistograms();
-  void Save();
+  void SaveWaveForms();
+  void SaveHistograms();
   void SaveFFT();
   void Update();
-
+  void OneTimePlot() 
+  {
+    if (dat.WDrun.ChannelPlotMask == 0) std::cout << "No channel enabled for plotting" << std::endl;
+    else
+    {
+	dat.WDrun.SinglePlot = 1;
+	Update();
+    }
+  }
 private:
-  int FindMaxBin() {
+  /*int FindMaxBin() {
     int extreme{0};
     if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
       for (std::size_t gr = 0; gr < (dat.WDcfg.Nch / 8); gr++) {
@@ -45,7 +54,7 @@ private:
     if (extreme == 0)
       return 1;
     return extreme;
-  }
+  }*/
   void SetLabelsWaveForms() {
     /*	for(std::size_t h=0;h!=histos.size();++h)
       {
@@ -86,6 +95,10 @@ histos[h].GetYaxis()->SetRange(0,(float)(1<<WDcfg.Nbit));*/
   TCanvas can;
   std::vector<TH1D> histos;
   std::vector<TH1D> histos_histos;
+  TH1D RE;
+  TH1D IM;
+  TH1D MAG;
+  TH1D PH;
 
 public:
   Data &dat;

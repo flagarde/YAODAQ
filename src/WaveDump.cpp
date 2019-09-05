@@ -36,11 +36,10 @@ void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
     digi.ContinuousTrigger();
   } else if (command == "Continuous Plotting") {
     digi.ContinuousPloting();
-  } else if (command == "Plot") {
-    digi.Plot();
-    plot.PlotWaveform();
-    plot.Save();
-    command = "Where";
+  } else if (command == "Plot") 
+    {
+    	plot.OneTimePlot();
+    	command = "Where";
 
   } else if (command == "f") {
     digi.f();
@@ -77,7 +76,6 @@ int main(int argc, char *argv[]) {
   FileManager file(dat, "Toto.root", 0, 36, 0);
   file.OpenFile();
   Digitizer digi(dat);
-  Plotter a(dat, server);
   std::string where = "Release";
   server.config.port = 9876;
   auto &echo_all = server.endpoint["^/Rack/?$"];
@@ -156,6 +154,9 @@ int main(int argc, char *argv[]) {
   }
   // Get Number of Channels, Number of bits, Number of Groups of the board */
   digi.GetMoreBoardInfo();
+
+
+
   // load DAC calibration data (if present in flash)
   digi.LoadDACCalibration();
   // Perform calibration (if needed).
@@ -164,6 +165,8 @@ int main(int argc, char *argv[]) {
   digi.MaskChannels();
   // Set plot mask
   digi.SetPlotMask();
+  // Have to know the number of channels; FIX IT
+  Plotter a(dat, server);
   /* ***************************************************************************************
    */
   /* program the digitizer */

@@ -93,7 +93,9 @@ public:
   int GroupPlotIndex;
   int GroupPlotSwitch;
   int ChannelPlotMask;
-  int RunHisto;
+  int RunHisto{1};
+  bool isNewEvent{false};
+  int NbrThreadFFT{0};
 };
 
 class Data {

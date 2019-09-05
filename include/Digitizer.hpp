@@ -254,12 +254,7 @@ public:
       dat.WDrun.ContinuousPlot ^= 1;
   }
 
-  void Plot() {
-    if (dat.WDrun.ChannelPlotMask == 0)
-      std::cout << "No channel enabled for plotting" << std::endl;
-    else
-      dat.WDrun.SinglePlot = 1;
-  }
+
 
   void f() {
 

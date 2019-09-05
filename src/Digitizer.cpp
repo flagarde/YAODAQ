@@ -1135,6 +1135,7 @@ void Digitizer::DecodeEvent() {
       }
     }
   }
+  dat.WDrun.isNewEvent=true;
   if (ret) {
     Quit(ERR_EVENT_BUILD);
   }

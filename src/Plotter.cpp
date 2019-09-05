@@ -1,59 +1,30 @@
 #include "Plotter.hpp"
-
-
+#include "TROOT.h"
+#include <thread>
 
 
 void Plotter::Update()
 {
-
-
-
-    /* Update Histograms */
-    if (dat.WDrun.RunHisto) {
-      /* for(std::size_t ch=0; ch<dat.WDcfg.Nch; ch++)
-                                                                   {
-           int chmask = ((dat.BoardInfo.FamilyCode ==
-       CAEN_DGTZ_XX740_FAMILY_CODE) || (dat.BoardInfo.FamilyCode ==
-       CAEN_DGTZ_XX742_FAMILY_CODE) )? (ch/8) : ch; if
-       (!(dat.EventInfo.ChannelMask & (1<<chmask))) continue; if
-       (dat.WDrun.Histogram[ch] == nullptr)
-                                                                                   {
-               if ((dat.WDrun.Histogram[ch] =
-       static_cast<uint32_t*>(malloc((uint64_t)(1<<dat.WDcfg.Nbit) *
-       sizeof(uint32_t)))) == nullptr) Quit(ERR_HISTO_MALLOC);
-               //memset(dat.WDrun.Histogram[ch], 0,
-       (uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t));
-           }
-           if (dat.WDcfg.Nbit == 8) for(std::size_t i=0;
-       i<(int)dat.Event8->ChSize[ch]; i++)
-       dat.WDrun.Histogram[ch][dat.Event8->DataChannel[ch][i]]++; else { if
-       (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) { for(i=0;
-       i<(int)dat.Event16->ChSize[ch]; i++)
-       dat.WDrun.Histogram[ch][dat.Event16->DataChannel[ch][i]]++;
-               }
-               else {
-                   printf("Can't build samples histogram for this board: it has
-       float samples.\n"); dat.WDrun.RunHisto = 0;
-                  // dat.WDrun.PlotType = PLOT_WAVEFORMS;
-                   break;
-               }
-           }
-       }*/
+    if ((dat.WDrun.ContinuousPlot || dat.WDrun.SinglePlot)) 
+    {
+        if(dat.WDrun.isNewEvent==true)
+	{
+		std::thread t(&Plotter::PlotHistograms,this);
+		std::thread t2(&Plotter::PlotWaveform,this);
+        	t.join();
+        	t2.join();
+		dat.WDrun.isNewEvent=false;
+	}
+        //PlotHistograms();
+	//PlotWaveform();
+        std::thread wave(&Plotter::SaveWaveForms,this);
+	std::thread hist(&Plotter::SaveHistograms,this);
+	wave.detach();
+	hist.detach();
+	//SaveWaveForms();
+	//SaveFFT();
+	//SaveHistograms();
     }
-
-
-
-    /* Plot Waveforms */
-    if ((dat.WDrun.ContinuousPlot || dat.WDrun.SinglePlot)) {
-    }
-
-
-
-
-
-
-
-
 }
 
 
@@ -61,45 +32,11 @@ void Plotter::Update()
 
 
 
-Plotter::Plotter(Data &da, WsServer &ser) : dat(da), server(ser) {}
-
-void Plotter::PlotHistograms() {
-  for (std::size_t ch = 0; ch < dat.WDcfg.Nch; ch++) {
-    uint64_t Nbrbins = (uint64_t)(1 << dat.WDcfg.Nbit);
-    std::string title = "HistosChannel" + std::to_string(ch);
-    histos_histos.push_back(
-        TH1D(title.c_str(), title.c_str(), Nbrbins, 0, Nbrbins));
-    int chmask = ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) ||
-                  (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE))
-                     ? (ch / 8)
-                     : ch;
-    if (!(dat.EventInfo.ChannelMask & (1 << chmask)))
-      continue;
-    /* if (dat.WDrun.Histogram[ch] == nullptr)
-     {*/
-    /* if ((dat.WDrun.Histogram[ch] =
-     * static_cast<uint32_t*>(malloc((uint64_t)(1<<dat.WDcfg.Nbit) *
-     * sizeof(uint32_t)))) == nullptr) Quit(ERR_HISTO_MALLOC);*/
-    // memset(dat.WDrun.Histogram[ch], 0, (uint64_t)(1<<dat.WDcfg.Nbit) *
-    // sizeof(uint32_t));
-    /* }*/
-    if (dat.WDcfg.Nbit == 8) {
-      for (std::size_t i = 0; i < (int)dat.Event8->ChSize[ch]; i++)
-        histos_histos[ch].Fill(dat.Event8->DataChannel[ch][i]);
-    } else {
-      if (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) {
-        for (std::size_t i = 0; i < (int)dat.Event16->ChSize[ch]; i++)
-          histos_histos[ch].Fill(dat.Event16->DataChannel[ch][i]);
-      } else {
-        for (std::size_t i = 0; i < (int)dat.Event16->ChSize[ch]; i++)
-          histos_histos[ch].Fill(dat.Event16->DataChannel[ch][i]);
-      }
-    }
-  }
-}
-
-void Plotter::PlotWaveform() {
-  int NbrBins = FindMaxBin();
+Plotter::Plotter(Data &da, WsServer &ser) : dat(da), server(ser) 
+{
+ ROOT::EnableImplicitMT(); 
+ //Generate TH1 for waveforms;
+ int NbrBins = /*FindMaxBin();*/dat.WDcfg.RecordLength;
   float maxValue{0};
   float tickSize{0};
   if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)
@@ -113,7 +50,7 @@ void Plotter::PlotWaveform() {
     std::string title = "";
     if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) &&
         ((ch != 0) && (((ch + 1) % 9) == 0))) {
-      title = "Trigger" + std::to_string((int)((ch - 1) / 16));
+      title = "Trigger" + std::to_string((int)((ch) / 8)-1);
 
     } else {
       title = "Channel" + std::to_string(erasetrigger);
@@ -125,6 +62,120 @@ void Plotter::PlotWaveform() {
     if (ch == dat.WDcfg.Nch - 1)
       erasetrigger = 0;
   }
+ //Generate TH1 for histos;
+uint64_t Nbrbins = (uint64_t)(1 << dat.WDcfg.Nbit);
+  for (std::size_t ch = 0; ch != dat.WDcfg.Nch; ++ch) {
+    static int erasetrigger{0};
+    std::string title = "";
+    if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) &&
+        ((ch != 0) && (((ch + 1) % 9) == 0))) {
+      title = "HistoTrigger" + std::to_string((int)((ch) / 8)-1);
+
+    } else {
+      title = "HistoChannel" + std::to_string(erasetrigger);
+
+      erasetrigger++;
+    }
+
+    histos_histos.push_back(TH1D(title.c_str(), title.c_str(), Nbrbins, 0, Nbrbins));
+    if (ch == dat.WDcfg.Nch - 1)
+      erasetrigger = 0;
+  }
+
+  //Avoid creating each time a new TH1D pointor
+  RE=TH1D("","", NbrBins, 0, maxValue);
+  IM=TH1D("","", NbrBins, 0, maxValue);
+  MAG=TH1D("","", NbrBins, 0, maxValue);
+  PH=TH1D("","", NbrBins, 0, maxValue);
+  //Initialiase the FFT
+  TH1* RE2=histos[0].FFT(&RE, "RE R2C ES");
+  TH1* IM2= histos[0].FFT(&IM, "IM R2C ES");
+  TH1* MAG2 = histos[0].FFT(&MAG, "MAG R2C ES");
+  TH1* PH2 = histos[0].FFT(&PH, "PH R2C ES");
+   
+
+
+
+
+
+
+
+}
+
+void Plotter::PlotHistograms() {
+
+for(unsigned int i=0;i!=histos_histos.size();++i) histos[i].Reset("ICESM");
+  if (dat.WDcfg.Nbit == 8) {
+    for (std::size_t ch = 0; ch != dat.WDcfg.Nch; ++ch) {
+      int Size = dat.Event8->ChSize[ch];
+      if (Size <= 0)
+        continue;
+      for (int j = 0; j < Size; j++) {
+        histos_histos[ch].Fill(dat.Event8->DataChannel[ch][j]);
+      }
+    }
+  } else if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
+    for (std::size_t gr = 0; gr < (dat.WDcfg.Nch / 8); gr++) {
+      if (dat.Event742->GrPresent[gr]) {
+        for (std::size_t ch = 0; ch < 9; ch++) {
+          int Size = dat.Event742->DataGroup[gr].ChSize[ch];
+          if (Size <= 0)
+            continue;
+          for (int j = 0; j < Size; j++) {
+            histos_histos[gr * 9 + ch].Fill(dat.Event742->DataGroup[gr].DataChannel[ch][j]);
+          }
+        }
+      }
+    }
+  } else {
+    for (std::size_t ch = 0; ch != dat.WDcfg.Nch; ++ch) {
+      int Size = dat.Event16->ChSize[ch];
+      if (Size <= 0)
+        continue;
+      for (int j = 0; j < Size; j++) {
+        histos_histos[ch].Fill(dat.Event16->DataChannel[ch][j]);
+      }
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+/*
+
+  for (std::size_t ch = 0; ch < dat.WDcfg.Nch; ch++) {
+    uint64_t Nbrbins = (uint64_t)(1 << dat.WDcfg.Nbit);
+    std::string title = "HistosChannel" + std::to_string(ch);
+    histos_histos.push_back(
+        TH1D(title.c_str(), title.c_str(), Nbrbins, 0, Nbrbins));
+    int chmask = ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) ||
+                  (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE))
+                     ? (ch / 8)
+                     : ch;
+    if (!(dat.EventInfo.ChannelMask & (1 << chmask))) continue;
+    if (dat.WDcfg.Nbit == 8) {
+      for (std::size_t i = 0; i < (int)dat.Event8->ChSize[ch]; i++)
+        histos_histos[ch].Fill(dat.Event8->DataChannel[ch][i]);
+    } else {
+      if (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) {
+        for (std::size_t i = 0; i < (int)dat.Event16->ChSize[ch]; i++)
+          histos_histos[ch].Fill(dat.Event16->DataChannel[ch][i]);
+      } else {
+        for (std::size_t i = 0; i < (int)dat.Event16->ChSize[ch]; i++)
+          histos_histos[ch].Fill(dat.Event16->DataChannel[ch][i]);
+      }
+    }
+  }*/
+}
+
+void Plotter::PlotWaveform() {
+  for(unsigned int i=0;i!=histos.size();++i) histos[i].Reset("ICESM");
   if (dat.WDcfg.Nbit == 8) {
     for (std::size_t ch = 0; ch != dat.WDcfg.Nch; ++ch) {
       int Size = dat.Event8->ChSize[ch];
@@ -161,63 +212,64 @@ void Plotter::PlotWaveform() {
 }
 
 void Plotter::SaveFFT() {
+  dat.WDrun.NbrThreadFFT++;
+  std::cout<<dat.WDrun.NbrThreadFFT<<std::endl;
   auto &echo_all = server.endpoint["^/Rack/?$"];
-  TH1 *toto{nullptr};
+  TH1* toto{nullptr};
   TString json;
   for (std::size_t i = 0; i != histos.size(); ++i) {
-    toto = histos[i].FFT(nullptr, "RE R2C EX");
+    toto = histos[i].FFT(&RE, "RE R2C ES");
     toto->SetTitle(
         ("FFT Real Part " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("RE" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
     for (auto &a_connection : echo_all.get_connections())
       a_connection->send(json.Data());
-    toto = histos[i].FFT(nullptr, "IM R2C EX");
+    toto = histos[i].FFT(&IM, "IM R2C ES");
     toto->SetTitle(
         ("FFT Imaginary Part " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("IM" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
     for (auto &a_connection : echo_all.get_connections())
       a_connection->send(json.Data());
-    toto = histos[i].FFT(nullptr, "MAG R2C EX");
+    toto = histos[i].FFT(&MAG, "MAG R2C ES");
     toto->SetTitle(
         ("FFT Magnitude " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("MAG" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
     for (auto &a_connection : echo_all.get_connections())
       a_connection->send(json.Data());
-    toto = histos[i].FFT(nullptr, "PH R2C EX");
+    toto = histos[i].FFT(&PH, "PH R2C ES");
     toto->SetTitle(("FFT Phase " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("PH" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
     for (auto &a_connection : echo_all.get_connections())
       a_connection->send(json.Data());
   }
+  dat.WDrun.NbrThreadFFT--;
 }
 
-void Plotter::Save() {
+void Plotter::SaveWaveForms() {
   for (std::size_t i = 0; i != histos.size(); ++i) {
-    // histos[i].SetMarkerStyle(kFullSquare);
-    // histos[i].Draw("P0");
-    // can.SaveAs(("/home/rpclab/data/"+std::string(histos[i].GetTitle())+".png").c_str());
     TString json = TBufferJSON::ToJSON(&histos[i]);
     auto &echo_all = server.endpoint["^/Rack/?$"];
     for (auto &a_connection : echo_all.get_connections())
       a_connection->send(json.Data());
   }
-  SaveFFT();
-  /*for(std::size_t i=0;i!=histos.size();++i)
-  {
-          histos[i].SetMarkerStyle(kFullSquare);
-          if(i==0)histos[i].Draw("P0 PLC PMC");
-          else histos[i].Draw("SAME P0 PLC PMC");
-
-  }
-
-  can.SaveAs("/home/rpclab/data/All.png");*/
-
-  // auto &echo_all = server.endpoint["^/Rack/?$"];
-  // for(auto &a_connection : echo_all.get_connections())
-  // a_connection->send(json.Data());
-  histos.clear();
+  if(dat.WDrun.NbrThreadFFT==0) SaveFFT();
+  else std::cout<<"Thread blocked"<<std::endl;
 }
+
+
+void Plotter::SaveHistograms()
+{
+for (std::size_t i = 0; i != histos_histos.size(); ++i) {
+    TString json = TBufferJSON::ToJSON(&histos_histos[i]);
+    auto &echo_all = server.endpoint["^/Rack/?$"];
+    for (auto &a_connection : echo_all.get_connections())
+      a_connection->send(json.Data());
+  }
+}
+
+
+
