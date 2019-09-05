@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
   FileManager file(dat, "Toto.root", 0, 36, 0);
   file.OpenFile();
-  Digitizer digi(dat, file);
+  Digitizer digi(dat);
   Plotter a(dat, server);
   std::string where = "Release";
   server.config.port = 9876;
