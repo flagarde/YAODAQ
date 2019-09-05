@@ -1155,8 +1155,11 @@ void Digitizer::InterruptTimeout() {
   nCycles++;
   if (ElapsedTime > 1000) {
     if (Nb == 0)
-      if (ret == CAEN_DGTZ_Timeout)
+      if (dat.isTimeOut==true)
+      {
         std::cout << "Timeout..." << std::endl;
+	dat.isTimeOut==false;
+      }
       else
         std::cout << "No data..." << std::endl;
     else
@@ -1169,60 +1172,8 @@ void Digitizer::InterruptTimeout() {
     PrevRateTime = CurrentTime;
   }
 
-  /* Analyze data */
-  for (std::size_t i = 0; i < (int)NumEvents; i++) {
+ 
 
-    /* Get one event from the readout buffer */
-    GetEvent(i);
-    /* decode the event */
-    DecodeEvent();
-
-    /* Update Histograms */
-    if (dat.WDrun.RunHisto) {
-      /* for(std::size_t ch=0; ch<dat.WDcfg.Nch; ch++)
-                                                                   {
-           int chmask = ((dat.BoardInfo.FamilyCode ==
-       CAEN_DGTZ_XX740_FAMILY_CODE) || (dat.BoardInfo.FamilyCode ==
-       CAEN_DGTZ_XX742_FAMILY_CODE) )? (ch/8) : ch; if
-       (!(dat.EventInfo.ChannelMask & (1<<chmask))) continue; if
-       (dat.WDrun.Histogram[ch] == nullptr)
-                                                                                   {
-               if ((dat.WDrun.Histogram[ch] =
-       static_cast<uint32_t*>(malloc((uint64_t)(1<<dat.WDcfg.Nbit) *
-       sizeof(uint32_t)))) == nullptr) Quit(ERR_HISTO_MALLOC);
-               //memset(dat.WDrun.Histogram[ch], 0,
-       (uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t));
-           }
-           if (dat.WDcfg.Nbit == 8) for(std::size_t i=0;
-       i<(int)dat.Event8->ChSize[ch]; i++)
-       dat.WDrun.Histogram[ch][dat.Event8->DataChannel[ch][i]]++; else { if
-       (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) { for(i=0;
-       i<(int)dat.Event16->ChSize[ch]; i++)
-       dat.WDrun.Histogram[ch][dat.Event16->DataChannel[ch][i]]++;
-               }
-               else {
-                   printf("Can't build samples histogram for this board: it has
-       float samples.\n"); dat.WDrun.RunHisto = 0;
-                  // dat.WDrun.PlotType = PLOT_WAVEFORMS;
-                   break;
-               }
-           }
-       }*/
-    }
-
-    /* Write Event data to file */
-    if (dat.WDrun.ContinuousWrite || dat.WDrun.SingleWrite) {
-      file.addEvent();
-      if (dat.WDrun.SingleWrite) {
-        std::cout << "Single Event saved to output files" << std::endl;
-        dat.WDrun.SingleWrite = 0;
-      }
-    }
-
-    /* Plot Waveforms */
-    if ((dat.WDrun.ContinuousPlot || dat.WDrun.SinglePlot)) {
-    }
-  }
 }
 
 /*! \fn      static long get_time()
@@ -1236,12 +1187,15 @@ long Digitizer::get_time() {
       .count();
 }
 
-void Digitizer::Interrupt() {
+
+
+
+bool Digitizer::Interrupt() {
   int ret;
   int32_t boardId;
   int VMEHandle = -1;
   int InterruptMask = (1 << VME_INTERRUPT_LEVEL);
-
+  bool doInterruptTimeout{false};
   BufferSize = 0;
   NumEvents = 0;
   // Interrupt handling
@@ -1252,11 +1206,11 @@ void Digitizer::Interrupt() {
                                &VMEHandle);
   } else
     ret = CAEN_DGTZ_IRQWait(handle, INTERRUPT_TIMEOUT);
-  if (ret == CAEN_DGTZ_Timeout) { // No active interrupt requests
-    std::cout << "toto1" << std::endl;
-
-    InterruptTimeout();
-    return;
+  if (ret == CAEN_DGTZ_Timeout) 
+  { // No active interrupt requests
+    dat.isTimeOut=true;
+    doInterruptTimeout=true;
+    return doInterruptTimeout;
   }
   if (ret != CAEN_DGTZ_Success) {
     Quit(ERR_INTERRUPT);
@@ -1265,15 +1219,14 @@ void Digitizer::Interrupt() {
   if (isVMEDevice()) {
     ret = CAEN_DGTZ_VMEIACKCycle(VMEHandle, VME_INTERRUPT_LEVEL, &boardId);
     if ((ret != CAEN_DGTZ_Success) || (boardId != VME_INTERRUPT_STATUS_ID)) {
-      std::cout << "toto2" << std::endl;
-
-      InterruptTimeout();
-      return;
+     doInterruptTimeout=true;
+    return doInterruptTimeout;
     } else {
       if (INTERRUPT_MODE == CAEN_DGTZ_IRQ_MODE_ROAK)
         ret = CAEN_DGTZ_RearmInterrupt(handle);
     }
   }
+  return doInterruptTimeout;
 }
 
 void Digitizer::NextGroup() {

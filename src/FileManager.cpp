@@ -9,6 +9,29 @@ void FileManager::CloseFile() {
   f->Close();
 }
 
+
+
+void FileManager::AddEvents()
+{
+
+
+
+
+    /* Write Event data to file */
+    if (dat.WDrun.ContinuousWrite || dat.WDrun.SingleWrite) 
+	{
+      addEvent();
+      if (dat.WDrun.SingleWrite) {
+        std::cout << "Single Event saved to output files" << std::endl;
+        dat.WDrun.SingleWrite = 0;
+      }
+    }
+
+
+
+}
+
+
 void FileManager::OpenFile() {
   f = new TFile((path + "/" + fname).c_str(), "RECREATE", "File", 9);
   t = new TTree("Toto", "Toto");

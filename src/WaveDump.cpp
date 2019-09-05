@@ -194,13 +194,44 @@ int main(int argc, char *argv[]) {
 
     /* Wait for interrupt (if enabled) */
     if (dat.WDcfg.InterruptNumEvents > 0) {
-      digi.Interrupt();
+      if(digi.Interrupt()==true)
+	{
+		digi.InterruptTimeout();
+		 /* Analyze data */
+  		for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
+		{
+			/* Get one event from the readout buffer */
+    			digi.GetEvent(i);
+    			/* decode the event */
+    			digi.DecodeEvent();
+			a.Update();
+			file.AddEvents();
+  		}
+
+
+
+
+
+
+
+		
+	}
       continue;
     }
     /* Read data from the board */
     digi.Read();
 
     digi.InterruptTimeout();
+    		 /* Analyze data */
+  		for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
+		{
+			/* Get one event from the readout buffer */
+    			digi.GetEvent(i);
+    			/* decode the event */
+    			digi.DecodeEvent();
+			a.Update();
+			file.AddEvents();
+  		}
   }
   file.CloseFile();
   server_thread.join();

@@ -18,6 +18,7 @@ const double rolloverAdd = 8e-9 * 2147483647;
 class FileManager {
 public:
   FileManager(Data &data) : dat(data) { initialized = false; }
+  void AddEvents();
   FileManager(Data &data, std::string filename, uint16_t EnableMask,
               int nbrChannels, double xinc)
       : dat(data) {

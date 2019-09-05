@@ -1,5 +1,66 @@
 #include "Plotter.hpp"
 
+
+
+
+void Plotter::Update()
+{
+
+
+
+    /* Update Histograms */
+    if (dat.WDrun.RunHisto) {
+      /* for(std::size_t ch=0; ch<dat.WDcfg.Nch; ch++)
+                                                                   {
+           int chmask = ((dat.BoardInfo.FamilyCode ==
+       CAEN_DGTZ_XX740_FAMILY_CODE) || (dat.BoardInfo.FamilyCode ==
+       CAEN_DGTZ_XX742_FAMILY_CODE) )? (ch/8) : ch; if
+       (!(dat.EventInfo.ChannelMask & (1<<chmask))) continue; if
+       (dat.WDrun.Histogram[ch] == nullptr)
+                                                                                   {
+               if ((dat.WDrun.Histogram[ch] =
+       static_cast<uint32_t*>(malloc((uint64_t)(1<<dat.WDcfg.Nbit) *
+       sizeof(uint32_t)))) == nullptr) Quit(ERR_HISTO_MALLOC);
+               //memset(dat.WDrun.Histogram[ch], 0,
+       (uint64_t)(1<<dat.WDcfg.Nbit) * sizeof(uint32_t));
+           }
+           if (dat.WDcfg.Nbit == 8) for(std::size_t i=0;
+       i<(int)dat.Event8->ChSize[ch]; i++)
+       dat.WDrun.Histogram[ch][dat.Event8->DataChannel[ch][i]]++; else { if
+       (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) { for(i=0;
+       i<(int)dat.Event16->ChSize[ch]; i++)
+       dat.WDrun.Histogram[ch][dat.Event16->DataChannel[ch][i]]++;
+               }
+               else {
+                   printf("Can't build samples histogram for this board: it has
+       float samples.\n"); dat.WDrun.RunHisto = 0;
+                  // dat.WDrun.PlotType = PLOT_WAVEFORMS;
+                   break;
+               }
+           }
+       }*/
+    }
+
+
+
+    /* Plot Waveforms */
+    if ((dat.WDrun.ContinuousPlot || dat.WDrun.SinglePlot)) {
+    }
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
 Plotter::Plotter(Data &da, WsServer &ser) : dat(da), server(ser) {}
 
 void Plotter::PlotHistograms() {

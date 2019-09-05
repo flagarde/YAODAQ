@@ -41,7 +41,7 @@ public:
   void NextGroup();
   void Quit() { dat.WDrun.Quit = 1; }
 
-  void Interrupt();
+  bool Interrupt();
 
   void SoftwareTrigger() { CAEN_DGTZ_SendSWtrigger(handle); }
   void Calibrate_XX740_DC_Offset();
@@ -343,7 +343,7 @@ public:
       std::cout << "Disconnect input signal from all channels and press any "
                    "key to start."
                 << std::endl;
-      /// FIX ME
+      /// FIX ME PRESS KEY WITH WEBSOCKW 
       if (dat.BoardInfo.FamilyCode ==
           CAEN_DGTZ_XX740_FAMILY_CODE) /*XX740 specific*/
         Calibrate_XX740_DC_Offset();
@@ -393,7 +393,11 @@ public:
   void Save_DAC_Calibration_To_Flash();
 
   static long get_time();
+ 
 
+  uint32_t getNumberOfEvents(){
+	return NumEvents;
+}
 private:
   bool isVMEDevice() { return dat.WDcfg.BaseAddress ? 1 : 0; }
   uint32_t AllocatedSize{0};

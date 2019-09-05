@@ -1,6 +1,6 @@
 #ifndef DATA_H
 #define DATA_H
-
+#include <cstdio>
 #include "CAENDigitizer.h"
 #include "CAENDigitizerType.h"
 #define MAX_GW 1000  /* max. number of generic write commads */
@@ -125,6 +125,8 @@ public:
       nullptr}; /* custom event struct with 8 bit data (only for 8 bit
                    digitizers) */
   WaveDumpConfig_t WDcfg;
+  bool isTimeOut{false};
+  int NbrEvents{0};
   WaveDumpRun_t WDrun;
 };
 #endif

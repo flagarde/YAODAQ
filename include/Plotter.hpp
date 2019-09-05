@@ -15,6 +15,7 @@ public:
   void PlotHistograms();
   void Save();
   void SaveFFT();
+  void Update();
 
 private:
   int FindMaxBin() {
