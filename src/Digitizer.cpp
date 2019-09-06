@@ -267,13 +267,6 @@ void Digitizer::Calibrate_XX740_DC_Offset() {
     cal[i] = 1;
   int ret;
   CAEN_DGTZ_AcqMode_t mem_mode;
-  uint32_t AllocatedSize;
-
-  uint32_t BufferSize;
-  CAEN_DGTZ_EventInfo_t EventInfo;
-  char *buffer = nullptr;
-  char *EventPtr = nullptr;
-  CAEN_DGTZ_UINT16_EVENT_t *Event16 = nullptr;
 
   float avg_value[NPOINTS][MAX_CH] = {0};
   uint32_t dc[NPOINTS] = {25, 75}; // test values (%)
@@ -308,7 +301,7 @@ void Digitizer::Calibrate_XX740_DC_Offset() {
   ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &buffer, &AllocatedSize);
   if (ret)
     Quit(ERR_MALLOC);
-  ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&Event16);
+  ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&dat.Event16);
   if (ret != CAEN_DGTZ_Success)
     Quit(ERR_MALLOC);
 
@@ -340,17 +333,17 @@ void Digitizer::Calibrate_XX740_DC_Offset() {
         Quit(ERR_READOUT);
       if (BufferSize == 0)
         continue;
-      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &EventInfo,
+      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &dat.EventInfo,
                                    &EventPtr);
       if (ret)
         Quit(ERR_EVENT_BUILD);
       // decode the event //
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&Event16);
+      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
       if (ret)
         Quit(ERR_EVENT_BUILD);
       for (std::size_t g = 0; g < (int32_t)dat.BoardInfo.Channels; g++) {
         for (std::size_t k = 1; k < 21; k++) // mean over 20 samples
-          value[acq][g] += (int)(Event16->DataChannel[g * 8][k]);
+          value[acq][g] += (int)(dat.Event16->DataChannel[g * 8][k]);
         value[acq][g] = (value[acq][g] / 20);
       }
     } // for acq
@@ -399,7 +392,7 @@ void Digitizer::Calibrate_XX740_DC_Offset() {
   CAEN_DGTZ_ClearData(handle);
   /// free events e buffer
   CAEN_DGTZ_FreeReadoutBuffer(&buffer);
-  CAEN_DGTZ_FreeEvent(handle, (void **)&Event16);
+  CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event16);
   ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, dat.WDcfg.NumEvents);
   ret |= CAEN_DGTZ_SetDecimationFactor(handle, dat.WDcfg.DecimationFactor);
   ret |= CAEN_DGTZ_SetPostTriggerSize(handle, dat.WDcfg.PostTrigger);
@@ -440,13 +433,6 @@ void Digitizer::Set_relative_Threshold() {
     return;
 
   int ret;
-  uint32_t AllocatedSize;
-  uint32_t BufferSize;
-  CAEN_DGTZ_EventInfo_t EventInfo;
-  char *buffer = nullptr;
-  char *EventPtr = nullptr;
-  CAEN_DGTZ_UINT16_EVENT_t *Event16 = nullptr;
-  CAEN_DGTZ_UINT8_EVENT_t *Event8 = nullptr;
   uint32_t custom_posttrg = 50, dco, custom_thr;
   float expected_baseline;
   float dco_percent;
@@ -459,9 +445,9 @@ void Digitizer::Set_relative_Threshold() {
   if (ret)
     Quit(ERR_MALLOC);
   if (dat.WDcfg.Nbit == 8)
-    ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&Event8);
+    ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&dat.Event8);
   else
-    ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&Event16);
+    ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&dat.Event16);
   if (ret != CAEN_DGTZ_Success)
     Quit(ERR_MALLOC);
 
@@ -516,15 +502,15 @@ void Digitizer::Set_relative_Threshold() {
     Quit(ERR_READOUT);
   // we have some self-triggered event
   if (BufferSize > 0) {
-    ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &EventInfo,
+    ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &dat.EventInfo,
                                  &EventPtr);
     if (ret)
       Quit(ERR_EVENT_BUILD);
     // decode the event //
     if (dat.WDcfg.Nbit == 8)
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&Event8);
+      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event8);
     else
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&Event16);
+      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
     if (ret)
       Quit(ERR_EVENT_BUILD);
 
@@ -533,8 +519,8 @@ void Digitizer::Set_relative_Threshold() {
         event_ch = (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE)
                        ? (ch * 8)
                        : ch; // for x740 boards shift to channel 0 of next group
-        size = (dat.WDcfg.Nbit == 8) ? Event8->ChSize[event_ch]
-                                     : Event16->ChSize[event_ch];
+        size = (dat.WDcfg.Nbit == 8) ? dat.Event8->ChSize[event_ch]
+                                     : dat.Event16->ChSize[event_ch];
         if (size == 0) { // no data from channel ch
           no_self_triggered_event[ch] = 1;
           sw_trigger_needed = 1;
@@ -546,9 +532,9 @@ void Digitizer::Set_relative_Threshold() {
                i++) // mean over some pre trigger samples
           {
             if (dat.WDcfg.Nbit == 8)
-              baseline[ch] += (int)(Event8->DataChannel[event_ch][i]);
+              baseline[ch] += (int)(dat.Event8->DataChannel[event_ch][i]);
             else
-              baseline[ch] += (int)(Event16->DataChannel[event_ch][i]);
+              baseline[ch] += (int)(dat.Event16->DataChannel[event_ch][i]);
           }
           baseline[ch] = (baseline[ch] / samples);
         }
@@ -593,15 +579,15 @@ void Digitizer::Set_relative_Threshold() {
     if (BufferSize == 0)
       return;
 
-    ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &EventInfo,
+    ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &dat.EventInfo,
                                  &EventPtr);
     if (ret)
       Quit(ERR_EVENT_BUILD);
     // decode the event //
     if (dat.WDcfg.Nbit == 8)
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&Event8);
+      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event8);
     else
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&Event16);
+      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
 
     if (ret)
       Quit(ERR_EVENT_BUILD);
@@ -611,8 +597,8 @@ void Digitizer::Set_relative_Threshold() {
         event_ch = (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE)
                        ? (ch * 8)
                        : ch; // for x740 boards shift to channel 0 of next group
-        size = (dat.WDcfg.Nbit == 8) ? Event8->ChSize[event_ch]
-                                     : Event16->ChSize[event_ch];
+        size = (dat.WDcfg.Nbit == 8) ? dat.Event8->ChSize[event_ch]
+                                     : dat.Event16->ChSize[event_ch];
         if (!no_self_triggered_event[ch]) // we already have a good baseline for
                                           // channel ch
           continue;
@@ -620,9 +606,9 @@ void Digitizer::Set_relative_Threshold() {
         // use some samples to calculate the baseline
         for (std::size_t i = 1; i < 11; i++) { // mean over 10 samples
           if (dat.WDcfg.Nbit == 8)
-            baseline[ch] += (int)(Event8->DataChannel[event_ch][i]);
+            baseline[ch] += (int)(dat.Event8->DataChannel[event_ch][i]);
           else
-            baseline[ch] += (int)(Event16->DataChannel[event_ch][i]);
+            baseline[ch] += (int)(dat.Event16->DataChannel[event_ch][i]);
         }
         baseline[ch] = (baseline[ch] / 10);
       }
@@ -661,9 +647,9 @@ void Digitizer::Set_relative_Threshold() {
 
   CAEN_DGTZ_FreeReadoutBuffer(&buffer);
   if (dat.WDcfg.Nbit == 8)
-    CAEN_DGTZ_FreeEvent(handle, (void **)&Event8);
+    CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event8);
   else
-    CAEN_DGTZ_FreeEvent(handle, (void **)&Event16);
+    CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event16);
 }
 
 /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
@@ -704,14 +690,6 @@ void Digitizer::Calibrate_DC_Offset() {
     cal[i] = 1;
   int ret;
   CAEN_DGTZ_AcqMode_t mem_mode;
-  uint32_t AllocatedSize;
-
-  uint32_t BufferSize;
-  CAEN_DGTZ_EventInfo_t EventInfo;
-  char *buffer = nullptr;
-  char *EventPtr = nullptr;
-  CAEN_DGTZ_UINT16_EVENT_t *Event16 = nullptr;
-  CAEN_DGTZ_UINT8_EVENT_t *Event8 = nullptr;
 
   float avg_value[NPOINTS][MAX_CH] = {0};
   uint32_t dc[NPOINTS] = {25, 75}; // test values (%)
@@ -750,9 +728,9 @@ void Digitizer::Calibrate_DC_Offset() {
   if (ret)
     Quit(ERR_MALLOC);
   if (dat.WDcfg.Nbit == 8)
-    ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&Event8);
+    ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&dat.Event8);
   else
-    ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&Event16);
+    ret = CAEN_DGTZ_AllocateEvent(handle, (void **)&dat.Event16);
   if (ret != CAEN_DGTZ_Success)
     Quit(ERR_MALLOC);
 
@@ -786,15 +764,15 @@ void Digitizer::Calibrate_DC_Offset() {
         Quit(ERR_READOUT);
       if (BufferSize == 0)
         continue;
-      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &EventInfo,
+      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &dat.EventInfo,
                                    &EventPtr);
       if (ret)
         Quit(ERR_EVENT_BUILD);
       // decode the event //
       if (dat.WDcfg.Nbit == 8)
-        ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&Event8);
+        ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event8);
       else
-        ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&Event16);
+        ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
 
       if (ret)
         Quit(ERR_EVENT_BUILD);
@@ -803,9 +781,9 @@ void Digitizer::Calibrate_DC_Offset() {
         for (std::size_t i = 1; i < 21; i++) // mean over 20 samples
         {
           if (dat.WDcfg.Nbit == 8)
-            value[acq][ch] += (int)(Event8->DataChannel[ch][i]);
+            value[acq][ch] += (int)(dat.Event8->DataChannel[ch][i]);
           else
-            value[acq][ch] += (int)(Event16->DataChannel[ch][i]);
+            value[acq][ch] += (int)(dat.Event16->DataChannel[ch][i]);
         }
         value[acq][ch] = (value[acq][ch] / 20);
       }
@@ -857,9 +835,9 @@ void Digitizer::Calibrate_DC_Offset() {
   /// free events e buffer
   CAEN_DGTZ_FreeReadoutBuffer(&buffer);
   if (dat.WDcfg.Nbit == 8)
-    CAEN_DGTZ_FreeEvent(handle, (void **)&Event8);
+    CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event8);
   else
-    CAEN_DGTZ_FreeEvent(handle, (void **)&Event16);
+    CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event16);
   // reset settings
   ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, dat.WDcfg.NumEvents);
   ret |= CAEN_DGTZ_SetPostTriggerSize(handle, dat.WDcfg.PostTrigger);
