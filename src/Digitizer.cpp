@@ -948,6 +948,7 @@ Digitizer::~Digitizer() {
   CAEN_DGTZ_FreeReadoutBuffer(&buffer);
   if (buffer != nullptr)
     delete buffer;
+  if(EventPtr!=nullptr) delete EventPtr;
   CAEN_DGTZ_CloseDigitizer(handle);
 }
 
@@ -1126,7 +1127,7 @@ void Digitizer::GetMoreBoardInfo() {
 
 void Digitizer::GetEvent(std::size_t i) {
   int ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, i,
-                                   &dat.EventInfo, &dat.EventPtr);
+                                   &dat.EventInfo, &EventPtr);
   if (ret) {
     Quit(ERR_EVENT_BUILD);
   }
@@ -1135,11 +1136,11 @@ void Digitizer::GetEvent(std::size_t i) {
 void Digitizer::DecodeEvent() {
   int ret{0};
   if (dat.WDcfg.Nbit == 8)
-    ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void **)&dat.Event8);
+    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event8);
   else if (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) {
-    ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void **)&dat.Event16);
+    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
   } else {
-    ret = CAEN_DGTZ_DecodeEvent(handle, dat.EventPtr, (void **)&dat.Event742);
+    ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event742);
     if (dat.WDcfg.useCorrections != -1) { // if manual corrections
       uint32_t gr;
       for (gr = 0; gr < dat.WDcfg.MaxGroupNumber; gr++) {

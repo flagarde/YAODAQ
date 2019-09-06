@@ -385,6 +385,7 @@ void Start()
 	return NumEvents;
 }
 private:
+  char *EventPtr{nullptr};
   bool isStarted{false};
   bool isVMEDevice() { return dat.WDcfg.BaseAddress ? 1 : 0; }
   uint32_t AllocatedSize{0};

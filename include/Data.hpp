@@ -93,16 +93,6 @@ public:
   int ChannelPlotMask;
   int RunHisto{1};
   bool isNewEvent{false};
-  int NbrThreadFFT{0};
-  bool initialize{false};
-  bool configure{false};
-  bool connect{false};
-  bool start{false};
-  bool stop{false};
-  bool disconnect{false};
-  bool clear{false}; 
-  bool release{false};
-
 };
 
 class Data {
@@ -114,8 +104,6 @@ public:
     }
   }
   ~Data() {
-    if (EventPtr != nullptr)
-      delete EventPtr;
     if (Event8 != nullptr)
       delete Event8;
     if (Event16 != nullptr)
@@ -125,7 +113,6 @@ public:
   }
   CAEN_DGTZ_UINT16_EVENT_t *Event16{nullptr};
   CAEN_DGTZ_UINT8_EVENT_t *Event8{nullptr};
-  char *EventPtr{nullptr};
   CAEN_DGTZ_BoardInfo_t BoardInfo;
   CAEN_DGTZ_EventInfo_t EventInfo;
   CAEN_DGTZ_X742_EVENT_t *Event742{
