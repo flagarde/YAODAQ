@@ -28,14 +28,11 @@ void Plotter::Update()
 }
 
 
-
-
-
-
-Plotter::Plotter(Data &da, WsServer &ser) : dat(da), server(ser) 
+void Plotter::Init()
 {
- ROOT::EnableImplicitMT(); 
- //Generate TH1 for waveforms;
+  if(isInitialised==false)
+  {
+//Generate TH1 for waveforms;
  int NbrBins = /*FindMaxBin();*/dat.WDcfg.RecordLength;
   float maxValue{0};
   float tickSize{0};
@@ -92,14 +89,16 @@ uint64_t Nbrbins = (uint64_t)(1 << dat.WDcfg.Nbit);
   TH1* IM2= histos[0].FFT(&IM, "IM R2C ES");
   TH1* MAG2 = histos[0].FFT(&MAG, "MAG R2C ES");
   TH1* PH2 = histos[0].FFT(&PH, "PH R2C ES");
-   
+  isInitialised=true;
+  }
+}
 
 
 
-
-
-
-
+Plotter::Plotter(Data &da, WsServer &ser) : dat(da), server(ser) 
+{
+ ROOT::EnableImplicitMT(); 
+  if(dat.WDcfg.Nch!=0) Init();
 }
 
 void Plotter::PlotHistograms() {

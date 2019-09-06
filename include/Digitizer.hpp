@@ -41,7 +41,7 @@ public:
   void Quit() { dat.WDrun.Quit = 1; }
 
   bool Interrupt();
-
+  void Disconnect();
   void SoftwareTrigger() { CAEN_DGTZ_SendSWtrigger(handle); }
   void Calibrate_XX740_DC_Offset();
   void Set_relative_Threshold();

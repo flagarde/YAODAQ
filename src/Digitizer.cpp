@@ -919,6 +919,19 @@ std::vector<std::string> Digitizer::ErrMsg{
     "Over Temperature",
     "UNKNOWN"};
 
+
+
+void Digitizer::Disconnect()
+{
+
+
+CAEN_DGTZ_CloseDigitizer(handle);
+
+
+}
+
+
+
 Digitizer::~Digitizer() {
   /* stop the acquisition */
   CAEN_DGTZ_SWStopAcquisition(handle);

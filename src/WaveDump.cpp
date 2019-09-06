@@ -29,19 +29,19 @@ void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
     digi.NextGroup();
   } else if (command == "Quit") {
     digi.Quit();
-  } else if (command == "Trigger") {
+  } /*else if (command == "Trigger") {
     digi.Trigger();
     command = "Where";
-  } else if (command == "Continuous Trigger") {
+  } */else if (command == "Continuous Trigger") {
     digi.ContinuousTrigger();
   } else if (command == "Continuous Plotting") {
     digi.ContinuousPloting();
-  } else if (command == "Plot") 
+  } /*else if (command == "Plot") 
     {
     	plot.OneTimePlot();
     	command = "Where";
 
-  } else if (command == "f") {
+  } */else if (command == "f") {
     digi.f();
   } else if (command == "h") {
     digi.h();
@@ -49,11 +49,11 @@ void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
     digi.Write();
   } else if (command == "Continuous Write") {
     digi.ContinuousWrite();
-  } else if (command == "Start") {
+  } /*else if (command == "Start") {
     digi.Start();
   } else if (command == "Stop") {
     digi.Stop();
-  } else if (command == "Temperature") {
+  } */else if (command == "Temperature") {
     digi.Temperature();
   } else if (command == "Calibrate")
     digi.calibrate();
@@ -67,45 +67,46 @@ void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
 /* MAIN */
 /* ###########################################################################
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) 
+{
   const std::string WaveDump_Release{"3.9.0"};
   const std::string WaveDump_Release_Date{"October 2018"};
   Data dat;
   WsServer server;
-
+  Plotter plot(dat, server);
   FileManager file(dat, "Toto.root", 0, 36, 0);
   file.OpenFile();
   Digitizer digi(dat);
-  std::string where = "Release";
+  std::string command = "Release";
   server.config.port = 9876;
   auto &echo_all = server.endpoint["^/Rack/?$"];
-  echo_all.on_message =
-      [&server, &where](std::shared_ptr<WsServer::Connection> /*connection*/,
-                        std::shared_ptr<WsServer::InMessage> in_message) {
-        auto out_message = in_message->string();
-        std::cout << out_message << std::endl;
-        if (out_message == "Where") {
-          for (auto &a_connection : server.get_connections())
-            a_connection->send(where);
-        } else {
-          std::string toto = out_message;
-          where = toto;
-          // echo_all.get_connections() can also be used to solely receive
-          // connections on this endpoint
-          for (auto &a_connection : server.get_connections())
-            a_connection->send(out_message);
-        }
-      };
+  echo_all.on_message =[&server, &command](std::shared_ptr<WsServer::Connection> /*connection*/,std::shared_ptr<WsServer::InMessage> in_message) 
+	{
+    static std::string where="Release";
+  	auto out_message = in_message->string();
+    std::cout << out_message << std::endl;
+   	if (out_message == "Where") 
+		{
+    	for (auto &a_connection : server.get_connections()) a_connection->send(where);
+   	} 
+		else 
+		{
+    	command = out_message;
+      where = out_message;
+      // echo_all.get_connections() can also be used to solely receive
+      // connections on this endpoint
+      for (auto &a_connection : server.get_connections()) a_connection->send(out_message);
+     }
+  };
 
   std::thread server_thread([&server]() {
     // Start WS-server
     server.start();
   });
 
-  std::string ConfigFileName{""};
-  int MajorNumber;
-  int nCycles = 0;
-  FILE *f_ini;
+  
+  
+  
 
   std::cout << "**************************************************************"
             << std::endl;
@@ -113,12 +114,9 @@ int main(int argc, char *argv[]) {
             << std::endl;
   std::cout << "**************************************************************"
             << std::endl;
+/*
 
-  /* ***************************************************************************************
-   */
-  /* Open and parse default configuration file */
-  /* ***************************************************************************************
-   */
+  // Open and parse default configuration file 
 
   if (argc > 1)
     ConfigFileName = argv[1];
@@ -131,11 +129,9 @@ int main(int argc, char *argv[]) {
   ParseConfigFile(f_ini, dat.WDcfg);
   fclose(f_ini);
 
-  /* ***************************************************************************************
-   */
-  /* Open the digitizer and read the board information */
-  /* ***************************************************************************************
-   */
+
+  // Open the digitizer and read the board information 
+
   digi.Connect();
 
   digi.GetInfos();
@@ -146,13 +142,13 @@ int main(int argc, char *argv[]) {
   std::cout << "AMC FPGA Release is " << dat.BoardInfo.AMC_FirmwareRel
             << std::endl;
 
-  // Check firmware rivision (DPP firmwares cannot be used with WaveDump */
+  // Check firmware rivision (DPP firmwares cannot be used with WaveDump 
   sscanf(dat.BoardInfo.AMC_FirmwareRel, "%d", &MajorNumber);
   if (MajorNumber >= 128) {
     std::cout << "This digitizer has a DPP firmware" << std::endl;
     digi.Quit(ERR_INVALID_BOARD_TYPE);
   }
-  // Get Number of Channels, Number of bits, Number of Groups of the board */
+  // Get Number of Channels, Number of bits, Number of Groups of the board 
   digi.GetMoreBoardInfo();
 
 
@@ -167,76 +163,155 @@ int main(int argc, char *argv[]) {
   digi.SetPlotMask();
   // Have to know the number of channels; FIX IT
   Plotter a(dat, server);
-  /* ***************************************************************************************
-   */
-  /* program the digitizer */
-  /* ***************************************************************************************
-   */
+
+  // program the digitizer 
+
   digi.ProgramDigitizer2();
 
   digi.Ugly();
   // Allocate memory for the event data and readout buffer
   digi.Allocate();
 
-  std::cout << "Waiting for command !" << std::endl;
-  digi.setPrevRateTime();
+  
+  digi.setPrevRateTime();*/
   /* ***************************************************************************************
    */
   /* Readout Loop */
   /* ***************************************************************************************
    */
-  while (!dat.WDrun.Quit) {
-    // Check for keyboard commands (key pressed)
-    CheckKeyboardCommands(digi, a, where);
-    if (dat.WDrun.AcqRun == 0)
-      continue;
 
-    /* Send a software trigger */
-    if (dat.WDrun.ContinuousTrigger)
-      digi.SoftwareTrigger();
-
-    /* Wait for interrupt (if enabled) */
-    if (dat.WDcfg.InterruptNumEvents > 0) {
-      if(digi.Interrupt()==true)
-	{
-		digi.InterruptTimeout();
-		 /* Analyze data */
-  		for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
-		{
-			/* Get one event from the readout buffer */
-    			digi.GetEvent(i);
-    			/* decode the event */
-    			digi.DecodeEvent();
-			a.Update();
-			file.AddEvents();
-  		}
-
-
-
-
-
-
-
-		
-	}
-      continue;
+  while(command!="Quit")
+  {
+    if(command=="Initialize")
+    {	
+      /* ***************************************************************************************
+   		*/
+  		/* Open and parse default configuration file */
+  		/* ***************************************************************************************
+   		*/
+      std::string ConfigFileName{""};
+  		if (argc > 1)ConfigFileName = argv[1];
+  		std::cout << "Opening Configuration File " << ConfigFileName << std::endl;
+      FILE *f_ini;
+  		f_ini = fopen(ConfigFileName.c_str(), "r");
+  		if (f_ini == nullptr) digi.Quit(ERR_CONF_FILE_NOT_FOUND);
+  		ParseConfigFile(f_ini, dat.WDcfg);
+  		fclose(f_ini);
+			command = "Where";
     }
-    /* Read data from the board */
-    digi.Read();
-
-    digi.InterruptTimeout();
-    		 /* Analyze data */
-  		for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
+		else if(command=="Connect")
 		{
-			/* Get one event from the readout buffer */
+			 /* ***************************************************************************************
+   		 */
+  		/* Open the digitizer and read the board information */
+  		/* ***************************************************************************************
+   		*/
+  		digi.Connect();
+      command="Where";
+    }
+    else if(command=="Configure")
+    {
+      int MajorNumber{0};
+			digi.GetInfos();
+  		std::cout << "Connected to CAEN Digitizer Model " << dat.BoardInfo.ModelName<< std::endl;
+  		std::cout << "ROC FPGA Release is " << dat.BoardInfo.ROC_FirmwareRel<< std::endl;
+  		std::cout << "AMC FPGA Release is " << dat.BoardInfo.AMC_FirmwareRel<< std::endl;		
+			// Check firmware rivision (DPP firmwares cannot be used with WaveDump */
+  		sscanf(dat.BoardInfo.AMC_FirmwareRel, "%d", &MajorNumber);
+  		if (MajorNumber >= 128) 
+			{
+    		std::cout << "This digitizer has a DPP firmware" << std::endl;
+    		digi.Quit(ERR_INVALID_BOARD_TYPE);
+  		}
+  		// Get Number of Channels, Number of bits, Number of Groups of the board */
+  		digi.GetMoreBoardInfo();
+  		// load DAC calibration data (if present in flash)
+  		digi.LoadDACCalibration();
+  		// Perform calibration (if needed).
+  		digi.PerformCalibration();
+  		// mask the channels not available for this model
+  		digi.MaskChannels();
+  		// Set plot mask
+  		digi.SetPlotMask();
+  		// Have to know the number of channels; FIX IT
+      plot.Init();
+  		// program the digitizer 
+  		digi.ProgramDigitizer2();
+  		digi.Ugly();
+  		// Allocate memory for the event data and readout buffer
+  		digi.Allocate();
+  		digi.setPrevRateTime();
+      command="Where";
+		}
+  	if(command=="Start")
+  	{
+      digi.Start();
+    	command="Where";
+  		while (command!="Stop") 
+  		{
+    		//CheckKeyboardCommands(digi, a, command);
+      	if(command=="Trigger")
+				{
+					digi.Trigger();
+          command="Where";
+      	}
+      	if(command=="Plot")
+     	 	{
+					plot.OneTimePlot();
+    	  	command = "Where";
+      	}
+    		if (dat.WDrun.AcqRun == 0) continue;
+
+    		/* Send a software trigger */
+    		if (dat.WDrun.ContinuousTrigger) digi.SoftwareTrigger();
+
+    		/* Wait for interrupt (if enabled) */
+    		if (dat.WDcfg.InterruptNumEvents > 0) 
+				{
+      		if(digi.Interrupt()==true)
+					{
+						digi.InterruptTimeout();
+		 				/* Analyze data */
+  					for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
+						{
+							/* Get one event from the readout buffer */
+    					digi.GetEvent(i);
+    					/* decode the event */
+    					digi.DecodeEvent();
+							plot.Update();
+							file.AddEvents();
+  					}
+					}
+      		continue;
+    		}
+    		/* Read data from the board */
+    		digi.Read();
+				digi.InterruptTimeout();
+    		/* Analyze data */
+  			for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
+				{
+					/* Get one event from the readout buffer */
     			digi.GetEvent(i);
     			/* decode the event */
     			digi.DecodeEvent();
-			a.Update();
-			file.AddEvents();
+					plot.Update();
+					file.AddEvents();
+  			}
   		}
+  	}
+    else if(command=="Stop")
+		{
+			digi.Stop();
+			command="Where";
+		}
+    else if(command=="Disconnect")
+		{
+			digi.Disconnect();
+			command="Where";
+		}
   }
   file.CloseFile();
+  server.stop();
   server_thread.join();
   return 0;
 }

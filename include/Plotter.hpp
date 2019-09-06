@@ -102,9 +102,11 @@ histos[h].GetYaxis()->SetRange(0,(float)(1<<WDcfg.Nbit));*/
 
 public:
   Data &dat;
-
+  void Init();
 private:
+  bool isInitialised{false};
   Plotter() = delete;
+  
   WsServer &server;
 };
 #endif

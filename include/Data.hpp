@@ -81,21 +81,30 @@ public:
 
 class WaveDumpRun_t {
 public:
-  int Quit;
-  int AcqRun;
+  bool Quit{false};
+  bool AcqRun{false};
   int PlotType;
-  int ContinuousTrigger;
-  int ContinuousWrite;
-  int SingleWrite;
-  int ContinuousPlot;
-  int SinglePlot;
-  int SetPlotOptions;
+  bool ContinuousTrigger{false};
+  bool ContinuousWrite{false};
+  bool SingleWrite{false};
+  bool ContinuousPlot{false};
+  bool SinglePlot{false};
+  bool SetPlotOptions{false};
   int GroupPlotIndex;
   int GroupPlotSwitch;
   int ChannelPlotMask;
   int RunHisto{1};
   bool isNewEvent{false};
   int NbrThreadFFT{0};
+  bool initialize{false};
+  bool configure{false};
+  bool connect{false};
+  bool start{false};
+  bool stop{false};
+  bool disconnect{false};
+  bool clear{false}; 
+  bool release{false};
+
 };
 
 class Data {
