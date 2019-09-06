@@ -27,21 +27,12 @@ void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
     digi.EnableChannelForPloting(ch);
   } else if (command == "g") {
     digi.NextGroup();
-  } else if (command == "Quit") {
-    digi.Quit();
-  } /*else if (command == "Trigger") {
-    digi.Trigger();
-    command = "Where";
-  } */else if (command == "Continuous Trigger") {
+  }
+  else if (command == "Continuous Trigger") {
     digi.ContinuousTrigger();
   } else if (command == "Continuous Plotting") {
     digi.ContinuousPloting();
-  } /*else if (command == "Plot") 
-    {
-    	plot.OneTimePlot();
-    	command = "Where";
-
-  } */else if (command == "f") {
+  } else if (command == "f") {
     digi.f();
   } else if (command == "h") {
     digi.h();
@@ -49,11 +40,7 @@ void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
     digi.Write();
   } else if (command == "Continuous Write") {
     digi.ContinuousWrite();
-  } /*else if (command == "Start") {
-    digi.Start();
-  } else if (command == "Stop") {
-    digi.Stop();
-  } */else if (command == "Temperature") {
+  } else if (command == "Temperature") {
     digi.Temperature();
   } else if (command == "Calibrate")
     digi.calibrate();
@@ -104,91 +91,20 @@ int main(int argc, char *argv[])
     server.start();
   });
 
-  
-  
-  
-
-  std::cout << "**************************************************************"
-            << std::endl;
-  std::cout << "                        Wave Dump " << WaveDump_Release
-            << std::endl;
-  std::cout << "**************************************************************"
-            << std::endl;
-/*
-
-  // Open and parse default configuration file 
-
-  if (argc > 1)
-    ConfigFileName = argv[1];
-  std::cout << "Opening Configuration File " << ConfigFileName << std::endl;
-
-  f_ini = fopen(ConfigFileName.c_str(), "r");
-  if (f_ini == nullptr) {
-    digi.Quit(ERR_CONF_FILE_NOT_FOUND);
-  }
-  ParseConfigFile(f_ini, dat.WDcfg);
-  fclose(f_ini);
-
-
-  // Open the digitizer and read the board information 
-
-  digi.Connect();
-
-  digi.GetInfos();
-  std::cout << "Connected to CAEN Digitizer Model " << dat.BoardInfo.ModelName
-            << std::endl;
-  std::cout << "ROC FPGA Release is " << dat.BoardInfo.ROC_FirmwareRel
-            << std::endl;
-  std::cout << "AMC FPGA Release is " << dat.BoardInfo.AMC_FirmwareRel
-            << std::endl;
-
-  // Check firmware rivision (DPP firmwares cannot be used with WaveDump 
-  sscanf(dat.BoardInfo.AMC_FirmwareRel, "%d", &MajorNumber);
-  if (MajorNumber >= 128) {
-    std::cout << "This digitizer has a DPP firmware" << std::endl;
-    digi.Quit(ERR_INVALID_BOARD_TYPE);
-  }
-  // Get Number of Channels, Number of bits, Number of Groups of the board 
-  digi.GetMoreBoardInfo();
-
-
-
-  // load DAC calibration data (if present in flash)
-  digi.LoadDACCalibration();
-  // Perform calibration (if needed).
-  digi.PerformCalibration();
-  // mask the channels not available for this model
-  digi.MaskChannels();
-  // Set plot mask
-  digi.SetPlotMask();
-  // Have to know the number of channels; FIX IT
-  Plotter a(dat, server);
-
-  // program the digitizer 
-
-  digi.ProgramDigitizer2();
-
-  digi.Ugly();
-  // Allocate memory for the event data and readout buffer
-  digi.Allocate();
-
-  
-  digi.setPrevRateTime();*/
+  std::cout << "**************************************************************"<< std::endl;
+  std::cout << "                        Wave Dump " << WaveDump_Release<< std::endl;
+  std::cout << "**************************************************************"<< std::endl;
   /* ***************************************************************************************
-   */
+  */
   /* Readout Loop */
   /* ***************************************************************************************
-   */
+  */
 
   while(command!="Quit")
   {
     if(command=="Initialize")
     {	
-      /* ***************************************************************************************
-   		*/
-  		/* Open and parse default configuration file */
-  		/* ***************************************************************************************
-   		*/
+  		// Open and parse default configuration file 
       std::string ConfigFileName{""};
   		if (argc > 1)ConfigFileName = argv[1];
   		std::cout << "Opening Configuration File " << ConfigFileName << std::endl;
@@ -201,11 +117,7 @@ int main(int argc, char *argv[])
     }
 		else if(command=="Connect")
 		{
-			 /* ***************************************************************************************
-   		 */
-  		/* Open the digitizer and read the board information */
-  		/* ***************************************************************************************
-   		*/
+  		// Open the digitizer 
   		digi.Connect();
       command="Where";
     }
@@ -249,13 +161,12 @@ int main(int argc, char *argv[])
     	command="Where";
   		while (command!="Stop") 
   		{
-    		//CheckKeyboardCommands(digi, a, command);
       	if(command=="Trigger")
 				{
 					digi.Trigger();
           command="Where";
       	}
-      	if(command=="Plot")
+      	else if(command=="Plot")
      	 	{
 					plot.OneTimePlot();
     	  	command = "Where";

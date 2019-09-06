@@ -38,7 +38,6 @@ public:
   void DecodeEvent();
   void EnableChannelForPloting(const int &ch);
   void NextGroup();
-  void Quit() { dat.WDrun.Quit = 1; }
 
   bool Interrupt();
   void Disconnect();

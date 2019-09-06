@@ -81,7 +81,6 @@ public:
 
 class WaveDumpRun_t {
 public:
-  bool Quit{false};
   bool AcqRun{false};
   int PlotType;
   bool ContinuousTrigger{false};
@@ -110,8 +109,6 @@ public:
 class Data {
 public:
   Data() {
-    // memset(&WDrun, 0, sizeof(WDrun));
-    // memset(&WDcfg, 0, sizeof(WDcfg));
     for (std::size_t i = 0; i < MAX_SET; i++) {
       WDcfg.DAC_Calib.cal[i] = 1;
       WDcfg.DAC_Calib.offset[i] = 0;
