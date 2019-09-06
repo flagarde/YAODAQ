@@ -47,7 +47,7 @@ public:
   void Calibrate_DC_Offset();
   ~Digitizer();
   void Connect();
-  int ProgramDigitizer();
+  void ProgramDigitizer();
   void GetInfos();
   void GetMoreBoardInfo();
   void InterruptTimeout();
@@ -57,13 +57,6 @@ public:
   int WriteOutputFiles(void *Event);
   int WriteOutputFilesx742(CAEN_DGTZ_X742_EVENT_t *Event);
   void calibrate();
-
-  void ProgramDigitizer2() {
-
-    if (ProgramDigitizer()) {
-      Quit(ERR_DGZ_PROGRAM);
-    }
-  }
 
   void ReloadConf() {
     int ret{0};
@@ -286,6 +279,7 @@ public:
 void Start() 
 {
     if(isStarted) return;
+    //Wait connection is done
     if (dat.BoardInfo.FamilyCode !=
           CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
         Set_relative_Threshold();

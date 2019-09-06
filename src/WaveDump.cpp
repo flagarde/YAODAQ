@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
   		// Have to know the number of channels; FIX IT
       plot.Init();
   		// program the digitizer 
-  		digi.ProgramDigitizer2();
+  		digi.ProgramDigitizer();
   		digi.Ugly();
   		// Allocate memory for the event data and readout buffer
   		digi.Allocate();

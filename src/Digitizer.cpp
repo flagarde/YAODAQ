@@ -46,15 +46,18 @@ int Digitizer::WriteRegisterBitmask(uint32_t address, uint32_t data,
  *   \param   WDcfg:   WaveDumpConfig data structure
  *   \return  0 = Success; negative numbers are error codes
  */
-int Digitizer::ProgramDigitizer() {
+void Digitizer::ProgramDigitizer() 
+{
+  
   int ret = 0;
   /* reset the digitizer */
   ret |= CAEN_DGTZ_Reset(handle);
-  if (ret != 0) {
+  if (ret != 0) 
+  {
     std::cout << "Error: Unable to reset digitizer.\nPlease reset digitizer "
                  "manually then restart the program"
               << std::endl;
-    return -1;
+     if (ret) Quit(ERR_DGZ_PROGRAM);
   }
   // Set the waveform test bit for debugging
   if (dat.WDcfg.TestPattern)
@@ -201,7 +204,7 @@ int Digitizer::ProgramDigitizer() {
     std::cout << "Warning: errors found during the programming of the "
                  "digitizer.\nSome settings may not be executed\n"
               << std::endl;
-  return 0;
+  if (ret) Quit(ERR_DGZ_PROGRAM);
 }
 
 /*! \brief   Write the event data on x742 boards into the output files
