@@ -104,6 +104,7 @@ public:
   Data &dat;
   void Init();
 private:
+  int NbrThreadFFT{0};
   bool isInitialised{false};
   Plotter() = delete;
   

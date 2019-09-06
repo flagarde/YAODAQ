@@ -211,8 +211,8 @@ void Plotter::PlotWaveform() {
 }
 
 void Plotter::SaveFFT() {
-  dat.WDrun.NbrThreadFFT++;
-  std::cout<<dat.WDrun.NbrThreadFFT<<std::endl;
+  NbrThreadFFT++;
+  std::cout<<NbrThreadFFT<<std::endl;
   auto &echo_all = server.endpoint["^/Rack/?$"];
   TH1* toto{nullptr};
   TString json;
@@ -245,7 +245,7 @@ void Plotter::SaveFFT() {
     for (auto &a_connection : echo_all.get_connections())
       a_connection->send(json.Data());
   }
-  dat.WDrun.NbrThreadFFT--;
+  NbrThreadFFT--;
 }
 
 void Plotter::SaveWaveForms() {
@@ -255,8 +255,8 @@ void Plotter::SaveWaveForms() {
     for (auto &a_connection : echo_all.get_connections())
       a_connection->send(json.Data());
   }
-  if(dat.WDrun.NbrThreadFFT==0) SaveFFT();
-  else std::cout<<"Thread blocked"<<std::endl;
+  if(NbrThreadFFT==0) SaveFFT();
+  else std::cout<<"Not plotting FFT again !!!! TOO FAST !!!"<<std::endl;
 }
 
 

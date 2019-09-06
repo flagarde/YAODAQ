@@ -171,7 +171,6 @@ int main(int argc, char *argv[])
 					plot.OneTimePlot();
     	  	command = "Where";
       	}
-    		if (dat.WDrun.AcqRun == 0) continue;
 
     		/* Send a software trigger */
     		if (dat.WDrun.ContinuousTrigger) digi.SoftwareTrigger();

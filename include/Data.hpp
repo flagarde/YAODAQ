@@ -81,7 +81,6 @@ public:
 
 class WaveDumpRun_t {
 public:
-  bool AcqRun{false};
   int PlotType;
   bool ContinuousTrigger{false};
   bool ContinuousWrite{false};

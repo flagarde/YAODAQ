@@ -283,10 +283,10 @@ public:
       std::cout << "Continuous writing is disabled" << std::endl;
   }
 
-  void Start() {
-
-    if (dat.WDrun.AcqRun == 0) {
-      if (dat.BoardInfo.FamilyCode !=
+void Start() 
+{
+    if(isStarted) return;
+    if (dat.BoardInfo.FamilyCode !=
           CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
         Set_relative_Threshold();
       if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE ||
@@ -294,22 +294,21 @@ public:
         dat.WDrun.GroupPlotSwitch = 0;
       std::cout << "Acquisition started" << std::endl;
       CAEN_DGTZ_SWStartAcquisition(handle);
-      dat.WDrun.AcqRun = 1;
-    }
+    isStarted=true; 
+    
   }
 
   void Stop() {
-    if (dat.WDrun.AcqRun == 1) {
+    if(isStarted==false) return;
       std::cout << "Acquisition stopped" << std::endl;
       CAEN_DGTZ_SWStopAcquisition(handle);
-      dat.WDrun.AcqRun = 0;
-    }
+      isStarted = false;
   }
 
   void Temperature() {
 
     if (BoardSupportsTemperatureRead()) {
-      if (dat.WDrun.AcqRun == 0) {
+      if (isStarted == false) {
         int32_t ch;
         for (ch = 0; ch < (int32_t)dat.BoardInfo.Channels; ch++) {
           uint32_t temp;
@@ -332,7 +331,7 @@ public:
 
   void D() {
 
-    if (dat.WDrun.AcqRun == 0) {
+    if (isStarted == 0) {
       std::cout << "Disconnect input signal from all channels and press any "
                    "key to start."
                 << std::endl;
@@ -392,6 +391,7 @@ public:
 	return NumEvents;
 }
 private:
+  bool isStarted{false};
   bool isVMEDevice() { return dat.WDcfg.BaseAddress ? 1 : 0; }
   uint32_t AllocatedSize{0};
   uint32_t BufferSize{0};

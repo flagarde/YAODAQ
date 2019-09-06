@@ -214,7 +214,7 @@ int Digitizer::ProgramDigitizer() {
 void Digitizer::calibrate() {
   std::cout << std::endl;
   if (BoardSupportsCalibration()) {
-    if (dat.WDrun.AcqRun == 0) {
+    if (isStarted == false) {
       int32_t ret = CAEN_DGTZ_Calibrate(handle);
       if (ret == CAEN_DGTZ_Success)
         std::cout << "ADC Calibration successfully executed." << std::endl;
