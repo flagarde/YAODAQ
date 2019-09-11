@@ -19,32 +19,11 @@ void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
   } else if (command == "g") {
     digi.NextGroup();
   }
-  else if (command == "Continuous Trigger") {
-    digi.ContinuousTrigger();
-  } else if (command == "Continuous Plotting") {
-    digi.ContinuousPloting();
-  } else if (command == "f") {
-    digi.f();
-  } else if (command == "h") {
-    digi.h();
-  } else if (command == "Write") {
-    digi.Write();
-  } else if (command == "Continuous Write") {
-    digi.ContinuousWrite();
-  } else if (command == "Temperature") {
-    digi.Temperature();
-  } else if (command == "Calibrate")
-    digi.calibrate();
   else if (command == "D") {
     digi.D();
   }
 }
 
-/* ###########################################################################
- */
-/* MAIN */
-/* ###########################################################################
- */
 int main(int argc, char *argv[]) 
 {
   const std::string WaveDump_Release{"3.9.0"};
@@ -55,33 +34,14 @@ int main(int argc, char *argv[])
   FileManager file(dat, "Toto.root", 0, 36, 0);
   file.OpenFile();
   Digitizer digi(dat);
-
-  
-
-// Run the server in the background. Server can be stoped by calling server.stop()
-server.start();
-
-
-server.listen();
-
-
-
-
-
-
-
-
-
-
+	// Run the server in the background. Server can be stoped by calling server.stop()
+	server.start();
+	server.listen();
   std::cout << "**************************************************************"<< std::endl;
   std::cout << "                        Wave Dump " << WaveDump_Release<< std::endl;
   std::cout << "**************************************************************"<< std::endl;
-  /* ***************************************************************************************
-  */
-  /* Readout Loop */
-  /* ***************************************************************************************
-  */
 
+  /* Readout Loop */
   while(server.Command()!="Quit")
   {
     if(server.Command()=="Initialize")
@@ -143,13 +103,31 @@ server.listen();
   		digi.setPrevRateTime();
       server.resetCommand();
 		}
-  	if(server.Command()=="Start")
+  	else if(server.Command()=="Start")
   	{
-      digi.Start();
-    	server.resetCommand();
   		while (server.Command()!="Stop") 
   		{
-      	if(server.Command()=="Trigger")
+        if(server.Command()=="Pause")
+				{
+					digi.setPaused(true);
+					server.resetCommand();
+				}
+        else if(server.Command()=="Write")
+				{
+					if(digi.isPaused())
+					{
+						file.addEvent();
+        		std::cout << "Single Event saved to output files" << std::endl;
+					}
+					else std::cout<<"Event are YET written to the files !!!"<<std::endl;
+          server.resetCommand();
+				}
+        else if(server.Command()=="Start")
+        {
+					digi.Start();
+    			server.resetCommand();
+        }
+      	else if(server.Command()=="Trigger")
 				{
 					digi.Trigger();
           server.resetCommand();
@@ -159,10 +137,19 @@ server.listen();
 					plot.Plot();
     	  	server.resetCommand();
       	}
-
-    		/* Send a software trigger */
-    		if (dat.WDrun.ContinuousTrigger) digi.SoftwareTrigger();
-
+        else if(server.Command()=="Continuous Trigger")
+        { 
+          digi.swapContinuousTrigger();
+  				server.resetCommand();
+				}
+        else if(server.Command()=="Continuous Plotting")
+				{
+      		plot.swapContinuousPlotting();
+					server.resetCommand();
+				}
+        digi.SoftwareTrigger();
+        if(!digi.isPaused())
+        {
     		/* Wait for interrupt (if enabled) */
     		if (dat.WDcfg.InterruptNumEvents > 0) 
 				{
@@ -177,7 +164,7 @@ server.listen();
     					/* decode the event */
     					digi.DecodeEvent();
 							plot.Upload();
-							//plot.Plot();
+							if(plot.isContinuousPlotting())plot.Plot();
 							file.AddEvents();
   					}
 					}
@@ -194,10 +181,11 @@ server.listen();
     			/* decode the event */
     			digi.DecodeEvent();
           plot.Upload();
-					//plot.Plot();
+				  if(plot.isContinuousPlotting())plot.Plot();
 					file.AddEvents();
   			}
-  		}
+			}
+			}
   	}
     else if(server.Command()=="Stop")
 		{
@@ -214,6 +202,16 @@ server.listen();
       file.CloseFile();
       server.resetCommand();
     }
+    else if(server.Command()=="Calibrate")
+    {
+			digi.calibrate();
+      server.resetCommand();
+    }
+    else if(server.Command()=="Continuous Plotting")
+		{
+      plot.swapContinuousPlotting();
+			server.resetCommand();
+		}
   }
   server.stop();
   return 0;

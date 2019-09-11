@@ -18,22 +18,7 @@ std::string FileManager::SHA512()
 
 void FileManager::AddEvents()
 {
-
-
-
-
-    /* Write Event data to file */
-    if (dat.WDrun.ContinuousWrite || dat.WDrun.SingleWrite) 
-	{
       addEvent();
-      if (dat.WDrun.SingleWrite) {
-        std::cout << "Single Event saved to output files" << std::endl;
-        dat.WDrun.SingleWrite = 0;
-      }
-    }
-
-
-
 }
 
 

@@ -82,12 +82,7 @@ public:
 class WaveDumpRun_t {
 public:
   int PlotType;
-  bool ContinuousTrigger{false};
-  bool ContinuousWrite{false};
-  bool SingleWrite{false};
   bool ContinuousPlot{false};
-  bool SinglePlot{false};
-  bool SetPlotOptions{false};
   int GroupPlotIndex;
   int GroupPlotSwitch;
   int ChannelPlotMask;

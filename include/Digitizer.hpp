@@ -41,7 +41,7 @@ public:
 
   bool Interrupt();
   void Disconnect();
-  void SoftwareTrigger() { CAEN_DGTZ_SendSWtrigger(handle); }
+  void SoftwareTrigger() { if(!m_isPaused && m_continuousTrigger) CAEN_DGTZ_SendSWtrigger(handle); }
   void Calibrate_XX740_DC_Offset();
   void Set_relative_Threshold();
   void Calibrate_DC_Offset();
@@ -224,61 +224,17 @@ public:
   void setPrevRateTime() { PrevRateTime = get_time(); }
   void Trigger() {
 
-    if (!dat.WDrun.ContinuousTrigger) {
+ /*   if (!dat.WDrun.ContinuousTrigger) {*/
       CAEN_DGTZ_SendSWtrigger(handle);
       std::cout << "Single Software Trigger issued" << std::endl;
-    }
-  }
-
-  void ContinuousTrigger() {
-    dat.WDrun.ContinuousTrigger ^= 1;
-    if (dat.WDrun.ContinuousTrigger)
-      std::cout << "Continuous trigger is enabled" << std::endl;
-    else
-      std::cout << "Continuous trigger is disabled" << std::endl;
-  }
-
-  void ContinuousPloting() {
-
-    if (dat.WDrun.ChannelPlotMask == 0)
-      std::cout << "No channel enabled for plotting" << std::endl;
-    else
-      dat.WDrun.ContinuousPlot ^= 1;
-  }
-
-
-
-  void f() {
-
-    dat.WDrun.PlotType =
-        (dat.WDrun.PlotType == PLOT_FFT) ? PLOT_WAVEFORMS : PLOT_FFT;
-    dat.WDrun.SetPlotOptions = 1;
-  }
-
-  void h() {
-    dat.WDrun.PlotType = (dat.WDrun.PlotType == PLOT_HISTOGRAM)
-                             ? PLOT_WAVEFORMS
-                             : PLOT_HISTOGRAM;
-    dat.WDrun.RunHisto = (dat.WDrun.PlotType == PLOT_HISTOGRAM);
-    dat.WDrun.SetPlotOptions = 1;
-  }
-
-  void Write() {
-    if (!dat.WDrun.ContinuousWrite)
-      dat.WDrun.SingleWrite = 1;
-  }
-
-  void ContinuousWrite() {
-    dat.WDrun.ContinuousWrite ^= 1;
-    if (dat.WDrun.ContinuousWrite)
-      std::cout << "Continuous writing is enabled" << std::endl;
-    else
-      std::cout << "Continuous writing is disabled" << std::endl;
+  /*  }*/
   }
 
 void Start() 
 {
-    if(isStarted) return;
+
+    if(isStarted&&!m_isPaused) return;
+        m_isPaused=false;
     //Wait connection is done
     if (dat.BoardInfo.FamilyCode !=
           CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
@@ -294,6 +250,7 @@ void Start()
 
   void Stop() {
     if(isStarted==false) return;
+     m_isPaused=false;
       std::cout << "Acquisition stopped" << std::endl;
       CAEN_DGTZ_SWStopAcquisition(handle);
       isStarted = false;
@@ -384,11 +341,23 @@ void Start()
   uint32_t getNumberOfEvents(){
 	return NumEvents;
 }
+  void swapContinuousTrigger()
+  {  
+	if(m_continuousTrigger==true) m_continuousTrigger=false;
+        else m_continuousTrigger=true;
+	std::cout<<"Conitnuous trigger set to : "<<m_continuousTrigger<<std::endl;
+  }
+  void setPaused(const bool& p){ m_isPaused=p;
+			       }
+  bool isPaused(){return m_isPaused;}
+
 private:
   void FreeEvent();
   void FreeBuffer();
   char *EventPtr{nullptr};
   bool isStarted{false};
+  bool m_continuousTrigger{false};
+  bool m_isPaused{false};
   bool isVMEDevice() { return dat.WDcfg.BaseAddress ? 1 : 0; }
   uint32_t AllocatedSize{0};
   uint32_t BufferSize{0};

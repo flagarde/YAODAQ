@@ -6,6 +6,7 @@
 #include "TH1D.h"
 #include "THStack.h"
 #include "IXWebSocketServer.h"
+#include <iostream>
 
 class Plotter {
 public:
@@ -62,11 +63,22 @@ histos[h].GetYaxis()->SetRange(0,(float)(1<<WDcfg.Nbit));*/
   TH1D IM;
   TH1D MAG;
   TH1D PH;
-
+   
 public:
   Data &dat;
   void Init();
+  void swapContinuousPlotting()
+  {
+	if(m_ContinuousPlotting==true) m_ContinuousPlotting=false;
+	else m_ContinuousPlotting=true;
+        std::cout<<"Continuous Plotting is set to : "<<m_ContinuousPlotting<<std::endl;
+  }
+  bool isContinuousPlotting()
+  {
+	return m_ContinuousPlotting;
+  }
 private:
+  bool m_ContinuousPlotting{"False"};
   int NbrThreadFFT{0};
   bool isInitialised{false};
   Plotter() = delete;
