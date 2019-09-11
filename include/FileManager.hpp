@@ -55,16 +55,17 @@ public:
     else if (dat.Event742 != nullptr)
       addEvent742();
   }
-
+  std::string SHA512();
 private:
   void addEvent16();
+  
   void addEvent8();
   void addEvent742();
   unsigned int nbrChannels{0};
   bool verbose{false};
   bool initialized{false};
   std::string fname{""};
-  std::string path{"."};
+  std::string path{"/NAS"};
   TFile *f{nullptr};
   TTree *t{nullptr};
   std::bitset<64> mask;
@@ -75,7 +76,7 @@ private:
   std::vector<int> nRollover;
   double xinc{0};
   std::string finalFilename{""};
-
+  std::string m_SHA512{""};
   // Per Event
 
   double BoardID{0};

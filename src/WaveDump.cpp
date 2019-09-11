@@ -3,12 +3,12 @@
 #include "FileManager.hpp"
 #include "Plotter.hpp"
 #include "WDconfig.hpp"
-#include "server_ws.hpp"
+#include "IXWebSocketServer.h"
 #include <iostream>
 #include <string>
 #include <vector>
+#include "CAENVMElib.h"
 
-using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
 
 /*! \fn      void CheckKeyboardCommands(WaveDumpRun_t *WDrun)
  *   \brief   check if there is a key pressed and execute the relevant command
@@ -59,37 +59,96 @@ int main(int argc, char *argv[])
   const std::string WaveDump_Release{"3.9.0"};
   const std::string WaveDump_Release_Date{"October 2018"};
   Data dat;
-  WsServer server;
+  ix::WebSocketServer server(9876,"192.168.1.210");
   Plotter plot(dat, server);
   FileManager file(dat, "Toto.root", 0, 36, 0);
   file.OpenFile();
   Digitizer digi(dat);
-  std::string command = "Release";
-  server.config.port = 9876;
-  auto &echo_all = server.endpoint["^/Rack/?$"];
-  echo_all.on_message =[&server, &command](std::shared_ptr<WsServer::Connection> /*connection*/,std::shared_ptr<WsServer::InMessage> in_message) 
-	{
-    static std::string where="Release";
-  	auto out_message = in_message->string();
-    std::cout << out_message << std::endl;
-   	if (out_message == "Where") 
-		{
-    	for (auto &a_connection : server.get_connections()) a_connection->send(where);
-   	} 
-		else 
-		{
-    	command = out_message;
-      where = out_message;
-      // echo_all.get_connections() can also be used to solely receive
-      // connections on this endpoint
-      for (auto &a_connection : server.get_connections()) a_connection->send(out_message);
-     }
-  };
+  std::string command = "Initialize";
 
-  std::thread server_thread([&server]() {
-    // Start WS-server
-    server.start();
-  });
+  server.setOnConnectionCallback(
+  [&server,&command](std::shared_ptr<ix::WebSocket> webSocket,std::shared_ptr<ix::ConnectionState> connectionState)
+  {
+  	webSocket->setOnMessageCallback(
+        [webSocket, connectionState, &server,&command](const ix::WebSocketMessagePtr msg)
+        {
+        	if (msg->type == ix::WebSocketMessageType::Open)
+                {
+                    std::cerr << "New connection" << std::endl;
+
+                    // A connection state object is available, and has a default id
+                    // You can subclass ConnectionState and pass an alternate factory
+                    // to override it. It is useful if you want to store custom
+                    // attributes per connection (authenticated bool flag, attributes, etc...)
+                    std::cerr << "id: " << connectionState->getId() << std::endl;
+
+                    // The uri the client did connect to.
+                    std::cerr << "Uri: " << msg->openInfo.uri << std::endl;
+
+                    std::cerr << "Headers:" << std::endl;
+                    for (auto it : msg->openInfo.headers)
+                    {
+                        std::cerr << it.first << ": " << it.second << std::endl;
+                    }
+                    webSocket->send(command.c_str());
+                }
+                else if (msg->type == ix::WebSocketMessageType::Close)
+                {
+			webSocket->send("NONE");
+		}
+                else if (msg->type == ix::WebSocketMessageType::Message)
+                {
+			static std::string where="Void";
+                    
+                    // For an echo server, we just send back to the client whatever was received by the server
+                    // All connected clients are available in an std::set. See the broadcast cpp example.
+                    // Second parameter tells whether we are sending the message in binary or text mode.
+                    // Here we send it in the same mode as it was received.
+
+   		    if (msg->str == "Where") 
+		    {
+
+			std::cout<<"I TRIGGER" <<msg->str<<"   "<<where<<"  "<<command <<std::endl;
+                       webSocket->send(where.c_str());
+    		    } 
+		    else 
+		    {
+    			std::cout<<msg->str<<"   "<<where<<"  "<<command <<std::endl;
+     	              command = msg->str;
+                      where = msg->str;
+      			webSocket->send(where.c_str());
+     		    }
+
+
+
+
+                }
+            }
+        );
+    }
+);
+
+
+// Run the server in the background. Server can be stoped by calling server.stop()
+server.start();
+
+
+
+auto res = server.listen();
+if (!res.first)
+{
+    // Error handling
+    return 1;
+}
+
+
+
+
+
+
+
+
+
 
   std::cout << "**************************************************************"<< std::endl;
   std::cout << "                        Wave Dump " << WaveDump_Release<< std::endl;
@@ -120,6 +179,12 @@ int main(int argc, char *argv[])
   		// Open the digitizer 
   		digi.Connect();
       command="Where";
+    }
+    else if(command=="Temperature")
+    {
+			digi.Temperature();
+			command="Where";
+
     }
     else if(command=="Configure")
     {
@@ -168,7 +233,7 @@ int main(int argc, char *argv[])
       	}
       	else if(command=="Plot")
      	 	{
-					plot.OneTimePlot();
+					plot.Plot();
     	  	command = "Where";
       	}
 
@@ -188,7 +253,8 @@ int main(int argc, char *argv[])
     					digi.GetEvent(i);
     					/* decode the event */
     					digi.DecodeEvent();
-							plot.Update();
+							plot.Upload();
+							//plot.Plot();
 							file.AddEvents();
   					}
 					}
@@ -204,7 +270,8 @@ int main(int argc, char *argv[])
     			digi.GetEvent(i);
     			/* decode the event */
     			digi.DecodeEvent();
-					plot.Update();
+          plot.Upload();
+					//plot.Plot();
 					file.AddEvents();
   			}
   		}
@@ -219,9 +286,12 @@ int main(int argc, char *argv[])
 			digi.Disconnect();
 			command="Where";
 		}
+		else if(command=="Release")
+    {		
+      file.CloseFile();
+      command="Where";
+    }
   }
-  file.CloseFile();
   server.stop();
-  server_thread.join();
   return 0;
 }

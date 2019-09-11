@@ -5,56 +5,19 @@
 #include "TCanvas.h"
 #include "TH1D.h"
 #include "THStack.h"
-#include "server_ws.hpp"
-using WsServer = SimpleWeb::SocketServer<SimpleWeb::WS>;
+#include "IXWebSocketServer.h"
 
 class Plotter {
 public:
-  Plotter(Data &da, WsServer &ser);
+  Plotter(Data &da, ix::WebSocketServer &ser);
   void PlotWaveform();
   void PlotHistograms();
   void SaveWaveForms();
   void SaveHistograms();
   void SaveFFT();
-  void Update();
-  void OneTimePlot() 
-  {
-    if (dat.WDrun.ChannelPlotMask == 0) std::cout << "No channel enabled for plotting" << std::endl;
-    else
-    {
-	dat.WDrun.SinglePlot = 1;
-	Update();
-    }
-  }
+  void Plot();
+  void Upload();
 private:
-  /*int FindMaxBin() {
-    int extreme{0};
-    if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
-      for (std::size_t gr = 0; gr < (dat.WDcfg.Nch / 8); gr++) {
-        if (dat.Event742->GrPresent[gr]) {
-          for (std::size_t ch = 0; ch < 9; ch++) {
-            int Size = dat.Event742->DataGroup[gr].ChSize[ch];
-            if (Size <= 0)
-              continue;
-            if (Size > extreme)
-              extreme = Size;
-          }
-        }
-      }
-    } else {
-      for (std::size_t ch = 0; ch < dat.WDcfg.Nch; ch++) {
-        int Size = (dat.WDcfg.Nbit == 8) ? dat.Event8->ChSize[ch]
-                                         : dat.Event16->ChSize[ch];
-        if (Size <= 0)
-          continue;
-        if (Size > extreme)
-          extreme = Size;
-      }
-    }
-    if (extreme == 0)
-      return 1;
-    return extreme;
-  }*/
   void SetLabelsWaveForms() {
     /*	for(std::size_t h=0;h!=histos.size();++h)
       {
@@ -108,6 +71,6 @@ private:
   bool isInitialised{false};
   Plotter() = delete;
   
-  WsServer &server;
+  ix::WebSocketServer &server;
 };
 #endif

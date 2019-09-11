@@ -1,30 +1,37 @@
 #include "Plotter.hpp"
 #include "TROOT.h"
 #include <thread>
+#include <iostream>
 
 
-void Plotter::Update()
+void Plotter::Upload()
 {
-    if ((dat.WDrun.ContinuousPlot || dat.WDrun.SinglePlot)) 
-    {
-        if(dat.WDrun.isNewEvent==true)
-	{
+	/*if(dat.WDrun.isNewEvent==true)
+	{*/
 		std::thread t(&Plotter::PlotHistograms,this);
 		std::thread t2(&Plotter::PlotWaveform,this);
-        	t.join();
-        	t2.join();
+    t.join();
+    t2.join();
 		dat.WDrun.isNewEvent=false;
-	}
-        //PlotHistograms();
+	/*}*/
+}
+
+void Plotter::Plot()
+{
+  if (dat.WDrun.ChannelPlotMask == 0) std::cout << "No channel enabled for plotting" << std::endl;
+  else
+  {
+  
+  //PlotHistograms();
 	//PlotWaveform();
-        std::thread wave(&Plotter::SaveWaveForms,this);
+  std::thread wave(&Plotter::SaveWaveForms,this);
 	std::thread hist(&Plotter::SaveHistograms,this);
 	wave.detach();
 	hist.detach();
 	//SaveWaveForms();
 	//SaveFFT();
 	//SaveHistograms();
-    }
+  }
 }
 
 
@@ -95,7 +102,7 @@ uint64_t Nbrbins = (uint64_t)(1 << dat.WDcfg.Nbit);
 
 
 
-Plotter::Plotter(Data &da, WsServer &ser) : dat(da), server(ser) 
+Plotter::Plotter(Data &da, ix::WebSocketServer &ser) : dat(da), server(ser) 
 {
  ROOT::EnableImplicitMT(); 
   if(dat.WDcfg.Nch!=0) Init();
@@ -213,7 +220,7 @@ void Plotter::PlotWaveform() {
 void Plotter::SaveFFT() {
   NbrThreadFFT++;
   std::cout<<NbrThreadFFT<<std::endl;
-  auto &echo_all = server.endpoint["^/Rack/?$"];
+ // auto &echo_all = server.endpoint["^/Rack/?$"];
   TH1* toto{nullptr};
   TString json;
   for (std::size_t i = 0; i != histos.size(); ++i) {
@@ -222,28 +229,44 @@ void Plotter::SaveFFT() {
         ("FFT Real Part " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("RE" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
-    for (auto &a_connection : echo_all.get_connections())
-      a_connection->send(json.Data());
+   for (auto&& client : server.getClients())
+                            {
+
+                                    client->send(json.Data());
+  
+                            }
     toto = histos[i].FFT(&IM, "IM R2C ES");
     toto->SetTitle(
         ("FFT Imaginary Part " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("IM" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
-    for (auto &a_connection : echo_all.get_connections())
-      a_connection->send(json.Data());
+    for (auto&& client : server.getClients())
+                            {
+
+                                    client->send(json.Data());
+  
+                            }
     toto = histos[i].FFT(&MAG, "MAG R2C ES");
     toto->SetTitle(
         ("FFT Magnitude " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("MAG" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
-    for (auto &a_connection : echo_all.get_connections())
-      a_connection->send(json.Data());
+ for (auto&& client : server.getClients())
+                            {
+
+                                    client->send(json.Data());
+  
+                            }
     toto = histos[i].FFT(&PH, "PH R2C ES");
     toto->SetTitle(("FFT Phase " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("PH" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
-    for (auto &a_connection : echo_all.get_connections())
-      a_connection->send(json.Data());
+  for (auto&& client : server.getClients())
+                            {
+
+                                    client->send(json.Data());
+  
+                            }
   }
   NbrThreadFFT--;
 }
@@ -251,9 +274,13 @@ void Plotter::SaveFFT() {
 void Plotter::SaveWaveForms() {
   for (std::size_t i = 0; i != histos.size(); ++i) {
     TString json = TBufferJSON::ToJSON(&histos[i]);
-    auto &echo_all = server.endpoint["^/Rack/?$"];
-    for (auto &a_connection : echo_all.get_connections())
-      a_connection->send(json.Data());
+   // auto &echo_all = server.endpoint["^/Rack/?$"];
+  for (auto&& client : server.getClients())
+                            {
+
+                                    client->send(json.Data());
+  
+                            }
   }
   if(NbrThreadFFT==0) SaveFFT();
   else std::cout<<"Not plotting FFT again !!!! TOO FAST !!!"<<std::endl;
@@ -264,9 +291,13 @@ void Plotter::SaveHistograms()
 {
 for (std::size_t i = 0; i != histos_histos.size(); ++i) {
     TString json = TBufferJSON::ToJSON(&histos_histos[i]);
-    auto &echo_all = server.endpoint["^/Rack/?$"];
-    for (auto &a_connection : echo_all.get_connections())
-      a_connection->send(json.Data());
+   // auto &echo_all = server.endpoint["^/Rack/?$"];
+  for (auto&& client : server.getClients())
+                            {
+
+                                    client->send(json.Data());
+  
+                            }
   }
 }
 

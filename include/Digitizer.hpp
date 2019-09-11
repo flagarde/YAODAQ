@@ -385,6 +385,8 @@ void Start()
 	return NumEvents;
 }
 private:
+  void FreeEvent();
+  void FreeBuffer();
   char *EventPtr{nullptr};
   bool isStarted{false};
   bool isVMEDevice() { return dat.WDcfg.BaseAddress ? 1 : 0; }

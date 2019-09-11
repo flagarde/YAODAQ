@@ -207,13 +207,7 @@ void Digitizer::ProgramDigitizer()
   if (ret) Quit(ERR_DGZ_PROGRAM);
 }
 
-/*! \brief   Write the event data on x742 boards into the output files
- *
- *   \param   WDrun Pointer to the WaveDumpRun data structure
- *   \param   WDcfg Pointer to the WaveDumpConfig data structure
- *   \param   EventInfo Pointer to the EventInfo data structure
- *   \param   Event Pointer to the Event to write
- */
+/*! \brief   Write the event data on x742 boards into the output files*/
 void Digitizer::calibrate() {
   std::cout << std::endl;
   if (BoardSupportsCalibration()) {
@@ -234,11 +228,7 @@ void Digitizer::calibrate() {
 }
 
 /*! \fn      void GoToNextEnabledGroup(WaveDumpRun_t *WDrun, WaveDumpConfig_t
- * *WDcfg) \brief   selects the next enabled group for plotting
- *
- *   \param   WDrun:   Pointer to the WaveDumpRun_t data structure
- *   \param   WDcfg:   Pointer to the WaveDumpConfig_t data structure
- */
+ * *WDcfg) \brief   selects the next enabled group for plotting */
 void Digitizer::GoToNextEnabledGroup() {
   if ((dat.WDcfg.EnableMask) && (dat.WDcfg.Nch > 8)) {
     int orgPlotIndex = dat.WDrun.GroupPlotIndex;
@@ -254,12 +244,7 @@ void Digitizer::GoToNextEnabledGroup() {
 
 /*! \fn      void Calibrate_XX740_DC_Offset(int handle, WaveDumpConfig_t WDcfg,
  * CAEN_DGTZ_BoardInfo_t BoardInfo) \brief   calibrates DAC of enabled channel
- * groups (only if BASELINE_SHIFT is in use)
- *
- *   \param   handle   Digitizer handle
- *   \param   WDcfg:   Pointer to the WaveDumpConfig_t data structure
- *   \param   BoardInfo: structure with the board info
- */
+ * groups (only if BASELINE_SHIFT is in use)*/
 void Digitizer::Calibrate_XX740_DC_Offset() {
   float cal[MAX_CH];
   float offset[MAX_CH] = {0};
@@ -333,14 +318,9 @@ void Digitizer::Calibrate_XX740_DC_Offset() {
         Quit(ERR_READOUT);
       if (BufferSize == 0)
         continue;
-      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &dat.EventInfo,
-                                   &EventPtr);
-      if (ret)
-        Quit(ERR_EVENT_BUILD);
+      GetEvent(0);
       // decode the event //
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
-      if (ret)
-        Quit(ERR_EVENT_BUILD);
+      DecodeEvent();
       for (std::size_t g = 0; g < (int32_t)dat.BoardInfo.Channels; g++) {
         for (std::size_t k = 1; k < 21; k++) // mean over 20 samples
           value[acq][g] += (int)(dat.Event16->DataChannel[g * 8][k]);
@@ -391,8 +371,8 @@ void Digitizer::Calibrate_XX740_DC_Offset() {
   }
   CAEN_DGTZ_ClearData(handle);
   /// free events e buffer
-  CAEN_DGTZ_FreeReadoutBuffer(&buffer);
-  CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event16);
+  FreeBuffer();
+  FreeEvent();
   ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, dat.WDcfg.NumEvents);
   ret |= CAEN_DGTZ_SetDecimationFactor(handle, dat.WDcfg.DecimationFactor);
   ret |= CAEN_DGTZ_SetPostTriggerSize(handle, dat.WDcfg.PostTrigger);
@@ -502,17 +482,9 @@ void Digitizer::Set_relative_Threshold() {
     Quit(ERR_READOUT);
   // we have some self-triggered event
   if (BufferSize > 0) {
-    ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &dat.EventInfo,
-                                 &EventPtr);
-    if (ret)
-      Quit(ERR_EVENT_BUILD);
+    GetEvent(0);
     // decode the event //
-    if (dat.WDcfg.Nbit == 8)
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event8);
-    else
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
-    if (ret)
-      Quit(ERR_EVENT_BUILD);
+    DecodeEvent();
 
     for (std::size_t ch = 0; ch < (int32_t)dat.BoardInfo.Channels; ch++) {
       if (dat.WDcfg.EnableMask & (1 << ch) && dat.WDcfg.Version_used[ch] == 1) {
@@ -579,18 +551,8 @@ void Digitizer::Set_relative_Threshold() {
     if (BufferSize == 0)
       return;
 
-    ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &dat.EventInfo,
-                                 &EventPtr);
-    if (ret)
-      Quit(ERR_EVENT_BUILD);
-    // decode the event //
-    if (dat.WDcfg.Nbit == 8)
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event8);
-    else
-      ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
-
-    if (ret)
-      Quit(ERR_EVENT_BUILD);
+    GetEvent(0);
+    DecodeEvent();
 
     for (std::size_t ch = 0; ch < (int32_t)dat.BoardInfo.Channels; ch++) {
       if (dat.WDcfg.EnableMask & (1 << ch) && dat.WDcfg.Version_used[ch] == 1) {
@@ -645,11 +607,8 @@ void Digitizer::Set_relative_Threshold() {
 
   CAEN_DGTZ_ClearData(handle);
 
-  CAEN_DGTZ_FreeReadoutBuffer(&buffer);
-  if (dat.WDcfg.Nbit == 8)
-    CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event8);
-  else
-    CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event16);
+  FreeBuffer();
+  FreeEvent();
 }
 
 /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
@@ -764,18 +723,9 @@ void Digitizer::Calibrate_DC_Offset() {
         Quit(ERR_READOUT);
       if (BufferSize == 0)
         continue;
-      ret = CAEN_DGTZ_GetEventInfo(handle, buffer, BufferSize, 0, &dat.EventInfo,
-                                   &EventPtr);
-      if (ret)
-        Quit(ERR_EVENT_BUILD);
+      GetEvent(0);
       // decode the event //
-      if (dat.WDcfg.Nbit == 8)
-        ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event8);
-      else
-        ret = CAEN_DGTZ_DecodeEvent(handle, EventPtr, (void **)&dat.Event16);
-
-      if (ret)
-        Quit(ERR_EVENT_BUILD);
+      DecodeEvent();
 
       for (std::size_t ch = 0; ch < (int32_t)dat.BoardInfo.Channels; ch++) {
         for (std::size_t i = 1; i < 21; i++) // mean over 20 samples
@@ -833,11 +783,8 @@ void Digitizer::Calibrate_DC_Offset() {
   CAEN_DGTZ_ClearData(handle);
 
   /// free events e buffer
-  CAEN_DGTZ_FreeReadoutBuffer(&buffer);
-  if (dat.WDcfg.Nbit == 8)
-    CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event8);
-  else
-    CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event16);
+  FreeBuffer();
+  FreeEvent();
   // reset settings
   ret |= CAEN_DGTZ_SetMaxNumEventsBLT(handle, dat.WDcfg.NumEvents);
   ret |= CAEN_DGTZ_SetPostTriggerSize(handle, dat.WDcfg.PostTrigger);
@@ -911,21 +858,31 @@ CAEN_DGTZ_CloseDigitizer(handle);
 
 }
 
-
-
-Digitizer::~Digitizer() {
-  /* stop the acquisition */
-  CAEN_DGTZ_SWStopAcquisition(handle);
-  /* close the device and free the buffers */
+void Digitizer::FreeEvent()
+{
   if (dat.Event8)
     CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event8);
   if (dat.Event16)
     CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event16);
   if (dat.Event742)
     CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event742);
-  CAEN_DGTZ_FreeReadoutBuffer(&buffer);
+}
+
+void Digitizer::FreeBuffer()
+{
+	CAEN_DGTZ_FreeReadoutBuffer(&buffer);
   if (buffer != nullptr)
     delete buffer;
+}
+
+
+
+Digitizer::~Digitizer() {
+  /* stop the acquisition */
+  CAEN_DGTZ_SWStopAcquisition(handle);
+  /* close the device and free the buffers */
+  FreeEvent();
+  FreeBuffer();
   if(EventPtr!=nullptr) delete EventPtr;
   CAEN_DGTZ_CloseDigitizer(handle);
 }

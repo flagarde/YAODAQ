@@ -25,8 +25,8 @@ set(CMAKE_EXE_LINKER_FLAGS  "-fPIC ${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
 
-set(Websocket_repository "https://gitlab.com/eidheim/Simple-WebSocket-Server.git")
-set(Websocket_version "master")
+set(IXWebSocket_repository "https://github.com/RPClab/IXWebSocket.git")
+set(IXWebSocket_version "master")
 
 
 include(ExternalProject)
@@ -47,12 +47,12 @@ ExternalProject_Add(
 # ----- CAENlibs package -----
 ExternalProject_Add(
                     WebSocket
-                    GIT_REPOSITORY ${Websocket_repository}
-                    GIT_TAG ${Websocket_version}
+                    GIT_REPOSITORY ${IXWebSocket_repository}
+                    GIT_TAG ${IXWebSocket_version}
                     GIT_PROGRESS TRUE
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/WebSocket-prefix
-                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/WebSocket
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DUSE_TLS=1 -DUSE_WS=0
+                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/IXWebSocket-prefix
+                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/IXWebSocket
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
                     )
 
@@ -70,9 +70,12 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 add_definitions(${CAEN_FLAGS})
 include_directories("${CMAKE_INSTALL_PREFIX}/include")
 include_directories("${CMAKE_INSTALL_PREFIX}/include/CAEN")
-include_directories("${CMAKE_INSTALL_PREFIX}/include/simple-websocket-server")
+include_directories("${CMAKE_INSTALL_PREFIX}/include/ixwebsocket")
 
-link_libraries(CAENVME CAENComm pthread)
+
+find_package (Threads)
+
+link_libraries(CAENVME CAENComm ${CMAKE_THREAD_LIBS_INIT})
 
 
 
@@ -118,9 +121,18 @@ add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/
 add_dependencies(libb CAENlibs Channel)
 add_executable(WaveDump src/WaveDump.cpp)
 
-link_libraries(WaveDump libb ${ROOT_LIBRARIES} CAENlibs CAENDigitizer m crypto INTERFACE Simple-WebSocket-Server)
 
-target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto Channel)
+find_package(ZLIB)
+include_directories(${ZLIB_INCLUDE_DIRS})
+ find_package(OpenSSL REQUIRED)
+  add_definitions(${OPENSSL_DEFINITIONS})
+  message(STATUS "OpenSSL: " ${OPENSSL_VERSION})
+  include_directories(${OPENSSL_INCLUDE_DIR})
+
+
+link_libraries(WaveDump libb ${ROOT_LIBRARIES} CAENlibs CAENDigitizer m crypto ${ZLIB_LIBRARIES} INTERFACE ixwebsocket )
+
+target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto Channel ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ixwebsocket )
 
 
 ## Install executable
