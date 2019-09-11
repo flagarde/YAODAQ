@@ -1,3 +1,6 @@
+#ifndef FILEMAN_h
+#define FILEMAN_h
+
 #include "Channel.hpp"
 #include "Data.hpp"
 #include "TFile.h"
@@ -10,8 +13,7 @@
 #include <vector>
 //#include "CAENdaq.h"
 
-#ifndef FILEMAN_h
-#define FILEMAN_h
+
 
 const double rolloverAdd = 8e-9 * 2147483647;
 

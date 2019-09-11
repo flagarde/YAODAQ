@@ -116,7 +116,7 @@ add_library(Channel SHARED src/Channel.cpp G__Channel.cxx)
 target_link_libraries(Channel ${ROOT_LIBRARIES})
 
 
-add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp)
+add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp src/WebServer.cpp)
 
 add_dependencies(libb CAENlibs Channel)
 add_executable(WaveDump src/WaveDump.cpp)

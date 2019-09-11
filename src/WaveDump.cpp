@@ -3,20 +3,11 @@
 #include "FileManager.hpp"
 #include "Plotter.hpp"
 #include "WDconfig.hpp"
-#include "IXWebSocketServer.h"
 #include <iostream>
 #include <string>
 #include <vector>
-#include "CAENVMElib.h"
+#include "WebServer.hpp"
 
-
-/*! \fn      void CheckKeyboardCommands(WaveDumpRun_t *WDrun)
- *   \brief   check if there is a key pressed and execute the relevant command
- *
- *   \param   WDrun:   Pointer to the WaveDumpRun_t data structure
- *   \param   WDcfg:   Pointer to the WaveDumpConfig_t data structure
- *   \param   BoardInfo: structure with the board info
- */
 void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
                            std::string &command) {
   uint8_t percent;
@@ -59,87 +50,19 @@ int main(int argc, char *argv[])
   const std::string WaveDump_Release{"3.9.0"};
   const std::string WaveDump_Release_Date{"October 2018"};
   Data dat;
-  ix::WebSocketServer server(9876,"192.168.1.210");
-  Plotter plot(dat, server);
+  WebServer server(9876,"192.168.1.210");
+  Plotter plot(dat, server.Ref());
   FileManager file(dat, "Toto.root", 0, 36, 0);
   file.OpenFile();
   Digitizer digi(dat);
-  std::string command = "Initialize";
 
-  server.setOnConnectionCallback(
-  [&server,&command](std::shared_ptr<ix::WebSocket> webSocket,std::shared_ptr<ix::ConnectionState> connectionState)
-  {
-  	webSocket->setOnMessageCallback(
-        [webSocket, connectionState, &server,&command](const ix::WebSocketMessagePtr msg)
-        {
-        	if (msg->type == ix::WebSocketMessageType::Open)
-                {
-                    std::cerr << "New connection" << std::endl;
-
-                    // A connection state object is available, and has a default id
-                    // You can subclass ConnectionState and pass an alternate factory
-                    // to override it. It is useful if you want to store custom
-                    // attributes per connection (authenticated bool flag, attributes, etc...)
-                    std::cerr << "id: " << connectionState->getId() << std::endl;
-
-                    // The uri the client did connect to.
-                    std::cerr << "Uri: " << msg->openInfo.uri << std::endl;
-
-                    std::cerr << "Headers:" << std::endl;
-                    for (auto it : msg->openInfo.headers)
-                    {
-                        std::cerr << it.first << ": " << it.second << std::endl;
-                    }
-                    webSocket->send(command.c_str());
-                }
-                else if (msg->type == ix::WebSocketMessageType::Close)
-                {
-			webSocket->send("NONE");
-		}
-                else if (msg->type == ix::WebSocketMessageType::Message)
-                {
-			static std::string where="Void";
-                    
-                    // For an echo server, we just send back to the client whatever was received by the server
-                    // All connected clients are available in an std::set. See the broadcast cpp example.
-                    // Second parameter tells whether we are sending the message in binary or text mode.
-                    // Here we send it in the same mode as it was received.
-
-   		    if (msg->str == "Where") 
-		    {
-
-			std::cout<<"I TRIGGER" <<msg->str<<"   "<<where<<"  "<<command <<std::endl;
-                       webSocket->send(where.c_str());
-    		    } 
-		    else 
-		    {
-    			std::cout<<msg->str<<"   "<<where<<"  "<<command <<std::endl;
-     	              command = msg->str;
-                      where = msg->str;
-      			webSocket->send(where.c_str());
-     		    }
-
-
-
-
-                }
-            }
-        );
-    }
-);
-
+  
 
 // Run the server in the background. Server can be stoped by calling server.stop()
 server.start();
 
 
-
-auto res = server.listen();
-if (!res.first)
-{
-    // Error handling
-    return 1;
-}
+server.listen();
 
 
 
@@ -159,9 +82,9 @@ if (!res.first)
   /* ***************************************************************************************
   */
 
-  while(command!="Quit")
+  while(server.Command()!="Quit")
   {
-    if(command=="Initialize")
+    if(server.Command()=="Initialize")
     {	
   		// Open and parse default configuration file 
       std::string ConfigFileName{""};
@@ -172,21 +95,21 @@ if (!res.first)
   		if (f_ini == nullptr) digi.Quit(ERR_CONF_FILE_NOT_FOUND);
   		ParseConfigFile(f_ini, dat.WDcfg);
   		fclose(f_ini);
-			command = "Where";
+			server.resetCommand();
     }
-		else if(command=="Connect")
+		else if(server.Command()=="Connect")
 		{
   		// Open the digitizer 
   		digi.Connect();
-      command="Where";
+      server.resetCommand();
     }
-    else if(command=="Temperature")
+    else if(server.Command()=="Temperature")
     {
 			digi.Temperature();
-			command="Where";
+			server.resetCommand();
 
     }
-    else if(command=="Configure")
+    else if(server.Command()=="Configure")
     {
       int MajorNumber{0};
 			digi.GetInfos();
@@ -218,23 +141,23 @@ if (!res.first)
   		// Allocate memory for the event data and readout buffer
   		digi.Allocate();
   		digi.setPrevRateTime();
-      command="Where";
+      server.resetCommand();
 		}
-  	if(command=="Start")
+  	if(server.Command()=="Start")
   	{
       digi.Start();
-    	command="Where";
-  		while (command!="Stop") 
+    	server.resetCommand();
+  		while (server.Command()!="Stop") 
   		{
-      	if(command=="Trigger")
+      	if(server.Command()=="Trigger")
 				{
 					digi.Trigger();
-          command="Where";
+          server.resetCommand();
       	}
-      	else if(command=="Plot")
+      	else if(server.Command()=="Plot")
      	 	{
 					plot.Plot();
-    	  	command = "Where";
+    	  	server.resetCommand();
       	}
 
     		/* Send a software trigger */
@@ -276,20 +199,20 @@ if (!res.first)
   			}
   		}
   	}
-    else if(command=="Stop")
+    else if(server.Command()=="Stop")
 		{
 			digi.Stop();
-			command="Where";
+			server.resetCommand();
 		}
-    else if(command=="Disconnect")
+    else if(server.Command()=="Disconnect")
 		{
 			digi.Disconnect();
-			command="Where";
+			server.resetCommand();
 		}
-		else if(command=="Release")
+		else if(server.Command()=="Release")
     {		
       file.CloseFile();
-      command="Where";
+      server.resetCommand();
     }
   }
   server.stop();
