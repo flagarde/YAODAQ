@@ -6,6 +6,9 @@ cmake_minimum_required(VERSION 3.1)
 
 project(DAQ VERSION 1.0 LANGUAGES C CXX)
 
+
+OPTION(RASPBERRY "I'M RASPBERRY" OFF)
+
 set(CMAKE_INSTALL_PREFIX "")
 if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
     set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin)
@@ -30,14 +33,16 @@ set(IXWebSocket_version "master")
 
 
 include(ExternalProject)
-
+if(RASPBERRY) 
+message(STATUS "You said I'm a RASPBERRY !!!")
+endif()
 # ----- CAENlibs package -----
 ExternalProject_Add( 
                     CAENlibs
                     GIT_REPOSITORY ${CAENlibs_repository}
                     GIT_TAG ${CAENlibs_version}
                     GIT_PROGRESS TRUE
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DINSTALL_ALL_DEMO=OFF -DRASPBERRY=ON -DINSTALL_CAENVME=ON -DINSTALL_CAENComm=ON -DINSTALL_CAENHVWrapper=ON -DINSTALL_CAENDigitizer=ON
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DINSTALL_ALL_DEMO=OFF -DRASPBERRY=${RASPBERRY} -DINSTALL_CAENVME=ON -DINSTALL_CAENComm=ON -DINSTALL_CAENHVWrapper=ON -DINSTALL_CAENDigitizer=ON
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs-prefix
                     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
