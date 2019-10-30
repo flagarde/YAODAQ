@@ -37,6 +37,7 @@ void Plotter::Plot()
 
 void Plotter::Init()
 {
+  TH1::AddDirectory(kFALSE);
   if(isInitialised==false)
   {
 //Generate TH1 for waveforms;
