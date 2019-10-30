@@ -113,17 +113,19 @@ link_directories(${CMAKE_INSTALL_PREFIX}/lib)
 ## Sources
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-
-ROOT_GENERATE_DICTIONARY(G__Channel Channel.hpp LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/include/LinkDef.hpp)
+ROOT_GENERATE_DICTIONARY(G__Channel Channel.hpp LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/include/ChannelLinkDef.hpp)
 
 #---Create a shared library with geneated dictionary
 add_library(Channel SHARED src/Channel.cpp G__Channel.cxx)
 target_link_libraries(Channel ${ROOT_LIBRARIES})
 
+ROOT_GENERATE_DICTIONARY(G__Event Event.hpp LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/include/EventLinkDef.hpp)
+
+#---Create a shared library with geneated dictionary
+add_library(Event SHARED src/Event.cpp G__Event.cxx)
+target_link_libraries(Event ${ROOT_LIBRARIES})
 
 add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp src/WebServer.cpp)
-
-add_dependencies(libb CAENlibs Channel)
 add_executable(WaveDump src/WaveDump.cpp)
 
 
@@ -134,10 +136,7 @@ include_directories(${ZLIB_INCLUDE_DIRS})
   message(STATUS "OpenSSL: " ${OPENSSL_VERSION})
   include_directories(${OPENSSL_INCLUDE_DIR})
 
-
-link_libraries(WaveDump libb ${ROOT_LIBRARIES} CAENlibs CAENDigitizer m crypto ${ZLIB_LIBRARIES} INTERFACE ixwebsocket )
-
-target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto Channel ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ixwebsocket )
+target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto Channel Event  ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ixwebsocket)
 
 
 ## Install executable
@@ -145,5 +144,7 @@ install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 ##add_subdirectory(Analysis)
 
-
+add_executable(Analysis Analysis/Analysis.cpp)
+target_link_libraries(Analysis ${ROOT_LIBRARIES} Event Channel)
+install(TARGETS Analysis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 

@@ -6,14 +6,25 @@
 class Channel : public TObject {
 public:
   Channel();
-  double RecordLength{0};
-  double Number{0};
+  void clear()
+  {
+      RecordLength=0.0;
+      Number=0.0;
+      TriggerTimeTag=0.0;
+      DCoffset=0.0;
+      StartIndexCell=0.0;
+      Group=0.0;
+      Data.clear();
+  }
+  double RecordLength{0.0};
+  double Number{0.0};
   std::string Name{""};
-  double TriggerTimeTag;
-  double DCoffset;
-  double StartIndexCell;
-  double Group{0};
+  double TriggerTimeTag{0.0};
+  double DCoffset{0.0};
+  double StartIndexCell{0.0};
+  double Group{0.0};
   std::vector<double> Data;
-  ClassDef(Channel, 1); // Simple event class
+  ClassDef(Channel,1); // Simple event class
 };
+
 #endif
