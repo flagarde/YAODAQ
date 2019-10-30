@@ -10,10 +10,6 @@
 #include <thread>
 #include <vector>
 
-#define PLOT_WAVEFORMS 0
-#define PLOT_FFT 1
-#define PLOT_HISTOGRAM 2
-
 /* Error messages */
 typedef enum {
   ERR_NONE = 0,
@@ -36,8 +32,6 @@ class Digitizer {
 public:
   void GetEvent(std::size_t i);
   void DecodeEvent();
-  void EnableChannelForPloting(const int &ch);
-  void NextGroup();
 
   bool Interrupt();
   void Disconnect();
@@ -102,8 +96,6 @@ public:
     if ((dat.WDcfg.EnableMask) &&
         (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE ||
          dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE))
-      if (((dat.WDcfg.EnableMask >> dat.WDrun.GroupPlotIndex) & 0x1) == 0)
-        GoToNextEnabledGroup();
 
     // Read again the board infos, just in case some of them were changed by the
     // programming (like, for example, the TSample and the number of channels if
@@ -204,21 +196,8 @@ public:
     }
   }
 
-  void SetPlotMask() {
-    if ((dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX740_FAMILY_CODE) &&
-        (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)) {
-      dat.WDrun.ChannelPlotMask = dat.WDcfg.EnableMask;
-    } else {
-      dat.WDrun.ChannelPlotMask =
-          (dat.WDcfg.FastTriggerEnabled == 0) ? 0xFF : 0x1FF;
-    }
-    if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE) ||
-        (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE)) {
-      dat.WDrun.GroupPlotSwitch = 0;
-    }
-  }
 
-  void GoToNextEnabledGroup();
+
   int32_t BoardSupportsCalibration();
   int32_t BoardSupportsTemperatureRead();
   void setPrevRateTime() { PrevRateTime = get_time(); }
@@ -239,9 +218,6 @@ void Start()
     if (dat.BoardInfo.FamilyCode !=
           CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
         Set_relative_Threshold();
-      if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE ||
-          dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE)
-        dat.WDrun.GroupPlotSwitch = 0;
       std::cout << "Acquisition started" << std::endl;
       CAEN_DGTZ_SWStartAcquisition(handle);
     isStarted=true; 

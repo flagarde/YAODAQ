@@ -10,16 +10,7 @@
 
 void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
                            std::string &command) {
-  uint8_t percent;
-  if (command == "0" || command == "1" || command == "2" || command == "3" ||
-      command == "4" || command == "5" || command == "6" || command == "7" ||
-      command == "8") {
-    int ch = std::atoi(command.c_str());
-    digi.EnableChannelForPloting(ch);
-  } else if (command == "g") {
-    digi.NextGroup();
-  }
-  else if (command == "D") {
+if (command == "D") {
     digi.D();
   }
 }
@@ -100,8 +91,6 @@ int main(int argc, char *argv[])
   		digi.PerformCalibration();
   		// mask the channels not available for this model
   		digi.MaskChannels();
-  		// Set plot mask
-  		digi.SetPlotMask();
   		// Have to know the number of channels; FIX IT
       plot.Init();
   		// program the digitizer 

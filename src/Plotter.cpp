@@ -18,9 +18,6 @@ void Plotter::Upload()
 
 void Plotter::Plot()
 {
-  if (dat.WDrun.ChannelPlotMask == 0) std::cout << "No channel enabled for plotting" << std::endl;
-  else
-  {
   
   //PlotHistograms();
 	//PlotWaveform();
@@ -31,7 +28,6 @@ void Plotter::Plot()
 	//SaveWaveForms();
 	//SaveFFT();
 	//SaveHistograms();
-  }
 }
 
 

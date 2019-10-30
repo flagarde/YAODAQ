@@ -81,11 +81,7 @@ public:
 
 class WaveDumpRun_t {
 public:
-  int PlotType;
   bool ContinuousPlot{false};
-  int GroupPlotIndex;
-  int GroupPlotSwitch;
-  int ChannelPlotMask;
   int RunHisto{1};
   bool isNewEvent{false};
 };

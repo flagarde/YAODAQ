@@ -227,20 +227,6 @@ void Digitizer::calibrate() {
               << std::endl;
 }
 
-/*! \fn      void GoToNextEnabledGroup(WaveDumpRun_t *WDrun, WaveDumpConfig_t
- * *WDcfg) \brief   selects the next enabled group for plotting */
-void Digitizer::GoToNextEnabledGroup() {
-  if ((dat.WDcfg.EnableMask) && (dat.WDcfg.Nch > 8)) {
-    int orgPlotIndex = dat.WDrun.GroupPlotIndex;
-    do {
-      dat.WDrun.GroupPlotIndex =
-          (++dat.WDrun.GroupPlotIndex) % (dat.WDcfg.Nch / 8);
-    } while (!((1 << dat.WDrun.GroupPlotIndex) & dat.WDcfg.EnableMask));
-    if (dat.WDrun.GroupPlotIndex != orgPlotIndex)
-      std::cout << "Plot group set to " << dat.WDrun.GroupPlotIndex
-                << std::endl;
-  }
-}
 
 /*! \fn      void Calibrate_XX740_DC_Offset(int handle, WaveDumpConfig_t WDcfg,
  * CAEN_DGTZ_BoardInfo_t BoardInfo) \brief   calibrates DAC of enabled channel
@@ -1182,23 +1168,6 @@ bool Digitizer::Interrupt() {
   return doInterruptTimeout;
 }
 
-void Digitizer::NextGroup() {
-  if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE) ||
-      (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE) &&
-          (dat.WDcfg.Nch > 8)) {
-    if (dat.WDrun.GroupPlotSwitch == 0) {
-      dat.WDrun.GroupPlotSwitch = 1;
-      std::cout << "Channel group set to " << dat.WDrun.GroupPlotSwitch
-                << ": use numbers 0-7 for channels 8-15" << std::endl;
-    } else if (dat.WDrun.GroupPlotSwitch == 1) {
-      dat.WDrun.GroupPlotSwitch = 0;
-      std::cout << "Channel group set to " << dat.WDrun.GroupPlotSwitch
-                << ": use numbers 0-7 for channels 0-7" << std::endl;
-    }
-  } else /* Update the group plot index*/ if ((dat.WDcfg.EnableMask) &&
-                                              (dat.WDcfg.Nch > 8))
-    GoToNextEnabledGroup();
-}
 
 extern int dc_file[MAX_CH];
 /*! \fn      void Set_calibrated_DCO(int handle, WaveDumpConfig_t *WDcfg,
@@ -1249,44 +1218,6 @@ int Digitizer::Set_calibrated_DCO(const int &ch) {
       std::cout << "Error setting channel " << ch << " offset" << std::endl;
   }
   return ret;
-}
-
-void Digitizer::EnableChannelForPloting(const int &ch) {
-  if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) ||
-      (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)) {
-    if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) &&
-        (dat.WDcfg.FastTriggerEnabled == 0) && (ch == 8))
-      dat.WDrun.ChannelPlotMask = dat.WDrun.ChannelPlotMask;
-    else
-      dat.WDrun.ChannelPlotMask ^= (1 << ch);
-    int toto = ch + dat.WDrun.GroupPlotIndex * 8;
-    if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) && (ch == 8))
-      std::cout << "Channel " << toto << " belongs to a different group"
-                << std::endl;
-    else if (dat.WDrun.ChannelPlotMask & (1 << ch))
-      std::cout << "Channel " << toto << " enabled for plotting" << std::endl;
-    else
-      std::cout << "Channel " << toto << " disabled for plotting " << std::endl;
-  } else if ((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE) ||
-             (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE) &&
-                 (dat.WDcfg.Nch > 8)) {
-    int toto = ch + 8 * dat.WDrun.GroupPlotSwitch;
-    if (toto != 8 && dat.WDcfg.EnableMask & (1 << toto)) {
-      dat.WDrun.ChannelPlotMask ^= (1 << toto);
-      if (dat.WDrun.ChannelPlotMask & (1 << toto))
-        std::cout << "Channel " << ch << " enabled for plotting" << std::endl;
-      else
-        std::cout << "Channel " << ch << " disabled for plotting" << std::endl;
-    } else
-      std::cout << "Channel " << ch << " not enabled for acquisition"
-                << std::endl;
-  } else {
-    dat.WDrun.ChannelPlotMask ^= (1 << ch);
-    if (dat.WDrun.ChannelPlotMask & (1 << ch))
-      std::cout << "Channel " << ch << " enabled for plotting" << std::endl;
-    else
-      std::cout << "Channel " << ch << " disabled for plotting" << std::endl;
-  }
 }
 
 void Digitizer::Load_DAC_Calibration_From_Flash() {
