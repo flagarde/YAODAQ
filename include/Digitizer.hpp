@@ -337,6 +337,12 @@ void Start()
 
   static long get_time();
  
+  uint32_t getTotalOfEvents(){
+	return totalevent;
+}
+
+
+void addOneEventProcessed(){totalevent++;}
 
   uint32_t getNumberOfEvents(){
 	return NumEvents;
@@ -354,6 +360,7 @@ void Start()
 private:
   void FreeEvent();
   void FreeBuffer();
+  uint32_t totalevent{0};
   char *EventPtr{nullptr};
   bool isStarted{false};
   bool m_continuousTrigger{false};

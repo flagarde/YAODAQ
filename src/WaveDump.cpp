@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
   const std::string WaveDump_Release{"3.9.0"};
   const std::string WaveDump_Release_Date{"October 2018"};
   Data dat;
-  WebServer server(9876,"192.168.1.210");
+  WebServer server(9876,"192.168.1.103");
   Plotter plot(dat, server.Ref());
   FileManager file(dat, "Toto.root", 0, 36, 0);
   file.OpenFile();
@@ -44,7 +44,16 @@ int main(int argc, char *argv[])
   /* Readout Loop */
   while(server.Command()!="Quit")
   {
-    if(server.Command()=="Initialize")
+    if(server.Command()=="Event Number")
+    {
+          for (auto&& client : server.Ref().getClients())
+                            {
+                                    client->send("{\"Event\":"+std::to_string(digi.getTotalOfEvents())+"}");
+  
+                            }
+                            server.resetCommand();
+    }
+    else if(server.Command()=="Initialize")
     {	
   		// Open and parse default configuration file 
       std::string ConfigFileName{""};
@@ -166,12 +175,22 @@ int main(int argc, char *argv[])
 							plot.Upload();
 							if(plot.isContinuousPlotting())plot.Plot();
 							file.AddEvents();
+                            digi.addOneEventProcessed();
+                            uint32_t event= digi.getTotalOfEvents();
+                             for (auto&& client : server.Ref().getClients())
+                            {
+
+                                    client->send("{\"Event\":"+std::to_string(event)+"}");
+  
+                            }
+                            
   					}
 					}
       		continue;
     		}
     		/* Read data from the board */
     		digi.Read();
+            
 				digi.InterruptTimeout();
     		/* Analyze data */
   			for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
@@ -183,6 +202,14 @@ int main(int argc, char *argv[])
           plot.Upload();
 				  if(plot.isContinuousPlotting())plot.Plot();
 					file.AddEvents();
+                   digi.addOneEventProcessed();
+                            uint32_t event= digi.getTotalOfEvents();
+                             for (auto&& client : server.Ref().getClients())
+                            {
+
+                                    client->send("{\"Event\":"+std::to_string(event)+"}");
+  
+                            }
   			}
 			}
 			}
@@ -197,8 +224,9 @@ int main(int argc, char *argv[])
 			digi.Disconnect();
 			server.resetCommand();
 		}
-		else if(server.Command()=="Release")
+    else if(server.Command()=="Release")
     {		
+        std::cout<<"TOTO"<<std::endl;
       file.CloseFile();
       server.resetCommand();
     }

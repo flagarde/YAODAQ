@@ -2,6 +2,7 @@
 #define FILEMAN_h
 
 #include "Channel.hpp"
+#include "Event.hpp"
 #include "Data.hpp"
 #include "TFile.h"
 #include "TTree.h"
@@ -19,7 +20,7 @@ const double rolloverAdd = 8e-9 * 2147483647;
 
 class FileManager {
 public:
-  FileManager(Data &data) : dat(data) { initialized = false; }
+  FileManager(Data &data) : dat(data){ initialized = false; }
   void AddEvents();
   FileManager(Data &data, std::string filename, uint16_t EnableMask,
               int nbrChannels, double xinc)
@@ -28,7 +29,12 @@ public:
     setTick(xinc);
     Init(filename, EnableMask);
   }
-  ~FileManager() {}
+  ~FileManager() 
+{
+    delete f;
+    delete t;
+    
+}
 
   void Init(std::string filename, uint16_t EnableMask);
   void OpenFile();
@@ -46,7 +52,7 @@ public:
     nbrChannels = i;
     lastTrigTime.resize(i);
     nRollover.resize(i);
-    Channels.resize(i);
+    //Channels.resize(i);
   }
   void setTick(double i) { xinc = i; }
   void addEvent() {
@@ -79,14 +85,7 @@ private:
   double xinc{0};
   std::string finalFilename{""};
   std::string m_SHA512{""};
-  // Per Event
-
-  double BoardID{0};
-  double EventNumber{0};
-  double Pattern{0};
-
-  std::vector<Channel> Channels;
-
+  Event* event{nullptr};
   Data &dat;
 };
 #endif
