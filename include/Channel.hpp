@@ -15,6 +15,7 @@ public:
       StartIndexCell=0.0;
       Group=0.0;
       Data.clear();
+      Time.clear();
   }
   double RecordLength{0.0};
   double Number{0.0};
@@ -24,6 +25,7 @@ public:
   double StartIndexCell{0.0};
   double Group{0.0};
   std::vector<double> Data;
+  std::vector<double> Time;
   ClassDef(Channel,1); // Simple event class
 };
 

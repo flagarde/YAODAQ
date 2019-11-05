@@ -117,6 +117,7 @@ void FileManager::addEvent742()
           for (std::size_t i = 0; i != chan.RecordLength; ++i) 
           {
             chan.Data.push_back(dat.Event742->DataGroup[gr].DataChannel[ch][i]);
+            chan.Time.push_back(dat.WDcfg.Ts*i*1.0e-9);
             //std::cout<<chan.Data[i]<<std::endl;
           }
           // chan.Data.assign(Event.DataGroup[gr].DataChannel[ch][0],Event.DataGroup[gr].DataChannel[ch][int(chan.RecordLength-1)]);

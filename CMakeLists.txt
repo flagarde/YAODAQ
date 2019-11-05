@@ -124,11 +124,10 @@ ROOT_GENERATE_DICTIONARY(G__Event Event.hpp LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/
 #---Create a shared library with geneated dictionary
 add_library(Event SHARED src/Event.cpp G__Event.cxx)
 target_link_libraries(Event ${ROOT_LIBRARIES})
-
 add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp src/WebServer.cpp)
 add_executable(WaveDump src/WaveDump.cpp)
 
-
+add_dependencies(Event CAENlibs)
 find_package(ZLIB)
 include_directories(${ZLIB_INCLUDE_DIRS})
  find_package(OpenSSL REQUIRED)
