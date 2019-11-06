@@ -7,6 +7,10 @@
 #include <string>
 #include <vector>
 #include "WebServer.hpp"
+#include "elogpp/ElogManager.h"
+#include <ctime>
+#include <iomanip>
+using namespace elogpp;
 
 void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
                            std::string &command) {
@@ -17,13 +21,14 @@ if (command == "D") {
 
 int main(int argc, char *argv[]) 
 {
+  ElogManager manager;
+  ElogEntry entry= manager.CreateEntry();
   const std::string WaveDump_Release{"3.9.0"};
   const std::string WaveDump_Release_Date{"October 2018"};
   Data dat;
+  FileManager file(dat);
   WebServer server(9876,"192.168.1.103");
   Plotter plot(dat, server.Ref());
-  FileManager file(dat, "Toto.root", 0, 36, 0);
-  file.OpenFile();
   Digitizer digi(dat);
 	// Run the server in the background. Server can be stoped by calling server.stop()
 	server.start();
@@ -122,7 +127,28 @@ int main(int argc, char *argv[])
 				}
         else if(server.Command()=="Start")
         {
-					digi.Start();
+             ElogEntry entry2= manager.CreateEntry();
+            entry2.User("DAQ").To("NAS","Runs").ReceiveEntry("last");
+            int ID=std::stoi(entry2.GetAttribute("ID"));
+            ID++;
+            entry.SetAttribute("Run Number",std::to_string(ID));
+            entry.SetMessage("Please say something !");
+          
+            
+            std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+            std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+            std::chrono::nanoseconds now2 = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+            long second= now2.count()/1000000000;
+            entry.SetAttribute("Begin",std::to_string(second));
+
+            
+       
+    
+            std::string fname = "Run_"+std::to_string(ID)+".root";
+            entry.User("DAQ").To("NAS","Runs").Send("V");
+                file.Init(fname, 0, 36, 0);
+                file.OpenFile();
+                digi.Start();
     			server.resetCommand();
         }
       	else if(server.Command()=="Trigger")
@@ -162,7 +188,7 @@ int main(int argc, char *argv[])
     					/* decode the event */
     					digi.DecodeEvent();
 							plot.Upload();
-							if(plot.isContinuousPlotting())plot.Plot();
+							if(plot.isContinuousPlotting()&&(digi.getTotalOfEvents()%20==0))plot.Plot();
 							file.AddEvents();
                             digi.addOneEventProcessed();
                             uint32_t event= digi.getTotalOfEvents();
@@ -189,7 +215,7 @@ int main(int argc, char *argv[])
     			/* decode the event */
     			digi.DecodeEvent();
           plot.Upload();
-				  if(plot.isContinuousPlotting())plot.Plot();
+				  if(plot.isContinuousPlotting()&&(digi.getTotalOfEvents()%20==0))plot.Plot();
 					file.AddEvents();
                    digi.addOneEventProcessed();
                             uint32_t event= digi.getTotalOfEvents();
@@ -206,6 +232,13 @@ int main(int argc, char *argv[])
     else if(server.Command()=="Stop")
 		{
 			digi.Stop();
+             std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+            std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+            std::chrono::nanoseconds now2 = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+            long second= now2.count()/1000000000;
+            entry.SetAttribute("End",std::to_string(second));
+            entry.User("DAQ").To("NAS","Runs").Edit("last").Send();
+            file.CloseFile();
 			server.resetCommand();
 		}
     else if(server.Command()=="Disconnect")
@@ -215,8 +248,6 @@ int main(int argc, char *argv[])
 		}
     else if(server.Command()=="Release")
     {		
-        std::cout<<"TOTO"<<std::endl;
-      file.CloseFile();
       server.resetCommand();
     }
     else if(server.Command()=="Calibrate")

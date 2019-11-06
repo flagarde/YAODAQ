@@ -29,7 +29,7 @@ RECORD_LENGTH  1024
 # options: 0 to 100
 # For x742 there is a delay of about 42 nsec on Fast Trigger TR, and about 115 nsec on TRG-IN; 
 # the post trigger is added to this delay  
-POST_TRIGGER  50
+POST_TRIGGER  0
 
 #PULSE_POLARITY: input signal polarity.
 #options: POSITIVE, NEGATIVE
@@ -44,7 +44,7 @@ EXTERNAL_TRIGGER   ACQUISITION_AND_TRGOUT
 # FAST_TRIGGER: fast trigger input settings. ONLY FOR 742 MODELS. When enabled, the fast trigger is used
 # for the data acquisition 
 # options: DISABLED, ACQUISITION_ONLY
-FAST_TRIGGER   DISABLE		
+FAST_TRIGGER   DISABLED
 
 # FAST_TRIGGER_DIGITIZING: ONLY FOR 742 MODELS. If enabled the fast trigger signal is digitized and it is
 # present in data readout as channel n.8 for each group.
@@ -80,7 +80,7 @@ CORRECTION_LEVEL AUTO
 #   1 = 2.5 GHz
 #   2 = 1 GHz
 #   3 = 750 MHz
-DRS4_FREQUENCY 0
+DRS4_FREQUENCY 3
 
 # OUTPUT_FILE_FORMAT: output file can be either ASCII (column of decimal numbers) or binary 
 # (2 bytes per sample)
@@ -130,7 +130,7 @@ ENABLE_INPUT          YES
 # +50: analog input dynamic range = 0 to +Vpp (positive signals)*
 # 0:   analog input dynamic range = -Vpp/2 to +Vpp/2 (bipolar signals)*
 #options: -50 to 50
-DC_OFFSET              0 
+DC_OFFSET              0
 
 # GRP_CH_DC_OFFSET dc_0, dc_1, dc_2, dc_3, dc_4, dc_5, dc_6, dc_7
 # Available only for model 742, allows to set different DC offset adjust for each channel (DAC channel setting) in percent of the Full Scale. 
@@ -145,19 +145,17 @@ DC_OFFSET              0
 #	-set DC offset to 10% of the full scale, to use the input dynamic range in a better way
 #	-adjust channel 0 DC_OFFSET within 3%
 
-[0]
-ENABLE_INPUT           YES
-DC_OFFSET              10
-GRP_CH_DC_OFFSET       3,0,0,0,0,0,0,0 
-
-[1]
+#[0]
 
 
-[2]
+#[1]
 
 
-[3]
+#[2]
+#ENABLE_INPUT          OFF
 
+#[3]
+#ENABLE_INPUT          OFF
 
 # ----------------------------------------------------------------
 # Custom Setting for Model 742 
@@ -189,10 +187,10 @@ GRP_CH_DC_OFFSET       3,0,0,0,0,0,0,0
 # 	DC_OFFSET 43520 
 # 	TRIGGER_THRESHOLD 26214
 
-[TR0]
-DC_OFFSET              32768	
-TRIGGER_THRESHOLD      20934	
+#[TR0]
+#DC_OFFSET              32768	
+#TRIGGER_THRESHOLD      50000	
 
-[TR1]
-DC_OFFSET              32768
-TRIGGER_THRESHOLD      20934
+#[TR1]
+#DC_OFFSET              32768
+#TRIGGER_THRESHOLD      50000

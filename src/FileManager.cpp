@@ -1,8 +1,13 @@
 #include "FileManager.hpp"
 #include "SHA512.hpp"
+#include <iostream>
+#include <sstream>
 
-void FileManager::Init(const std::string filename, uint16_t EnableMask) {
-  fname = filename;
+void FileManager::Init(const std::string& filename, uint16_t EnableMask,int nbrChannels, double xinc) 
+{
+    fname = filename;
+    setNbrChannels(nbrChannels);
+    setTick(xinc);
 }
 
 void FileManager::CloseFile() {
@@ -26,7 +31,7 @@ void FileManager::AddEvents()
 void FileManager::OpenFile() {
   finalFilename=path + "/" + fname;
   f = new TFile(finalFilename.c_str(), "RECREATE",fname.c_str());
-  t = new TTree("Toto", "Toto");
+  t = new TTree("Tree", "Tree");
   event = new Event();
   t->Branch("Events", &event,10,0);
  

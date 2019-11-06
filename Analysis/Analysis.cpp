@@ -18,7 +18,7 @@ int main()
  // note that we use "new" to create the TFile and TTree objects, because we
    // want to keep these objects alive when we leave this function.
    TFile fileIn("Toto.root");  
-   TTree *t1 = (TTree*)fileIn.Get("Toto");
+   TTree *t1 = (TTree*)fileIn.Get("Tree");
    Event* event{nullptr};
    t1->SetBranchAddress("Events",&event);
 //read all entries and fill the histograms

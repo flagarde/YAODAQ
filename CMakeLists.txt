@@ -31,6 +31,8 @@ set(CAENlibs_version "master")
 set(IXWebSocket_repository "https://github.com/RPClab/IXWebSocket.git")
 set(IXWebSocket_version "master")
 
+set(elogpp_repository "https://github.com/RPClab/elogpp.git")
+set(elogpp_version "master")
 
 include(ExternalProject)
 if(RASPBERRY) 
@@ -49,7 +51,7 @@ ExternalProject_Add(
                     )                       
 
 
-# ----- CAENlibs package -----
+# ----- WebSocket package -----
 ExternalProject_Add(
                     WebSocket
                     GIT_REPOSITORY ${IXWebSocket_repository}
@@ -61,7 +63,17 @@ ExternalProject_Add(
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
                     )
 
-
+# ----- elogpp package -----
+ExternalProject_Add(
+                    elogpp
+                    GIT_REPOSITORY ${elogpp_repository}
+                    GIT_TAG ${elogpp_version}
+                    GIT_PROGRESS TRUE
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/elogpp-prefix
+                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/elogpp
+                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+                    )
 
 if (UNIX)
    SET(CAEN_FLAGS "-DUNIX" "-DLINUX" CACHE INTERNAL " " FORCE )
@@ -125,17 +137,18 @@ ROOT_GENERATE_DICTIONARY(G__Event Event.hpp LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/
 add_library(Event SHARED src/Event.cpp G__Event.cxx)
 target_link_libraries(Event ${ROOT_LIBRARIES})
 add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp src/WebServer.cpp)
+
+
 add_executable(WaveDump src/WaveDump.cpp)
 
-add_dependencies(Event CAENlibs)
+add_dependencies(Event CAENlibs elogpp)
 find_package(ZLIB)
 include_directories(${ZLIB_INCLUDE_DIRS})
  find_package(OpenSSL REQUIRED)
   add_definitions(${OPENSSL_DEFINITIONS})
   message(STATUS "OpenSSL: " ${OPENSSL_VERSION})
   include_directories(${OPENSSL_INCLUDE_DIR})
-
-target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb m crypto Channel Event  ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ixwebsocket)
+target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb  elogcpp jsoncpp m crypto Channel Event  ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ixwebsocket)
 
 
 ## Install executable
@@ -144,6 +157,6 @@ install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 ##add_subdirectory(Analysis)
 
 add_executable(Analysis Analysis/Analysis.cpp)
-target_link_libraries(Analysis ${ROOT_LIBRARIES} Event Channel)
+target_link_libraries(Analysis ${ROOT_LIBRARIES} Event Channel libb)
 install(TARGETS Analysis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 

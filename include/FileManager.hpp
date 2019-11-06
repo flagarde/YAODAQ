@@ -25,18 +25,18 @@ public:
   FileManager(Data &data, std::string filename, uint16_t EnableMask,
               int nbrChannels, double xinc)
       : dat(data) {
-    setNbrChannels(nbrChannels);
-    setTick(xinc);
-    Init(filename, EnableMask);
+
+    Init(filename, EnableMask,nbrChannels,xinc);
   }
   ~FileManager() 
 {
     delete f;
     delete t;
+    delete event;
     
 }
 
-  void Init(std::string filename, uint16_t EnableMask);
+  void Init(const std::string& filename, uint16_t EnableMask,int nbrChannels, double xinc);
   void OpenFile();
   void CloseFile();
   void setVerbose(bool v) { verbose = v; }
