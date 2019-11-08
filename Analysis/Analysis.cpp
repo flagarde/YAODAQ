@@ -27,18 +27,26 @@ int main()
    {
      t1->GetEntry(i);
      std::cout<<event->EventNumber<<std::endl;
-     for(unsigned int channel=0;channel!=event->Channels.size();++channel)
+     for(unsigned int channel=0;channel!=2;++channel)
      {
+        double min{999999};
+        double max{-99999};
         double NbrTicks=event->Channels[channel].Data.size();
         double MaxTime=event->Channels[channel].Time[NbrTicks-1];
-        TH1F test("Test","Test",NbrTicks,0,MaxTime);
+        TH1F test("Test","Test",NbrTicks,0,NbrTicks);
         for(unsigned int j=0;j!=event->Channels[channel].Data.size();++j)
         {
-            test.Fill(event->Channels[channel].Time[j],event->Channels[channel].Data[j]);
+            if(event->Channels[channel].Data[j]*1.0/4096<min)min=event->Channels[channel].Data[j]*1.0/4096;
+            else if (event->Channels[channel].Data[j]*1.0/4096>max) max=event->Channels[channel].Data[j]*1.0/4096;
+            test.Fill(j,event->Channels[channel].Data[j]*1.0/4096);
+            test.GetYaxis()->SetRangeUser(min-((max-min)/20.0),max+((max-min)/20.0));
+            test.SetLabelColor(kRed);
+            
         }
+        
         test.SetMarkerStyle(kFullSquare);
-        test.Draw("*H HIST");
-        can.SaveAs((std::to_string(i)+"_"+std::to_string(channel)+".pdf").c_str());
+        test.Draw("HIST");
+        can.SaveAs(("Event"+std::to_string(i)+"_Channel"+std::to_string(channel)+".pdf").c_str());
         test.Clear();
      }
      event->clear();
