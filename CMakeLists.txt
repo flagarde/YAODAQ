@@ -8,6 +8,7 @@ project(DAQ VERSION 1.0 LANGUAGES C CXX)
 
 
 OPTION(RASPBERRY "I'M RASPBERRY" OFF)
+OPTION(ANALYSER "I'M AN ANALYSIST" OFF)
 
 set(CMAKE_INSTALL_PREFIX "")
 if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "")
@@ -23,8 +24,7 @@ set(CMAKE_CXX_FLAGS  "-fPIC ${CMAKE_CXX_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS  "-fPIC ${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath=${CMAKE_INSTALL_PREFIX}/lib/" )
 
 
-
-
+if(NOT ${ANALYSER}) 
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
 
@@ -82,17 +82,23 @@ endif (UNIX)
 if (WIN32)
    SET(CAEN_FLAGS "-D_WIN32" "-DWIN32" CACHE INTERNAL " " FORCE )
 endif (WIN32)
-
-link_directories(${CMAKE_INSTALL_PREFIX}/lib)
-add_definitions(${CAEN_FLAGS})
-include_directories("${CMAKE_INSTALL_PREFIX}/include")
 include_directories("${CMAKE_INSTALL_PREFIX}/include/CAEN")
 include_directories("${CMAKE_INSTALL_PREFIX}/include/ixwebsocket")
+add_definitions(${CAEN_FLAGS})
+link_libraries(CAENVME CAENComm ${CMAKE_THREAD_LIBS_INIT})
+else()
+link_libraries(${CMAKE_THREAD_LIBS_INIT})
+endif()
+
+link_directories(${CMAKE_INSTALL_PREFIX}/lib)
+
+include_directories("${CMAKE_INSTALL_PREFIX}/include")
+
 
 
 find_package (Threads)
 
-link_libraries(CAENVME CAENComm ${CMAKE_THREAD_LIBS_INIT})
+
 
 
 
@@ -136,6 +142,9 @@ ROOT_GENERATE_DICTIONARY(G__Event Event.hpp LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/
 #---Create a shared library with geneated dictionary
 add_library(Event SHARED src/Event.cpp G__Event.cxx)
 target_link_libraries(Event ${ROOT_LIBRARIES})
+
+
+if(NOT ${ANALYSER}) 
 add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp src/WebServer.cpp)
 
 
@@ -153,10 +162,10 @@ target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer libb  elogcpp jso
 
 ## Install executable
 install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-
+endif()
 ##add_subdirectory(Analysis)
 
 add_executable(Analysis Analysis/Analysis.cpp)
-target_link_libraries(Analysis ${ROOT_LIBRARIES} Event Channel libb)
+target_link_libraries(Analysis ${ROOT_LIBRARIES} Event Channel)
 install(TARGETS Analysis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
