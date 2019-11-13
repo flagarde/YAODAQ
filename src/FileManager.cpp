@@ -29,7 +29,7 @@ void FileManager::AddEvents()
 
 
 void FileManager::OpenFile() {
-  finalFilename=path + "/" + fname;
+  finalFilename=path + "/" + fname+".root";
   f = new TFile(finalFilename.c_str(), "RECREATE",fname.c_str());
   t = new TTree("Tree", "Tree");
   event = new Event();

@@ -34,10 +34,48 @@ set(IXWebSocket_version "master")
 set(elogpp_repository "https://github.com/RPClab/elogpp.git")
 set(elogpp_version "master")
 
+set(zeromq_repository "https://github.com/RPClab/libzmq.git")
+set(zeromq_version "master")
+
+set(czmq_repository "https://github.com/RPClab/czmq.git")
+set(czmq_version "master")
+
+
+
 include(ExternalProject)
 if(RASPBERRY) 
 message(STATUS "You said I'm a RASPBERRY !!!")
 endif()
+
+# ----- zeromq package -----
+#ExternalProject_Add( 
+#                    zeromq
+#                    GIT_REPOSITORY ${zeromq_repository}
+#                    GIT_TAG ${zeromq_version}
+#                    GIT_PROGRESS TRUE
+#                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DENABLE_ASAN=ON -DBUILD_TESTS=OFF
+#                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/zeromq-prefix
+#                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/zeromq
+#                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+#                    )   
+
+# ----- czmq package -----
+#ExternalProject_Add( 
+#                    czmq
+#                    GIT_REPOSITORY ${czmq_repository}
+#                    GIT_TAG ${czmq_version}
+#                    GIT_PROGRESS TRUE
+#                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DLIBZMQ_LIBRARIES="${CMAKE_INSTALL_PREFIX}/lib/libzmq"
+#                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/czmq-prefix
+#                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/czmq
+#                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+#                    ) 
+#add_dependencies(czmq zeromq)
+
+
+
+
+
 # ----- CAENlibs package -----
 ExternalProject_Add( 
                     CAENlibs
@@ -106,11 +144,7 @@ find_package (Threads)
 
 
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
-
-
-
-list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
-find_package(ROOT REQUIRED)
+find_package(ROOT REQUIRED COMPONENTS Spectrum)
 include(${ROOT_USE_FILE})
 
 
@@ -150,7 +184,7 @@ add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/
 
 add_executable(WaveDump src/WaveDump.cpp)
 
-add_dependencies(Event CAENlibs elogpp)
+add_dependencies(Event CAENlibs elogpp )
 find_package(ZLIB)
 include_directories(${ZLIB_INCLUDE_DIRS})
  find_package(OpenSSL REQUIRED)

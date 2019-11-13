@@ -4,13 +4,14 @@
 #include "TBufferJSON.h"
 #include "TCanvas.h"
 #include "TH1D.h"
-#include "THStack.h"
-#include "IXWebSocketServer.h"
+#include "WebServer.hpp"
 #include <iostream>
+#include "TGraph.h"
+
 
 class Plotter {
 public:
-  Plotter(Data &da, ix::WebSocketServer &ser);
+  Plotter(Data &da, WebServer &ser);
   void PlotWaveform();
   void PlotHistograms();
   void SaveWaveForms();
@@ -55,9 +56,9 @@ histos[h].GetYaxis()->SetRange(0,(float)(1<<WDcfg.Nbit));*/
         PlotVar->Yautoscale = 1;
         PlotVar->Xautoscale = 1;*/
   }
-  THStack hs;
   TCanvas can;
   std::vector<TH1D> histos;
+  std::vector<TGraph> graphs;
   std::vector<TH1D> histos_histos;
   TH1D RE;
   TH1D IM;
@@ -82,7 +83,7 @@ private:
   int NbrThreadFFT{0};
   bool isInitialised{false};
   Plotter() = delete;
-  
-  ix::WebSocketServer &server;
+  double tickSize{0};
+  WebServer &server;
 };
 #endif

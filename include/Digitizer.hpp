@@ -211,7 +211,7 @@ public:
 
 void Start() 
 {
-
+    
     if(isStarted&&!m_isPaused) return;
         m_isPaused=false;
     //Wait connection is done
@@ -230,6 +230,9 @@ void Start()
       std::cout << "Acquisition stopped" << std::endl;
       CAEN_DGTZ_SWStopAcquisition(handle);
       isStarted = false;
+      totalevent=0;
+      std::cout<<"Reseting number "<<getNumberOfEvents()<<std::endl;
+      
   }
 
   void Temperature() {
