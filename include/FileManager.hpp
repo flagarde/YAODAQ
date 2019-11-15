@@ -73,7 +73,7 @@ private:
   bool verbose{false};
   bool initialized{false};
   std::string fname{""};
-  std::string path{"/NAS"};
+  std::string path{"/mnt/NAS/RawData/"};
   TFile *f{nullptr};
   TTree *t{nullptr};
   std::bitset<64> mask;

@@ -22,13 +22,17 @@ if (command == "D") {
 
 int main(int argc, char *argv[]) 
 {
+  if(argc!=3)
+  {
+	std::cout<<" config file and ip "<<std::endl;
+  }
   ElogManager manager;
   ElogEntry entry= manager.CreateEntry();
   const std::string WaveDump_Release{"3.9.0"};
   const std::string WaveDump_Release_Date{"October 2018"};
   Data dat;
   FileManager file(dat);
-  WebServer server(9876,"192.168.1.103");
+  WebServer server(2345,std::string(argv[2]));
   Plotter plot(dat, server);
   Digitizer digi(dat);
 	// Run the server in the background. Server can be stoped by calling server.stop()
