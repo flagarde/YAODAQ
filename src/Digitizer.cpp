@@ -1079,7 +1079,8 @@ void Digitizer::DecodeEvent() {
   }
 }
 
-void Digitizer::InterruptTimeout() {
+void Digitizer::InterruptTimeout() 
+{
   static uint64_t CurrentTime{0};
   static uint64_t ElapsedTime{0};
   int nCycles = 0;
@@ -1092,19 +1093,24 @@ void Digitizer::InterruptTimeout() {
   ElapsedTime = CurrentTime - PrevRateTime;
 
   nCycles++;
-  if (ElapsedTime > 1000) {
+  if (ElapsedTime > 1000) 
+  {
     if (Nb == 0)
+    {
       if (dat.isTimeOut==true)
       {
         std::cout << "Timeout..." << std::endl;
-	dat.isTimeOut==false;
+        dat.isTimeOut==false;
       }
       else
-        std::cout << "No data..." << std::endl;
+      {
+        m_TimeOutInfos.set(0.,0.0);
+      }
+    }
     else
-      printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n",
-             (float)Nb / ((float)ElapsedTime * 1048.576f),
-             (float)Ne * 1000.0f / (float)ElapsedTime);
+    {
+        m_TimeOutInfos.set(Nb /(ElapsedTime * 1048.576),Ne * 1000.0/ElapsedTime);
+    }
     nCycles = 0;
     Nb = 0;
     Ne = 0;

@@ -11,9 +11,9 @@ void FileManager::Init(const std::string& filename, uint16_t EnableMask,int nbrC
 }
 
 void FileManager::CloseFile() {
- f->Write();
+  f->Write();
   f->Close();
-  m_SHA512=sw::sha512::file(finalFilename);
+  //m_SHA512=sw::sha512::file(finalFilename);
   delete event;
 }
 

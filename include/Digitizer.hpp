@@ -9,6 +9,40 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <utility>
+
+
+class TimeOutInfos
+{
+public:
+    TimeOutInfos(double data,double trigger):DataRate(data),TriggerRate(trigger){}
+    TimeOutInfos(){}
+    void set(double data,double trigger)
+    {
+        DataRate=data;
+        TriggerRate=trigger;
+        Changed=true;
+    }
+    double getDataRate()
+    {
+        Changed=false; 
+        return DataRate;
+    }
+    double getTriggerRate()
+    {
+        Changed=false; 
+        return TriggerRate;
+    }
+    bool hasChanged()
+    {
+        return Changed;
+    }
+private:
+    bool Changed{false};
+    double DataRate{0.};
+    double TriggerRate{0.};
+};
+
 
 /* Error messages */
 typedef enum {
@@ -336,6 +370,7 @@ void addOneEventProcessed(){totalevent++;}
 			       }
   bool isPaused(){return m_isPaused;}
 
+  TimeOutInfos& getTimeOutInfos(){return m_TimeOutInfos;}
 private:
   void FreeEvent();
   void FreeBuffer();
@@ -358,5 +393,6 @@ private:
   int ReloadCfgStatus{0x7FFFFFFF}; // Init to the bigger positive number
   Data &dat;
   static std::vector<std::string> ErrMsg;
+  TimeOutInfos m_TimeOutInfos;
 };
 #endif

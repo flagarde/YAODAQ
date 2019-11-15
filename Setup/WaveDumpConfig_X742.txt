@@ -29,7 +29,7 @@ RECORD_LENGTH  1024
 # options: 0 to 100
 # For x742 there is a delay of about 42 nsec on Fast Trigger TR, and about 115 nsec on TRG-IN; 
 # the post trigger is added to this delay  
-POST_TRIGGER  0
+POST_TRIGGER  10
 
 #PULSE_POLARITY: input signal polarity.
 #options: POSITIVE, NEGATIVE
@@ -39,7 +39,7 @@ PULSE_POLARITY  NEGATIVE
 # EXTERNAL_TRIGGER: external trigger input settings. When enabled, the ext. trg. can be either 
 # propagated (ACQUISITION_AND_TRGOUT) or not (ACQUISITION_ONLY) through the TRGOUT
 # options: DISABLED, ACQUISITION_ONLY, ACQUISITION_AND_TRGOUT
-EXTERNAL_TRIGGER   ACQUISITION_AND_TRGOUT
+EXTERNAL_TRIGGER   ACQUISITION_ONLY
 
 # FAST_TRIGGER: fast trigger input settings. ONLY FOR 742 MODELS. When enabled, the fast trigger is used
 # for the data acquisition 
@@ -80,7 +80,7 @@ CORRECTION_LEVEL AUTO
 #   1 = 2.5 GHz
 #   2 = 1 GHz
 #   3 = 750 MHz
-DRS4_FREQUENCY 3
+DRS4_FREQUENCY 1
 
 # OUTPUT_FILE_FORMAT: output file can be either ASCII (column of decimal numbers) or binary 
 # (2 bytes per sample)
@@ -97,7 +97,7 @@ TEST_PATTERN   NO
 
 # FPIO_LEVEL: type of the front panel I/O LEMO connectors 
 # options: NIM, TTL
-FPIO_LEVEL  NIM
+FPIO_LEVEL  TTL
 
 # WRITE_REGISTER: generic write register access. This command allows the user to have a direct write access
 # to the registers of the board. NOTE: all the direct write accesses are executed AFTER the other settings,

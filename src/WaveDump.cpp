@@ -109,12 +109,12 @@ int main(int argc, char *argv[])
     else if(server.Command()=="STOP")
     {
         digi.Stop();
-        std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+        /*std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
         std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
         std::chrono::nanoseconds now2 = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
         long second= now2.count()/1000000000;
         entry.SetAttribute("End",std::to_string(second));
-        entry.User("DAQ").To("NAS","Runs").Edit("last").Send();
+        entry.User("DAQ").To("NAS","Runs").Edit("last").Send();*/
         file.CloseFile();
         server.SendStatus("STOPED");
     }
@@ -185,6 +185,16 @@ int main(int argc, char *argv[])
                 if(digi.Interrupt()==true)
                 {
                     digi.InterruptTimeout();
+                    if(digi.getTimeOutInfos().hasChanged())
+                    {
+                        if(digi.getTimeOutInfos().getDataRate()==0) std::cout << "No data..." << std::endl;
+                        else
+                        {
+                            server.SendInfos("DataRate",std::to_string(digi.getTimeOutInfos().getDataRate()));
+                            server.SendInfos("TriggerRate",std::to_string(digi.getTimeOutInfos().getTriggerRate()));
+                            printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n",digi.getTimeOutInfos().getDataRate(),digi.getTimeOutInfos().getTriggerRate());
+                        }
+                    } 
                     for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
                     {
                         digi.GetEvent(i);
@@ -193,14 +203,24 @@ int main(int argc, char *argv[])
                         if(plot.isContinuousPlotting())plot.Plot();
                         file.AddEvents();
                         digi.addOneEventProcessed();
-                        uint32_t event= digi.getTotalOfEvents();
-                        server.SendInfos("EventNbr",std::to_string(event));
+                        server.SendInfos("EventNbr",std::to_string(digi.getTotalOfEvents()));
                     }
                 }
                 continue;
             }
             digi.Read();
             digi.InterruptTimeout();
+            if(digi.getTimeOutInfos().hasChanged())
+            {
+                if(digi.getTimeOutInfos().getDataRate()==0) std::cout << "No data..." << std::endl;
+                else
+                {
+                    server.SendInfos("DataRate",std::to_string(digi.getTimeOutInfos().getDataRate()));
+                    server.SendInfos("TriggerRate",std::to_string(digi.getTimeOutInfos().getTriggerRate()));
+                    printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n",digi.getTimeOutInfos().getDataRate(),digi.getTimeOutInfos().getTriggerRate());
+                }
+            } 
+                     
             for (std::size_t i = 0; i < digi.getNumberOfEvents(); i++) 
             {
                 digi.GetEvent(i);
@@ -209,8 +229,7 @@ int main(int argc, char *argv[])
                 if(plot.isContinuousPlotting())plot.Plot();
                 file.AddEvents();
                 digi.addOneEventProcessed();
-                uint32_t event= digi.getTotalOfEvents();
-                server.SendInfos("EventNbr",std::to_string(event));
+                server.SendInfos("EventNbr",std::to_string(digi.getTotalOfEvents()));
             }
         }
     }
