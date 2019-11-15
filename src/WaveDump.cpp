@@ -27,7 +27,6 @@ int main(int argc, char *argv[])
 	std::cout<<" config file and ip "<<std::endl;
   }
   ElogManager manager;
-  ElogEntry entry= manager.CreateEntry();
   const std::string WaveDump_Release{"3.9.0"};
   const std::string WaveDump_Release_Date{"October 2018"};
   Data dat;
@@ -36,7 +35,7 @@ int main(int argc, char *argv[])
   Plotter plot(dat, server);
   Digitizer digi(dat);
 	// Run the server in the background. Server can be stoped by calling server.stop()
-	
+  std::string RunNumber{""};
 	
   std::cout << "**************************************************************"<< std::endl;
   std::cout << "                        Wave Dump " << WaveDump_Release<< std::endl;
@@ -113,12 +112,13 @@ int main(int argc, char *argv[])
     else if(server.Command()=="STOP")
     {
         digi.Stop();
-        /*std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+        ElogEntry entry= manager.CreateEntry();
+        std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
         std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
         std::chrono::nanoseconds now2 = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
         long second= now2.count()/1000000000;
         entry.SetAttribute("End",std::to_string(second));
-        entry.User("DAQ").To("NAS","Runs").Edit("last").Send();*/
+        entry.User("DAQ").To("NAS","Runs").Edit(RunNumber).Send();
         file.CloseFile();
         server.SendStatus("STOPED");
     }
@@ -128,25 +128,26 @@ int main(int argc, char *argv[])
         
         if(server.Command()=="START"&&server.isStartedd()==false)
         {
-            /*ElogEntry entry2= manager.CreateEntry();
+            ElogEntry entry= manager.CreateEntry();
+            ElogEntry entry2= manager.CreateEntry();
+            std::cout<<"Here"<<std::endl;
             entry2.User("DAQ").To("NAS","Runs").ReceiveEntry("last");
             int ID=std::stoi(entry2.GetAttribute("ID"));
-            ID++;
-            entry.SetAttribute("Run Number",std::to_string(ID));
-            entry.SetMessage("Please say something !");
-          
-            
+            ++ID;
+            RunNumber=std::to_string(ID);
             std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
             std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
             std::chrono::nanoseconds now2 = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
             long second= now2.count()/1000000000;
-            entry.SetAttribute("Begin",std::to_string(second));
-
-            
             std::string fname = "Run_"+std::to_string(ID)+".root";
-            entry.User("DAQ").To("NAS","Runs").Send("V");*/
-            file.Init(server.getInfos("FileName"), 0, 36, 0);
+            entry.SetAttribute("Begin",std::to_string(second));
+            entry.SetAttribute("Run Number",RunNumber);
+            entry.SetMessage("Please say something !");
+            std::cout<<"ID"<<ID<<"  "<<RunNumber<<std::endl;
+            //file.Init(server.getInfos("FileName"), 0, 36, 0);
+            file.Init(fname, 0, 36, 0);
             file.OpenFile();
+            entry.User("DAQ").To("NAS","Runs").Send("V");
             
         }
         digi.Start();
