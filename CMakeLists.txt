@@ -180,11 +180,11 @@ target_link_libraries(Event ${ROOT_LIBRARIES})
 
 if(NOT ${ANALYSER}) 
 add_library( libb STATIC src/flash.cpp src/WDconfig.cpp src/FileManager.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Plotter.cpp src/Digitizer.cpp src/WebServer.cpp)
+add_dependencies(libb CAENlibs)
 
 
 add_executable(WaveDump src/WaveDump.cpp)
 
-add_dependencies(Event CAENlibs elogpp )
 find_package(ZLIB)
 include_directories(${ZLIB_INCLUDE_DIRS})
  find_package(OpenSSL REQUIRED)
