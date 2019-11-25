@@ -184,7 +184,7 @@ void Plotter::PlotWaveform() {
   float ti=1.0/(1<<dat.WDcfg.Nbit);
   for(unsigned int i=0;i!=histos.size();++i) histos[i].Reset("ICESM");
   if (dat.WDcfg.Nbit == 8) {
-    for (std::size_t ch = 0; ch != /*dat.WDcfg.Nch*/3; ++ch) {
+    for (std::size_t ch = 0; ch != dat.WDcfg.Nch; ++ch) {
       int Size = dat.Event8->ChSize[ch];
       if (Size <= 0)
         continue;
@@ -193,9 +193,9 @@ void Plotter::PlotWaveform() {
       }
     }
   } else if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
-    for (std::size_t gr = 0; gr < /*(dat.WDcfg.Nch / 8)*/2; gr++) {
+    for (std::size_t gr = 0; gr < (dat.WDcfg.Nch / 8); gr++) {
       if (dat.Event742->GrPresent[gr]) {
-        for (std::size_t ch = 0; ch < /*9*/3; ch++) {
+        for (std::size_t ch = 0; ch < 9; ch++) {
           int Size = dat.Event742->DataGroup[gr].ChSize[ch];
           if (Size <= 0)
             continue;
