@@ -13,13 +13,6 @@
 #include <thread>
 using namespace elogpp;
 
-void CheckKeyboardCommands(Digitizer &digi, Plotter &plot,
-                           std::string &command) {
-if (command == "D") {
-    digi.D();
-  }
-}
-
 int main(int argc, char *argv[]) 
 {
   if(argc!=3)
@@ -256,7 +249,11 @@ int main(int argc, char *argv[])
     }
             
             
-            
+    else if(server.Command()=="D")
+    {
+         digi.D();
+         server.SendStatus("DED");
+    }
             
             
             
