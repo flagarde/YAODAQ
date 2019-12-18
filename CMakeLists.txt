@@ -45,7 +45,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 
 if(NOT ${ANALYSER}) 
-set(CAENlibs_repository "https://github.com/RPClab/CAENlibs2.git")
+set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
 
 set(IXWebSocket_repository "https://github.com/RPClab/IXWebSocket.git")
