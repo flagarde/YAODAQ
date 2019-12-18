@@ -122,7 +122,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg) {
       read = fscanf(f_ini, "%d", &freq);
       WDcfg.DRS4Frequency = (CAEN_DGTZ_DRS4Frequency_t)freq;
       if (PrevDRS4Freq != WDcfg.DRS4Frequency)
-        ret |= (0x1 << CFGRELOAD_CORRTABLES_BIT);
+        ret |= 0x1 ;
       continue;
     }
 
@@ -175,7 +175,7 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg) {
                       sizeof(WDcfg.TablesFilenames)))
         changed = 1;
       if (changed == 1)
-        ret |= (0x1 << CFGRELOAD_CORRTABLES_BIT);
+        ret |= 0x1;
       continue;
     }
 

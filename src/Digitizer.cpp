@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 #include <thread>
+#include "flash.cpp"
 
 #define NPOINTS 2
 #define NACQS 50

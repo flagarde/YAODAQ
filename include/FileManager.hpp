@@ -7,13 +7,12 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "util.h"
-#include <CAENDigitizer.h>
+//#include <CAENDigitizer.h>
 #include <CAENDigitizerType.h>
 #include <bitset>
 #include <iostream>
 #include <vector>
 //#include "CAENdaq.h"
-
 
 
 const double rolloverAdd = 8e-9 * 2147483647;

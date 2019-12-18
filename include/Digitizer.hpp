@@ -1,16 +1,14 @@
-#ifndef DIGITIZER_H
-#define DIGITIZER_H
+#ifndef DIGITIZER_HPP
+#define DIGITIZER_HPP
 #include "Data.hpp"
-#include "WDconfig.hpp"
 #include "X742CorrectionRoutines.hpp"
-#include <chrono>
-#include <cmath>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <vector>
 #include <utility>
-
+#include "CAENDigitizerType.h"
+#include "CAENDigitizer.h"
 
 class TimeOutInfos
 {
@@ -62,7 +60,8 @@ typedef enum {
   ERR_DUMMY_LAST,
 } ERROR_CODES;
 
-class Digitizer {
+class Digitizer
+{
 public:
   void GetEvent(std::size_t i);
   void DecodeEvent();
@@ -88,13 +87,11 @@ public:
 
   void ReloadConf() {
     int ret{0};
-    if (ReloadCfgStatus > 0) {
       ret = CAEN_DGTZ_GetInfo(handle, &dat.BoardInfo);
       if (ret) {
         Quit(ERR_BOARD_INFO_READ);
       }
       GetMoreBoardInfo();
-    }
   }
 
   void Read() {
@@ -137,8 +134,8 @@ public:
     ReloadConf();
 
     // Reload Correction Tables if changed
-    if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE &&
-        (ReloadCfgStatus & (0x1 << CFGRELOAD_CORRTABLES_BIT))) {
+    if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) 
+    {
       if (dat.WDcfg.useCorrections != -1) { // Use Manual Corrections
         uint32_t GroupMask = 0;
 
@@ -390,7 +387,6 @@ private:
   CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];
   Digitizer() = delete;
   int handle{-1};
-  int ReloadCfgStatus{0x7FFFFFFF}; // Init to the bigger positive number
   Data &dat;
   static std::vector<std::string> ErrMsg;
   TimeOutInfos m_TimeOutInfos;
