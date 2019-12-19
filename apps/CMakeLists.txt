@@ -1,0 +1,21 @@
+
+add_executable(Analysis Analysis.cpp)
+target_link_libraries(Analysis ${ROOT_LIBRARIES} Event_static Channel_static)
+target_include_directories(Analysis PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" "${CMAKE_SOURCE_DIR}/source/include/")
+install(TARGETS Analysis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+if(NOT ${ANALYSER}) 
+    add_executable(WaveDump WaveDump.cpp)
+    find_package(ZLIB)
+    target_include_directories(WaveDump PRIVATE ${ZLIB_INCLUDE_DIRS})
+    find_package(OpenSSL REQUIRED)
+    add_dependencies(WaveDump lib1 lib2 web elogpp WebSocket CAENlibs)
+    target_compile_definitions(WaveDump PRIVATE  ${OPENSSL_DEFINITIONS})
+    message(STATUS "OpenSSL: " ${OPENSSL_VERSION})
+    target_include_directories(WaveDump PRIVATE  ${OPENSSL_INCLUDE_DIR})
+    target_include_directories(WaveDump PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" "${INCLUDE_OUTPUT_DIRECTORY}/elogpp")
+    target_link_directories(WaveDump PRIVATE ${LIBRARY_OUTPUT_DIRECTORY})
+    target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m crypto Channel_static Event_static  ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ixwebsocket)
+    install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
+

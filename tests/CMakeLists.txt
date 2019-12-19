@@ -1,0 +1,5 @@
+add_executable(CAENErrors CAENErrors.cpp)
+target_include_directories(CAENErrors PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/CAEN")
+target_link_directories(CAENErrors PRIVATE ${LIBRARY_OUTPUT_DIRECTORY})
+target_link_libraries(CAENErrors CAENError CAENVME CAENComm ${DPPLIB} ${CMAKE_THREAD_LIBS_INIT} caenhvwrapper ${CMAKE_DL_LIBS} )
+install(TARGETS CAENErrors RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
