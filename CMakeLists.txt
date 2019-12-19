@@ -33,7 +33,7 @@ if(POLICY CMP0048)
     cmake_policy(SET CMP0048 NEW)
 endif()
 
-if(POLICY CMP0048)
+if(POLICY CMP0083)
     cmake_policy(SET CMP0083 NEW)
     include(CheckPIESupported)
     check_pie_supported(OUTPUT_VARIABLE output LANGUAGES CXX)
