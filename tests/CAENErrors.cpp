@@ -1,3 +1,5 @@
+#include "doctest.h"
+
 #include "CAENVMEError.hpp"
 #include "CAENCommError.hpp"
 #include "CAENDPPError.hpp"
@@ -8,7 +10,8 @@
 
 using namespace CAEN;
 
-int main()
+
+TEST_CASE("Test CAEN Errors")
 {
     std::cout<<"VME Errors"<<std::endl;
     for(unsigned int i=0; i!=6;++i)
