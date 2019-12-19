@@ -40,6 +40,16 @@ else()
   message(STATUS "PIE link options will be passed to linker.")
 endif()
 
+include(CheckIPOSupported)
+# Optional IPO. Do not use IPO if it's not supported by compiler.
+check_ipo_supported(RESULT result OUTPUT output)
+if(result)
+  set_property(TARGET foo PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+  message(WARNING "IPO is not supported: ${output}")
+endif()
+
+
 set(LIBRARY_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/lib")
 set(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}")
 set(ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/lib")
