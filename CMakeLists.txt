@@ -24,6 +24,8 @@ endif()
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 
+cmake_policy(SET CMP0048 NEW)
+
 cmake_policy(SET CMP0083 NEW)
 include(CheckPIESupported)
 check_pie_supported(OUTPUT_VARIABLE output LANGUAGES CXX)
