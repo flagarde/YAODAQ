@@ -9,6 +9,7 @@ project(DAQ VERSION 1.0.0.0 DESCRIPTION "DAQ for RPClab" HOMEPAGE_URL "https://g
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
 include(ConfigSafeGuards)
+include(CodeCoverage)
 
 find_package(Git REQUIRED)
 
