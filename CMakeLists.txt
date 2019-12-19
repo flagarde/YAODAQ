@@ -10,12 +10,15 @@ project(DAQ VERSION 1.0.0.0 DESCRIPTION "DAQ for RPClab" HOMEPAGE_URL "https://g
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
 include(ConfigSafeGuards)
 include(CodeCoverage)
+include(Doctest)
 
 find_package(Git REQUIRED)
 
 option(ANALYSER "I'M AN ANALYSIST" OFF)
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
-
+option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
+                        Tests in tests/*.cpp will still be enabled." OFF)
+                        
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
   message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
