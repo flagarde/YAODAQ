@@ -1,53 +1,28 @@
 language: cpp
 
-sudo: required
+compiler:
+ - gcc
+ - clang
 
+os:
+ - linux
+ - osx
+ - windows
+ 
 dist: bionic
 osx_image: xcode11.2
 
-compiler:
-  - gcc
-  - clang
-  
-os:
-  - linux
-  - osx
-  - windows
-  
-before_install:
-  - $CXX --version
-  - $CC --version
+matrix:
+  exclude:
+    - os: windows
+      compiler: gcc
 
-  - if [ $TRAVIS_OS_NAME == linux ]; then wget https://root.cern/download/root_v6.18.02.Linux-ubuntu18-x86_64-gcc7.4.tar.gz && tar -xvf root_v6.18.02.Linux-ubuntu18-x86_64-gcc7.4.tar.gz && source root/bin/thisroot.sh; fi  
-
-  - if [ $TRAVIS_OS_NAME == osx ]; then wget https://root.cern/download/root_v6.18.02.macosx64-10.14-clang100.tar.gz && tar -xvf root_v6.18.02.macosx64-10.14-clang100.tar.gz && source root/bin/thisroot.sh; fi  
-  
-  - if [ $TRAVIS_OS_NAME == windows ]; then wget https://root.cern/download/root_v6.18.02.win32.vc16.debug.zip && tar -xvf https://root.cern/download/root_v6.18.02.win32.vc16.debug.zip && source root/bin/thisroot.sh; fi 
-
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get -qq update; fi
- 
-  
-install:
-  # Install package dependencies for Linux:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -y python-numpy-dev ; fi
-  # Install package dependencies for Mac OS X:
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew unlink cmake; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew install python libusb qt; fi
-  # Install numpy via pip:
-  - if [ $TRAVIS_OS_NAME == osx ]; then easy_install pip && pip install numpy; fi
-  
 before_script:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update          ; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install cmake lcov doxygen ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update          ; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install cmake lcov doxygen; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then source $(brew --prefix root)/libexec/thisroot.sh; fi
-  - $CXX --version
-  - $CC --version
-  - mkdir build
-  - cd build
 
-  
 script:
   # create a build folder for the out-of-source build
   - mkdir build
@@ -67,8 +42,8 @@ script:
   # if the project uses ctest we can run the tests like this
   # - make test
   # - make docs 
-  
-#after_success:
+
+after_success:
 # Create lcov report
 # capture coverage info
 # - lcov --directory . --capture --output-file coverage.info
