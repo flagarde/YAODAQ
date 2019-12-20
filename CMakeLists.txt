@@ -11,8 +11,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
 
 include(ExternalProject)
 include(ConfigSafeGuards)
-include(Doctest)
-
 
 find_package(Git REQUIRED)
 
@@ -23,6 +21,7 @@ option(ANALYSER "I'M AN ANALYSIST" OFF)
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
 option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
                         Tests in tests/*.cpp will still be enabled." OFF)
+option(ENABLE_TEST "Include tests folder" ON)
                         
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
@@ -82,6 +81,7 @@ link_directories("${CMAKE_INSTALL_PREFIX}/lib/")
 include(Architectures)
 
 if(NOT ${ANALYSER}) 
+
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
 
@@ -139,11 +139,12 @@ ExternalProject_Add(
                     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/elogpp
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
                     )
-else()
-link_libraries(${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 add_subdirectory(source)
 add_subdirectory(apps)
 
-add_subdirectory(tests)
+if(ENABLE_TEST)
+    include(Doctest)
+    add_subdirectory(tests)
+endif()
