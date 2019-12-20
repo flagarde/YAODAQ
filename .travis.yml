@@ -15,7 +15,6 @@ env:
  
 os: 
  - linux
- #- windows
 
 matrix:
   fast_finish: true
@@ -23,9 +22,6 @@ matrix:
   - os: 
     - osx
   include:
-    - os: osx
-      compiler: clang
-      osx_image: xcode10.13 
     - os: osx
       compiler: clang
       osx_image: xcode10.14 
