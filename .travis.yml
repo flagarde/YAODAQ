@@ -73,7 +73,7 @@ script:
     then cmake .. ; 
     then cmake --build . ;
     fi
-   # - cmake --install .
+    - cmake --install .
     # - make test
     # - make docs 
   
