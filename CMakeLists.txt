@@ -11,8 +11,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
 
 include(ExternalProject)
 include(ConfigSafeGuards)
-include(CodeCoverage)
 include(Doctest)
+
 
 find_package(Git REQUIRED)
 

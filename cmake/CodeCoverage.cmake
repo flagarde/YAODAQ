@@ -151,8 +151,8 @@ if (cmake_build_type_tolower STREQUAL "coverage")
                             )
 else() 
     add_custom_target(coverage 
-        COMMAND echo "${Red}Code coverage only available in coverage builds." 
-        COMMAND echo "${Green}Make a new build directory and rerun cmake with -DCMAKE_BUILD_TYPE=Coverage to enable this target.${ColorReset}" 
+        COMMAND echo "Code coverage only available in coverage builds." 
+        COMMAND echo "Make a new build directory and rerun cmake with -DCMAKE_BUILD_TYPE=Coverage to enable this target." 
     )
 endif()
 

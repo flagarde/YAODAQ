@@ -24,5 +24,7 @@ add_test(
     # Use some per-module/project prefix so that it is easier to run only tests for this module
     NAME ${TEST_MAIN}
     COMMAND ${TEST_MAIN} ${TEST_RUNNER_PARAMS})
+    
+include(CodeCoverage)
 
 
