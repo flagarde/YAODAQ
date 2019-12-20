@@ -61,11 +61,11 @@ script:
     - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake .. ;fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake -DCMAKE_BUILD_TYPE=Coverage .. ;fi
     - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake .. ; fi
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cmake --build . ; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake --build . ; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake --build . --target coverage ; fi
-    - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake --build . ; fi
-    - cmake --install .
+   # - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cmake --build . ; fi
+   # - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake --build . ; fi
+   # - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake --build . --target coverage ; fi
+   # - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake --build . ; fi
+   # - cmake --install .
     # - make test
     # - make docs 
   
