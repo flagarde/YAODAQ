@@ -39,16 +39,18 @@ addons:
       - libmysqlclient-dev
       - doxygen
       - cmake
+      - lcov
+      - cmake
   
 before_install:
   - ./.travis-ci.d/install_dependencies.sh
   - if [ "$TRAVIS_OS_NAME" == "osx"  ];
     then brew update ; 
-    then brew install mysql cmake lcov doxygen;
+    brew install mysql cmake lcov doxygen;
     fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ];
     then sudo apt-get update;
-    then sudo apt-get install cmake lcov doxygen; 
+    sudo apt-get install cmake lcov doxygen; 
     fi
   
 script:
