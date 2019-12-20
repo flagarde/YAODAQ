@@ -1,4 +1,6 @@
 language: cpp
+sudo: required
+dist: bionic
 
 arch:
   - amd64
@@ -8,45 +10,63 @@ compiler:
  - gcc
  - clang
  
-os:
- - linux
- - osx
- - windows
+env:
+  global:
+  matrix:
+    - ROOT_VERSION=6.18.04
  
-dist: bionic
-osx_image: xcode11.2
+os: linux
 
 matrix:
-  exclude:
-    - os: windows
-      compiler: gcc
+  fast_finish: true
+  allow_failures:
+  - os: 
+    - osx
+    - windows
+  include:
+    - os: osx
+      compiler: clang
+      osx_image: xcode10.13 
+    - os: osx
+      compiler: clang
+      osx_image: xcode10.14 
 
-before_script:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update          ; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install cmake lcov doxygen ; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update          ; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install cmake lcov doxygen; fi
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - libmysqlclient-dev
+      - doxygen
+      - cmake
+  
+before_install:
+  - ./.travis-ci.d/install_dependencies.sh
+  - if [[ "${TRAVIS_OS_NAME}" == "osx"  ]];
+    then brew update ; 
+    then brew install mysql cmake lcov doxygen;
+    fi
+  - if [[ "${TRAVIS_OS_NAME}" == "osx"  ]];
+    then sudo apt-get update;
+    then sudo apt-get install cmake lcov doxygen; 
+    fi
   
 script:
-  # create a build folder for the out-of-source build
-  - mkdir build
-  # switch to build directory
-  - cd build
-  # run cmake; here we assume that the project's
-  # top-level CMakeLists.txt is located at '..'
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cmake .. ;  fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake .. ;fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake -DCMAKE_BUILD_TYPE=Coverage .. ;fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake .. ; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cmake --build . ; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake --build . ; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake --build . --target coverage ; fi
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake --build . ; fi
-  - cmake --install .
-  # if the project uses ctest we can run the tests like this
-  # - make test
-  # - make docs 
-
+    - source dependencies/root/bin/thisroot.sh
+    - mkdir build
+    - cd build
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cmake .. ;  fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake .. ;fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake -DCMAKE_BUILD_TYPE=Coverage .. ;fi
+    - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake .. ; fi
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cmake --build . ; fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake --build . ; fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake --build . --target coverage ; fi
+    - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake --build . ; fi
+    - cmake --install .
+    # - make test
+    # - make docs 
+  
 after_success:
 # Create lcov report
 # capture coverage info
@@ -59,3 +79,10 @@ after_success:
 # Uploading to CodeCov
 # '-f' specifies file(s) to use and disables manual coverage gathering and file search which has already been done above
 # - bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+
+# Don't send e-mail notifications
+notifications:
+  email:
+    on_success: never
+    on_failure: never
+
