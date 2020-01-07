@@ -11,10 +11,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
 
 include(ExternalProject)
 include(ConfigSafeGuards)
+include(Documentation)
 
 find_package(Git REQUIRED)
 
-find_package(ROOT 6 REQUIRED )
+find_package(ROOT 6 REQUIRED)
 include(${ROOT_USE_FILE})
 
 option(ANALYSER "I'M AN ANALYSIST" OFF)
@@ -29,7 +30,9 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
-set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
+
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 if(POLICY CMP0048)
     cmake_policy(SET CMP0048 NEW)
