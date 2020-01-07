@@ -8,6 +8,9 @@ cmake_minimum_required(VERSION 3.9...3.16 FATAL_ERROR)
 project(DAQ VERSION "1.0.0.0" DESCRIPTION "DAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/DAQ" LANGUAGES C CXX)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
+set(GENERATED_HEADER_PATH ${CMAKE_BINARY_DIR}/generated/)
+include_directories(${GENERATED_HEADER_PATH})
+
 
 include(ExternalProject)
 include(ConfigSafeGuards)

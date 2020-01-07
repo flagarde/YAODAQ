@@ -11,10 +11,15 @@
 #include <ctime>
 #include <iomanip>
 #include <thread>
+#include "ProgramInfos.hpp"
 using namespace elogpp;
 
 int main(int argc, char *argv[]) 
 {
+  ProgramInfos infos;
+  std::cout << "**************************************************************"<< std::endl;
+  std::cout << "                        Wave Dump " << infos.getVersion()<< std::endl;
+  std::cout << "**************************************************************"<< std::endl;
   if(argc!=3)
   {
 	std::cout<<" config file and ip "<<std::endl;
@@ -30,9 +35,7 @@ int main(int argc, char *argv[])
 	// Run the server in the background. Server can be stoped by calling server.stop()
   std::string RunNumber{""};
 	
-  std::cout << "**************************************************************"<< std::endl;
-  std::cout << "                        Wave Dump " << WaveDump_Release<< std::endl;
-  std::cout << "**************************************************************"<< std::endl;
+
   server.start();
   std::thread f(&WebServer::listen,&server);
   f.detach();

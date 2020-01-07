@@ -1,0 +1,23 @@
+#ifndef PROGRAM_INFOS_H
+#define PROGRAM_INFOS_H
+#include <string>
+
+class ProgramInfos
+{
+public:
+    unsigned int getVersionMajor(){return PROJECT_VERSION_MAJOR;}
+    unsigned int getVersionMinor(){return PROJECT_VERSION_MINOR;}
+    unsigned int getVersionPatch(){return PROJECT_VERSION_PATCH;}
+    unsigned int getVersionTweak(){return PROJECT_VERSION_TWEAK;}
+    std::string getDescription(){return PROJECT_DESCRIPTION;}
+    std::string getHomepage(){return HOMEPAGE_URL;}
+    std::string getVersion(){return "@PROJECT_VERSION@";}
+private:
+    inline static constexpr unsigned int PROJECT_VERSION_MAJOR{@PROJECT_VERSION_MAJOR@};
+    inline static constexpr unsigned int PROJECT_VERSION_MINOR{@PROJECT_VERSION_MINOR@};
+    inline static constexpr unsigned int PROJECT_VERSION_PATCH{@PROJECT_VERSION_PATCH@};
+    inline static constexpr unsigned int PROJECT_VERSION_TWEAK{@PROJECT_VERSION_TWEAK@};
+    const std::string PROJECT_DESCRIPTION{"@PROJECT_DESCRIPTION@"};
+    const std::string HOMEPAGE_URL{"@PROJECT_HOMEPAGE_URL@"};
+};
+#endif
