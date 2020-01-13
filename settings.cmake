@@ -10,3 +10,9 @@ set(elogpp_version "master")
 # doctest
 set(doctest_repository "https://github.com/onqtam/doctest.git")
 set(doctest_version "master")
+# fmt
+set(fmt_repository "https://github.com/RPClab/fmt.git")
+set(fmt_version "master")
+# fmt
+set(CLI11_repository "https://github.com/RPClab/CLI11.git")
+set(CLI11_version "master")

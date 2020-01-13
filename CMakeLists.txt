@@ -91,11 +91,18 @@ include(Architectures)
 
 find_package (Threads)
 
+include(fmt)
+include(CLI11)
+
 if(NOT ${ANALYSER}) 
   include(CAENlibs)
   include(IXWebSocket)
   include(elogpp)
 endif()
+
+
+
+
 
 add_subdirectory(source)
 add_subdirectory(apps)
