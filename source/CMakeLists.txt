@@ -30,6 +30,11 @@ if(NOT ${ANALYSER})
         add_subdirectory(CAEN)
     endif()
     
+    add_library(websocket src/WebsocketServer.cpp src/WebsocketClient.cpp src/ConnectionState.cpp)
+    add_dependencies(websocket IXWebSocket)
+    target_include_directories(websocket PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+    
+    
     add_library(lib1 STATIC src/flash.cpp src/WDconfig.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Digitizer.cpp)
     add_dependencies(lib1 CAENlibs)
     target_include_directories(lib1 PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
