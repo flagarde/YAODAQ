@@ -39,7 +39,7 @@ if(NOT ${ANALYSER})
     target_include_directories(lib2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/CAEN")
     
     add_library(web STATIC src/WebServer.cpp src/Plotter.cpp)
-    add_dependencies(web elogpp WebSocket CAENlibs)
+    add_dependencies(web elogpp IXWebSocket CAENlibs)
     target_include_directories(web PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" "${INCLUDE_OUTPUT_DIRECTORY}/CAEN")
 endif()
 

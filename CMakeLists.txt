@@ -7,12 +7,12 @@ cmake_minimum_required(VERSION 3.9...3.16 FATAL_ERROR)
 
 project(DAQ VERSION "1.0.0.0" DESCRIPTION "DAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/DAQ" LANGUAGES C CXX)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/ ${CMAKE_SOURCE_DIR}/extern/)
 set(GENERATED_HEADER_PATH ${CMAKE_BINARY_DIR}/generated/)
 include_directories(${GENERATED_HEADER_PATH})
 
 
-include(ExternalProject)
+
 include(ConfigSafeGuards)
 include(Documentation)
 
@@ -65,6 +65,8 @@ else()
 endif()
 
 
+include(${CMAKE_SOURCE_DIR}/settings.cmake)
+
 set(LIBRARY_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/lib")
 set(RUNTIME_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}")
 set(ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/lib")
@@ -86,65 +88,13 @@ link_directories("${CMAKE_INSTALL_PREFIX}/lib/")
 
 include(Architectures)
 
-if(NOT ${ANALYSER}) 
-
-set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
-set(CAENlibs_version "master")
-
-set(IXWebSocket_repository "https://github.com/RPClab/IXWebSocket.git")
-set(IXWebSocket_version "master")
-
-set(elogpp_repository "https://github.com/RPClab/elogpp.git")
-set(elogpp_version "master")
 
 find_package (Threads)
 
-
-include(FetchContent)
-
-
-# ----- CAENlibs package -----
-ExternalProject_Add( 
-                    CAENlibs
-                   GIT_REPOSITORY ${CAENlibs_repository}
-                    GIT_TAG ${CAENlibs_version}
-                    GIT_PROGRESS TRUE
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCAENALL=ON
-                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs-prefix
-                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs
-                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-                    )                       
-if(UNIX)
-   set(CAEN_DEFS "-DUNIX" "-DLINUX" CACHE INTERNAL " " FORCE)
-elseif(WIN32)
-   set(CAEN_DEFS "-D_WIN32" "-DWIN32" CACHE INTERNAL " " FORCE)
-endif()
-
-mark_as_advanced(FORCE CAEN_DEFS)
-
-# ----- WebSocket package -----
-ExternalProject_Add(
-                    WebSocket DEPENDS 
-                    GIT_REPOSITORY ${IXWebSocket_repository}
-                    GIT_TAG ${IXWebSocket_version}
-                    GIT_PROGRESS TRUE
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DUSE_TLS=1 -DUSE_WS=0
-                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/IXWebSocket-prefix
-                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/IXWebSocket
-                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-                    )
-
-# ----- elogpp package -----
-ExternalProject_Add(
-                    elogpp
-                    GIT_REPOSITORY ${elogpp_repository}
-                    GIT_TAG ${elogpp_version}
-                    GIT_PROGRESS TRUE
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-                    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/elogpp-prefix
-                    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/elogpp
-                    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-                    )
+if(NOT ${ANALYSER}) 
+  include(CAENlibs)
+  include(IXWebSocket)
+  include(elogpp)
 endif()
 
 add_subdirectory(source)
