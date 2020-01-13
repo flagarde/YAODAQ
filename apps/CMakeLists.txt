@@ -8,16 +8,12 @@ if(NOT ${ANALYSER})
     add_executable(WaveDump WaveDump.cpp)
     find_package(ZLIB)
     target_include_directories(WaveDump PRIVATE ${ZLIB_INCLUDE_DIRS})
-    if (CMAKE_SYSTEM_NAME MATCHES Darwin)
-    set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl/")
-    endif()
-    find_package(OpenSSL REQUIRED)
     add_dependencies(WaveDump lib1 lib2 web elogpp IXWebSocket CAENlibs)
-    target_compile_definitions(WaveDump PRIVATE  ${OPENSSL_DEFINITIONS})
-    message(STATUS "OpenSSL: " ${OPENSSL_VERSION})
-    target_include_directories(WaveDump PRIVATE  ${OPENSSL_INCLUDE_DIR})
     target_include_directories(WaveDump PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" "${INCLUDE_OUTPUT_DIRECTORY}/elogpp")
-    target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m crypto Channel_static Event_static  ${ZLIB_LIBRARIES} ${OPENSSL_LIBRARIES} ixwebsocket)
+    target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m crypto Channel_static Event_static  ${ZLIB_LIBRARIES} mbedcrypto ixwebsocket mbedtls mbedx509)
     install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+    
+    
+    
 endif()
 
