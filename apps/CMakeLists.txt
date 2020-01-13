@@ -13,7 +13,10 @@ if(NOT ${ANALYSER})
     target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m crypto Channel_static Event_static  ${ZLIB_LIBRARIES} mbedcrypto ixwebsocket mbedtls mbedx509)
     install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
-    
-    
+    add_executable(WebsocketServer WebsocketServer.cpp)
+    add_dependencies(WebsocketServer IXWebSocket websocket fmt)
+    target_include_directories(WebsocketServer  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
+    target_link_libraries(WebsocketServer websocket mbedcrypto ixwebsocket mbedtls mbedx509 ${ZLIB_LIBRARIES} ${FMT_LIB})
+    install(TARGETS WebsocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 

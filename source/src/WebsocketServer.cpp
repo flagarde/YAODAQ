@@ -3,7 +3,7 @@
 #include "ConnectionState.hpp"
 #include <iostream>
 
-WebsocketServer::WebsocketServer(const int& port,const std::string& host,const int& backlog,const std::size_t& maxConnections):m_Server(port,host,backlog,maxConnections)
+WebsocketServer::WebsocketServer(const int& port,const std::string& host,const int& backlog,const std::size_t& maxConnections,const int& handshakeTimeoutSecs):m_Server(port,host,backlog,maxConnections,handshakeTimeoutSecs)
 {
   ix::initNetSystem();
   // Test that we can override the connectionState impl to provide our own
@@ -59,22 +59,22 @@ WebsocketServer::~WebsocketServer()
   ix::uninitNetSystem();
 }
 
-void WebsocketServer::Start()
+void WebsocketServer::start()
 {
   m_Server.start();
 }
 
-void WebsocketServer::Stop()
+void WebsocketServer::stop()
 {
   m_Server.stop();
 }
 
-void WebsocketServer::Wait()
+void WebsocketServer::wait()
 {
   m_Server.wait();
 }
 
-void  WebsocketServer::Listen()
+void  WebsocketServer::listen()
 {
   std::pair<bool, std::string> res = m_Server.listen();
   if(!res.first)
