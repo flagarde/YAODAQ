@@ -14,9 +14,21 @@ if(NOT ${ANALYSER})
     install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     add_executable(WebsocketServer WebsocketServer.cpp)
-    add_dependencies(WebsocketServer IXWebSocket websocket fmt)
+    add_dependencies(WebsocketServer IXWebSocket websocket fmt CLI11)
     target_include_directories(WebsocketServer  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
     target_link_libraries(WebsocketServer websocket mbedcrypto ixwebsocket mbedtls mbedx509 ${ZLIB_LIBRARIES} ${FMT_LIB})
     install(TARGETS WebsocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+    
+    add_executable(DumpModule DumpModule.cpp)
+    add_dependencies(DumpModule IXWebSocket websocket fmt)
+    target_include_directories(DumpModule  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
+    target_link_libraries(DumpModule websocket mbedcrypto ixwebsocket mbedtls mbedx509 ${ZLIB_LIBRARIES} ${FMT_LIB})
+    install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+    
+       add_executable(server server.cpp)
+    add_dependencies(server IXWebSocket websocket fmt)
+    target_include_directories(server  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
+    target_link_libraries(server websocket mbedcrypto ixwebsocket mbedtls mbedx509 ${ZLIB_LIBRARIES} ${FMT_LIB})
+    install(TARGETS server RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 

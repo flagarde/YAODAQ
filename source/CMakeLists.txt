@@ -30,7 +30,7 @@ if(NOT ${ANALYSER})
         add_subdirectory(CAEN)
     endif()
     
-    add_library(websocket src/WebsocketServer.cpp src/WebsocketClient.cpp src/ConnectionState.cpp)
+    add_library(websocket src/WebsocketServer.cpp src/WebsocketClient.cpp src/ConnectionState.cpp src/StateMachine.cpp src/Module.cpp)
     add_dependencies(websocket IXWebSocket)
     target_include_directories(websocket PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
     

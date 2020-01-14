@@ -2,60 +2,23 @@
 #include "IXNetSystem.h"
 #include <iostream>
 #include <sstream>
+
 std::string WebsocketClient::m_Url{"ws://localhost:80/"};
 
 WebsocketClient::WebsocketClient(const ix::WebSocketHttpHeaders & header):m_Headers(header)
 {
   ix::initNetSystem();
-  m_WebSocket.setOnMessageCallback
-  (
-    [](const ix::WebSocketMessagePtr& msg)
-    {
-      if (msg->type == ix::WebSocketMessageType::Message)
-      {
-        std::cout << msg->str << std::endl;
-      }
-      
-      else if (msg->type == ix::WebSocketMessageType::Open)
-      {
-        std::cout << "send greetings" << std::endl;
-        
-        // Headers can be inspected (pairs of string/string)
-        std::cout << "Handshake Headers:" << std::endl;
-        for (auto it : msg->openInfo.headers)
-        {
-          std::cout << it.first << ": " << it.second << std::endl;
-        }
-      }
-      else if (msg->type == ix::WebSocketMessageType::Close)
-      {
-        std::cout << "disconnected" << std::endl;
-        
-        // The server can send an explicit code and reason for closing.
-        // This data can be accessed through the closeInfo object.
-        std::cout << msg->closeInfo.code << std::endl;
-        std::cout << msg->closeInfo.reason << std::endl;
-      }
-      else if (msg->type == ix::WebSocketMessageType::Error)
-      {
-        std::stringstream ss;
-        ss << "Error: "         << msg->errorInfo.reason      << std::endl;
-        ss << "#retries: "      << msg->errorInfo.retries     << std::endl;
-        ss << "Wait time(ms): " << msg->errorInfo.wait_time   << std::endl;
-        ss << "HTTP Status: "   << msg->errorInfo.http_status << std::endl;
-        std::cout << ss.str() << std::endl;
-      }
-      else if (msg->type == ix::WebSocketMessageType::Ping)
-      {
-        std::cout << "pong data: " << msg->str << std::endl;
-      }
-      else if(msg->type == ix::WebSocketMessageType::Pong)
-      {
-        
-      }
-    }
-  );
-  
+}
+
+void WebsocketClient::setExtraHeader(const std::string& key, const std::string& value)
+{
+  m_Headers[key.c_str()]=(' '+value).c_str();
+}
+
+void WebsocketClient::setOnMessageCallback(std::function<void(const std::shared_ptr<ix::WebSocketMessage>)> m_func)
+{
+  m_SocketMessagePtr=m_func;
+  m_WebSocket.setOnMessageCallback(m_SocketMessagePtr);
 }
 
 WebsocketClient::~WebsocketClient()
@@ -70,7 +33,16 @@ void WebsocketClient::setHeartBeatPeriod(const int& HeartBeat)
 
 void WebsocketClient::start()
 {
+  m_WebSocket.setUrl(m_Url);
+  m_WebSocket.setExtraHeaders(m_Headers);
   m_WebSocket.start();
+  std::cout<<"Connecting "<<m_Url<<" ";
+  while(m_WebSocket.getReadyState()!=ix::ReadyState::Open) 
+  {
+    
+   // std::cout<<".";
+  }
+  std::cout<<std::endl;
 }
 
 void WebsocketClient::stop()
@@ -93,5 +65,8 @@ ix::WebSocketSendInfo WebsocketClient::sendText(const std::string& text,const ix
   return m_WebSocket.sendText(text,onProgressCallback);
 }
 
-
+void WebsocketClient::setURL(const std::string& url)
+{
+  m_Url=url;
+}
 

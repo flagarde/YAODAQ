@@ -72,6 +72,8 @@ WebServer::WebServer(int port,const std::string& host,int backlog,size_t maxConn
                 {
                     std::cerr << it.first << ": " << it.second << std::endl;
                 }
+                
+                
                 Json::StreamWriterBuilder builder;
                 builder.settings_["indentation"] = "";
                 std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());

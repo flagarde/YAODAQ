@@ -31,7 +31,10 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
             {
               std::cout <<"\t"<< it.first << ": " << it.second<<std::endl;
             }
+            if(msg->openInfo.headers.find("Name")!=msg->openInfo.headers.end()) state->setName(msg->openInfo.headers["Name"]);
+            if(msg->openInfo.headers.find("Type")!=msg->openInfo.headers.end()) state->setType(msg->openInfo.headers["Type"]);
             std::cout<< "Type : "<<state->getType()<<std::endl;
+            std::cout<< "Name : "<<state->getName()<<std::endl;
           }
           else if (msg->type == ix::WebSocketMessageType::Close)
           {
