@@ -1,14 +1,17 @@
 #ifndef MODULE_HPP
 #define MODULE_HPP
-#include "WebsocketClient.hpp"
+
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "Message.hpp"
+#include "Infos.hpp"
+#include "WebsocketClient.hpp"
 
 class Module 
 {
 public :
-  Module(const std::string& name="Unknown", const std::string& type="Unknown");
+  Module( const std::string& type="Unknown",const std::string& name="Unknown");
   ~Module();
   virtual void Initialize();
   virtual void Connect();
@@ -26,6 +29,12 @@ public :
   virtual void OnPong(const std::string&);
   virtual void OnPing(const std::string&);
   virtual void OnMessage(const std::string&);
+  
+  ix::WebSocketSendInfo sendBinary(Message& message);
+  ix::WebSocketSendInfo sendText(Message& message);
+  
+  
+  
 private:
   WebsocketClient m_WebsocketClient;
   std::string m_Name{"Unknown"};

@@ -30,9 +30,16 @@ if(NOT ${ANALYSER})
         add_subdirectory(CAEN)
     endif()
     
+    add_library(message src/Message.cpp src/Infos.cpp)
+    add_dependencies(message elogpp)
+    target_include_directories(message PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/json" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+    target_link_libraries(message PUBLIC jsoncpp)
+    
     add_library(websocket src/WebsocketServer.cpp src/WebsocketClient.cpp src/ConnectionState.cpp src/StateMachine.cpp src/Module.cpp)
-    add_dependencies(websocket IXWebSocket)
+    add_dependencies(websocket IXWebSocket message)
     target_include_directories(websocket PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+    target_link_libraries(websocket PUBLIC message)
+   
     
     
     add_library(lib1 STATIC src/flash.cpp src/WDconfig.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Digitizer.cpp)

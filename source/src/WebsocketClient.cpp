@@ -39,8 +39,7 @@ void WebsocketClient::start()
   std::cout<<"Connecting "<<m_Url<<" ";
   while(m_WebSocket.getReadyState()!=ix::ReadyState::Open) 
   {
-    
-   // std::cout<<".";
+
   }
   std::cout<<std::endl;
 }

@@ -9,7 +9,21 @@ std::string Module::getType()
   return m_Type;
 }
 
-Module::Module(const std::string& name, const std::string& type):m_Name(name),m_Type(type)
+
+ix::WebSocketSendInfo Module::sendBinary(Message& message)
+{
+  message.setFrom(m_Type+"/"+m_Name);
+  return m_WebsocketClient.sendBinary(message.get());
+}
+
+ix::WebSocketSendInfo Module::sendText(Message& message)
+{
+  message.setFrom(m_Type+"/"+m_Name);
+  return m_WebsocketClient.sendText(message.get());
+}
+
+
+Module::Module( const std::string& type,const std::string& name):m_Name(name),m_Type(type)
 {
   m_WebsocketClient.setExtraHeader("Name",m_Name);
   m_WebsocketClient.setExtraHeader("Type",m_Type);
