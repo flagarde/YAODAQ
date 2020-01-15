@@ -45,13 +45,10 @@ void Message::parse(const std::string& msg)
 {
   Json::String errs;
   bool ok = m_Reader->parse(&msg[0],&msg[msg.size()],&m_Value, &errs);
- // std::stringstream stream(msg);
- // bool ok = parseFromStream(m_CharReaderBuilder,std::stringstream(msg),&m_Value, &errs);
   if(!ok)
   {
       std::cout << "Error: " <<errs<<std::endl;
   }
-  std::cout<<m_Value.toStyledString()<<std::endl;
 }
 
 std::string Message::print() const

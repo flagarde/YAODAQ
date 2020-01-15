@@ -2,6 +2,7 @@
 #define WEBSOCKETSERVER_HPP
 #include <string>
 #include "IXWebSocketServer.h"
+#include "Message.hpp"
 
 class WebsocketServer
 {

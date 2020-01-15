@@ -36,20 +36,134 @@ Module::~Module()
 }
 
 
-void Module::Initialize(){};
-void Module::Connect(){};
-void Module::Configure(){};
-void Module::Start(){};
-void Module::Pause(){};
-void Module::Stop(){};
-void Module::Clear(){};
-void Module::Disconnect(){};
-void Module::Release(){};
+void Module::Initialize()
+{
+  std::cout<<"Initialize"<<std::endl;
+};
+
+void Module::Connect()
+{
+  std::cout<<"Connect"<<std::endl;
+};
+
+void Module::Configure()
+{
+  std::cout<<"Configure"<<std::endl;
+};
+
+void Module::Start()
+{
+  std::cout<<"Start"<<std::endl;
+};
+
+void Module::Pause()
+{
+  std::cout<<"Pause"<<std::endl;
+};
+
+void Module::Stop()
+{
+  std::cout<<"Stop"<<std::endl;
+};
+
+void Module::Clear()
+{
+  std::cout<<"Clear"<<std::endl;
+};
+
+void Module::Disconnect()
+{
+  std::cout<<"Disconnect"<<std::endl;
+};
+
+void Module::Release()
+{
+  std::cout<<"Release"<<std::endl;
+};
+
+void Module::Quit()
+{
+  std::cout<<"Quit"<<std::endl;
+}
+
+void Module::DoOnStatus(Message& message)
+{
+  if(message.getContent()=="INITIALIZE")
+  {
+    Initialize();
+    message.setContent("INITIALIZED");
+    sendText(message);
+  }
+  else if(message.getContent()=="CONNECT")
+  {
+    Connect();
+    message.setContent("CONNECTED");
+    sendText(message);
+  }
+  else if(message.getContent()=="CONFIGURE")
+  {
+    Configure();
+    message.setContent("CONFIGURE");
+    sendText(message);
+  }
+  else if(message.getContent()=="START")
+  {
+    Start();
+    message.setContent("STARTED");
+    sendText(message);
+  }
+  else if(message.getContent()=="PAUSE") 
+  {
+    Pause();
+    message.setContent("PAUSED");
+    sendText(message);
+  }
+  else if(message.getContent()=="STOP") 
+  {
+    Stop();
+    message.setContent("STOPED");
+    sendText(message);
+  }
+  else if(message.getContent()=="CLEAR")
+  {
+    Clear();
+    message.setContent("CLEARED");
+    sendText(message);
+  }
+  else if(message.getContent()=="DISCONNECT")
+  {
+    Disconnect();
+    message.setContent("DISCONNECTED");
+    sendText(message);
+  }
+  else if(message.getContent()=="RELEASE")
+  {
+    Release();
+    message.setContent("RELEASED");
+    sendText(message);
+  }
+  else if(message.getContent()=="QUIT")
+  {
+    Quit();
+    message.setContent("QUITED");
+    sendText(message);
+  }
+  else if(message.getContent()=="UNKNOWN_STATUS")
+  {
+    std::cout<<"You type an UNKNOWN_STATUS "<<std::endl;
+  }
+}
 
 void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
-  
-  std::cout << msg->str << std::endl;
+  Message message;
+  message.parse(msg->str);
+  message.print();
+  if(message.getType()=="Status")
+  {
+    DoOnStatus(message);
+  }
+  else OnMessage(msg);
 }
 
 

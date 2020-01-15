@@ -13,7 +13,7 @@ class Module
 {
 public :
   Module( const std::string& type="Unknown",const std::string& name="Unknown");
-  ~Module();
+  virtual ~Module();
   virtual void Initialize();
   virtual void Connect();
   virtual void Configure();
@@ -23,6 +23,7 @@ public :
   virtual void Clear();
   virtual void Disconnect();
   virtual void Release();
+  virtual void Quit();
   std::string getName();
   std::string getType();
   virtual void OnOpen(const ix::WebSocketMessagePtr& msg);
@@ -36,6 +37,7 @@ public :
   ix::WebSocketSendInfo sendText(Message& message);
   
 private:
+  void DoOnStatus(Message& message);
   void DoOnMessage(const ix::WebSocketMessagePtr& msg);
   WebsocketClient m_WebsocketClient;
   std::string m_Name{"Unknown"};

@@ -2,6 +2,8 @@
 #include "IXNetSystem.h"
 #include <iostream>
 #include <sstream>
+#include <chrono>
+#include <thread>
 
 std::string WebsocketClient::m_Url{"ws://localhost:80/"};
 
@@ -36,17 +38,18 @@ void WebsocketClient::start()
   m_WebSocket.setUrl(m_Url);
   m_WebSocket.setExtraHeaders(m_Headers);
   m_WebSocket.start();
-  std::cout<<"Connecting "<<m_Url<<" ";
+  std::cout<<"Connecting to "<<m_Url<<std::endl;
   while(m_WebSocket.getReadyState()!=ix::ReadyState::Open) 
   {
-
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
-  std::cout<<std::endl;
 }
 
 void WebsocketClient::stop()
 {
+  std::this_thread::sleep_for(std::chrono::milliseconds(1));
   m_WebSocket.stop();
+  std::cout<<"Disconnecting"<<std::endl;
 }
 
 ix::WebSocketSendInfo WebsocketClient::send(const std::string& data,bool binary,const ix::OnProgressCallback& onProgressCallback)

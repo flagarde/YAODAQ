@@ -1,6 +1,6 @@
 #include "Status.hpp"
  
-std::set<std::string> Status::m_Status{"UNINITIALIZED","INITIALIZED","CONNECTED","CONFIGURED","STARTED","PAUSED","STOPED","CLEARED","DISCONNECTED","RELEASED"};
+ std::set<std::string> Status::m_Status{"UNINITIALIZED","INITIALIZED","CONNECTED","CONFIGURED","STARTED","PAUSED","STOPED","CLEARED","DISCONNECTED","RELEASED","QUITED","INITIALIZE","CONNECT","CONFIGURE","START","PAUSE","STOP","CLEAR","DISCONNECT","RELEASE","QUIT"};
  
 Status::Status(const std::string& content,const std::string& to,const std::string& from):Message("Status",checkContent(content),to,from)
 {

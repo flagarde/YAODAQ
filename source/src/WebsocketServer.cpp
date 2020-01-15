@@ -6,13 +6,7 @@
 WebsocketServer::WebsocketServer(const int& port,const std::string& host,const int& backlog,const std::size_t& maxConnections,const int& handshakeTimeoutSecs):m_Server(port,host,backlog,maxConnections,handshakeTimeoutSecs)
 {
   ix::initNetSystem();
-  // Test that we can override the connectionState impl to provide our own
- /* auto factory = []() -> std::shared_ptr<ix::ConnectionState> 
-  {
-    return std::make_shared<ConnectionStateCustom>();
-  };*/
   m_Server.setConnectionStateFactory(&ConnectionState::createConnectionState);
-  
   m_Server.setOnConnectionCallback
   (
     [this](std::shared_ptr<ix::WebSocket> webSocket,std::shared_ptr<ix::ConnectionState> connectionState) 
@@ -33,8 +27,6 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
             }
             if(msg->openInfo.headers.find("Name")!=msg->openInfo.headers.end()) state->setName(msg->openInfo.headers["Name"]);
             if(msg->openInfo.headers.find("Type")!=msg->openInfo.headers.end()) state->setType(msg->openInfo.headers["Type"]);
-            std::cout<< "Type : "<<state->getType()<<std::endl;
-            std::cout<< "Name : "<<state->getName()<<std::endl;
           }
           else if (msg->type == ix::WebSocketMessageType::Close)
           {
@@ -42,9 +34,9 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
           }
           else if (msg->type == ix::WebSocketMessageType::Message)
           {
+            std::cout<<"Message  : "<<msg->str<<std::endl;
             for (auto&& client : m_Server.getClients())
             {
-              std::cout<<msg->str<<std::endl;
               if (client != webSocket)
               {
                 client->send(msg->str);
