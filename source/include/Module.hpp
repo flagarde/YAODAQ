@@ -5,7 +5,8 @@
 #include <sstream>
 #include <string>
 #include "Message.hpp"
-#include "Infos.hpp"
+#include "Info.hpp"
+#include "Status.hpp"
 #include "WebsocketClient.hpp"
 
 class Module 

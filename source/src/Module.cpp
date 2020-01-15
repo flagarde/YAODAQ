@@ -9,7 +9,6 @@ std::string Module::getType()
   return m_Type;
 }
 
-
 ix::WebSocketSendInfo Module::sendBinary(Message& message)
 {
   message.setFrom(m_Type+"/"+m_Name);

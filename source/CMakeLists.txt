@@ -30,7 +30,7 @@ if(NOT ${ANALYSER})
         add_subdirectory(CAEN)
     endif()
     
-    add_library(message src/Message.cpp src/Infos.cpp)
+    add_library(message src/Message.cpp src/Info.cpp src/Status.cpp)
     add_dependencies(message elogpp)
     target_include_directories(message PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/json" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
     target_link_libraries(message PUBLIC jsoncpp)

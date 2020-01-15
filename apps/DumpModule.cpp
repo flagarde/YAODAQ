@@ -6,17 +6,32 @@ int main()
   Message a;
   a.setContent("Toto");
   
-  Infos b;
+  Info b;
   b.setContent("I inform you");
   
-  std::cout<<a.print()<<std::endl;
-  std::cout<<b.print()<<std::endl;
+  Status c;
+  c.setContent("TOTO");
   
-  WebsocketClient::setURL("ws://192.168.1.126:8080/");
-  Module toto("Digitizer","MyDigitizerCheriDamour");
   
-  toto.sendText(a);
-  toto.sendText(b);
-  toto.sendBinary(a);
-  toto.sendBinary(b);
+ // std::cout<<a.print()<<std::endl;
+ // std::cout<<b.print()<<std::endl;
+  
+  //WebsocketClient::setURL("ws://192.168.1.126:8080/");
+ // Module toto("Digitizer","MyDigitizerCheriDamour");
+  
+ // toto.sendText(a);
+ // toto.sendText(b);
+ // toto.sendBinary(a);
+ // toto.sendBinary(b);
+  
+  Message C;
+  C.parse(b.get());
+  std::cout<<"PRINT"<<std::endl;
+  C.print();
+  std::cout<<C.get()<<std::endl;
+  std::cout<<C.getContent()<<std::endl;
+  
+  
+  c.print();
+  
 }
