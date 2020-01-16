@@ -1,6 +1,5 @@
 #include "Module.hpp"
 #include <string>
-
 int main()
 {  
  
@@ -18,5 +17,4 @@ int main()
  // toto.sendBinary(a);
  // toto.sendBinary(b);
   Master.sendText(c);
-  
 }

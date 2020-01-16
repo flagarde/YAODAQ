@@ -8,7 +8,7 @@ ExternalProject_Add(
                     GIT_TAG ${CAENlibs_version}
                     GIT_PROGRESS TRUE
                     GIT_SHALLOW TRUE
-                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCAENALL=TRUE
+                    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} -DCAENALL=TRUE -DINCLUDE_OUTPUT_DIRECTORY=${CMAKE_CURRENT_BINARY_DIR}/CAEN
                     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs-prefix
                     SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/CAENlibs
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}

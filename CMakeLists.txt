@@ -22,6 +22,7 @@ find_package(ROOT 6 REQUIRED)
 include(${ROOT_USE_FILE})
 
 option(ANALYSER "I'M AN ANALYSIST" OFF)
+option(CONFIGURATOR "Compile Configurator" ON)
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
 option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
                         Tests in tests/*.cpp will still be enabled." OFF)
@@ -89,7 +90,11 @@ link_directories("${CMAKE_INSTALL_PREFIX}/lib/")
 include(Architectures)
 
 
-find_package (Threads)
+find_package(Threads)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+
+
+find_package(ZLIB)
 
 include(fmt)
 include(CLI11)
@@ -98,6 +103,9 @@ if(NOT ${ANALYSER})
   include(CAENlibs)
   include(IXWebSocket)
   include(elogpp)
+  if(${CONFIGURATOR})
+    include(soci)
+  endif()
 endif()
 
 

@@ -26,7 +26,8 @@ target_include_directories(${TEST_MAIN} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/incl
 
 
 if(NOT ${ANALYSER}) 
-target_link_libraries(${TEST_MAIN} CAENError CAENVME CAENComm ${DPPLIB} ${CMAKE_THREAD_LIBS_INIT} caenhvwrapper ${CMAKE_DL_LIBS} )
+target_link_libraries(${TEST_MAIN}  CAENError Threads::Threads)
+add_dependencies(${TEST_MAIN} CAENError)
 endif()
 
 add_test(

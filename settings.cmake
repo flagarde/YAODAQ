@@ -13,6 +13,12 @@ set(doctest_version "master")
 # fmt
 set(fmt_repository "https://github.com/RPClab/fmt.git")
 set(fmt_version "master")
-# fmt
+# CLI11
 set(CLI11_repository "https://github.com/RPClab/CLI11.git")
 set(CLI11_version "master")
+# soci
+set(soci_repository "https://github.com/RPClab/soci.git")
+set(soci_version "master")
+# MariaDB
+set(MariaDB_repository "https://github.com/RPClab/server.git")
+set(MariaDB_version "10.5")
