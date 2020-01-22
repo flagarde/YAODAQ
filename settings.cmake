@@ -19,6 +19,6 @@ set(CLI11_version "master")
 # soci
 set(soci_repository "https://github.com/RPClab/soci.git")
 set(soci_version "master")
-# MariaDB
-set(MariaDB_repository "https://github.com/RPClab/server.git")
-set(MariaDB_version "10.5")
+# toml11
+set(toml11_repository "https://github.com/RPClab/toml11.git")
+set(toml11_version "master")

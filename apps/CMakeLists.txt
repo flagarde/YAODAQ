@@ -30,5 +30,14 @@ if(NOT ${ANALYSER})
     target_include_directories(DumpModule PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
     target_link_libraries(DumpModule websocket ${FMT_LIB} message)
     install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+    
+    
+      
+    add_executable(Conf Conf.cpp)
+    add_dependencies(Conf Configuration)
+        target_include_directories(Conf PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
+        target_link_libraries(Conf Configuration)
+    install(TARGETS Conf RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+    
 endif()
 

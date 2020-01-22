@@ -98,6 +98,7 @@ find_package(ZLIB)
 
 include(fmt)
 include(CLI11)
+include(toml11)
 
 if(NOT ${ANALYSER}) 
   include(CAENlibs)

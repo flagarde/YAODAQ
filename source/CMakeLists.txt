@@ -42,14 +42,20 @@ if(NOT ${ANALYSER})
     target_include_directories(message PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/json" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
     target_link_libraries(message PUBLIC jsoncpp)
     
-    add_library(websocket src/WebsocketServer.cpp src/WebsocketClient.cpp src/ConnectionState.cpp src/StateMachine.cpp src/Module.cpp)
+    add_library(websocket src/WebsocketServer.cpp src/WebsocketClient.cpp src/ConnectionState.cpp src/StateMachine.cpp src/Module.cpp src/Board.cpp src/Connector.cpp)
     add_dependencies(websocket IXWebSocket message)
     target_include_directories(websocket PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/"  PUBLIC ${ZLIB_INCLUDE_DIRS})
     target_link_libraries(websocket PUBLIC message PUBLIC mbedcrypto PUBLIC ixwebsocket PUBLIC mbedtls PUBLIC mbedx509 PUBLIC ${ZLIB_LIBRARIES})
     
+    add_library(Configuration src/Configuration.cpp)
+    add_dependencies(Configuration toml11)
+    target_include_directories(Configuration PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+    
+    
+    
   if(${CONFIGURATOR})
     add_library(configurator src/Configurator.cpp)
-    add_dependencies(configurator soci websocket )
+    add_dependencies(configurator soci websocket toml11)
     target_include_directories(configurator PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/" PUBLIC ${DATABASES_INCLUDE_DIR}  PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
     target_link_libraries(configurator PUBLIC websocket ${DATABASES_LIBRARIES} PUBLIC soci_core PUBLIC soci_empty)
     if(${DB2_FOUND})
