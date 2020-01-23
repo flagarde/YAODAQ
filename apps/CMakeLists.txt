@@ -14,21 +14,21 @@ if(NOT ${ANALYSER})
     install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     add_executable(WebsocketServer WebsocketServer.cpp)
-    add_dependencies(WebsocketServer websocket fmt CLI11)
+    add_dependencies(WebsocketServer websocket CLI11)
     target_include_directories(WebsocketServer PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include"  )
-    target_link_libraries(WebsocketServer websocket ${FMT_LIB} )
+    target_link_libraries(WebsocketServer websocket)
     install(TARGETS WebsocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     add_executable(Configurator Configurator.cpp)
     add_dependencies(Configurator websocket fmt CLI11 configurator)
     target_include_directories(Configurator PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include"  )
-    target_link_libraries(Configurator websocket ${FMT_LIB} configurator ${CMAKE_DL_LIBS} ${DATABASES_LIBRARIES} ${MYSQL_LIBRARIES})
+    target_link_libraries(Configurator websocket  configurator ${CMAKE_DL_LIBS} ${DATABASES_LIBRARIES} ${MYSQL_LIBRARIES})
     install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     add_executable(DumpModule DumpModule.cpp)
-    add_dependencies(DumpModule  websocket fmt)
+    add_dependencies(DumpModule  websocket)
     target_include_directories(DumpModule PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
-    target_link_libraries(DumpModule websocket ${FMT_LIB} message)
+    target_link_libraries(DumpModule websocket message)
     install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     
