@@ -1,5 +1,12 @@
 #include "Module.hpp"
 
+Configuration Module::m_Config=Configuration();
+
+void  Module::setConfigFile(const std::string& file)
+{
+  m_Config.setFileName(file);
+}
+
 std::string Module::getName()
 {
   return m_Name;
@@ -39,6 +46,7 @@ Module::~Module()
 void Module::Initialize()
 {
   std::cout<<"Initialize"<<std::endl;
+  m_Config.parse();
 };
 
 void Module::Connect()

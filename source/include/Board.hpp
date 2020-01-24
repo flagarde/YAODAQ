@@ -3,7 +3,6 @@
 #include <string>
 #include "Connector.hpp"
 #include "Module.hpp"
-#include "Configuration.hpp"
 #include <memory>
 
 class Board : public Module
@@ -15,7 +14,7 @@ public:
   virtual ~Board(){};
 private:
   std::shared_ptr<Connector> m_Connector;
-  static Configuration m_Config;
+  std::int32_t m_Handle{-1};
 };
 
 #endif

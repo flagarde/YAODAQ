@@ -8,6 +8,7 @@
 #include "Info.hpp"
 #include "Status.hpp"
 #include "WebsocketClient.hpp"
+#include "Configuration.hpp"
 
 class Module 
 {
@@ -35,7 +36,9 @@ public :
   
   ix::WebSocketSendInfo sendBinary(Message& message);
   ix::WebSocketSendInfo sendText(Message& message);
-  
+  static void setConfigFile(const std::string&);
+protected:
+  static Configuration m_Config;
 private:
   void DoOnStatus(Message& message);
   void DoOnMessage(const ix::WebSocketMessagePtr& msg);

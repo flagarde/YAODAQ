@@ -1,9 +1,10 @@
-#include "Configuration.hpp"
+#include "Board.hpp"
 #include <iostream>
 int main()
 {
- 
-  
+  Board::setConfigFile("./toto.toml");
+  Board toto;
+  toto.Initialize();
   /*toml::value data = toml::parse("./toto.cfg");
   // loop over all the `[[robot]]` defined in a file
   for(const auto& robot : toml::find<toml::array>(data, "robot"))
@@ -15,8 +16,8 @@ int main()
     }
   }*/
   
-  Configuration toto;
+ /* Configuration toto;
   toto.setFileName("./toto.cfg");
-  toto.parse();
+  toto.parse();*/
   
 }

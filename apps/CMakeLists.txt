@@ -26,17 +26,17 @@ if(NOT ${ANALYSER})
     install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     add_executable(DumpModule DumpModule.cpp)
-    add_dependencies(DumpModule  websocket)
+    add_dependencies(DumpModule  websocket Configuration)
     target_include_directories(DumpModule PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
-    target_link_libraries(DumpModule websocket message)
+    target_link_libraries(DumpModule websocket message Configuration)
     install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     
       
     add_executable(Conf Conf.cpp)
-    add_dependencies(Conf Configuration)
+    add_dependencies(Conf Configuration websocket)
         target_include_directories(Conf PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
-        target_link_libraries(Conf Configuration)
+        target_link_libraries(Conf Configuration websocket)
     install(TARGETS Conf RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
 endif()
