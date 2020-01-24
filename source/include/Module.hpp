@@ -15,16 +15,16 @@ class Module
 public :
   Module( const std::string& type="Unknown",const std::string& name="Unknown");
   virtual ~Module();
-  virtual void Initialize();
-  virtual void Connect();
-  virtual void Configure();
-  virtual void Start();
-  virtual void Pause();
-  virtual void Stop();
-  virtual void Clear();
-  virtual void Disconnect();
-  virtual void Release();
-  virtual void Quit();
+  void Initialize();
+  void Connect();
+  void Configure();
+  void Start();
+  void Pause();
+  void Stop();
+  void Clear();
+  void Disconnect();
+  void Release();
+  void Quit();
   std::string getName();
   std::string getType();
   virtual void OnOpen(const ix::WebSocketMessagePtr& msg);
@@ -39,8 +39,19 @@ public :
   static void setConfigFile(const std::string&);
 protected:
   static Configuration m_Config;
+  virtual void DoInitialize();
+  virtual void DoConnect();
+  virtual void DoConfigure();
+  virtual void DoStart();
+  virtual void DoPause();
+  virtual void DoStop();
+  virtual void DoClear();
+  virtual void DoDisconnect();
+  virtual void DoRelease();
+  virtual void DoQuit();
 private:
   void DoOnStatus(Message& message);
+  void sendStatus(const std::string&);
   void DoOnMessage(const ix::WebSocketMessagePtr& msg);
   WebsocketClient m_WebsocketClient;
   std::string m_Name{"Unknown"};

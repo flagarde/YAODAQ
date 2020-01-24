@@ -42,54 +42,121 @@ Module::~Module()
   m_WebsocketClient.stop();
 }
 
-
 void Module::Initialize()
 {
-  std::cout<<"Initialize"<<std::endl;
   m_Config.parse();
-};
+  DoInitialize();
+  sendStatus("INITIALIZED");
+}
 
 void Module::Connect()
+{
+  DoConnect();
+  sendStatus("CONNECTED");
+}
+
+void Module::Configure()
+{
+  DoConfigure();
+  sendStatus("CONFIGURE");
+}
+
+void Module::Start()
+{
+  DoStart();
+  sendStatus("STARTED");
+}
+
+void Module::Pause()
+{
+  DoPause();
+  sendStatus("PAUSED");
+}
+
+void Module::Stop()
+{
+  DoStop();
+  sendStatus("STOPED");
+}
+
+void Module::Clear()
+{
+  DoClear();
+  sendStatus("CLEARED");
+}
+
+void Module::Disconnect()
+{
+  DoDisconnect();
+  sendStatus("DISCONNECTED");
+}
+
+void Module::Release()
+{
+  DoRelease();
+  sendStatus("RELEASED");
+}
+
+void Module::Quit()
+{
+  DoQuit();
+  sendStatus("QUITED");
+}
+
+void Module::sendStatus(const std::string& stat)
+{
+  Status status;
+  status.setContent(stat);
+  sendText(status);
+}
+
+
+void Module::DoInitialize()
+{
+  std::cout<<"Initialize"<<std::endl;
+};
+
+void Module::DoConnect()
 {
   std::cout<<"Connect"<<std::endl;
 };
 
-void Module::Configure()
+void Module::DoConfigure()
 {
   std::cout<<"Configure"<<std::endl;
 };
 
-void Module::Start()
+void Module::DoStart()
 {
   std::cout<<"Start"<<std::endl;
 };
 
-void Module::Pause()
+void Module::DoPause()
 {
   std::cout<<"Pause"<<std::endl;
 };
 
-void Module::Stop()
+void Module::DoStop()
 {
   std::cout<<"Stop"<<std::endl;
 };
 
-void Module::Clear()
+void Module::DoClear()
 {
   std::cout<<"Clear"<<std::endl;
 };
 
-void Module::Disconnect()
+void Module::DoDisconnect()
 {
   std::cout<<"Disconnect"<<std::endl;
 };
 
-void Module::Release()
+void Module::DoRelease()
 {
   std::cout<<"Release"<<std::endl;
 };
 
-void Module::Quit()
+void Module::DoQuit()
 {
   std::cout<<"Quit"<<std::endl;
 }
@@ -99,62 +166,42 @@ void Module::DoOnStatus(Message& message)
   if(message.getContent()=="INITIALIZE")
   {
     Initialize();
-    message.setContent("INITIALIZED");
-    sendText(message);
   }
   else if(message.getContent()=="CONNECT")
   {
     Connect();
-    message.setContent("CONNECTED");
-    sendText(message);
   }
   else if(message.getContent()=="CONFIGURE")
   {
     Configure();
-    message.setContent("CONFIGURE");
-    sendText(message);
   }
   else if(message.getContent()=="START")
   {
     Start();
-    message.setContent("STARTED");
-    sendText(message);
   }
   else if(message.getContent()=="PAUSE") 
   {
     Pause();
-    message.setContent("PAUSED");
-    sendText(message);
   }
   else if(message.getContent()=="STOP") 
   {
     Stop();
-    message.setContent("STOPED");
-    sendText(message);
   }
   else if(message.getContent()=="CLEAR")
   {
     Clear();
-    message.setContent("CLEARED");
-    sendText(message);
   }
   else if(message.getContent()=="DISCONNECT")
   {
     Disconnect();
-    message.setContent("DISCONNECTED");
-    sendText(message);
   }
   else if(message.getContent()=="RELEASE")
   {
     Release();
-    message.setContent("RELEASED");
-    sendText(message);
   }
   else if(message.getContent()=="QUIT")
   {
     Quit();
-    message.setContent("QUITED");
-    sendText(message);
   }
   else if(message.getContent()=="UNKNOWN_STATUS")
   {

@@ -3,7 +3,7 @@
 int main()
 {
   Board::setConfigFile("./toto.toml");
-  Board toto;
+  Board toto("toto","titi");
   toto.Initialize();
   /*toml::value data = toml::parse("./toto.cfg");
   // loop over all the `[[robot]]` defined in a file
