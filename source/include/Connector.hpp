@@ -11,6 +11,7 @@ public:
   virtual void Disconnect()=0;
   virtual ~Connector(){};
   void setConfiguration(const toml::value& config);
+  void printParameters();
 protected:
   std::string m_Type{""};
   std::string m_Name{""};

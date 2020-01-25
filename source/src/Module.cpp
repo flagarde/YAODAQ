@@ -1,4 +1,8 @@
 #include "Module.hpp"
+#include "parser.hpp"
+#include "literal.hpp"
+#include "serializer.hpp"
+#include "get.hpp"
 
 Configuration Module::m_Config=Configuration();
 
@@ -28,13 +32,26 @@ ix::WebSocketSendInfo Module::sendText(Message& message)
   return m_WebsocketClient.sendText(message.get());
 }
 
-
 Module::Module( const std::string& type,const std::string& name):m_Name(name),m_Type(type)
 {
   m_WebsocketClient.setExtraHeader("Name",m_Name);
   m_WebsocketClient.setExtraHeader("Type",m_Type);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
+  
+}
+
+
+void Module::LoadConfig()
+{
+  m_Config.parse();
+  m_Conf=m_Config.getConfig(m_Name);
+}
+
+
+void Module::printParameters()
+{
+  std::cout<<m_Conf<<std::endl;
 }
 
 Module::~Module()
@@ -44,7 +61,7 @@ Module::~Module()
 
 void Module::Initialize()
 {
-  m_Config.parse();
+  LoadConfig();
   DoInitialize();
   sendStatus("INITIALIZED");
 }

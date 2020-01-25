@@ -3,9 +3,6 @@
 #include "CAENVMElib.h"
 #include <iostream>
 #include "get.hpp"
-#include "parser.hpp"
-#include "literal.hpp"
-#include "serializer.hpp"
 
 namespace CAEN 
 {
@@ -67,6 +64,8 @@ void CAENVMEConnector::verifyConfig()
       std::exit(2);
     }
   }
+
 }
+
 
 }

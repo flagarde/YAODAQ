@@ -6,15 +6,35 @@
 #include "get.hpp"
 #include <algorithm>
 
+toml::value Configuration::getConfig(const std::string& mmodule)
+{
+  if(m_ModuleConfig.find(mmodule)==m_ModuleConfig.end())
+  {
+    std::cout<<"Board/Module "<<mmodule<<" not found in configuration !"<<std::endl;
+    throw;
+  }
+  else return m_ModuleConfig[mmodule];
+}
+  
+toml::value Configuration::getConnectorConfig(const std::string& mmodule)
+{
+  if(m_ConnectorConfig.find(mmodule)==m_ConnectorConfig.end())
+  {
+    std::cout<<"Board "<<mmodule<<" not found in configuration !"<<std::endl;
+    throw;
+  }
+  return m_ConnectorConfig[mmodule];
+}
+
+
 void Configuration::parse()
 {
-  m_Conf=toml::parse<toml::preserve_comments,std::map,std::vector>(m_Filename);
-  checkFile();
-  fillIndexes();
-  for(std::map<std::string,BoardInfos>::iterator it=m_BoardsInfos.begin();it!=m_BoardsInfos.end();++it)
+  if(m_isParsed==false)
   {
-    it->second.print();
-    std::cout<<std::endl;
+    m_Conf=toml::parse<toml::preserve_comments,std::map,std::vector>(m_Filename);
+    checkFile();
+    fillIndexes();
+    m_isParsed=true;
   }
 }
 
@@ -94,6 +114,8 @@ void Configuration::checkFile()
                     }
                   }
                   m_BoardsInfos.emplace(board_name,BoardInfos(room_name,rack_name,crate_name,board_name,boards,board_connector));
+                  m_ModuleConfig.emplace(board_name,boards);
+                  m_ConnectorConfig.emplace(board_name,board_connector);
                 }
               }
             }

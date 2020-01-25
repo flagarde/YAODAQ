@@ -38,10 +38,14 @@ install(TARGETS CAENError RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIV
 
 set(CAEN_CONNECTOR_INCLUDE_FILES
     include/CAENVMEConnector.hpp
+    include/CAENDigitizerConnector.hpp
+    include/CAENHVConnector.hpp
     )
 
 set(CAEN_CONNECTOR_SRC_FILES
     src/CAENVMEConnector.cpp
+    src/CAENDigitizerConnector.cpp
+    src/CAENHVConnector.cpp
     )
 
 add_library(CAENConnectors STATIC "${CAEN_CONNECTOR_SRC_FILES}")

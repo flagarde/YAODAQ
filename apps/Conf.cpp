@@ -5,6 +5,8 @@ int main()
   Board::setConfigFile("./toto.toml");
   Board toto("toto","titi");
   toto.Initialize();
+  toto.printParameters();
+  toto.printConnectorParameters();
   /*toml::value data = toml::parse("./toto.cfg");
   // loop over all the `[[robot]]` defined in a file
   for(const auto& robot : toml::find<toml::array>(data, "robot"))

@@ -33,12 +33,11 @@ public :
   virtual void OnPing(const ix::WebSocketMessagePtr& msg);
   virtual void OnMessage(const ix::WebSocketMessagePtr& msg);
   virtual void OnError(const ix::WebSocketMessagePtr& msg);
-  
   ix::WebSocketSendInfo sendBinary(Message& message);
   ix::WebSocketSendInfo sendText(Message& message);
   static void setConfigFile(const std::string&);
+  void printParameters();
 protected:
-  static Configuration m_Config;
   virtual void DoInitialize();
   virtual void DoConnect();
   virtual void DoConfigure();
@@ -49,13 +48,16 @@ protected:
   virtual void DoDisconnect();
   virtual void DoRelease();
   virtual void DoQuit();
+  virtual void LoadConfig();
+  toml::value m_Conf;
+  static Configuration m_Config;
+  std::string m_Name{"Unknown"};
+  std::string m_Type{"Unknown"};
 private:
   void DoOnStatus(Message& message);
   void sendStatus(const std::string&);
   void DoOnMessage(const ix::WebSocketMessagePtr& msg);
   WebsocketClient m_WebsocketClient;
-  std::string m_Name{"Unknown"};
-  std::string m_Type{"Unknown"};
   std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack
   {
     [this](const ix::WebSocketMessagePtr& msg)
