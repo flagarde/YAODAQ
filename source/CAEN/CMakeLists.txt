@@ -49,9 +49,9 @@ set(CAEN_CONNECTOR_SRC_FILES
     )
 
 add_library(CAENConnectors STATIC "${CAEN_CONNECTOR_SRC_FILES}")
-add_dependencies(CAENConnectors Connector)
+add_dependencies(CAENConnectors Connector CAENError)
 set_target_properties(CAENConnectors PROPERTIES PUBLIC_HEADER "${CAEN_CONNECTOR_INCLUDE_FILES}")
-target_link_libraries(CAENConnectors PUBLIC Connector)
+target_link_libraries(CAENConnectors PUBLIC Connector PUBLIC CAENError)
 target_include_directories(CAENConnectors PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/> PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}/CAEN>)
 target_compile_definitions(CAENConnectors PRIVATE ${CAEN_DEFS})
 install(TARGETS CAENConnectors RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION "include/CAEN")
