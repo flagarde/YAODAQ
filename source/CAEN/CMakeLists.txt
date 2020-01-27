@@ -13,8 +13,8 @@ set(CAEN_ERROR_INCLUDE_FILES
     include/CAENFlashError.hpp
     include/CAENHVError.hpp
     include/CAENVMEError.hpp
-     ${DPP_HEADER}
-    )
+    ${DPP_HEADER}
+   )
 
 set(CAEN_ERROR_SRC_FILES
     src/CAENCommError.cpp
@@ -23,35 +23,35 @@ set(CAEN_ERROR_SRC_FILES
     src/CAENHVError.cpp
     src/CAENVMEError.cpp
     ${DPP_SRC}
-    )
+   )
 
-add_library(CAENError STATIC "${CAEN_ERROR_SRC_FILES}")
-add_dependencies(CAENError CAENlibs Error)
-set_target_properties(CAENError PROPERTIES PUBLIC_HEADER "${CAEN_ERROR_INCLUDE_FILES}")
-target_link_libraries(CAENError PUBLIC Error INTERFACE CAENVME INTERFACE CAENComm INTERFACE CAENDigitizer INTERFACE caenhvwrapper INTERFACE ${CMAKE_DL_LIBS})
+add_library(CAENErrors STATIC "${CAEN_ERROR_SRC_FILES}")
+add_dependencies(CAENErrors CAENlibs Error)
+set_target_properties(CAENErrors PROPERTIES PUBLIC_HEADER "${CAEN_ERROR_INCLUDE_FILES}")
+target_link_libraries(CAENErrors PUBLIC Error INTERFACE CAENVME INTERFACE CAENComm INTERFACE CAENDigitizer INTERFACE caenhvwrapper INTERFACE ${CMAKE_DL_LIBS})
 if(${ARCHITECTURE} STREQUAL "x64" OR ${ARCHITECTURE} STREQUAL "x86")
-  target_link_libraries(CAENError INTERFACE ${DPP_LIB})
+  target_link_libraries(CAENErrors INTERFACE ${DPP_LIB})
 endif()
-target_include_directories(CAENError PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/> PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}/CAEN>)
-target_compile_definitions(CAENError PRIVATE ${CAEN_DEFS})
-install(TARGETS CAENError RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION "include/CAEN")
+target_include_directories(CAENErrors PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/> PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}/CAEN>)
+target_compile_definitions(CAENErrors PRIVATE ${CAEN_DEFS})
+install(TARGETS CAENErrors RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION "include/CAEN")
 
 set(CAEN_CONNECTOR_INCLUDE_FILES
     include/CAENVMEConnector.hpp
     include/CAENDigitizerConnector.hpp
     include/CAENHVConnector.hpp
-    )
+   )
 
 set(CAEN_CONNECTOR_SRC_FILES
     src/CAENVMEConnector.cpp
     src/CAENDigitizerConnector.cpp
     src/CAENHVConnector.cpp
-    )
+   )
 
 add_library(CAENConnectors STATIC "${CAEN_CONNECTOR_SRC_FILES}")
-add_dependencies(CAENConnectors Connector CAENError)
+add_dependencies(CAENConnectors Connector CAENErrors)
 set_target_properties(CAENConnectors PROPERTIES PUBLIC_HEADER "${CAEN_CONNECTOR_INCLUDE_FILES}")
-target_link_libraries(CAENConnectors PUBLIC Connector PUBLIC CAENError)
+target_link_libraries(CAENConnectors PUBLIC Connector PUBLIC CAENErrors)
 target_include_directories(CAENConnectors PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/> PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}/CAEN>)
 target_compile_definitions(CAENConnectors PRIVATE ${CAEN_DEFS})
 install(TARGETS CAENConnectors RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION "include/CAEN")

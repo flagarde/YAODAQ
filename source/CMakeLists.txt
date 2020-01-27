@@ -28,22 +28,40 @@ add_custom_command(TARGET Event_shared PRE_BUILD  COMMAND ${CMAKE_COMMAND} -E co
 
 if(NOT ${ANALYSER}) 
     
-    add_library(Error src/Error.cpp include/Error.hpp)
-    target_include_directories(Error PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
-    install(TARGETS Error RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
-
-    add_library(Connector src/Connector.cpp include/Connector.hpp)
-    target_include_directories(Connector PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}> PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml")
-    install(TARGETS Error RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
-    
     if(CAEN_HARDWARE)
       add_subdirectory(CAEN)
     endif()
     
+    add_library(Error src/Error.cpp include/Error.hpp)
+    target_include_directories(Error PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+    install(TARGETS Error RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
+
+    add_library(ConnectorInfos src/ConnectorInfos.cpp include/ConnectorInfos.hpp)
+    add_dependencies(ConnectorInfos toml11)
+    target_include_directories(ConnectorInfos PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}> PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml")
+    install(TARGETS ConnectorInfos RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
+    
+    add_library(Connector src/Connector.cpp include/Connector.hpp)
+    add_dependencies(Connector ConnectorInfos)
+    target_include_directories(Connector PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+    install(TARGETS Connector RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
+    target_link_libraries(Connector PUBLIC ConnectorInfos)
+    
+    add_library(ConnectorFactory src/ConnectorFactory.cpp include/ConnectorFactory.hpp)
+    add_dependencies(ConnectorFactory ConnectorInfos)
+    if(CAEN_HARDWARE)
+      target_include_directories(ConnectorFactory PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/source/CAEN/include> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}/CAEN>)
+      target_link_libraries(ConnectorFactory PUBLIC CAENConnectors)
+    endif()
+    target_include_directories(ConnectorFactory PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+    install(TARGETS ConnectorFactory RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
+    target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos)
+    
     add_library(Configuration src/Configuration.cpp src/BoardInfos.cpp)
-    add_dependencies(Configuration toml11)
-    target_include_directories(Configuration PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml" PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+    add_dependencies(Configuration ConnectorInfos)
+    target_include_directories(Configuration PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
     install(TARGETS Configuration RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
+    target_link_libraries(Configuration PUBLIC ConnectorInfos)
     
     add_library(message src/Message.cpp src/Info.cpp src/Status.cpp)
     add_dependencies(message elogpp)
@@ -51,9 +69,9 @@ if(NOT ${ANALYSER})
     target_link_libraries(message PUBLIC jsoncpp)
     
     add_library(websocket src/WebsocketServer.cpp src/WebsocketClient.cpp src/ConnectionState.cpp src/Module.cpp  src/Connector.cpp  src/Board.cpp )
-    add_dependencies(websocket IXWebSocket message fmt Configuration)
+    add_dependencies(websocket IXWebSocket message fmt Configuration ConnectorFactory)
     target_include_directories(websocket  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml"  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/"  PUBLIC ${ZLIB_INCLUDE_DIRS})
-    target_link_libraries(websocket PUBLIC message PUBLIC mbedcrypto PUBLIC ixwebsocket PUBLIC mbedtls PUBLIC mbedx509 PUBLIC ${ZLIB_LIBRARIES} INTERFACE fmt PUBLIC Configuration)
+    target_link_libraries(websocket PUBLIC message PUBLIC mbedcrypto PUBLIC ixwebsocket PUBLIC mbedtls PUBLIC mbedx509 PUBLIC ${ZLIB_LIBRARIES} INTERFACE fmt PUBLIC Configuration PUBLIC ConnectorFactory)
     
    
     

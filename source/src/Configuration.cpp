@@ -16,14 +16,14 @@ toml::value Configuration::getConfig(const std::string& mmodule)
   else return m_ModuleConfig[mmodule];
 }
   
-toml::value Configuration::getConnectorConfig(const std::string& mmodule)
+ConnectorInfos Configuration::getConnectorInfos(const std::string& mmodule)
 {
-  if(m_ConnectorConfig.find(mmodule)==m_ConnectorConfig.end())
+  if(m_ConnectorInfos.find(mmodule)==m_ConnectorInfos.end())
   {
     std::cout<<"Board "<<mmodule<<" not found in configuration !"<<std::endl;
     throw;
   }
-  return m_ConnectorConfig[mmodule];
+  return m_ConnectorInfos[mmodule];
 }
 
 
@@ -40,6 +40,7 @@ void Configuration::parse()
 
 void Configuration::checkFile()
 {
+  static int connector_ID{-1};
   for(const auto& rooms : toml::find<toml::array>(m_Conf,"Room"))
   {
     std::string room_name=toml::find_or<std::string>(rooms,"name","");
@@ -110,12 +111,13 @@ void Configuration::checkFile()
                     }
                     else
                     {
+                      ++connector_ID;
                       board_connector=crate_connector;
                     }
                   }
                   m_BoardsInfos.emplace(board_name,BoardInfos(room_name,rack_name,crate_name,board_name,boards,board_connector));
                   m_ModuleConfig.emplace(board_name,boards);
-                  m_ConnectorConfig.emplace(board_name,board_connector);
+                  m_ConnectorInfos.emplace(board_name,ConnectorInfos(board_connector,crate_have_connector,connector_ID));
                 }
               }
             }

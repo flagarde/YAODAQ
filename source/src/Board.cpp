@@ -3,36 +3,50 @@
 #include "literal.hpp"
 #include "serializer.hpp"
 #include "get.hpp"
+#include "value.hpp"
+
+ConnectorFactory Board::m_ConnectorFactory=ConnectorFactory();
 
 Board::Board(const std::string& type,const std::string& name):Module(type,name)
 {
   
 }
 
+void Board::DoDoConnect()
+{
+  m_Handle=m_Connector->Connect();
+  DoConnect();
+}
+
+void Board::DoDoDisconnect()
+{
+  DoDisconnect();
+  m_Connector->Disconnect();
+}
+
 void Board::DoInitialize()
 {
-  
   
 }
 
 void Board::DoConnect()
 {
-  m_Handle=m_Connector->Connect();
+  
 }
 
 void Board::DoDisconnect()
 {
-  m_Connector->Disconnect();
+  
 }
 
 void Board::LoadConfig()
 {
   Module::LoadConfig();
-  m_ConnectorConf=m_Config.getConnectorConfig(m_Name);
-  if(m_Connector!=nullptr) m_Connector->setConfiguration(m_ConnectorConf);
+  m_Connector=m_ConnectorFactory.createConnector(m_Config.getConnectorInfos(m_Name));
+  m_Connector->verifyParameters();
 }
 
 void Board::printConnectorParameters()
 {
-  std::cout<<m_ConnectorConf<<std::endl;
+  m_Connector->printParameters();
 }

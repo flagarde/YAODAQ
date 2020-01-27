@@ -1,7 +1,9 @@
 #ifndef CAENDIGITIZERCONNECTOR_HPP
 #define CAENDIGITIZERCONNECTOR_HPP
-#include "Connector.hpp"
+#include <string>
 #include <unordered_map>
+
+#include "Connector.hpp"
 
 namespace CAEN 
 {
@@ -9,11 +11,11 @@ namespace CAEN
 class CAENDigitizerConnector : public Connector
 {
 public:
-  CAENDigitizerConnector();
+  CAENDigitizerConnector(const ConnectorInfos& infos);
   virtual void Disconnect() final;
   virtual std::int32_t Connect() final;
 private:
-  virtual void verifyConfig() final;
+  virtual void verifyParameters() final;
   std::string m_ConnectionType{""};
   std::string m_Model{""};
   int m_LinkNum{0};

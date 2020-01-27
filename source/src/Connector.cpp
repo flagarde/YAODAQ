@@ -1,27 +1,17 @@
 #include "Connector.hpp"
-#include <iostream>
-#include "parser.hpp"
-#include "literal.hpp"
-#include "serializer.hpp"
-#include "get.hpp"
 
-Connector::Connector(const std::string& type,const std::string& name):m_Type(type),m_Name(name)
+Connector::Connector(const std::string& type,const ConnectorInfos& infos):m_Type(type),m_Infos(infos)
 {
   
 }
 
-void Connector::setConfiguration(const toml::value& config)
+toml::value Connector::getParameters()
 {
-  m_Configs=config;
-  verifyConfig();
+  return m_Infos.getParameters();
 }
 
-void Connector::verifyConfig()
-{
-  
-}
 
 void Connector::printParameters()
 {
-  std::cout<<m_Configs<<std::endl;
+  m_Infos.printParameters();
 }

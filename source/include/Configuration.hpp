@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include "BoardInfos.hpp"
+#include "ConnectorInfos.hpp"
 #include "value.hpp"
 
 class Configuration 
@@ -13,7 +14,7 @@ public:
   std::string getFileName();
   void setFileName(const std::string&);
   toml::value getConfig(const std::string&);
-  toml::value getConnectorConfig(const std::string&);
+  ConnectorInfos getConnectorInfos(const std::string&);
 private:
   void checkFile();
   void fillIndexes();
@@ -25,7 +26,7 @@ private:
   std::vector<std::string> m_Crate_Names;
   std::map<std::string,BoardInfos> m_BoardsInfos;
   std::map<std::string,toml::value> m_ModuleConfig;
-  std::map<std::string,toml::value> m_ConnectorConfig;
+  std::map<std::string,ConnectorInfos> m_ConnectorInfos;
 };
 
 #endif

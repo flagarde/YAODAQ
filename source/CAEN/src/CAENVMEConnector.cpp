@@ -7,18 +7,24 @@
 namespace CAEN 
 {
 
-CAENVMEConnector::CAENVMEConnector():Connector("CAENVME")
+std::unordered_map<std::string,int> CAENVMEConnector::m_ModelList
 {
+    {"V1718",cvV1718},    /*!< \brief The board is V1718  */
+    {"V2718",cvV2718},    /*!< \brief The board is V2718  */
+    {"A2818",cvA2818},    /*!< \brief The board is A2818  */
+    {"A2719",cvA2719},    /*!< \brief The board is A2719  */
+    {"A3818",cvA3818},    /*!< \brief The board is A3818  */
+};  
   
+  
+CAENVMEConnector::CAENVMEConnector(const ConnectorInfos& infos):Connector("CAENVME",infos)
+{
+
 }
 
 std::int32_t CAENVMEConnector::Connect()
 {
-  if(m_Model=="V1718") CAENVMEError(CAENVME_Init(cvV1718,toml::find<short>(m_Configs,"Link"),toml::find_or<short>(m_Configs,"Board Number",0),&m_Handle));
-  else if (m_Model=="V2718") CAENVMEError(CAENVME_Init(cvV2718,toml::find<short>(m_Configs,"Link"),toml::find_or<short>(m_Configs,"Board Number",0),&m_Handle));
-  else if (m_Model=="A2818") CAENVMEError(CAENVME_Init(cvA2818,toml::find<short>(m_Configs,"Link"),toml::find_or<short>(m_Configs,"Board Number",0),&m_Handle));
-  else if (m_Model=="A2719") CAENVMEError(CAENVME_Init(cvA2719,toml::find<short>(m_Configs,"Link"),toml::find_or<short>(m_Configs,"Board Number",0),&m_Handle));
-  else CAENVMEError(CAENVME_Init(cvA3818,toml::find<short>(m_Configs,"Link"),toml::find_or<short>(m_Configs,"Board Number",0),&m_Handle));
+  CAENVMEError(CAENVME_Init(static_cast<CVBoardTypes>(m_ModelList[m_Model]),m_LinkNumber,m_ConetNode,&m_Handle));
   return m_Handle;
 }
 
@@ -27,14 +33,15 @@ void CAENVMEConnector::Disconnect()
   CAENVMEError(CAENVME_End(m_Handle));
 }
 
-void CAENVMEConnector::verifyConfig()
+void CAENVMEConnector::verifyParameters()
 {
   try
   {
-    m_Model=toml::find_or<std::string>(m_Configs,"Model","");
-    if(m_Model!="V1718"&&m_Model!="V2718"&&m_Model!="A2818"&&m_Model!="A2719"&&m_Model!="A3818");
+    m_Model=toml::find_or<std::string>(getParameters(),"Model","");
+    if(m_ModelList.find(m_Model)==m_ModelList.end())
     {
-      std::cout<<"Model should be V1718, V2718, A2818, A2719, A3818 !"<<std::endl;
+      std::cout<<"Model "<<m_Model<<" Unknown !"<<std::endl;
+      std::exit(2);
     }
   }
   catch(const std::out_of_range& e)
@@ -42,21 +49,20 @@ void CAENVMEConnector::verifyConfig()
     std::cout<<"Model key not set !"<<std::endl;
     std::exit(2);
   }
-  
   try
   {
-    toml::find<short>(m_Configs,"Link");
+    m_LinkNumber=toml::find<short>(getParameters(),"Link Number");
   }
   catch(const std::out_of_range& e)
   {
-    std::cout<<"Link key not set !"<<std::endl;
+    std::cout<<"\"Link Number\" key not set !"<<std::endl;
     std::exit(2);
   }
   if(m_Model=="A2818"||m_Model=="A2719"||m_Model=="A3818")
   {
     try
     {
-      toml::find<short>(m_Configs,"Board Number");
+      m_ConetNode=toml::find<short>(getParameters(),"Conet Node");
     }
     catch(const std::out_of_range& e)
     {
@@ -64,7 +70,6 @@ void CAENVMEConnector::verifyConfig()
       std::exit(2);
     }
   }
-
 }
 
 

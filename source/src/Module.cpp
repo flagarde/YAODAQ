@@ -41,6 +41,15 @@ Module::Module( const std::string& type,const std::string& name):m_Name(name),m_
   
 }
 
+void Module::DoDoConnect()
+{
+  
+}
+
+void Module::DoDoDisconnect()
+{
+  
+}
 
 void Module::LoadConfig()
 {
@@ -68,7 +77,7 @@ void Module::Initialize()
 
 void Module::Connect()
 {
-  DoConnect();
+  DoDoConnect();
   sendStatus("CONNECTED");
 }
 
@@ -104,7 +113,7 @@ void Module::Clear()
 
 void Module::Disconnect()
 {
-  DoDisconnect();
+  DoDoDisconnect();
   sendStatus("DISCONNECTED");
 }
 

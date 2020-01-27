@@ -2,6 +2,7 @@
 #define BOARD_HPP
 #include <string>
 #include "Connector.hpp"
+#include "ConnectorFactory.hpp"
 #include "Module.hpp"
 #include <memory>
 
@@ -15,8 +16,10 @@ public:
   virtual ~Board(){};
   void printConnectorParameters();
 private:
-  toml::value m_ConnectorConf;
+  virtual void DoDoConnect() final;
+  virtual void DoDoDisconnect() final;
   virtual void LoadConfig() final;
+  static ConnectorFactory m_ConnectorFactory;
   std::shared_ptr<Connector> m_Connector;
   std::int32_t m_Handle{-1};
 };
