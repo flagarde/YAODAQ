@@ -91,17 +91,17 @@ switch (code) {
 #if experimental_have_source_location == 1
 CAENHVError::CAENHVError(const int& code,std::experimental::source_location loc):Error(code,ErrorStrings(code),loc)
 {
-    if(code!=CAENHV_OK) throw *this;
+  if(code!=CAENHV_OK) throw *this;
 };
 #elif have_source_location == 1
 CAENHVError::CAENHVError(const int& code,std::source_location loc):Error(code,ErrorStrings(code),loc)
 {
-    if(code!=CAENHV_OK) throw *this;
+  if(code!=CAENHV_OK) throw *this;
 };
 #else
 CAENHVError::CAENHVError(const int& code):Error(code,ErrorStrings(code))
 {
-    if(code!=CAENHV_OK) throw *this;
+  if(code!=CAENHV_OK) throw *this;
 };
 #endif
 

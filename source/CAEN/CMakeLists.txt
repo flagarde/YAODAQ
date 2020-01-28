@@ -48,7 +48,7 @@ set(CAEN_CONNECTOR_SRC_FILES
     src/CAENHVConnector.cpp
    )
 
-add_library(CAENConnectors STATIC "${CAEN_CONNECTOR_SRC_FILES}")
+add_library(CAENConnectors SHARED "${CAEN_CONNECTOR_SRC_FILES}")
 add_dependencies(CAENConnectors Connector CAENErrors)
 set_target_properties(CAENConnectors PROPERTIES PUBLIC_HEADER "${CAEN_CONNECTOR_INCLUDE_FILES}")
 target_link_libraries(CAENConnectors PUBLIC Connector PUBLIC CAENErrors)

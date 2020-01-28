@@ -10,14 +10,20 @@
 #else
 #  define have_source_location 0
 #endif
-#include<exception>
-#include<cstdint>
-#include<string>
+#include <exception>
+#include <cstdint>
+#include <string>
 
 class Error : public std::exception
 {
 public:
+#if experimental_have_source_location == 1
     Error(const int& code=0,const char* message="",std::experimental::source_location loc=std::experimental::source_location::current());
+#elif have_source_location == 1
+    Error(const int& code=0,const char* message="",std::source_location loc=std::source_location::current());
+#else
+    Error(const int& code=0,const char* message="");
+#endif
     virtual ~Error(){};
     virtual const char* what() const noexcept;
 #if have_source_location == 1
@@ -27,24 +33,20 @@ public:
     const char* function_name() const {return location.function_name();}
 #endif
     const std::int_least32_t code() const {return m_code;}
-    
+    void setLoggerName(const std::string& name);
 private:
     Error()=delete;
-    void construct_message()
-    {
-        m_message="Error "+std::to_string(m_code)+"\n\t-> "+m_message;
-#if have_source_location == 1
-        m_message+=(" in function \""+std::string(function_name())+"\" in file \""+std::string(file_name())+"\" line "+std::to_string(line())).c_str();
-#endif
-    }
+    void construct_message();
 protected:
+    void to_throw(const Error& error);
     std::string m_message{"Compile with C++20 for better informations !"};
     const std::int_least32_t m_code{0};
-    virtual const char* ErrorStrings(const std::int_least32_t& code)=0;
+    virtual const char* ErrorStrings(const std::int_least32_t& code);
 #if experimental_have_source_location == 1
     std::experimental::source_location location;
 #elif have_source_location == 1
     const std::source_location& location;
 #endif
 };
+
 #endif

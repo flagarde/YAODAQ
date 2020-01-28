@@ -14,8 +14,8 @@ Board::Board(const std::string& type,const std::string& name):Module(type,name)
 
 void Board::DoDoConnect()
 {
-  m_Handle=m_Connector->Connect();
-  DoConnect();
+    m_Handle=m_Connector->Connect();
+    DoConnect();
 }
 
 void Board::DoDoDisconnect()

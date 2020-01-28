@@ -30,17 +30,17 @@ switch (code) {
 #if experimental_have_source_location == 1
 CAENFlashError::CAENFlashError(const int& code,std::experimental::source_location loc):Error(code,ErrorStrings(code),loc)
 {
-    if(code!=0) throw *this;
+  if(code!=0) throw *this;
 };
 #elif have_source_location == 1
 CAENFlashError::CAENFlashError(const int& code,std::source_location loc):Error(code,ErrorStrings(code),loc)
 {
-    if(code!=0) throw *this;
+  if(code!=0) throw *this;
 };
 #else
 CAENFlashError::CAENFlashError(const int& code):Error(code,ErrorStrings(code))
 {
-    if(code!=0) throw *this;
+  if(code!=0) throw *this;
 };
 #endif
 

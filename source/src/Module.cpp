@@ -3,8 +3,23 @@
 #include "literal.hpp"
 #include "serializer.hpp"
 #include "get.hpp"
+#include "spdlog.h"
+#include "sinks/stdout_sinks.h" // or "../stdout_sinks.h" if no colors needed
+#include "sinks/ostream_sink.h"
+#include "sinks/ansicolor_sink.h"
+
+
+std::shared_ptr<spdlog::sinks::sink>  Module::console_sink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
 
 Configuration Module::m_Config=Configuration();
+
+void Module::sendLog(const std::string& log)
+{
+  Log m_log;
+  if(log!="") m_log=Log(log);
+  else m_log=Log(oss.str());
+  sendText(m_log);
+}
 
 void  Module::setConfigFile(const std::string& file)
 {
@@ -36,9 +51,11 @@ Module::Module( const std::string& type,const std::string& name):m_Name(name),m_
 {
   m_WebsocketClient.setExtraHeader("Name",m_Name);
   m_WebsocketClient.setExtraHeader("Type",m_Type);
+  std::shared_ptr<spdlog::sinks::sink> ostream_sink = std::make_shared<spdlog::sinks::ostream_sink_mt> (oss,true);
+  spdlog::sinks_init_list sink_list = {ostream_sink,console_sink};
+  m_Logger= std::make_shared<spdlog::logger>(m_Type+"/"+m_Name,sink_list.begin(),sink_list.end());
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
-  
 }
 
 void Module::DoDoConnect()
@@ -70,63 +87,153 @@ Module::~Module()
 
 void Module::Initialize()
 {
-  LoadConfig();
-  DoInitialize();
-  sendStatus("INITIALIZED");
+  try
+  {
+    LoadConfig();
+    DoInitialize();
+    sendStatus("INITIALIZED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Connect()
 {
-  DoDoConnect();
-  sendStatus("CONNECTED");
+  try
+  {
+    DoDoConnect();
+    sendStatus("CONNECTED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Configure()
 {
-  DoConfigure();
-  sendStatus("CONFIGURE");
+  try
+  {
+    DoConfigure();
+    sendStatus("CONFIGURE");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Start()
 {
-  DoStart();
-  sendStatus("STARTED");
+  try
+  {
+    DoStart();
+    sendStatus("STARTED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Pause()
 {
-  DoPause();
-  sendStatus("PAUSED");
+  try
+  {
+    DoPause();
+    sendStatus("PAUSED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Stop()
 {
-  DoStop();
-  sendStatus("STOPED");
+  try
+  {
+    DoStop();
+    sendStatus("STOPED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Clear()
 {
-  DoClear();
-  sendStatus("CLEARED");
+  try
+  {
+    DoClear();
+    sendStatus("CLEARED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Disconnect()
 {
-  DoDoDisconnect();
-  sendStatus("DISCONNECTED");
+  try
+  {
+    DoDoDisconnect();
+    sendStatus("DISCONNECTED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Release()
 {
-  DoRelease();
-  sendStatus("RELEASED");
+  try
+  {
+    DoRelease();
+    sendStatus("RELEASED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::Quit()
 {
-  DoQuit();
-  sendStatus("QUITED");
+  try
+  {
+    DoQuit();
+    sendStatus("QUITED");
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    sendLog();
+    throw;
+  }
 }
 
 void Module::sendStatus(const std::string& stat)

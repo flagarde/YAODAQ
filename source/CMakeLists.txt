@@ -33,12 +33,12 @@ if(NOT ${ANALYSER})
     endif()
     
     add_library(Error src/Error.cpp include/Error.hpp)
-    target_include_directories(Error PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+    target_include_directories(Error PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}> )
     install(TARGETS Error RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
 
     add_library(ConnectorInfos src/ConnectorInfos.cpp include/ConnectorInfos.hpp)
     add_dependencies(ConnectorInfos toml11)
-    target_include_directories(ConnectorInfos PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}> PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml")
+    target_include_directories(ConnectorInfos PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}> PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml/toml") #FIXME TOML/TOML DUE TO CMAKEFILE
     install(TARGETS ConnectorInfos RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
     
     add_library(Connector src/Connector.cpp include/Connector.hpp)
@@ -63,14 +63,14 @@ if(NOT ${ANALYSER})
     install(TARGETS Configuration RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
     target_link_libraries(Configuration PUBLIC ConnectorInfos)
     
-    add_library(message src/Message.cpp src/Info.cpp src/Status.cpp)
+    add_library(message src/Message.cpp src/Info.cpp src/Status.cpp src/Log.cpp)
     add_dependencies(message elogpp)
     target_include_directories(message PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/json" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/")
     target_link_libraries(message PUBLIC jsoncpp)
     
     add_library(websocket src/WebsocketServer.cpp src/WebsocketClient.cpp src/ConnectionState.cpp src/Module.cpp  src/Connector.cpp  src/Board.cpp )
-    add_dependencies(websocket IXWebSocket message fmt Configuration ConnectorFactory)
-    target_include_directories(websocket  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml"  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/"  PUBLIC ${ZLIB_INCLUDE_DIRS})
+    add_dependencies(websocket IXWebSocket message fmt Configuration ConnectorFactory spdlog)
+    target_include_directories(websocket  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml"  PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/"  PUBLIC ${ZLIB_INCLUDE_DIRS} PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/spdlog")
     target_link_libraries(websocket PUBLIC message PUBLIC mbedcrypto PUBLIC ixwebsocket PUBLIC mbedtls PUBLIC mbedx509 PUBLIC ${ZLIB_LIBRARIES} INTERFACE fmt PUBLIC Configuration PUBLIC ConnectorFactory)
     
    

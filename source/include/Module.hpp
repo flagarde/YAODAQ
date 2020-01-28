@@ -7,13 +7,16 @@
 #include "Message.hpp"
 #include "Info.hpp"
 #include "Status.hpp"
+#include "Log.hpp"
 #include "WebsocketClient.hpp"
 #include "Configuration.hpp"
+#include "spdlog.h"
+#include "Error.hpp"
 
 class Module 
 {
 public :
-  Module( const std::string& type="Unknown",const std::string& name="Unknown");
+  Module(const std::string& type="Unknown",const std::string& name="Unknown");
   virtual ~Module();
   void Initialize();
   void Connect();
@@ -55,11 +58,15 @@ protected:
   static Configuration m_Config;
   std::string m_Name{"Unknown"};
   std::string m_Type{"Unknown"};
+  std::shared_ptr<spdlog::logger> m_Logger{nullptr};
+  void sendLog(const std::string& log="");
 private:
+  std::ostringstream oss;
   void DoOnStatus(Message& message);
   void sendStatus(const std::string&);
   void DoOnMessage(const ix::WebSocketMessagePtr& msg);
   WebsocketClient m_WebsocketClient;
+  static std::shared_ptr<spdlog::sinks::sink>  console_sink;
   std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack
   {
     [this](const ix::WebSocketMessagePtr& msg)

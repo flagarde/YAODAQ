@@ -91,7 +91,7 @@ CAENDigitizerError::CAENDigitizerError(const int& code,std::experimental::source
 #elif have_source_location == 1
 CAENDigitizerError::CAENDigitizerError(const int& code,std::source_location loc):Error(code,ErrorStrings(code),loc)
 {
-    if(code!=CAEN_DGTZ_Success) throw *this;
+   if(code!=CAEN_DGTZ_Success) throw *this;
 };
 #else
 CAENDigitizerError::CAENDigitizerError(const int& code):Error(code,ErrorStrings(code))

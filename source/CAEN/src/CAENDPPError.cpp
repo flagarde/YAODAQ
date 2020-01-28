@@ -109,17 +109,17 @@ const char* CAENDPPError::ErrorStrings(const std::int_least32_t& code)
 #if experimental_have_source_location == 1
 CAENDPPError::CAENDPPError(const int& code,std::experimental::source_location loc):Error(code,ErrorStrings(code),loc)
 {
-    if(code!=CAENDPP_RetCode_Ok) throw *this;
+  if(code!=CAENDPP_RetCode_Ok) throw *this;
 };
 #elif have_source_location == 1
 CAENDPPError::CAENDPPError(const int& code,std::source_location loc):Error(code,ErrorStrings(code),loc)
 {
-    if(code!=CAENDPP_RetCode_Ok) throw *this;
+  if(code!=CAENDPP_RetCode_Ok) throw *this;
 };
 #else
 CAENDPPError::CAENDPPError(const int& code):Error(code,ErrorStrings(code))
 {
-    if(code!=CAENDPP_RetCode_Ok) throw *this;
+  if(code!=CAENDPP_RetCode_Ok) throw *this;
 };
 #endif
 

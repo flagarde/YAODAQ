@@ -99,6 +99,7 @@ find_package(ZLIB)
 include(fmt)
 include(CLI11)
 include(toml11)
+include(spdlog)
 
 if(NOT ${ANALYSER}) 
   include(CAENlibs)
