@@ -5,28 +5,47 @@ set(YAODAQ_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in" "${INCLUDE_OUTPUT_DIRECTORY}/ProgramInfos.hpp" @ONLY)
 
+find_package(Threads)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 
-ROOT_GENERATE_DICTIONARY(G__Channel ${YAODAQ_INCLUDE}/Channel.hpp LINKDEF ${YAODAQ_INCLUDE}/ChannelLinkDef.hpp)
-add_library(Channel OBJECT src/Channel.cpp G__Channel.cxx)
-target_link_libraries(Channel INTERFACE ${ROOT_LIBRARIES})
-target_include_directories(Channel PRIVATE ${YAODAQ_INCLUDE})
-add_library(Channel_shared SHARED $<TARGET_OBJECTS:Channel>)
-add_library(Channel_static STATIC $<TARGET_OBJECTS:Channel>)
-add_custom_command(TARGET Channel_shared PRE_BUILD  COMMAND ${CMAKE_COMMAND} -E copy
-                "${CMAKE_CURRENT_BINARY_DIR}/libChannel_rdict.pcm" "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm"
-                )
+if(BUILD_ANALYSIS)
+  ROOT_GENERATE_DICTIONARY(G__Channel ${YAODAQ_INCLUDE}/Channel.hpp LINKDEF ${YAODAQ_INCLUDE}/ChannelLinkDef.hpp)
+  add_library(Channel OBJECT src/Channel.cpp G__Channel.cxx)
+  target_include_directories(Channel PRIVATE ${YAODAQ_INCLUDE})
+  add_library(Channel_shared SHARED $<TARGET_OBJECTS:Channel>)
+  target_include_directories(Channel_shared PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+  target_link_libraries(Channel_shared INTERFACE ${ROOT_LIBRARIES} INTERFACE Threads::Threads)
+  add_library(Channel_static STATIC $<TARGET_OBJECTS:Channel>)
+  target_link_libraries(Channel_static INTERFACE ${ROOT_LIBRARIES} INTERFACE Threads::Threads)
+  target_include_directories(Channel_static PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+  add_custom_target(CopyChannel ALL DEPENDS "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm")
+  add_custom_command(OUTPUT "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm"
+                     COMMAND ${CMAKE_COMMAND} -E copy libChannel_rdict.pcm "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm"
+                     DEPENDS "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm"
+                    )
+  set_target_properties(Channel PROPERTIES PUBLIC_HEADER ${YAODAQ_INCLUDE}/Channel.hpp)
+  install(TARGETS Channel RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
 
 
-ROOT_GENERATE_DICTIONARY(G__Event ${CMAKE_CURRENT_SOURCE_DIR}/include/Event.hpp LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/include/EventLinkDef.hpp)
-add_library(Event OBJECT src/Event.cpp G__Event.cxx)
-target_include_directories(Event PRIVATE ${YAODAQ_INCLUDE})
-target_link_libraries(Event INTERFACE ${ROOT_LIBRARIES})
-add_library(Event_shared SHARED $<TARGET_OBJECTS:Event>)
-add_library(Event_static STATIC $<TARGET_OBJECTS:Event>)
-add_custom_command(TARGET Event_shared PRE_BUILD  COMMAND ${CMAKE_COMMAND} -E copy
-                "${CMAKE_CURRENT_BINARY_DIR}/libEvent_rdict.pcm" "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm"
-                )
+  ROOT_GENERATE_DICTIONARY(G__Event ${YAODAQ_INCLUDE}/Event.hpp LINKDEF ${YAODAQ_INCLUDE}/EventLinkDef.hpp)
+  add_library(Event OBJECT src/Event.cpp G__Event.cxx)
+  target_include_directories(Event PRIVATE ${YAODAQ_INCLUDE})
+  target_link_libraries(Event INTERFACE ${ROOT_LIBRARIES})
+  add_library(Event_shared SHARED $<TARGET_OBJECTS:Event>)
+  target_include_directories(Event_shared PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+  target_link_libraries(Event_shared INTERFACE ${ROOT_LIBRARIES} INTERFACE Threads::Threads)
+  add_library(Event_static STATIC $<TARGET_OBJECTS:Event>)
+  target_include_directories(Event_static PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
+  target_link_libraries(Event_static INTERFACE ${ROOT_LIBRARIES} INTERFACE Threads::Threads)
+  add_custom_target(CopyEvent ALL DEPENDS "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm")
+  add_custom_command(OUTPUT "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm"
+                     COMMAND ${CMAKE_COMMAND} -E copy libEvent_rdict.pcm "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm"
+                     DEPENDS "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm"
+                    )
+  set_target_properties(Event PROPERTIES PUBLIC_HEADER ${YAODAQ_INCLUDE}/Event.hpp)
+  install(TARGETS Event RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
+endif()
 
 if(NOT ${ANALYSER}) 
     

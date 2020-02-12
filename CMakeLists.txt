@@ -88,6 +88,8 @@ include(Architectures)
 
 option(ENABLE_TESTS "Include tests folder" ON)
 option(ENABLE_DOCS "Include docs folder" ON)
+option(BUILD_ANALYSIS "Build the Analysis code" ON)
+option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
 
 option(ANALYSER "I'M AN ANALYSIST" OFF)
 option(CONFIGURATOR "Compile Configurator" ON)
@@ -104,18 +106,12 @@ option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will r
 
 include(${CMAKE_SOURCE_DIR}/settings.cmake)
 
+if(BUILD_ANALYSIS)
+    find_package(ROOT 6 REQUIRED)
+    include(${ROOT_USE_FILE})
+endif()
 
 
-
-
-
-
-
-find_package(ROOT 6 REQUIRED)
-include(${ROOT_USE_FILE})
-
-find_package(Threads)
-set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 
 find_package(ZLIB)

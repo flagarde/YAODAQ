@@ -28,7 +28,7 @@ set(CAEN_ERROR_SRC_FILES
 add_library(CAENErrors STATIC "${CAEN_ERROR_SRC_FILES}")
 add_dependencies(CAENErrors CAENlibs Error)
 set_target_properties(CAENErrors PROPERTIES PUBLIC_HEADER "${CAEN_ERROR_INCLUDE_FILES}")
-target_link_libraries(CAENErrors PUBLIC Error INTERFACE CAENVME INTERFACE CAENComm INTERFACE CAENDigitizer INTERFACE caenhvwrapper INTERFACE ${CMAKE_DL_LIBS})
+target_link_libraries(CAENErrors PUBLIC Error INTERFACE CAENVME INTERFACE CAENComm INTERFACE CAENDigitizer INTERFACE caenhvwrapper INTERFACE ${CMAKE_DL_LIBS} INTERFACE  Threads::Threads)
 if(${ARCHITECTURE} STREQUAL "x64" OR ${ARCHITECTURE} STREQUAL "x86")
   target_link_libraries(CAENErrors INTERFACE ${DPP_LIB})
 endif()

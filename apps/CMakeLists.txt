@@ -1,8 +1,17 @@
+if(BUILD_ANALYSIS)
+  add_executable(Analysis Analysis.cpp)
+  target_link_libraries(Analysis PRIVATE Event_static PRIVATE Channel_static)
+  install(TARGETS Analysis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
 
-add_executable(Analysis Analysis.cpp)
-target_link_libraries(Analysis ${ROOT_LIBRARIES} Event_static Channel_static)
-target_include_directories(Analysis PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" "${CMAKE_SOURCE_DIR}/source/include/")
-install(TARGETS Analysis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+if(BUILD_WEBSOCKETSERVER)
+  add_executable(WebsocketServer WebsocketServer.cpp)
+  add_dependencies(WebsocketServer websocket CLI11)
+  target_include_directories(WebsocketServer PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}")
+  target_link_libraries(WebsocketServer websocket)
+  install(TARGETS WebsocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
+
 
 if(NOT ${ANALYSER}) 
     add_executable(WaveDump WaveDump.cpp)
@@ -13,11 +22,7 @@ if(NOT ${ANALYSER})
     target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m crypto Channel_static Event_static  ${ZLIB_LIBRARIES} mbedcrypto ixwebsocket mbedtls mbedx509)
     install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
-    add_executable(WebsocketServer WebsocketServer.cpp)
-    add_dependencies(WebsocketServer websocket CLI11)
-    target_include_directories(WebsocketServer PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include"  )
-    target_link_libraries(WebsocketServer websocket)
-    install(TARGETS WebsocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+    
     
     add_executable(Configurator Configurator.cpp)
     add_dependencies(Configurator websocket fmt CLI11 configurator)
