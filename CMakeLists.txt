@@ -3,17 +3,34 @@
 #                 author LAGARDE Francois               #
 #########################################################
 
-cmake_minimum_required(VERSION 3.9...3.16 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.9...3.16.4 FATAL_ERROR)
 
-project(DAQ VERSION "1.0.0.0" DESCRIPTION "DAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/DAQ" LANGUAGES C CXX)
+project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/ ${CMAKE_SOURCE_DIR}/extern/)
-set(GENERATED_HEADER_PATH ${CMAKE_BINARY_DIR}/generated/)
-include_directories(${GENERATED_HEADER_PATH})
+# guard against in-source builds
+if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
+endif()
 
+if(CMAKE_CONFIGURATION_TYPES)
+  if(NOT "Coverage" IN_LIST CMAKE_CONFIGURATION_TYPES)
+    list(APPEND CMAKE_CONFIGURATION_TYPES Coverage)
+  endif()
+  if(NOT "Profile" IN_LIST CMAKE_CONFIGURATION_TYPES)
+    list(APPEND CMAKE_CONFIGURATION_TYPES Profile)
+  endif()
+else()
+  set(allowableBuildTypes Debug MinSizeRel None RelWithDebInfo Release Coverage Profile)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "${allowableBuildTypes}")
+  if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+  elseif(NOT CMAKE_BUILD_TYPE IN_LIST allowableBuildTypes)
+    message(FATAL_ERROR "Invalid build type : ${CMAKE_BUILD_TYPE}")
+  endif()
+endif()
 
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/extern")
 
-include(ConfigSafeGuards)
 include(Documentation)
 
 find_package(Git REQUIRED)

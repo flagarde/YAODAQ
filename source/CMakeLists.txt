@@ -1,7 +1,5 @@
-configure_file(
-  "include/ProgramInfos.hpp.in"
-  "${GENERATED_HEADER_PATH}/ProgramInfos.hpp"
-)
+configure_file("include/ProgramInfos.hpp.in" "${CMAKE_BINARY_DIR}/generated/ProgramInfos.hpp" @ONLY)
+configure_file("${CMAKE_BINARY_DIR}/generated/ProgramInfos.hpp" "${INCLUDE_OUTPUT_DIRECTORY}" COPYONLY)
 
 set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 

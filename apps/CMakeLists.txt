@@ -9,7 +9,7 @@ if(NOT ${ANALYSER})
     
     target_include_directories(WaveDump PRIVATE ${ZLIB_INCLUDE_DIRS})
     add_dependencies(WaveDump lib1 lib2 web elogpp IXWebSocket CAENlibs)
-    target_include_directories(WaveDump PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" "${INCLUDE_OUTPUT_DIRECTORY}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
+    target_include_directories(WaveDump PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}")
     target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m crypto Channel_static Event_static  ${ZLIB_LIBRARIES} mbedcrypto ixwebsocket mbedtls mbedx509)
     install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
