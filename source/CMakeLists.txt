@@ -1,7 +1,9 @@
-configure_file("include/ProgramInfos.hpp.in" "${CMAKE_BINARY_DIR}/generated/ProgramInfos.hpp" @ONLY)
-configure_file("${CMAKE_BINARY_DIR}/generated/ProgramInfos.hpp" "${INCLUDE_OUTPUT_DIRECTORY}" COPYONLY)
-
 set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(YAODAQ_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in" "${INCLUDE_OUTPUT_DIRECTORY}/ProgramInfos.hpp" @ONLY)
+
+
 
 ROOT_GENERATE_DICTIONARY(G__Channel ${YAODAQ_INCLUDE}/Channel.hpp LINKDEF ${YAODAQ_INCLUDE}/ChannelLinkDef.hpp)
 add_library(Channel OBJECT src/Channel.cpp G__Channel.cxx)
