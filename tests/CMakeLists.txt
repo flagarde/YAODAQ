@@ -1,3 +1,4 @@
+include(Doctest)
 if(NOT ${ANALYSER}) 
 # List all files containing tests. (Change as needed)
 set(TESTFILES        # All .cpp files in tests/

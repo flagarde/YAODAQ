@@ -1,3 +1,5 @@
+find_package(Git REQUIRED)
+
 set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(YAODAQ_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
