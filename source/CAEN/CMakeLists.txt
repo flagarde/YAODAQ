@@ -1,3 +1,5 @@
+include(CAENlibs)
+
 if(${ARCHITECTURE} STREQUAL "x64" OR ${ARCHITECTURE} STREQUAL "x86")
   set(DPP_LIB CAENDPP)
   set(DPP_SRC src/CAENDPPError.cpp)

@@ -19,11 +19,7 @@ if(BUILD_ANALYSIS)
   add_library(Channel_static STATIC $<TARGET_OBJECTS:Channel>)
   target_link_libraries(Channel_static INTERFACE ${ROOT_LIBRARIES} INTERFACE Threads::Threads)
   target_include_directories(Channel_static PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
-  add_custom_target(CopyChannel ALL DEPENDS "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm")
-  add_custom_command(OUTPUT "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm"
-                     COMMAND ${CMAKE_COMMAND} -E copy libChannel_rdict.pcm "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm"
-                     DEPENDS "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm"
-                    )
+  add_custom_target(CopyChannel DEPENDS ALL COMMAND ${CMAKE_COMMAND} -E copy libChannel_rdict.pcm "${RUNTIME_OUTPUT_DIRECTORY}/libChannel_rdict.pcm")
   set_target_properties(Channel PROPERTIES PUBLIC_HEADER ${YAODAQ_INCLUDE}/Channel.hpp)
   install(TARGETS Channel RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
 
@@ -38,11 +34,7 @@ if(BUILD_ANALYSIS)
   add_library(Event_static STATIC $<TARGET_OBJECTS:Event>)
   target_include_directories(Event_static PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}>)
   target_link_libraries(Event_static INTERFACE ${ROOT_LIBRARIES} INTERFACE Threads::Threads)
-  add_custom_target(CopyEvent ALL DEPENDS "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm")
-  add_custom_command(OUTPUT "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm"
-                     COMMAND ${CMAKE_COMMAND} -E copy libEvent_rdict.pcm "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm"
-                     DEPENDS "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm"
-                    )
+  add_custom_target(CopyEvent DEPENDS ALL COMMAND ${CMAKE_COMMAND} -E copy libEvent_rdict.pcm "${RUNTIME_OUTPUT_DIRECTORY}/libEvent_rdict.pcm")
   set_target_properties(Event PROPERTIES PUBLIC_HEADER ${YAODAQ_INCLUDE}/Event.hpp)
   install(TARGETS Event RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION include)
 endif()

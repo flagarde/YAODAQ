@@ -97,18 +97,11 @@ option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
 option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
                         Tests in tests/*.cpp will still be enabled." OFF)
 
-
-
-
-
-
-
-
 include(${CMAKE_SOURCE_DIR}/settings.cmake)
 
 if(BUILD_ANALYSIS)
-    find_package(ROOT 6 REQUIRED)
-    include(${ROOT_USE_FILE})
+  find_package(ROOT 6.14 REQUIRED)
+  include(${ROOT_USE_FILE})
 endif()
 
 
@@ -120,15 +113,9 @@ include(fmt)
 include(CLI11)
 include(toml11)
 include(spdlog)
-
-if(NOT ${ANALYSER}) 
-  include(CAENlibs)
-  include(IXWebSocket)
-  include(elogpp)
-  if(${CONFIGURATOR})
-    include(soci)
-  endif()
-endif()
+include(IXWebSocket)
+include(elogpp)
+include(soci)
 
 
 
