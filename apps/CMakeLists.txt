@@ -6,8 +6,7 @@ endif()
 
 if(BUILD_WEBSOCKETSERVER)
   add_executable(WebsocketServer WebsocketServer.cpp)
-  add_dependencies(WebsocketServer websocket CLI11)
-  target_include_directories(WebsocketServer PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}")
+  add_dependencies(WebsocketServer websocket)
   target_link_libraries(WebsocketServer websocket)
   install(TARGETS WebsocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
@@ -15,17 +14,16 @@ endif()
 
 if(NOT ${ANALYSER}) 
     add_executable(WaveDump WaveDump.cpp)
-    
     target_include_directories(WaveDump PRIVATE ${ZLIB_INCLUDE_DIRS})
     add_dependencies(WaveDump lib1 lib2 web elogpp IXWebSocket CAENlibs)
-    target_include_directories(WaveDump PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/ixwebsocket" PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}")
-    target_link_libraries(WaveDump ${ROOT_LIBRARIES} CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m crypto Channel_static Event_static  ${ZLIB_LIBRARIES} mbedcrypto ixwebsocket mbedtls mbedx509)
+    target_include_directories(WaveDump PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}")
+    target_link_libraries(WaveDump WebSocket CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m Channel_static Event_static)
     install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     
     
     add_executable(Configurator Configurator.cpp)
-    add_dependencies(Configurator websocket fmt CLI11 configurator)
+    add_dependencies(Configurator websocket spdlog CLI11 configurator)
     target_include_directories(Configurator PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include"  )
     target_link_libraries(Configurator websocket  configurator ${CMAKE_DL_LIBS} ${DATABASES_LIBRARIES} ${MYSQL_LIBRARIES})
     install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
