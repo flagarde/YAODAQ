@@ -99,8 +99,6 @@ option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will r
 
 include(${CMAKE_SOURCE_DIR}/settings.cmake)
 
-find_package(ZLIB)
-
 if(BUILD_ANALYSIS)
   find_package(ROOT 6.14 REQUIRED)
   include(${ROOT_USE_FILE})

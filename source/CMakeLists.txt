@@ -1,6 +1,9 @@
 find_package(Git REQUIRED)
 
-
+if(NOT WIN32)
+  find_package(ZLIB)
+else()
+endif()
 
 include(fmt)
 include(CLI11)
@@ -148,6 +151,7 @@ if(NOT ${ANALYSER})
     add_library(lib2 STATIC src/FileManager.cpp )
     add_dependencies(lib2 CAENlibs)
     target_include_directories(lib2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
+    target_link_libraries(lib2 PUBLIC ZLIB::ZLIB)
     
     add_library(web STATIC src/WebServer.cpp src/Plotter.cpp)
     add_dependencies(web elogpp IXWebSocket CAENlibs)
