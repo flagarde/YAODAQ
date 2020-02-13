@@ -2,10 +2,7 @@
 #include "CAENDigitizerError.hpp"
 #include "CAENDigitizer.h"
 #include <iostream>
-#include "get.hpp"
-#include "parser.hpp"
-#include "literal.hpp"
-
+#include "toml.hpp"
 
 namespace CAEN 
 {

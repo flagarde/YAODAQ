@@ -1,6 +1,6 @@
 #ifndef CONNECTORINFOS_HPP
 #define CONNECTORINFOS_HPP
-#include "value.hpp"
+#include "toml.hpp"
 
 class ConnectorInfos
 {

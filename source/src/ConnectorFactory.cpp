@@ -1,12 +1,9 @@
 #include "ConnectorFactory.hpp"
 #include <iostream>
-#include "get.hpp"
 #include "CAENVMEConnector.hpp"
 #include "CAENDigitizerConnector.hpp"
-#include "parser.hpp"
-#include "literal.hpp"
-#include "serializer.hpp"
-#include "get.hpp"
+#include "toml.hpp"
+
 std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfos& infos)
 {
   infos.printParameters();

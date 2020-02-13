@@ -5,7 +5,7 @@
 #include <map>
 #include "BoardInfos.hpp"
 #include "ConnectorInfos.hpp"
-#include "value.hpp"
+#include "toml.hpp"
 
 class Configuration 
 {

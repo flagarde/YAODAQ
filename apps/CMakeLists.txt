@@ -5,12 +5,18 @@ if(BUILD_ANALYSIS)
 endif()
 
 if(BUILD_WEBSOCKETSERVER)
-  add_executable(WebsocketServer WebsocketServer.cpp)
-  add_dependencies(WebsocketServer websocket)
-  target_link_libraries(WebsocketServer websocket)
-  install(TARGETS WebsocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+  add_executable(WebSocketServer WebsocketServer.cpp)
+  add_dependencies(WebSocketServer WebsocketServer)
+  target_link_libraries(WebSocketServer WebsocketServer)
+  install(TARGETS WebSocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
+if(BUILD_CONFIGURATOR)
+  add_executable(Configurator Configurator.cpp)
+  add_dependencies(Configurator Configurator_)
+  target_link_libraries(Configurator PUBLIC Configurator_)
+  install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
 
 if(NOT ${ANALYSER}) 
     add_executable(WaveDump WaveDump.cpp)
@@ -22,24 +28,20 @@ if(NOT ${ANALYSER})
     
     
     
-    add_executable(Configurator Configurator.cpp)
-    add_dependencies(Configurator websocket spdlog CLI11 configurator)
-    target_include_directories(Configurator PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include"  )
-    target_link_libraries(Configurator websocket  configurator ${CMAKE_DL_LIBS} ${DATABASES_LIBRARIES} ${MYSQL_LIBRARIES})
-    install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+
     
     add_executable(DumpModule DumpModule.cpp)
-    add_dependencies(DumpModule  websocket Configuration)
+    add_dependencies(DumpModule  WebsocketServer Configuration)
     target_include_directories(DumpModule PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
-    target_link_libraries(DumpModule websocket message Configuration)
+    target_link_libraries(DumpModule WebsocketServer Message Configuration)
     install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     
       
     add_executable(Conf Conf.cpp)
-    add_dependencies(Conf Configuration websocket)
+    add_dependencies(Conf Configuration WebsocketServer)
         target_include_directories(Conf PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
-        target_link_libraries(Conf Configuration websocket)
+        target_link_libraries(Conf Configuration WebsocketServer)
     install(TARGETS Conf RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
 endif()

@@ -1,9 +1,5 @@
 #include "Board.hpp"
-#include "parser.hpp"
-#include "literal.hpp"
-#include "serializer.hpp"
-#include "get.hpp"
-#include "value.hpp"
+#include "toml.hpp"
 
 ConnectorFactory Board::m_ConnectorFactory=ConnectorFactory();
 

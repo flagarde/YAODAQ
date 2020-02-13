@@ -1,10 +1,7 @@
 #include "Configuration.hpp"
 #include <iostream>
-#include "parser.hpp"
-#include "literal.hpp"
-#include "serializer.hpp"
-#include "get.hpp"
 #include <algorithm>
+#include "toml.hpp"
 
 toml::value Configuration::getConfig(const std::string& mmodule)
 {

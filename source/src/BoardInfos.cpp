@@ -1,8 +1,5 @@
 #include "BoardInfos.hpp"
-#include "parser.hpp"
-#include "literal.hpp"
-#include "serializer.hpp"
-#include "get.hpp"
+#include "toml.hpp"
 
 BoardInfos::BoardInfos(const std::string& room,const std::string& rack,const std::string& crate,const std::string& board,const toml::value& parm,const toml::value& conparm)
 {

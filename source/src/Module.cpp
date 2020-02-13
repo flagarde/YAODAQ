@@ -1,13 +1,9 @@
 #include "Module.hpp"
-#include "parser.hpp"
-#include "literal.hpp"
-#include "serializer.hpp"
-#include "get.hpp"
 #include "spdlog.h"
 #include "sinks/stdout_sinks.h" // or "../stdout_sinks.h" if no colors needed
 #include "sinks/ostream_sink.h"
 #include "sinks/ansicolor_sink.h"
-
+#include "toml.hpp"
 
 std::shared_ptr<spdlog::sinks::sink>  Module::console_sink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
 

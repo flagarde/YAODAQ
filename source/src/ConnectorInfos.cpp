@@ -1,6 +1,6 @@
 #include "ConnectorInfos.hpp"
 #include <iostream>
-#include "serializer.hpp"
+#include "toml.hpp"
 
 ConnectorInfos::ConnectorInfos(const toml::value& params,const bool& isShared,const int& id):m_Parameters(params),m_IsSharedConnector(isShared),m_ID(id)
 {

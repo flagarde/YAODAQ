@@ -18,7 +18,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/extern")
 
 # guard against in-source builds
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
 endif()
 
@@ -38,7 +38,7 @@ set(CMAKE_SKIP_BUILD_RPATH  FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "${LIBRARY_OUTPUT_DIRECTORY}")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-link_directories("${CMAKE_INSTALL_PREFIX}/lib/")
+link_directories("${LIBRARY_OUTPUT_DIRECTORY}")
 
 if(CMAKE_CONFIGURATION_TYPES)
   if(NOT "Coverage" IN_LIST CMAKE_CONFIGURATION_TYPES)
@@ -90,14 +90,16 @@ option(ENABLE_TESTS "Include tests folder" ON)
 option(ENABLE_DOCS "Include docs folder" ON)
 option(BUILD_ANALYSIS "Build the Analysis code" ON)
 option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
+option(BUILD_DAQ "Build DAQ" ON)
+option(BUILD_CONFIGURATOR "Build Configurator" ON)
 
 option(ANALYSER "I'M AN ANALYSIST" OFF)
-option(CONFIGURATOR "Compile Configurator" ON)
+
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
 option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
                         Tests in tests/*.cpp will still be enabled." OFF)
 
-include(${CMAKE_SOURCE_DIR}/settings.cmake)
+include("${CMAKE_SOURCE_DIR}/settings.cmake")
 
 if(BUILD_ANALYSIS)
   find_package(ROOT 6.14 REQUIRED)

@@ -2,7 +2,7 @@
 #define BOARDINFOS_HPP
 #include <string>
 #include <iostream>
-#include "value.hpp"
+#include "toml.hpp"
 
 class BoardInfos 
 {
