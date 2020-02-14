@@ -57,23 +57,34 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg) {
       continue;
 
     // Section (COMMON or individual channel)
-    if (str[0] == '[') {
-      if (strstr(str, "COMMON")) {
+    if (str[0] == '[') 
+    {
+      if (strstr(str, "COMMON")) 
+      {
         ch = -1;
         continue;
       }
-      if (strstr(str, "TR")) {
+      if (strstr(str, "TR")) 
+      {
         sscanf(str + 1, "TR%d", &val);
-        if (val < 0 || val >= MAX_SET) {
+        if (val < 0 || val >= MAX_SET) 
+        {
           printf("%s: Invalid channel number\n", str);
-        } else {
+        } 
+        else 
+        {
           tr = val;
         }
-      } else {
+      } 
+      else
+      {
         sscanf(str + 1, "%d", &val);
-        if (val < 0 || val >= MAX_SET) {
+        if (val < 0 || val >= MAX_SET) 
+        {
           printf("%s: Invalid channel number\n", str);
-        } else {
+        } 
+        else 
+        {
           ch = val;
         }
       }
@@ -110,7 +121,8 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg) {
     }
 
     // Acquisition Record Length (number of samples)
-    if (strstr(str, "RECORD_LENGTH") != NULL) {
+    if (strstr(str, "RECORD_LENGTH") != NULL) 
+    {
       read = fscanf(f_ini, "%d", &WDcfg.RecordLength);
       continue;
     }
@@ -167,30 +179,25 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg) {
       }
 
       // Check for changes
-      if (PrevUseCorrections != WDcfg.useCorrections)
-        changed = 1;
-      else if (PrevUseManualTables != WDcfg.UseManualTables)
-        changed = 1;
-      else if (memcmp(TabBuf, WDcfg.TablesFilenames,
-                      sizeof(WDcfg.TablesFilenames)))
-        changed = 1;
-      if (changed == 1)
-        ret |= 0x1;
+      if (PrevUseCorrections != WDcfg.useCorrections)changed = 1;
+      else if (PrevUseManualTables != WDcfg.UseManualTables)changed = 1;
+      else if (memcmp(TabBuf, WDcfg.TablesFilenames,sizeof(WDcfg.TablesFilenames)))changed = 1;
+      if (changed == 1)ret |= 0x1;
       continue;
     }
 
     // Test Pattern
-    if (strstr(str, "TEST_PATTERN") != NULL) {
+    if (strstr(str, "TEST_PATTERN") != NULL) 
+    {
       read = fscanf(f_ini, "%s", str1);
-      if (strcmp(str1, "YES") == 0)
-        WDcfg.TestPattern = 1;
-      else if (strcmp(str1, "NO") != 0)
-        printf("%s: invalid option\n", str);
+      if (strcmp(str1, "YES") == 0) WDcfg.TestPattern = 1;
+      else if (strcmp(str1, "NO") != 0) printf("%s: invalid option\n", str);
       continue;
     }
 
     // Acquisition Record Length (number of samples)
-    if (strstr(str, "DECIMATION_FACTOR") != NULL) {
+    if (strstr(str, "DECIMATION_FACTOR") != NULL) 
+    {
       read = fscanf(f_ini, "%d", (int *)&WDcfg.DecimationFactor);
       continue;
     }
@@ -432,42 +439,36 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg) {
     }
 
     // Channel Auto trigger (DISABLED, ACQUISITION_ONLY, ACQUISITION_AND_TRGOUT)
-    if (strstr(str, "CHANNEL_TRIGGER") != NULL) {
+    if (strstr(str, "CHANNEL_TRIGGER") != NULL) 
+    {
       CAEN_DGTZ_TriggerMode_t tm;
       read = fscanf(f_ini, "%s", str1);
-      if (strcmp(str1, "DISABLED") == 0)
-        tm = CAEN_DGTZ_TRGMODE_DISABLED;
-      else if (strcmp(str1, "ACQUISITION_ONLY") == 0)
-        tm = CAEN_DGTZ_TRGMODE_ACQ_ONLY;
-      else if (strcmp(str1, "ACQUISITION_AND_TRGOUT") == 0)
-        tm = CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT;
-      else if (strcmp(str1, "TRGOUT_ONLY") == 0)
-        tm = CAEN_DGTZ_TRGMODE_EXTOUT_ONLY;
-      else {
+      if (strcmp(str1, "DISABLED") == 0) tm = CAEN_DGTZ_TRGMODE_DISABLED;
+      else if (strcmp(str1, "ACQUISITION_ONLY") == 0) tm = CAEN_DGTZ_TRGMODE_ACQ_ONLY;
+      else if (strcmp(str1, "ACQUISITION_AND_TRGOUT") == 0) tm = CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT;
+      else if (strcmp(str1, "TRGOUT_ONLY") == 0) tm = CAEN_DGTZ_TRGMODE_EXTOUT_ONLY;
+      else 
+      {
         printf("%s: Invalid Parameter\n", str);
         continue;
       }
-      if (ch == -1)
-        for (i = 0; i < MAX_SET; i++)
-          WDcfg.ChannelTriggerMode[i] = tm;
-      else
-        WDcfg.ChannelTriggerMode[ch] = tm;
-
+      if (ch == -1) for (i = 0; i < MAX_SET; i++) WDcfg.ChannelTriggerMode[i] = tm;
+      else WDcfg.ChannelTriggerMode[ch] = tm;
       continue;
     }
 
     // Front Panel LEMO I/O level (NIM, TTL)
-    if (strstr(str, "FPIO_LEVEL") != NULL) {
+    if (strstr(str, "FPIO_LEVEL") != NULL) 
+    {
       read = fscanf(f_ini, "%s", str1);
-      if (strcmp(str1, "TTL") == 0)
-        WDcfg.FPIOtype = CAEN_DGTZ_IOLevel_t(1);
-      else if (strcmp(str1, "NIM") != 0)
-        printf("%s: invalid option\n", str);
+      if (strcmp(str1, "TTL") == 0) WDcfg.FPIOtype = CAEN_DGTZ_IOLevel_t(1);
+      else if (strcmp(str1, "NIM") != 0) printf("%s: invalid option\n", str);
       continue;
     }
 
     // Channel Enable (or Group enable for the V1740) (YES/NO)
-    if (strstr(str, "ENABLE_INPUT") != NULL) {
+    if (strstr(str, "ENABLE_INPUT") != NULL) 
+    {
       read = fscanf(f_ini, "%s", str1);
       if (strcmp(str1, "YES") == 0) {
         if (ch == -1)
@@ -489,12 +490,11 @@ int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg) {
     }
 
     // Skip startup calibration
-    if (strstr(str, "SKIP_STARTUP_CALIBRATION") != NULL) {
+    if (strstr(str, "SKIP_STARTUP_CALIBRATION") != NULL) 
+    {
       read = fscanf(f_ini, "%s", str1);
-      if (strcmp(str1, "YES") == 0)
-        WDcfg.StartupCalibration = 0;
-      else
-        WDcfg.StartupCalibration = 1;
+      if (strcmp(str1, "YES") == 0) WDcfg.StartupCalibration = 0;
+      else WDcfg.StartupCalibration = 1;
       continue;
     }
 

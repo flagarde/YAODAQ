@@ -1,5 +1,6 @@
 #include "Module.hpp"
 #include <string>
+#include "CAENVMEBoard.hpp"
 int main()
 {  
  
@@ -17,4 +18,11 @@ int main()
  // toto.sendBinary(a);
  // toto.sendBinary(b);
   Master.sendText(c);
+  
+  
+  CAEN::CAENVMEBoard toto("toto");
+  std::cout<<toto.SWRelease()<<std::endl;
+  
+  
+  
 }

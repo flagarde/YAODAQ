@@ -20,10 +20,9 @@ endif()
 
 if(NOT ${ANALYSER}) 
     add_executable(WaveDump WaveDump.cpp)
-    target_include_directories(WaveDump PRIVATE ${ZLIB_INCLUDE_DIRS})
-    add_dependencies(WaveDump lib1 lib2 web elogpp IXWebSocket CAENlibs)
+    add_dependencies(WaveDump lib1 lib2 web elogpp)
     target_include_directories(WaveDump PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}")
-    target_link_libraries(WaveDump WebSocket CAENDigitizer CAENComm lib1 lib2 web  elogcpp jsoncpp m Channel_static Event_static)
+    target_link_libraries(WaveDump lib1 lib2 web  elogcpp jsoncpp m Channel_static Event_static)
     install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     
@@ -31,9 +30,9 @@ if(NOT ${ANALYSER})
 
     
     add_executable(DumpModule DumpModule.cpp)
-    add_dependencies(DumpModule  WebsocketServer Configuration)
+    add_dependencies(DumpModule  Boards)
     target_include_directories(DumpModule PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
-    target_link_libraries(DumpModule WebsocketServer Message Configuration)
+    target_link_libraries(DumpModule PRIVATE Boards)
     install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
     
