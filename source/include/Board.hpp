@@ -21,6 +21,7 @@ private:
   virtual void LoadConfig() final;
   static ConnectorFactory m_ConnectorFactory;
   std::shared_ptr<Connector> m_Connector;
+protected:
   std::int32_t m_Handle{-1};
 };
 

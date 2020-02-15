@@ -2,26 +2,21 @@
 name = "My Configuration"
 
 [[Room]]
-
+name="LL"
   [[Room.Rack]]
   name = "Rack1"
     
     [[Room.Rack.Crate]]
     name = "My Crate "
       
-      [[Room.Rack.Board]]
-      name = "Digitizer 1"
+      [[Room.Rack.Crate.Board]]
+      name = "titi"
       type = "N141X"
       
-      [Room.Rack.Board.Connector]
+      [Room.Rack.Crate.Board.Connector]
         name = "Connector 1"
-        type = "Toto"
-      
-        
-      
-
-
-[[Room.Rack]]
-name = "Rack 2"
+        Type = "CAENVME"
+        Model = "V1718"
+        "Link Number" = 0
 
 

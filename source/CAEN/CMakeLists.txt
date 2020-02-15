@@ -73,3 +73,26 @@ target_include_directories(CAENVMEBoard PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT
 target_compile_definitions(CAENVMEBoard PRIVATE ${CAEN_DEFS})
 install(TARGETS CAENVMEBoard RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION "include/CAEN")
 
+set(CAENCommBoard_INCLUDE_FILES
+    include/CAENCommBoard.hpp
+   )
+
+set(CAENCommBoard_SRC_FILES
+    src/CAENCommBoard.cpp
+   )
+add_library(CAENCommBoard SHARED "${CAENCommBoard_SRC_FILES}")
+add_dependencies(CAENCommBoard Board)
+set_target_properties(CAENCommBoard PROPERTIES PUBLIC_HEADER "${CAENCommBoard_INCLUDE_FILES}")
+target_link_libraries(CAENCommBoard PUBLIC Board)
+target_include_directories(CAENCommBoard PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/> PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}/CAEN>)
+target_compile_definitions(CAENCommBoard PRIVATE ${CAEN_DEFS})
+install(TARGETS CAENCommBoard RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION "include/CAEN")
+
+
+add_library(CAENDigitizerBoard SHARED src/CAENDigitizerBoard.cpp)
+add_dependencies(CAENDigitizerBoard Board)
+set_target_properties(CAENDigitizerBoard PROPERTIES PUBLIC_HEADER include/CAENDigitizerBoard.hpp)
+target_link_libraries(CAENDigitizerBoard PUBLIC Board)
+target_include_directories(CAENDigitizerBoard PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/> PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIRECTORY}/CAEN>)
+target_compile_definitions(CAENDigitizerBoard PRIVATE ${CAEN_DEFS})
+install(TARGETS CAENDigitizerBoard RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib PUBLIC_HEADER DESTINATION "include/CAEN")
