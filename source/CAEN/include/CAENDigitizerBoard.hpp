@@ -310,20 +310,18 @@ public:
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelGroupMask(int handle, uint32_t group, uint32_t *channelmask);
 
 
-/**************************************************************************//**
-* \brief     Sets post trigger for next acquisitions
-* \param     [IN] percent : the percent of current record length
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetPostTriggerSize(int handle, uint32_t percent);
+  /**************************************************************************//**
+  * \brief     Sets post trigger for next acquisitions
+  * \param     [IN] percent : the percent of current record length
+  ******************************************************************************/
+  void SetPostTriggerSize(const std::uint32_t& percent);
 
 
-/**************************************************************************//**
-* \brief     Gets current post trigger length
-* \param     [IN] percent : the percent of the record
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetPostTriggerSize(int handle, uint32_t *percent);
+  /**************************************************************************//**
+  * \brief     Gets current post trigger length
+  * \return  percent : the percent of the record
+  ******************************************************************************/
+  std::uint32_t GetPostTriggerSize();
 
 
 /**************************************************************************//**
@@ -483,20 +481,18 @@ public:
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelZSParams(int handle, uint32_t channel, CAEN_DGTZ_ThresholdWeight_t *weight, int32_t  *threshold, int32_t *nsamp);
 
 
-/**************************************************************************//**
-* \brief     Sets digitizer acquisition mode
-* \param     [IN] mode   : acquisition mode
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetAcquisitionMode(int handle, CAEN_DGTZ_AcqMode_t mode);
+  /**************************************************************************//**
+  * \brief     Sets digitizer acquisition mode
+  * \param     [IN] mode   : acquisition mode
+  ******************************************************************************/
+  void SetAcquisitionMode(const std::string& mode);
 
 
-/**************************************************************************//**
-* \brief     Gets the acquisition mode of the digitizer 
-* \param     [OUT] mode   : the acquisition mode set
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetAcquisitionMode(int handle, CAEN_DGTZ_AcqMode_t *mode);
+  /**************************************************************************//**
+  * \brief     Gets the acquisition mode of the digitizer 
+  * \return  mode   : the acquisition mode set
+  ******************************************************************************/
+  std::string GetAcquisitionMode();
 
 
 /**************************************************************************//**
@@ -612,35 +608,25 @@ public:
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetMaxNumEventsBLT(int handle, uint32_t *numEvents);
 
 
-/**************************************************************************//**
-* \brief     Allocates memory buffer to hold data received from digitizer.
-* \note     Grandfathered into the <b>new readout API</b>
-*
-* \param     [IN]  handle : digitizer handle
-* \param     [OUT] buffer : the address of the buffer pointer (WARNING: the *buffer MUST be initialized to NULL)
-* \param     [OUT] size   : the size in byte of the buffer allocated
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_MallocReadoutBuffer(int handle, char **buffer, uint32_t *size);
+  /**************************************************************************//**
+  * \brief     Allocates memory buffer to hold data received from digitizer.
+  * \note     Grandfathered into the <b>new readout API</b>
+  ******************************************************************************/
+  void MallocReadoutBuffer();
 
 
-/**************************************************************************//**
-* \brief     Reads data (events) from the digitizer.
-* \note        Grandfathered into the <b>new readout API</b>
-* \param     [OUT] buffer     : address of the buffer that will store data (acquisition buffer)
-* \param     [OUT] bufferSize : the size of the data stored in the buffer
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_ReadData(int handle, CAEN_DGTZ_ReadMode_t mode, char *buffer, uint32_t *bufferSize);
+  /**************************************************************************//**
+  * \brief     Reads data (events) from the digitizer.
+  * \note        Grandfathered into the <b>new readout API</b>
+  ******************************************************************************/
+  void ReadData(const std::string& mode="SLAVE_TERMINATED_READOUT_MBLT");
 
 
-/**************************************************************************//**
-* \brief     Frees memory allocated by the CAEN_DGTZ_MallocReadoutBuffer.
-* \note     Grandfathered into the <b>new readout API</b>
-* \param     [IN] buffer : address to the acquisition buffer returned by CAEN_DGTZ_MallocReadoutBuffer
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_FreeReadoutBuffer(char **buffer);
+  /**************************************************************************//**
+  * \brief     Frees memory allocated by the CAEN_DGTZ_MallocReadoutBuffer.
+  * \note     Grandfathered into the <b>new readout API</b>
+  ******************************************************************************/
+  void FreeReadoutBuffer();
 
 
 /**************************************************************************//**
@@ -867,14 +853,12 @@ public:
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetDPP_SupportedVirtualProbes(int handle, int trace, int probes[], int *numProbes);
 
 
-/*****************************************************************************//**
-* \brief     Get the name of the given virtual probe
-* \param     [IN] probe: The Virtual Probe to get the name of
-* \param     [OUT] name: The name of the given probe
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetDPP_VirtualProbeName(int probe, char name[]);
-
+  /*****************************************************************************//**
+  * \brief     Get the name of the given virtual probe
+  * \param     [IN] probe: The Virtual Probe to get the name of
+  * \return  name: The name of the given probe
+  ******************************************************************************/
+  std::string VirtualProbeName(const int& probe);
 
 /**************************************************************************//**
 * \brief     Allocate the memory for the event
@@ -884,21 +868,17 @@ public:
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_AllocateEvent(int handle, void **Evt);
 
 
-/**************************************************************************//**
-* \brief     Sets the IO Level
-* \param     [IN] level   : The level to set
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetIOLevel(int handle, CAEN_DGTZ_IOLevel_t level);
+  /**************************************************************************//**
+  * \brief     Sets the IO Level
+  * \param     [IN] level   : The level to set
+  ******************************************************************************/
+  void SetIOLevel(const std::string& level);
 
-
-/**************************************************************************//**
-* \brief     Gets the IO Level
-* \param     [OUT] level  : The IO level of the digitizer
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetIOLevel(int handle, CAEN_DGTZ_IOLevel_t *level);
-
+  /**************************************************************************//**
+  * \brief     Gets the IO Level
+  * \return  level  : The IO level of the digitizer
+  ******************************************************************************/
+  std::string GetIOLevel();
 
   /**************************************************************************//**
   * \brief     Sets the trigger polarity of a specified channel
@@ -1037,6 +1017,10 @@ private:
   
   void setVMEHandle(const std::uint32_t& model);
   std::uint32_t m_VMEHandle{0};
+  
+  char* m_Buffer{nullptr};
+  std::uint32_t m_AllocatedSize{0};
+  std::uint32_t m_BufferSize{0};
 };
 
 }

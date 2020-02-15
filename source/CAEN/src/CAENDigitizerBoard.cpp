@@ -288,4 +288,85 @@ void CAENDigitizerBoard::SetTriggerPolarity(const std::uint32_t& channel,const s
   
 }
 
+std::string CAENDigitizerBoard::CAENDigitizerBoard::GetIOLevel()
+{
+  CAEN_DGTZ_IOLevel_t level;
+  CAENDigitizerError(CAEN_DGTZ_GetIOLevel(m_Handle,&level));
+  if(level==CAEN_DGTZ_IOLevel_NIM) return "NIM";
+  else return "TTL";
+}
+
+void CAENDigitizerBoard::SetIOLevel(const std::string& level)
+{
+  if(level=="NIM") CAENDigitizerError(CAEN_DGTZ_SetIOLevel(m_Handle,CAEN_DGTZ_IOLevel_NIM));
+  else if(level=="TTL") CAENDigitizerError(CAEN_DGTZ_SetIOLevel(m_Handle,CAEN_DGTZ_IOLevel_TTL));
+  else throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+}
+
+std::string CAENDigitizerBoard::VirtualProbeName(const int& probe)
+{
+  char name[256];
+  CAENDigitizerError(CAEN_DGTZ_GetDPP_VirtualProbeName(probe,name));
+  return name;
+}
+
+void CAENDigitizerBoard::SetAcquisitionMode(const std::string& mode)
+{
+  if(mode=="SW_CONTROLLED") CAENDigitizerError(CAEN_DGTZ_SetAcquisitionMode(m_Handle,CAEN_DGTZ_SW_CONTROLLED));
+  else if(mode=="IN_CONTROLLED") CAENDigitizerError(CAEN_DGTZ_SetAcquisitionMode(m_Handle,CAEN_DGTZ_S_IN_CONTROLLED));
+  else if(mode=="FIRST_TRG_CONTROLLED")  CAENDigitizerError(CAEN_DGTZ_SetAcquisitionMode(m_Handle,CAEN_DGTZ_FIRST_TRG_CONTROLLED));
+  else if(mode=="LVDS_CONTROLLED") CAENDigitizerError(CAEN_DGTZ_SetAcquisitionMode(m_Handle,CAEN_DGTZ_LVDS_CONTROLLED));
+  else throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+}
+
+std::string CAENDigitizerBoard::GetAcquisitionMode()
+{
+  CAEN_DGTZ_AcqMode_t mode;
+  CAENDigitizerError(CAEN_DGTZ_GetAcquisitionMode(m_Handle,&mode));
+  switch(mode)
+  {
+    case CAEN_DGTZ_SW_CONTROLLED : return "SW_CONTROLLED";
+    case CAEN_DGTZ_S_IN_CONTROLLED : return "S_IN_CONTROLLED";
+    case CAEN_DGTZ_FIRST_TRG_CONTROLLED : return "FIRST_TRG_CONTROLLED";
+    default : return "LVDS_CONTROLLED";
+  }
+}
+
+void CAENDigitizerBoard::SetPostTriggerSize(const std::uint32_t& percent)
+{
+  CAENDigitizerError(CAEN_DGTZ_SetPostTriggerSize(m_Handle,percent));
+}
+
+std::uint32_t CAENDigitizerBoard::GetPostTriggerSize()
+{
+  std::uint32_t percent{0};
+  CAENDigitizerError(CAEN_DGTZ_GetPostTriggerSize(m_Handle,&percent));
+  return percent;
+}
+
+void CAENDigitizerBoard::MallocReadoutBuffer()
+{
+  CAENDigitizerError(CAEN_DGTZ_MallocReadoutBuffer(m_Handle,&m_Buffer,&m_AllocatedSize));
+}
+
+void CAENDigitizerBoard::FreeReadoutBuffer()
+{
+  CAENDigitizerError(CAEN_DGTZ_FreeReadoutBuffer(&m_Buffer));
+}
+
+void CAENDigitizerBoard::ReadData(const std::string& mode)
+{
+  if(mode=="SLAVE_TERMINATED_READOUT_MBLT")
+  CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle,CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT,m_Buffer,&m_BufferSize));
+  else if(mode=="SLAVE_TERMINATED_READOUT_2eVME")CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle,CAEN_DGTZ_SLAVE_TERMINATED_READOUT_2eVME,m_Buffer,&m_BufferSize));
+  else if(mode=="SLAVE_TERMINATED_READOUT_2eSST") CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle,CAEN_DGTZ_SLAVE_TERMINATED_READOUT_2eSST,m_Buffer,&m_BufferSize));
+  else if(mode=="POLLING_MBLT")CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle,CAEN_DGTZ_POLLING_MBLT,m_Buffer,&m_BufferSize));
+  else if(mode=="POLLING_2eVME")CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle,CAEN_DGTZ_POLLING_2eVME,m_Buffer,&m_BufferSize));
+  else if(mode=="POLLING_2eSST")CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle,CAEN_DGTZ_POLLING_2eSST,m_Buffer,&m_BufferSize));
+  else throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+}
+
+
+
+
 }
