@@ -1,9 +1,14 @@
 #ifndef CAENDIGITIZERBOARD_HPP
 #define CAENDIGITIZERBOARD_HPP
 #include "Board.hpp"
+#include <variant>
+#include "CAENDigitizerType.h"
+#include <memory>
 
 namespace CAEN
 {
+  
+class EventInfo;
 
 class CAENDigitizerBoard : public Board
 {
@@ -147,7 +152,6 @@ public:
   ******************************************************************************/
   void SetDESMode(const std::string& enable);
 
-
   /**************************************************************************//**
   * \brief     Gets Dual Edge Sampling (DES) mode. Valid only for digitizers that supports this acquisiton mode.
   * \param     [OUT] enable : shows current DES mode status (enabled/disabled)
@@ -161,7 +165,6 @@ public:
 * \param    [IN] channel : \c int specifying the channel to set the record length for. 
 *                           DPP-PSD and DPP-CI require this parameter,
 *                           DPP-PHA ignores it
-* \return  0 = Success; negative numbers are error codes
 ******************************************************************************/
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetRecordLength(int handle, uint32_t size, ...);
 
@@ -250,7 +253,6 @@ public:
 * \brief     Sets channel self trigger mode according to CAEN_DGTZ_TriggerMode_t. 
 * \param     [IN] mode        : self trigger mode
 * \param    [IN] channelmask : channel mask to select affected channels.
-* \return  0 = Success; negative numbers are error codes
 *
 * NOTE: since x730 board family has even and odd channels paired, the user
 *  shouldn't call this function separately for the channels of the same pair,
@@ -295,20 +297,17 @@ public:
 *           Valid only for digitizers that supports channel groups (V1740, DT5740 for instance).
 * \param     [IN] group       : channel group.
 * \param     [IN] channelmask : mask of channels to enable in event readout
-* \return  0 = Success; negative numbers are error codes
 ******************************************************************************/
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetChannelGroupMask(int handle, uint32_t group, uint32_t channelmask);
 
 
-/**************************************************************************//**
-* \brief     Gets current channel that are enabled to contribute to event among available channels of selected channel group. 
-*           Valid only for digitizers that supports channel groups (V1740, DT5740 for instance).
-* \param     [IN] group        : the group of channels.
-* \param     [OUT] channelmask : mask of channels to enable in event readout
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelGroupMask(int handle, uint32_t group, uint32_t *channelmask);
-
+  /**************************************************************************//**
+  * \brief     Gets current channel that are enabled to contribute to event among available channels of selected channel group. 
+  *           Valid only for digitizers that supports channel groups (V1740, DT5740 for instance).
+  * \param     [IN] group        : the group of channels.
+  * \return  channelmask : mask of channels to enable in event readout
+  ******************************************************************************/
+  std::uint32_t GetChannelGroupMask(const std::uint32_t& group);
 
   /**************************************************************************//**
   * \brief     Sets post trigger for next acquisitions
@@ -316,147 +315,114 @@ public:
   ******************************************************************************/
   void SetPostTriggerSize(const std::uint32_t& percent);
 
-
   /**************************************************************************//**
   * \brief     Gets current post trigger length
   * \return  percent : the percent of the record
   ******************************************************************************/
   std::uint32_t GetPostTriggerSize();
 
-
-/**************************************************************************//**
-* \brief     Sets the pre-trigger size, which is the portion of acquisition window visible before a trigger
-* \note        This function is only available to DPP enabled firmwares and only to DPP-PHA, DPP-PSD and DPP-CI
-* \param     [IN] ch      : the channel to set the pre-trigger for. ch=-1 writes the value for all channels.
+  /**************************************************************************//**
+  * \brief     Sets the pre-trigger size, which is the portion of acquisition window visible before a trigger
+  * \note        This function is only available to DPP enabled firmwares and only to DPP-PHA, DPP-PSD and DPP-CI
+  * \param     [IN] ch      : the channel to set the pre-trigger for. ch=-1 writes the value for all channels.
                            DPP-CI only supports ch=-1 (different channels must have the same pre-trigger)
-* \param     [IN] sample  : the pre-trigger size, in samples
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetDPPPreTriggerSize(int handle, int ch, uint32_t samples);
+  * \param     [IN] sample  : the pre-trigger size, in samples
+  ******************************************************************************/
+  void SetDPPPreTriggerSize(const int& ch,const std::uint32_t& samples);
 
+  /**************************************************************************//**
+  * \brief     Gets the pre-trigger size
+  * \param     [IN] ch      : the channel to get the pre-trigger of
+  * \return  sample : the pre-trigger size, in samples
+  ******************************************************************************/
+  std::uint32_t GetDPPPreTriggerSize(const int& ch);
 
-/**************************************************************************//**
-* \brief     Gets the pre-trigger size
-* \param     [IN] ch      : the channel to get the pre-trigger of
-* \param     [OUT] sample : the pre-trigger size, in samples
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetDPPPreTriggerSize(int handle, int ch, uint32_t *samples);
+  /**************************************************************************//**
+  * \brief     Sets the DC offset for a specified channel
+  * \param     [IN] channel : the channel to set
+  * \param    [IN] Tvalue  : the DC offset to set. Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
+  *                          Please refer to digitizer documentation for possible value range.
+  ******************************************************************************/
+  void SetChannelDCOffset(const std::uint32_t& channel,const std::uint32_t& Tvalue);
 
+  /**************************************************************************//**
+  * \brief     Gets the DC offset for a specified channel
+  * \param     [IN]  channel : the channel which takes the information.
+  * \return  Tvalue  : the DC offset to set. Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
+  ******************************************************************************/
+  std::uint32_t GetChannelDCOffset(const std::uint32_t& channel);
 
-/**************************************************************************//**
-* \brief     Sets the DC offset for a specified channel
-* \param     [IN] channel : the channel to set
-* \param    [IN] Tvalue  : the DC offset to set. Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
-*                          Please refer to digitizer documentation for possible value range.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetChannelDCOffset(int handle, uint32_t channel, uint32_t Tvalue);
+  /**************************************************************************//**
+  * \brief     Sets the DC offset for a specified group of channels
+  * \param     [IN] group  : the group of channels to set
+  * \param    [IN] Tvalue : the DC offset to set
+  *                         Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
+  *                         Please refer to digitizer documentation for possible value range.
+  ******************************************************************************/
+  void SetGroupDCOffset(const std::uint32_t& group,const std::uint32_t& Tvalue);
 
+  /**************************************************************************//**
+  * \brief     Gets the DC offset from a specified group of channels
+  * \param     [IN]  group  : the group of channels which takes the information.
+  * \return  Tvalue : the DC offset set
+  *                          Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
+  *                          Please refer to digitizer documentation for possible value range.
+  ******************************************************************************/
+  std::uint32_t GetGroupDCOffset(const std::uint32_t& group);
 
-/**************************************************************************//**
-* \brief     Gets the DC offset for a specified channel
-* \param     [IN]  channel : the channel which takes the information.
-* \param    [OUT] Tvalue  : the DC offset set.  
-*                           Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
-*                           Please refer to digitizer documentation for possible value range.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelDCOffset(int handle, uint32_t channel, uint32_t *Tvalue);
+  /**************************************************************************//**
+  * \brief     Sets the Trigger Threshold for a specific channel
+  * \param     [IN] channel : channel to set
+  * \param    [IN] Tvalue  : threshold value to set
+  ******************************************************************************/
+  void SetChannelTriggerThreshold(const std::uint32_t& channel,const std::uint32_t& Tvalue);
 
+  /**************************************************************************//**
+  * \brief     Gets current Trigger Threshold from a specified channel
+  * \param     [IN]  channel : the channel which takes the information.
+  * \return  Tvalue  : the threshold value set
+  ******************************************************************************/
+  std::uint32_t GetChannelTriggerThreshold(const std::uint32_t& channel);
 
-/**************************************************************************//**
-* \brief     Sets the DC offset for a specified group of channels
-* \param     [IN] group  : the group of channels to set
-* \param    [IN] Tvalue : the DC offset to set
-*                         Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
-*                         Please refer to digitizer documentation for possible value range.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetGroupDCOffset(int handle, uint32_t group, uint32_t Tvalue);
+  /**************************************************************************//**
+  * \brief     Set the pulse polarity for the specified channel
+  * \param     [IN] channel : channel to set.
+  * \param     [IN] pol     : the value of the pulse polarity
+  ******************************************************************************/
+  void SetChannelPulsePolarity(const std::uint32_t& channel,const std::string& pol);
 
+  /**************************************************************************//**
+  * \brief     Get the value of the pulse polarity for the specified channel
+  * \param     [IN] channel : channel to get information from
+  * \return  pol    : the value of the pulse polarity
+  ******************************************************************************/
+  std::string GetChannelPulsePolarity(const std::uint32_t& channel);
 
-/**************************************************************************//**
-* \brief     Gets the DC offset from a specified group of channels
-* \param     [IN]  group  : the group of channels which takes the information.
-* \param    [OUT] Tvalue : the DC offset set
-*                          Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
-*                          Please refer to digitizer documentation for possible value range.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetGroupDCOffset(int handle, uint32_t group, uint32_t *Tvalue);
+  /**************************************************************************//**
+  * \brief     Sets the Trigger Threshold for a specified group of channels
+  * \param     [IN] group  : the group of channels to set.
+  * \param    [IN] Tvalue : the threshold value to set.
+  ******************************************************************************/
+  void SetGroupTriggerThreshold(const std::uint32_t& group,const std::uint32_t& Tvalue);
 
+  /**************************************************************************//**
+  * \brief     Gets the Trigger Threshold from a specified group of channels
+  * \param     [IN]  group  : the group of channels which takes the information.
+  * \return  Tvalue : the threshold value to set.
+  ******************************************************************************/
+  std::uint32_t GetGroupTriggerThreshold(const std::uint32_t& group);
 
-/**************************************************************************//**
-* \brief     Sets the Trigger Threshold for a specific channel
-*
-* \param     [IN] handle  : digitizer handle
-* \param     [IN] channel : channel to set
-* \param    [IN] Tvalue  : threshold value to set
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetChannelTriggerThreshold(int handle, uint32_t channel, uint32_t Tvalue);
-
-
-/**************************************************************************//**
-* \brief     Gets current Trigger Threshold from a specified channel
-* \param     [IN]  channel : the channel which takes the information.
-* \param    [OUT] Tvalue  : the threshold value set
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelTriggerThreshold(int handle, uint32_t channel, uint32_t *Tvalue);
-
-
-/**************************************************************************//**
-* \brief     Set the pulse polarity for the specified channel
-* \param     [IN] channel : channel to set.
-* \param    [IN] pol     : the value of the pulse polarity
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetChannelPulsePolarity(int handle, uint32_t channel, CAEN_DGTZ_PulsePolarity_t pol);
-
-
-/**************************************************************************//**
-* \brief     Get the value of the pulse polarity for the specified channel
-* \param     [IN] channel : channel to get information from
-* \param    [OUT] pol    : the value of the pulse polarity
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelPulsePolarity(int handle, uint32_t channel, CAEN_DGTZ_PulsePolarity_t* pol);
-
-
-/**************************************************************************//**
-* \brief     Sets the Trigger Threshold for a specified group of channels
-* \param     [IN] group  : the group of channels to set.
-* \param    [IN] Tvalue : the threshold value to set.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetGroupTriggerThreshold(int handle, uint32_t group, uint32_t Tvalue);
-
-
-/**************************************************************************//**
-* \brief     Gets the Trigger Threshold from a specified group of channels
-* \param     [IN]  group  : the group of channels which takes the information.
-* \param    [OUT] Tvalue : the threshold value to set.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetGroupTriggerThreshold(int handle, uint32_t group, uint32_t *Tvalue);
-
-
-/**************************************************************************//**
-* \brief     Sets Zero Suppression mode.
-* \param     [IN] mode   : Zero Suppression mode.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetZeroSuppressionMode(int handle, CAEN_DGTZ_ZS_Mode_t mode);
-
-
-/**************************************************************************//**
-* \brief     Gets current Zero Suppression mode
-* \param     [OUT] mode  : Zero Suppression mode
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetZeroSuppressionMode(int handle, CAEN_DGTZ_ZS_Mode_t *mode);
+  /**************************************************************************//**
+  * \brief     Sets Zero Suppression mode.
+  * \param     [IN] mode   : Zero Suppression mode.
+  ******************************************************************************/
+  void SetZeroSuppressionMode(const std::string& mode);
+ 
+  /**************************************************************************//**
+  * \brief     Gets current Zero Suppression mode
+  * \return  mode  : Zero Suppression mode
+  ******************************************************************************/
+  std::string GetZeroSuppressionMode();
 
 
 /**************************************************************************//**
@@ -465,7 +431,6 @@ public:
 * \param     [IN] weight    : Zero Suppression Weight
 * \param     [IN] threshold : Zero Suppression Threshold
 * \param     [IN] nsamp     : Number of samples to store before/after threshold crossing
-* \return  0 = Success; negative numbers are error codes
 ******************************************************************************/
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetChannelZSParams(int handle, uint32_t channel, CAEN_DGTZ_ThresholdWeight_t weight, int32_t  threshold, int32_t nsamp);
 
@@ -487,34 +452,28 @@ public:
   ******************************************************************************/
   void SetAcquisitionMode(const std::string& mode);
 
-
   /**************************************************************************//**
   * \brief     Gets the acquisition mode of the digitizer 
   * \return  mode   : the acquisition mode set
   ******************************************************************************/
   std::string GetAcquisitionMode();
 
+  /**************************************************************************//**
+  * \brief  Sets the run synchronization mode of the digitizer, used to synchronize an acquisition on multiple boards
+  * \param     [IN] mode   : the run synchronization mode to set
+  ******************************************************************************/
+  void SetRunSynchronizationMode(const std::string& mode);
 
-/**************************************************************************//**
-* \brief     Sets the run synchronization mode of the digitizer, used to synchronize an acquisition on multiple boards
-* \param     [IN] mode   : the run synchronization mode to set
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetRunSynchronizationMode(int handle, CAEN_DGTZ_RunSyncMode_t mode);
-
-
-/**************************************************************************//**
-* \brief     Gets the run synchronization mode of the digitizer 
-* \param     [OUT] mode   : the current run synchronization mode
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetRunSynchronizationMode(int handle, CAEN_DGTZ_RunSyncMode_t* mode);
+  /**************************************************************************//**
+  * \brief   Gets the run synchronization mode of the digitizer 
+  * \return  mode   : the current run synchronization mode
+  ******************************************************************************/
+  std::string GetRunSynchronizationMode();
 
 
 /**************************************************************************//**
 * \brief     Sets waveform to output on Digitizer Analog Monitor Front Panel output 
 * \param     [IN] mode   : Analog Monitor mode.
-* \return  0 = Success; negative numbers are error codes
 ******************************************************************************/
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetAnalogMonOutput(int handle, CAEN_DGTZ_AnalogMonitorOutputMode_t mode);
 
@@ -550,63 +509,49 @@ public:
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetAnalogInspectionMonParams(int handle, uint32_t *channelmask, uint32_t *offset, CAEN_DGTZ_AnalogMonitorMagnify_t *mf, CAEN_DGTZ_AnalogMonitorInspectorInverter_t *ami);
 
 
-/**************************************************************************//**
-* \brief     Disables BERR as transfer termination signal from slave (digitizer)
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DisableEventAlignedReadout(int handle);
+  /**************************************************************************//**
+  * \brief     Disables BERR as transfer termination signal from slave (digitizer)
+  ******************************************************************************/
+  void DisableEventAlignedReadout();
 
+  /**************************************************************************//**
+  * \brief     Enable or disable the Pack 2.5 mode of V1720/DT5720 Digitizers
+  * \param     [IN] mode: Enable/Disable the Pack 2,5 mode 
+  ******************************************************************************/
+  void SetEventPackaging(const std::string& on);
 
-/**************************************************************************//**
-* \brief     Enable or disable the Pack 2.5 mode of V1720/DT5720 Digitizers
-* \param     [IN] mode: Enable/Disable the Pack 2,5 mode 
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetEventPackaging(int handle,CAEN_DGTZ_EnaDis_t mode);
+  /**************************************************************************//**
+  * \brief     get the information about the Pack 2.5 mode of V1720/DT5720 Digitizers
+  * \return  mode: Enable/Disable the Pack 2,5 mode
+  ******************************************************************************/
+  std::string GetEventPackaging();
 
+  /**************************************************************************//**
+  * \brief     Sets max aggregate number for each transfer
+  * \On DPP-PHA, DPP-PSD and DPP-CI you can use CAEN_DGTZ_SetDPPEventAggregation
+  * \param     [IN] numAggr : Maximum Event Number for transfer
+  ******************************************************************************/
+  void SetMaxNumAggregatesBLT(const std::uint32_t& numAggr);
 
-/**************************************************************************//**
-* \brief     get the information about the Pack 2.5 mode of V1720/DT5720 Digitizers
-* \param     [OUT] mode: Enable/Disable the Pack 2,5 mode 
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetEventPackaging(int handle,CAEN_DGTZ_EnaDis_t *mode);
+  /**************************************************************************//**
+  * \brief     Sets max event number for each transfer
+  * \deprecated On DPP-PHA, DPP-PSD and DPP-CI use CAEN_DGTZ_SetDPPEventAggregation
+  * \param     [IN] numEvents : Maximum Event Number for transfer
+  ******************************************************************************/
+  void SetMaxNumEventsBLT(const std::uint32_t& numEvents);
 
+  /**************************************************************************//**
+  * \brief     Gets the max number of aggregates of each block transfer  
+  * \return  numEvents : the number of aggregates set.
+  ******************************************************************************/
+  std::uint32_t GetMaxNumAggregatesBLT();
 
-/**************************************************************************//**
-* \brief     Sets max aggregate number for each transfer
-* \On DPP-PHA, DPP-PSD and DPP-CI you can use CAEN_DGTZ_SetDPPEventAggregation
-* \param     [IN] numAggr : Maximum Event Number for transfer
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetMaxNumAggregatesBLT(int handle, uint32_t numAggr);
-
-
-/**************************************************************************//**
-* \brief     Sets max event number for each transfer
-* \deprecated On DPP-PHA, DPP-PSD and DPP-CI use CAEN_DGTZ_SetDPPEventAggregation
-* \param     [IN] numEvents : Maximum Event Number for transfer
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetMaxNumEventsBLT(int handle, uint32_t numEvents);
-
-
-/**************************************************************************//**
-* \brief     Gets the max number of aggregates of each block transfer  
-* \param     [OUT] numEvents : the number of aggregates set.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetMaxNumAggregatesBLT(int handle, uint32_t *numAggr);
-
-
-/**************************************************************************//**
-* \brief     Gets the max number of events of each block transfer
-* \deprecated On DPP-PHA, DPP-PSD and DPP-CI use CAEN_DGTZ_SetDPPEventAggregation         
-* \param     [OUT] numEvents : the number of events set.
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetMaxNumEventsBLT(int handle, uint32_t *numEvents);
-
+  /**************************************************************************//**
+  * \brief     Gets the max number of events of each block transfer
+  * \deprecated On DPP-PHA, DPP-PSD and DPP-CI use CAEN_DGTZ_SetDPPEventAggregation         
+  * \return  numEvents : the number of events set.
+  ******************************************************************************/
+  std::uint32_t GetMaxNumEventsBLT();
 
   /**************************************************************************//**
   * \brief     Allocates memory buffer to hold data received from digitizer.
@@ -614,13 +559,11 @@ public:
   ******************************************************************************/
   void MallocReadoutBuffer();
 
-
   /**************************************************************************//**
   * \brief     Reads data (events) from the digitizer.
   * \note        Grandfathered into the <b>new readout API</b>
   ******************************************************************************/
   void ReadData(const std::string& mode="SLAVE_TERMINATED_READOUT_MBLT");
-
 
   /**************************************************************************//**
   * \brief     Frees memory allocated by the CAEN_DGTZ_MallocReadoutBuffer.
@@ -628,32 +571,23 @@ public:
   ******************************************************************************/
   void FreeReadoutBuffer();
 
+  /**************************************************************************//**
+  * \brief     Gets current number of event stored in the acquisition buffer.
+  * \deprecated On DPP-PHA, DPP-PSD and DPP-CI use the <b>new readout API</b>
+  * \return  numEvents : Number of events stored in the acquisition buffer
+  ******************************************************************************/
+  std::uint32_t GetNumEvents();
 
-/**************************************************************************//**
-* \brief     Gets current number of event stored in the acquisition buffer.
-* \deprecated On DPP-PHA, DPP-PSD and DPP-CI use the <b>new readout API</b>
-*
-* \param     [IN] handle     : digitizer handle
-* \param     [IN] buffer     : Address to the acquisition buffer 
-* \param     [IN] bufferSize : Size of the data stored in the acquisition buffer
-* \param     [OUT] numEvents : Number of events stored in the acquisition buffer
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetNumEvents(int handle, char *buffer, uint32_t buffsize, uint32_t *numEvents);
-
-
-/**************************************************************************//**
-* \brief     Retrieves the information associated with a specified event
-* \deprecated On DPP-PHA, DPP-PSD and DPP-CI use the <b>new readout API</b>
-* \param     [IN] buffer     : Address of the acquisition buffer 
-* \param     [IN] bufferSize : acquisition buffer size (in samples)
-* \param     [IN] numEvents  : Number of events stored in the acquisition buffer
-* \param     [OUT] eventInfo : Event Info structure containing the information about the specified event
-* \param     [OUT] EventPtr  : Pointer to the requested event in the acquisition buffer
-* \return  0 = Success; negative numbers are error codes
-******************************************************************************/
-//CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetEventInfo(int handle, char *buffer, uint32_t buffsize, int32_t numEvent, CAEN_DGTZ_EventInfo_t *eventInfo, char **EventPtr);
-
+  /**************************************************************************//**
+  * \brief     Retrieves the information associated with a specified event
+  * \deprecated On DPP-PHA, DPP-PSD and DPP-CI use the <b>new readout API</b>
+  * \param     [IN] buffer     : Address of the acquisition buffer 
+  * \param     [IN] bufferSize : acquisition buffer size (in samples)
+  * \param     [IN] numEvents  : Number of events stored in the acquisition buffer
+  * \param     [OUT] eventInfo : Event Info structure containing the information about the specified event
+  * \param     [OUT] EventPtr  : Pointer to the requested event in the acquisition buffer
+  ******************************************************************************/
+  EventInfo GetEventInfo(const std::int32_t& numEvent);
 
 /**************************************************************************//**
 * \brief     Decodes a specified event stored in the acquisition buffer
@@ -784,7 +718,6 @@ public:
 *                               - CAEN_DGTZ_DPP_PHA_Params_t, in case of DPP-PHA
 *                               - CAEN_DGTZ_DPP_PSD_Params_t,  in case of DPP-PSD
 *                               - CAEN_DGTZ_DPP_CI_Params_t, in case of DPP-CI
-* \return  0 = Success; negative numbers are error codes
 ******************************************************************************/
 //CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetDPPParameters(int handle, uint32_t channelMask, void* params);
 
@@ -1018,9 +951,10 @@ private:
   void setVMEHandle(const std::uint32_t& model);
   std::uint32_t m_VMEHandle{0};
   
-  char* m_Buffer{nullptr};
+  std::unique_ptr<char> m_Buffer{nullptr};
   std::uint32_t m_AllocatedSize{0};
   std::uint32_t m_BufferSize{0};
+  std::unique_ptr<char> m_EventPtr{nullptr};
 };
 
 }
