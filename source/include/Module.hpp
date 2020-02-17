@@ -54,6 +54,7 @@ protected:
   virtual void LoadConfig();
   virtual void DoDoConnect();
   virtual void DoDoDisconnect();
+  virtual void verifyParameters();
   toml::value m_Conf;
   static Configuration m_Config;
   std::string m_Name{"Unknown"};

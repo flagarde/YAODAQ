@@ -64,10 +64,16 @@ void Module::DoDoDisconnect()
   
 }
 
+void Module::verifyParameters()
+{
+  
+}
+
 void Module::LoadConfig()
 {
   m_Config.parse();
   m_Conf=m_Config.getConfig(m_Name);
+  verifyParameters();
 }
 
 
