@@ -18,11 +18,11 @@ class Error : public std::exception
 {
 public:
 #if experimental_have_source_location == 1
-    Error(const int& code=0,const char* message="",std::experimental::source_location loc=std::experimental::source_location::current());
+    Error(const int& code=0,const std::string& message="",std::experimental::source_location loc=std::experimental::source_location::current());
 #elif have_source_location == 1
-    Error(const int& code=0,const char* message="",std::source_location loc=std::source_location::current());
+    Error(const int& code=0,const  std::string& message="",std::source_location loc=std::source_location::current());
 #else
-    Error(const int& code=0,const char* message="");
+    Error(const int& code=0,const  std::string& message="");
 #endif
     virtual ~Error(){};
     virtual const char* what() const noexcept;

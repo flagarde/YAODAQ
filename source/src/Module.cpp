@@ -1,21 +1,12 @@
 #include "Module.hpp"
 #include "spdlog.h"
-#include "sinks/stdout_sinks.h" // or "../stdout_sinks.h" if no colors needed
+#include "sinks/stdout_color_sinks.h"
 #include "sinks/ostream_sink.h"
 #include "sinks/ansicolor_sink.h"
 #include "toml.hpp"
-
-std::shared_ptr<spdlog::sinks::sink>  Module::console_sink = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
+#include "LoggerSink.hpp"
 
 Configuration Module::m_Config=Configuration();
-
-void Module::sendLog(const std::string& log)
-{
-  Log m_log;
-  if(log!="") m_log=Log(log);
-  else m_log=Log(oss.str());
-  sendText(m_log);
-}
 
 void  Module::setConfigFile(const std::string& file)
 {
@@ -43,15 +34,19 @@ ix::WebSocketSendInfo Module::sendText(Message& message)
   return m_WebsocketClient.sendText(message.get());
 }
 
-Module::Module( const std::string& type,const std::string& name):m_Name(name),m_Type(type)
+Module::Module( const std::string& name,const std::string& type):m_Type(type),m_Name(name)
 {
+  std::cout<<"Creating Module"<<std::endl;
+  std::cout<<name<<"  "<<type<<std::endl;
   m_WebsocketClient.setExtraHeader("Name",m_Name);
   m_WebsocketClient.setExtraHeader("Type",m_Type);
-  std::shared_ptr<spdlog::sinks::sink> ostream_sink = std::make_shared<spdlog::sinks::ostream_sink_mt> (oss,true);
-  spdlog::sinks_init_list sink_list = {ostream_sink,console_sink};
-  m_Logger= std::make_shared<spdlog::logger>(m_Type+"/"+m_Name,sink_list.begin(),sink_list.end());
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
+  std::shared_ptr<spdlog::sinks::sink> console = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
+  std::shared_ptr<spdlog::sinks::sink> websocketlogger = std::make_shared<WebSocketLoguer_mt>(m_WebsocketClient,m_Type+"/"+m_Name);
+  spdlog::sinks_init_list sink_list={console,websocketlogger};
+  m_Logger= std::make_shared<spdlog::logger>(m_Type+"/"+m_Name,sink_list.begin(),sink_list.end());
+  std::cout<<"Finished Creating Module"<<std::endl;
 }
 
 void Module::DoDoConnect()
@@ -66,14 +61,14 @@ void Module::DoDoDisconnect()
 
 void Module::verifyParameters()
 {
-  
+  std::cout<<"Module VerifyParameters"<<std::endl;
 }
 
 void Module::LoadConfig()
 {
-  m_Config.parse();
-  m_Conf=m_Config.getConfig(m_Name);
-  verifyParameters();
+    m_Config.parse();
+    m_Conf=m_Config.getConfig(m_Name);
+    this->verifyParameters();
 }
 
 
@@ -84,7 +79,10 @@ void Module::printParameters()
 
 Module::~Module()
 {
+  std::cout<<"Destroying Module"<<std::endl;
   m_WebsocketClient.stop();
+  std::cout<<"Finished Destroying Module"<<std::endl;
+  
 }
 
 void Module::Initialize()
@@ -98,8 +96,7 @@ void Module::Initialize()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 
@@ -113,8 +110,7 @@ void Module::Connect()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 
@@ -128,8 +124,7 @@ void Module::Configure()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 
@@ -143,8 +138,7 @@ void Module::Start()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 
@@ -158,8 +152,7 @@ void Module::Pause()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 
@@ -173,8 +166,7 @@ void Module::Stop()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 
@@ -188,8 +180,7 @@ void Module::Clear()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error; 
   }
 }
 
@@ -203,8 +194,7 @@ void Module::Disconnect()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 
@@ -218,8 +208,7 @@ void Module::Release()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 
@@ -233,8 +222,7 @@ void Module::Quit()
   catch(const std::exception& error)
   {
     m_Logger->error(error.what());
-    sendLog();
-    throw;
+    throw error;
   }
 }
 

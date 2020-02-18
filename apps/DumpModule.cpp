@@ -1,6 +1,6 @@
 #include "Module.hpp"
 #include <string>
-#include "CAENVMEBoard.hpp"
+#include "CAENDigitizerBoard.hpp"
 int main()
 {  
  
@@ -11,6 +11,7 @@ int main()
  // std::cout<<b.print()<<std::endl;
   
   WebsocketClient::setURL("ws://127.0.0.1:80/");
+  Board::setConfigFile("../confs/Configs.toml");
  // Module Master("MaSter","MyMaster");
  // Module Receiver("Receiver","MyReceiver");
  // toto.sendText(a);
@@ -20,7 +21,8 @@ int main()
  // Master.sendText(c);
   
   
-  CAEN::CAENVMEBoard toto("toto");
+  CAEN::CAENDigitizerBoard toto("toto");
+  toto.Initialize();
   //std::cout<<"LL"<<toto.SWRelease()<<std::endl;
   //std::cout<<"KK"<<toto.BoardFWRelease()<<std::endl;
   

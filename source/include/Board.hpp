@@ -9,7 +9,7 @@
 class Board : public Module
 {
 public:
-  Board(const std::string& type="Unknown",const std::string& name="Unknown");
+  Board(const std::string& name="",const std::string& type="Board");
   virtual void DoConnect();
   virtual void DoDisconnect();
   virtual void DoInitialize();

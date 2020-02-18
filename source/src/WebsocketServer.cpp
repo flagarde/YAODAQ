@@ -1,6 +1,8 @@
 #include "WebsocketServer.hpp" 
 #include "IXNetSystem.h"
 #include "ConnectionState.hpp"
+#include "Log.hpp"
+
 #include <iostream>
 
 WebsocketServer::WebsocketServer(const int& port,const std::string& host,const int& backlog,const std::size_t& maxConnections,const int& handshakeTimeoutSecs):m_Server(port,host,backlog,maxConnections,handshakeTimeoutSecs)
@@ -15,6 +17,7 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
       (
         [webSocket, connectionState,this](const ix::WebSocketMessagePtr& msg) 
         {
+          static int browserNumber=1;
           std::shared_ptr<ConnectionState> state =std::static_pointer_cast<ConnectionState>(connectionState);
           if (msg->type == ix::WebSocketMessageType::Open)
           {
@@ -26,11 +29,17 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
               std::cout <<"\t"<< it.first << ": " << it.second<<std::endl;
             }
             if(msg->openInfo.headers.find("Name")!=msg->openInfo.headers.end()) state->setName(msg->openInfo.headers["Name"]);
+            else
+            {
+              state->setName("Browser"+std::to_string(browserNumber));
+              ++browserNumber;
+            }
             if(msg->openInfo.headers.find("Type")!=msg->openInfo.headers.end()) state->setType(msg->openInfo.headers["Type"]);
+            else state->setType("Browser");
           }
           else if (msg->type == ix::WebSocketMessageType::Close)
           {
-            std::cout << "Closed connection id : "<<connectionState->getId() <<std::endl;;
+            std::cout << "Closed connection ID : "<<connectionState->getId() <<std::endl;
           }
           else if (msg->type == ix::WebSocketMessageType::Message)
           {

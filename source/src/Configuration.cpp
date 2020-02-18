@@ -2,13 +2,13 @@
 #include <iostream>
 #include <algorithm>
 #include "toml.hpp"
+#include "Error.hpp"
 
 toml::value Configuration::getConfig(const std::string& mmodule)
 {
   if(m_ModuleConfig.find(mmodule)==m_ModuleConfig.end())
   {
-    std::cout<<"Board/Module "<<mmodule<<" not found in configuration !"<<std::endl;
-    throw;
+    throw Error(-1,"Board/Module "+mmodule+" not found in configuration !");
   }
   else return m_ModuleConfig[mmodule];
 }
@@ -17,8 +17,7 @@ ConnectorInfos Configuration::getConnectorInfos(const std::string& mmodule)
 {
   if(m_ConnectorInfos.find(mmodule)==m_ConnectorInfos.end())
   {
-    std::cout<<"Board "<<mmodule<<" not found in configuration !"<<std::endl;
-    throw;
+    throw Error(-1,"Board "+mmodule+" not found in configuration !");
   }
   return m_ConnectorInfos[mmodule];
 }
@@ -26,6 +25,10 @@ ConnectorInfos Configuration::getConnectorInfos(const std::string& mmodule)
 
 void Configuration::parse()
 {
+  if(m_Filename=="")
+  {
+    throw Error(-1,"No Configuration file given !");
+  }
   if(m_isParsed==false)
   {
     m_Conf=toml::parse<toml::preserve_comments,std::map,std::vector>(m_Filename);

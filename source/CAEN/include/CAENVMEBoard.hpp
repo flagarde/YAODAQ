@@ -50,7 +50,7 @@ private:
 class CAENVMEBoard : public Board
 {
 public:
-  CAENVMEBoard(const std::string& name="Unknown");
+  CAENVMEBoard(const std::string& name);
   void SetPulserAConf(Pulser& pulser);
   void SetPulserBConf(Pulser& pulser);
   Pulser GetPulserAConf();

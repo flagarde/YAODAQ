@@ -2,12 +2,26 @@
 #define CAENDIGITIZERBOARD_HPP
 #include "Board.hpp"
 #include <variant>
-#include "CAENDigitizerType.h"
 #include <memory>
 #include "Flash.hpp"
 
 namespace CAEN
 {
+  
+  
+class CAEN_DGTZ_UINT16_EVENT_t;
+class CAEN_DGTZ_UINT8_EVENT_t;
+class CAEN_DGTZ_X742_EVENT_t;
+class CAEN_DGTZ_X743_EVENT_t;
+  
+class CAEN_DGTZ_DPP_PHA_Event_t;
+class CAEN_DGTZ_DPP_PSD_Event_t;
+class CAEN_DGTZ_DPP_CI_Event_t;
+class CAEN_DGTZ_DPP_QDC_Event_t;
+class CAEN_DGTZ_751_ZLE_Event_t;
+class CAEN_DGTZ_730_ZLE_Event_t;
+class CAEN_DGTZ_DPP_X743_Event_t;
+class CAEN_DGTZ_730_DAW_Event_t;
   
 class EventInfo;
 
@@ -30,7 +44,7 @@ private:
 class CAENDigitizerBoard : public Board
 {
 public:
-  CAENDigitizerBoard(const std::string& type="CAENDigitizerBoard", const std::string& name="Unknown");
+  CAENDigitizerBoard(const std::string& name);
 
   /**************************************************************************//**
   * \fn          WriteRegister(const std::uint32_t& Address,const  std::uint32_t& Data);
@@ -901,9 +915,14 @@ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMCorrectionData(int handle, void
  std::uint32_t get_time();
   
 
- 
+  virtual ~CAENDigitizerBoard()
+  {
+    std::cout<<"Destroying CAENDigitizerBoard"<<std::endl;
+  }
   
 private:
+  void initilizeParameters();
+  
   virtual void verifyParameters() final;
   
   void setModelName(const std::string& name);
@@ -963,14 +982,14 @@ private:
   CAEN_DGTZ_X743_EVENT_t* m_X743Event{nullptr};
   
   
-  CAEN_DGTZ_DPP_PHA_Event_t* m_DPPPHAEvent[MAX_DPP_PHA_CHANNEL_SIZE];
-  CAEN_DGTZ_DPP_PSD_Event_t* m_DPPPSDEvent[MAX_DPP_PSD_CHANNEL_SIZE];
-  CAEN_DGTZ_DPP_CI_Event_t* m_DPPCIEvent[MAX_DPP_CI_CHANNEL_SIZE];
-  CAEN_DGTZ_DPP_QDC_Event_t* m_DPPQDCEvent[MAX_DPP_QDC_CHANNEL_SIZE];
-  CAEN_DGTZ_751_ZLE_Event_t* m_751ZLEEvent[MAX_ZLE_CHANNEL_SIZE];
-  CAEN_DGTZ_730_ZLE_Event_t* m_730ZLEEvent[MAX_V1730DPP_CHANNEL_SIZE];
-  CAEN_DGTZ_DPP_X743_Event_t* m_DPPX743Event[MAX_X743_CHANNELS_X_GROUP * MAX_V1743_GROUP_SIZE];
-  CAEN_DGTZ_730_DAW_Event_t* m_730DAWEvent[MAX_V1730_CHANNEL_SIZE];
+  CAEN_DGTZ_DPP_PHA_Event_t* m_DPPPHAEvent[16];
+  CAEN_DGTZ_DPP_PSD_Event_t* m_DPPPSDEvent[16];
+  CAEN_DGTZ_DPP_CI_Event_t* m_DPPCIEvent[16];
+  CAEN_DGTZ_DPP_QDC_Event_t* m_DPPQDCEvent[16];
+  CAEN_DGTZ_751_ZLE_Event_t* m_751ZLEEvent[8];
+  CAEN_DGTZ_730_ZLE_Event_t* m_730ZLEEvent[16];
+  CAEN_DGTZ_DPP_X743_Event_t* m_DPPX743Event[2 * 8];
+  CAEN_DGTZ_730_DAW_Event_t* m_730DAWEvent[16];
   
   void Exit(const int &error);
   
@@ -1009,6 +1028,9 @@ private:
   std::vector<std::uint32_t> m_GWdata;
   std::vector<std::uint32_t> m_GWmask;
   static std::vector<std::string> ErrMsg;
+  std::array<std::string,4> m_TablesFilenames;
+  bool m_UseCorrections{false};
+  bool m_UseManualTables{false};
   Flash m_Flash;
   /* Error messages */
 typedef enum {

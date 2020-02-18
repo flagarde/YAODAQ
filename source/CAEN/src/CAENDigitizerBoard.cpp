@@ -123,8 +123,29 @@ void CAENDigitizerBoard::Exit(const int &error)
   }
 }
 
-CAENDigitizerBoard::CAENDigitizerBoard(const std::string& type, const std::string& name):Board(type,name)
+void CAENDigitizerBoard::initilizeParameters()
 {
+  m_Cal.fill(1);
+  m_Offset.fill(0); 
+  m_PulsePolarity.fill("Positive");
+  m_Version_used.fill(0);
+  m_DCoffset.fill(0);
+  m_Threshold.fill(0);
+  m_ChannelTriggerMode.fill("DISABLED");
+  m_GroupTrgEnableMask.fill(0);
+  for (std::size_t i = 0; i < m_DCoffsetGrpCh.size(); i++) m_DCoffsetGrpCh[i].fill(-1);
+  for (std::size_t i = 0; i < m_TablesFilenames.size(); i++) m_TablesFilenames[i]="Tables_gr"+std::to_string(i);
+  m_FTThreshold.fill(0);
+  m_FTDCoffset.fill(0);
+}
+  
+
+
+CAENDigitizerBoard::CAENDigitizerBoard(const std::string& name):Board(name,"CAENDigitizerBoard")
+{
+  std::cout<<"Creating CAENDigitizerBoard"<<std::endl;
+  initilizeParameters();
+  std::cout<<"Exit Creating CAENDigitizerBoard"<<std::endl;
 }
 
 EventInfo CAENDigitizerBoard::GetEventInfo(const std::int32_t& numEvent)
@@ -1093,6 +1114,23 @@ void CAENDigitizerBoard::SetInterruptConfig(const std::string& state,const std::
 
 void CAENDigitizerBoard::verifyParameters()
 {
+
+  std::cout<<"Test"<<std::endl;
+  // Save previous values (for compare)
+  std::string PrevDesMode = m_DesMode;
+  bool PrevUseCorrections = m_UseCorrections;
+  bool PrevUseManualTables = m_UseManualTables;
+  std::array<std::string,4> PrevTablesFilenames=m_TablesFilenames;
+
+
+
+
+
+
+
+
+
+
   m_Test=toml::find_or(m_Conf,"Test",false);
   m_FastTriggerEnabled=toml::find_or<std::string>(m_Conf,"FAST_TRIGGER","DISABLE");
   if(m_FastTriggerEnabled!="DISABLE"&&m_FastTriggerEnabled!="ACQ_ONLY")

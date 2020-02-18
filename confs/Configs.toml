@@ -10,7 +10,7 @@ name="LL"
     name = "My Crate "
       
       [[Room.Rack.Crate.Board]]
-      name = "titi"
+      name = "toto"
       type = "N141X"
       
       [Room.Rack.Crate.Board.Connector]
@@ -18,5 +18,8 @@ name="LL"
         Type = "CAENVME"
         Model = "V1718"
         "Link Number" = 0
+        
+      "WRITE_REGISTER"=[[0,1,2],[3,4,5],[6,7,8]]
+      
 
 

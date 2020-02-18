@@ -1,8 +1,9 @@
 #ifndef WEBSOCKETSERVER_HPP
 #define WEBSOCKETSERVER_HPP
+
 #include <string>
+
 #include "IXWebSocketServer.h"
-#include "Message.hpp"
 
 class WebsocketServer
 {
@@ -16,4 +17,5 @@ public:
 private:
   ix::WebSocketServer m_Server;
 };
+
 #endif

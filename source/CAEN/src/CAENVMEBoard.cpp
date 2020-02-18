@@ -135,7 +135,7 @@ unsigned char Pulser::getPulseNbr()
   return m_PulseNbr;
 }
     
-CAENVMEBoard::CAENVMEBoard(const std::string& name):Board("CAENVME",name)
+CAENVMEBoard::CAENVMEBoard(const std::string& name):Board(name,"CAENVMEBoard")
 {
     
 }

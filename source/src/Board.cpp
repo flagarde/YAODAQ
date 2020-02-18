@@ -3,7 +3,7 @@
 
 ConnectorFactory Board::m_ConnectorFactory=ConnectorFactory();
 
-Board::Board(const std::string& type,const std::string& name):Module(type,name)
+Board::Board(const std::string& name,const std::string& type):Module(name,type)
 {
   
 }

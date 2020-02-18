@@ -1,7 +1,9 @@
 #ifndef CONNECTIONSTATE_HPP
 #define CONNECTIONSTATE_HPP
+
 #include <memory>
 #include <string>
+
 #include "IXConnectionState.h"
 
 class ConnectionState : public ix::ConnectionState

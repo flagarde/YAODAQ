@@ -1,7 +1,7 @@
 #include "Error.hpp"
 
 #if experimental_have_source_location == 1
-Error::Error(const int& code,const char* message,std::experimental::source_location loc):m_code(code),m_message(message),location(loc)
+Error::Error(const int& code,const std::string& message,std::experimental::source_location loc):m_code(code),m_message(message),location(loc)
 {
     construct_message();
 }

@@ -5,10 +5,9 @@
 
 namespace CAEN
 {
-
-CAENCommBoard::CAENCommBoard(const std::string type,const std::string name):Board(type,name)
+  
+CAENCommBoard::CAENCommBoard(const std::string& name):Board(name,"CAENCommBoard")
 {
-    
 }
 
 void CAENCommBoard::Write32(const std::uint32_t& Address,const std::uint32_t& Data)
