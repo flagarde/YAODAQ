@@ -2,6 +2,7 @@
 #include "IXNetSystem.h"
 #include "ConnectionState.hpp"
 #include "Log.hpp"
+#include "spdlog.h"
 
 #include <iostream>
 
@@ -21,12 +22,12 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
           std::shared_ptr<ConnectionState> state =std::static_pointer_cast<ConnectionState>(connectionState);
           if (msg->type == ix::WebSocketMessageType::Open)
           {
-            std::cout << "New connection id: " << connectionState->getId()<<std::endl;
-            std::cout << "Uri: " << msg->openInfo.uri<<std::endl;
-            std::cout << "Headers:"<<std::endl;
+            spdlog::info("New connection ID : {}",connectionState->getId());
+            spdlog::info("Uri : {}",msg->openInfo.uri);
+            spdlog::info("Headers :");
             for (auto it : msg->openInfo.headers)
             {
-              std::cout <<"\t"<< it.first << ": " << it.second<<std::endl;
+              spdlog::info("\t{} : {}",it.first,it.second);
             }
             if(msg->openInfo.headers.find("Name")!=msg->openInfo.headers.end()) state->setName(msg->openInfo.headers["Name"]);
             else
@@ -39,11 +40,11 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
           }
           else if (msg->type == ix::WebSocketMessageType::Close)
           {
-            std::cout << "Closed connection ID : "<<connectionState->getId() <<std::endl;
+            spdlog::info("Closed connection ID : {}",connectionState->getId());
           }
           else if (msg->type == ix::WebSocketMessageType::Message)
           {
-            std::cout<<"Message  : "<<msg->str<<std::endl;
+            spdlog::info("Message :\n{}",msg->str);
             for (auto&& client : m_Server.getClients())
             {
               if (client != webSocket)
@@ -83,7 +84,7 @@ void  WebsocketServer::listen()
   std::pair<bool, std::string> res = m_Server.listen();
   if(!res.first)
   {
-    std::cout<<res.second<<std::endl;
+    spdlog::error("{}",res.second);
     std::exit(1);
   } 
 }

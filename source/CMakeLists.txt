@@ -144,17 +144,17 @@ if(BUILD_DAQ)
   
   if(BUILD_WEBSOCKETSERVER)
     add_library(WebsocketServer "${YAODAQ_SRC}/WebsocketServer.cpp")
-    add_dependencies(WebsocketServer Board)
+    add_dependencies(WebsocketServer Util Message ConnectionState)
     target_include_directories(WebsocketServer PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>)
     set_target_properties(WebSocketClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebsocketServer.hpp")
-    target_link_libraries(WebsocketServer PUBLIC Board)
+    target_link_libraries(WebsocketServer PUBLIC Util PUBLIC Message PUBLIC ConnectionState)
   
     if(BUILD_CONFIGURATOR)
       add_library(Configurator_ "${YAODAQ_SRC}/Configurator.cpp")
-      add_dependencies(Configurator_ soci WebsocketServer)
+      add_dependencies(Configurator_ soci WebsocketServer Board)
       target_include_directories(Configurator_ PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC ${DATABASES_INCLUDE_DIR})
       set_target_properties(Configurator_ PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Configurator.hpp")
-      target_link_libraries(Configurator_ PUBLIC WebsocketServer PUBLIC ${DATABASES_LIBRARIES} PUBLIC soci_core PUBLIC soci_empty)
+      target_link_libraries(Configurator_ PUBLIC Board PUBLIC WebsocketServer PUBLIC ${DATABASES_LIBRARIES} PUBLIC soci_core PUBLIC soci_empty)
       if(${DB2_FOUND})
         message(STATUS "Linking soci_db2")
         target_link_libraries(Configurator_ PUBLIC soci_db2)
@@ -189,9 +189,7 @@ if(BUILD_DAQ)
     
     
     
-   
-    
-    
+  if(BUILD_OLD_WAVEDUMP)
     add_library(lib1 STATIC src/flash.cpp src/WDconfig.cpp src/X742CorrectionRoutines.cpp src/spi.cpp src/Digitizer.cpp)
     add_dependencies(lib1 Connectors)
     target_link_libraries(lib1 PUBLIC Connectors)
@@ -209,5 +207,6 @@ if(BUILD_DAQ)
     target_link_libraries(web PUBLIC Connectors PUBLIC WebSocket)
     target_include_directories(web PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
     target_include_directories(web PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
+  endif()
 
 endif()

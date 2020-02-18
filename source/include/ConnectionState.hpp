@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <string>
-
 #include "IXConnectionState.h"
 
 class ConnectionState : public ix::ConnectionState

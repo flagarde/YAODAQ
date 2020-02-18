@@ -18,30 +18,17 @@ if(BUILD_CONFIGURATOR)
   install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
-if(NOT ${ANALYSER}) 
-    add_executable(WaveDump WaveDump.cpp)
-    add_dependencies(WaveDump lib1 lib2 web elogpp)
-    target_include_directories(WaveDump PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}")
-    target_link_libraries(WaveDump lib1 lib2 web  elogcpp jsoncpp m Channel_static Event_static)
-    install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+if(BUILD_OLD_WAVEDUMP) 
+  add_executable(WaveDump WaveDump.cpp)
+  add_dependencies(WaveDump lib1 lib2 web elogpp)
+  target_include_directories(WaveDump PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIRECTORY}")
+  target_link_libraries(WaveDump lib1 lib2 web  elogcpp jsoncpp m Channel_static Event_static)
+  install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
     
-    
-    
-
-    
-    add_executable(DumpModule DumpModule.cpp)
-    add_dependencies(DumpModule  Boards)
-    target_include_directories(DumpModule PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
-    target_link_libraries(DumpModule PRIVATE Boards)
-    install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-    
-    
-      
-    add_executable(Conf Conf.cpp)
-    add_dependencies(Conf Configuration WebsocketServer)
-        target_include_directories(Conf PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/toml" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
-        target_link_libraries(Conf Configuration WebsocketServer)
-    install(TARGETS Conf RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-    
+  add_executable(DumpModule DumpModule.cpp)
+  add_dependencies(DumpModule  Boards)
+  target_include_directories(DumpModule PUBLIC "${INCLUDE_OUTPUT_DIRECTORY}/" PRIVATE "${CMAKE_SOURCE_DIR}/source/include")
+  target_link_libraries(DumpModule PRIVATE Boards)
+  install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 

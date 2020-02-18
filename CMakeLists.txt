@@ -93,7 +93,8 @@ option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
 option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_CONFIGURATOR "Build Configurator" ON)
 
-option(ANALYSER "I'M AN ANALYSIST" OFF)
+option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
+
 
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
 option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
