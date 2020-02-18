@@ -4,6 +4,7 @@
 #include <variant>
 #include "CAENDigitizerType.h"
 #include <memory>
+#include "Flash.hpp"
 
 namespace CAEN
 {
@@ -881,13 +882,26 @@ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMCorrectionData(int handle, void
   
   
   
+  /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
+ *            calibration or not.
+ */
+ bool BoardSupportsCalibration();
+
+ /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
+ *            temperature read or not.
+ */
+ bool BoardSupportsTemperatureRead();
   
   
+ /*! \fn      void GetMoreBoardInfo()
+ * \brief   calculate num of channels, num of bit and sampl period according to the board type
+ */
+ void GetMoreBoardInfo();
   
+ std::uint32_t get_time();
   
-  
-  
-  
+
+ 
   
 private:
   virtual void verifyParameters() final;
@@ -974,6 +988,9 @@ private:
   std::string m_ExtTriggerMode{"ACQ_ONLY"};
   std::uint16_t m_EnableMask{0xFFFF};
   int m_Nch{0};
+  int m_Nbit{0};
+  float m_Ts{0};
+  std::uint32_t m_MaxGroupNumber{0};
   //#define MAX_SET 16   /* max. number of independent settings */
   std::array<std::array<int32_t,16>,16> m_DCoffsetGrpCh;
   std::array<std::uint32_t,16> m_DCoffset;
@@ -992,6 +1009,7 @@ private:
   std::vector<std::uint32_t> m_GWdata;
   std::vector<std::uint32_t> m_GWmask;
   static std::vector<std::string> ErrMsg;
+  Flash m_Flash;
   /* Error messages */
 typedef enum {
   ERR_NONE = 0,

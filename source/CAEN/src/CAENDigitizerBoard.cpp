@@ -1375,8 +1375,107 @@ void CAENDigitizerBoard::ProgramDigitizer()
 
 
 
+std::uint32_t CAENDigitizerBoard::get_time() 
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
+
+bool CAENDigitizerBoard::BoardSupportsCalibration() 
+{
+  if(m_FamilyCode=="XX761"||m_FamilyCode=="XX751"||m_FamilyCode=="XX730"||m_FamilyCode=="XX725") return true;
+  else return false;
+}
 
 
+bool CAENDigitizerBoard::BoardSupportsTemperatureRead() 
+{
+  if(m_FamilyCode=="XX751"||m_FamilyCode=="XX730"||m_FamilyCode=="XX725") return true;
+  else return false;
+}
 
+
+void CAENDigitizerBoard::GetMoreBoardInfo() 
+{
+  if(m_FamilyCode=="XX724"||m_FamilyCode=="XX781"||m_FamilyCode=="XX780")
+  {
+    m_Nbit=14; 
+    m_Ts=1.0;
+  }
+  else if(m_FamilyCode=="XX720")
+  {
+    m_Nbit=12; 
+    m_Ts=4.0;
+  }
+  else if(m_FamilyCode=="XX721")
+  {
+    m_Nbit=8; 
+    m_Ts=2.0;
+  }
+  else if(m_FamilyCode=="XX731")
+  {
+    m_Nbit=8; 
+    m_Ts=2.0;
+  }
+  else if(m_FamilyCode=="XX751")
+  {
+    m_Nbit=10; 
+    m_Ts=1.0;
+  }
+  else if(m_FamilyCode=="XX761")
+  {
+    m_Nbit=10; 
+    m_Ts=0.25;
+  }
+  else if(m_FamilyCode=="XX740")
+  {
+    m_Nbit=12; 
+    m_Ts=16.0;
+  }
+  else if(m_FamilyCode=="XX725")
+  {
+    m_Nbit=14; 
+    m_Ts=4.0;
+  }
+  else if(m_FamilyCode=="XX730")
+  {
+    m_Nbit=14; 
+    m_Ts=2.0;
+  }
+  else if(m_FamilyCode=="XX742")
+  {
+    m_Nbit=12; 
+    std::string frequency=GetDRS4SamplingFrequency();
+    if(frequency=="1GHz") m_Ts=1.0;
+    else if(frequency=="2.5GHz") m_Ts=0.4;
+    else if(frequency=="5GHz") m_Ts=0.2;
+    else if(frequency=="750MHz") m_Ts=(1.0 / 750.0) * 1000.0;
+    if(m_FormFactor=="VME64"||m_FormFactor=="VME64X") m_MaxGroupNumber=4;
+    else if(m_FormFactor=="NIM"||m_FormFactor=="DESKTOP") m_MaxGroupNumber=2;
+  }
+  else if((m_FamilyCode=="XX751"||m_FamilyCode=="XX731")&&m_DesMode=="ENABLE")
+  {
+    m_Ts/=2;
+  }
+  if(m_FamilyCode=="XX724"||m_FamilyCode=="XX781"||m_FamilyCode=="XX780"||m_FamilyCode=="XX720"||m_FamilyCode=="XX721"||m_FamilyCode=="XX751"||m_FamilyCode=="XX761"||m_FamilyCode=="XX731")
+  {
+    if(m_FormFactor=="VME64"||m_FormFactor=="VME64X") m_Nch=8;
+    else if(m_FormFactor=="NIM"||m_FormFactor=="DESKTOP") m_Nch=4;
+  }
+  else if(m_FamilyCode=="XX725"||m_FamilyCode=="XX730")
+  {
+    if(m_FormFactor=="VME64"||m_FormFactor=="VME64X") m_Nch=16;
+    else if(m_FormFactor=="NIM"||m_FormFactor=="DESKTOP") m_Nch=8;
+  }
+  else if(m_FamilyCode=="XX740")
+  {
+    if(m_FormFactor=="VME64"||m_FormFactor=="VME64X") m_Nch=64;
+    else if(m_FormFactor=="NIM"||m_FormFactor=="DESKTOP") m_Nch=32;
+  }
+  else if(m_FamilyCode=="XX742")
+  {
+    if(m_FormFactor=="VME64"||m_FormFactor=="VME64X") m_Nch=36;
+    else if(m_FormFactor=="NIM"||m_FormFactor=="DESKTOP") m_Nch=16;
+  }
+}
 
 }
