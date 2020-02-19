@@ -90,10 +90,16 @@ void Configuration::checkFile()
               //std::cout<<"Parsing Crate : "<<crate_name<<std::endl;
               for(const auto& boards : toml::find<toml::array>(crates,"Board"))
               {
-                std::string board_name=toml::find_or<std::string>(boards,"name","");
+                std::string board_name=toml::find_or<std::string>(boards,"Name","");
                 if(board_name=="" || m_BoardsInfos.find(board_name) != m_BoardsInfos.end()) 
                 {
-                  std::cout<<"Board must have a (unique) name !"<<std::endl;
+                  std::cout<<"Board must have a (unique) Name !"<<std::endl;
+                  std::exit(2);
+                }
+                std::string type=toml::find_or<std::string>(boards,"Type","");
+                if(type=="") 
+                {
+                  std::cout<<"Board must have a Type !"<<std::endl;
                   std::exit(2);
                 }
                 else
@@ -115,7 +121,7 @@ void Configuration::checkFile()
                       board_connector=crate_connector;
                     }
                   }
-                  m_BoardsInfos.emplace(board_name,BoardInfos(room_name,rack_name,crate_name,board_name,boards,board_connector));
+                  m_BoardsInfos.emplace(board_name,BoardInfos(room_name,rack_name,crate_name,board_name,type,boards,board_connector));
                   m_ModuleConfig.emplace(board_name,boards);
                   m_ConnectorInfos.emplace(board_name,ConnectorInfos(board_connector,crate_have_connector,connector_ID));
                 }
@@ -139,7 +145,7 @@ void Configuration::fillIndexes()
     it->second.setRoomIndex(std::distance(m_Room_Names.begin(),std::find(m_Room_Names.begin(),m_Room_Names.end(),it->second.getRoomName())));
     it->second.setRackIndex(std::distance(m_Rack_Names.begin(),std::find(m_Rack_Names.begin(),m_Rack_Names.end(),it->second.getRackName())));
     it->second.setCrateIndex(std::distance(m_Crate_Names.begin(),std::find(m_Crate_Names.begin(),m_Crate_Names.end(),it->second.getCrateName())));
-    it->second.setBoardIndex(boardindex);
+    it->second.setIndex(boardindex);
     ++boardindex;
   }
 }

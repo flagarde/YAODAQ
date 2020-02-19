@@ -1,37 +1,14 @@
-#ifndef BOARDINFOS_HPP
-#define BOARDINFOS_HPP
-#include <string>
-#include <iostream>
+#pragma once
+
+#include "Infos.hpp"
 #include "toml.hpp"
 
-class BoardInfos 
+class BoardInfos : public Infos
 {
 public:
-  BoardInfos(const std::string& room="",const std::string& rack="",const std::string& crate="",const std::string& board="",const toml::value& parm={},const toml::value& conparm={});
-  void setRoomIndex(const int&);
-  void setRackIndex(const int&);
-  void setCrateIndex(const int&);
-  void setBoardIndex(const int&);
-  std::string getRoomName();
-  std::string getRackName();
-  std::string getCrateName();
-  std::string getBoardName();
-  int getRoomIndex();
-  int getRackIndex();
-  int getCrateIndex();
-  int getBoardIndex();
+  BoardInfos(const std::string& roomName="",const std::string& rackName="",const std::string& crateName="",const std::string& name="",const std::string& type="",const toml::value& parameters={},const toml::value& connectorParameters={});
   void print(std::ostream&  os=std::cout, const std::string shift="");
 private:
-  std::string m_RoomName{""};
-  int m_RoomIndex{-1};
-  std::string m_RackName{""};
-  int m_RackIndex{-1};
-  std::string m_CrateName{""};
-  int m_CrateIndex{-1};
-  std::string m_BoardName{""};
-  int m_BoardIndex{-1};
   toml::value m_ConnectorParameters;
   toml::value m_Parameters;
 };
-
-#endif

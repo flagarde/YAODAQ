@@ -1,18 +1,6 @@
-#include "CLI/CLI.hpp"
 #include "WebsocketServer.hpp"
 #include "spdlog.h"
-//#include "fmt/format.h"
-/*#include "chrono.h"
-#include "color.h"
-#include "compile.h"
-#include "format-inl.h"
-#include "locale.h"
-#include "os.h"
-#include "ostream.h"
-#include "posix.h"
-#include "printf.h"
-#include "ranges.h"*/
-
+#include "CLI/CLI.hpp"
 
 int main(int argc, char** argv)
 {
@@ -33,15 +21,16 @@ int main(int argc, char** argv)
   } 
   catch (const CLI::ParseError &e) 
   {
-    return app.exit(e);
+    spdlog::error("{}",e.what());
+    return e.get_exit_code();
   }
   bool stop{false};
   char answer{'a'};
   WebsocketServer server(port,host,backlog,maxConnections,handshakeTimeoutSecs);
   server.listen();
   server.start();
-  fmt::print("Websocket server started on ip {0} port {1} !\n",host,port);
-  fmt::print("Type q and ENTER to stop it !\n");
+  spdlog::info("Websocket server started on IP {0} Port {1}",host,port);
+  spdlog::info("Type q/Q and ENTER to stop it !");
   do
   {
     std::cin>>answer;
@@ -49,6 +38,6 @@ int main(int argc, char** argv)
   }
   while(stop==false);
   server.stop();
-  fmt::print("Bye !\n");
+  spdlog::info("Bye !");
   return 0;
 }

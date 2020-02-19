@@ -38,7 +38,6 @@ private:
     Error()=delete;
     void construct_message();
 protected:
-    void to_throw(const Error& error);
     std::string m_message{"Compile with C++20 for better informations !"};
     const std::int_least32_t m_code{0};
     virtual const char* ErrorStrings(const std::int_least32_t& code);

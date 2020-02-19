@@ -25,6 +25,7 @@ void WebsocketClient::setOnMessageCallback(std::function<void(const std::shared_
 
 WebsocketClient::~WebsocketClient()
 {
+  stop();
   ix::uninitNetSystem();
 }
 
@@ -33,12 +34,21 @@ void WebsocketClient::setHeartBeatPeriod(const int& HeartBeat)
   m_WebSocket.setHeartBeatPeriod(HeartBeat);
 }
 
+ix::ReadyState WebsocketClient::getReadyState()
+{
+  return m_WebSocket.getReadyState();
+}
+
+void WebsocketClient::disableAutomaticReconnection()
+{
+  m_WebSocket.disableAutomaticReconnection();
+}
+
 void WebsocketClient::start()
 {
   m_WebSocket.setUrl(m_Url);
   m_WebSocket.setExtraHeaders(m_Headers);
   m_WebSocket.start();
-  std::cout<<"Connecting to "<<m_Url<<std::endl;
   while(m_WebSocket.getReadyState()!=ix::ReadyState::Open) 
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -47,9 +57,11 @@ void WebsocketClient::start()
 
 void WebsocketClient::stop()
 {
-  std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  m_WebSocket.stop();
-  std::cout<<"Disconnecting"<<std::endl;
+  if(m_WebSocket.getReadyState()!=ix::ReadyState::Closing&&m_WebSocket.getReadyState()!=ix::ReadyState::Closed)m_WebSocket.stop();
+  while(m_WebSocket.getReadyState()!=ix::ReadyState::Closed) 
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
 }
 
 ix::WebSocketSendInfo WebsocketClient::send(const std::string& data,bool binary,const ix::OnProgressCallback& onProgressCallback)

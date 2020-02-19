@@ -1,13 +1,9 @@
-#ifndef MODULE_HPP
-#define MODULE_HPP
+#pragma once
 
 #include <iostream>
 #include <sstream>
 #include <string>
 #include "Message.hpp"
-#include "Info.hpp"
-#include "Status.hpp"
-#include "Log.hpp"
 #include "WebsocketClient.hpp"
 #include "Configuration.hpp"
 #include "spdlog.h"
@@ -97,4 +93,3 @@ private:
   };
 };
 
-#endif

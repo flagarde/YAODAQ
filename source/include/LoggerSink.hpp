@@ -1,9 +1,10 @@
 #pragma once 
 
-#include "Log.hpp"
+#include "Message.hpp"
+
+#include "WebsocketClient.hpp"
 
 #include "sinks/base_sink.h"
-#include "WebsocketClient.hpp"
 #include "details/null_mutex.h"
 
 template<typename Mutex>
@@ -38,7 +39,6 @@ private:
   WebsocketClient& m_WebSocketClient{nullptr};
   Log m_Log;
 };
-
 
 using WebSocketLoguer_mt = WebSocketLoguer<std::mutex>;
 using WebSocketLoguer_st = WebSocketLoguer<spdlog::details::null_mutex>;

@@ -10,8 +10,8 @@ name="LL"
     name = "My Crate "
       
       [[Room.Rack.Crate.Board]]
-      name = "toto"
-      type = "N141X"
+      Name = "toto"
+      Type = "N141X"
       
       [Room.Rack.Crate.Board.Connector]
         name = "Connector 1"

@@ -1,8 +1,9 @@
-#ifndef WEBSOCKETSERVER_HPP
-#define WEBSOCKETSERVER_HPP
+#pragma once
 
 #include <string>
+#include <unordered_map>
 
+#include "Infos.hpp"
 #include "IXWebSocketServer.h"
 
 class WebsocketServer
@@ -16,6 +17,6 @@ public:
   void listen();
 private:
   ix::WebSocketServer m_Server;
+  std::map<Infos,std::shared_ptr<ix::WebSocket>> m_Clients;
+  void erase(const std::shared_ptr<ix::WebSocket>& socket);
 };
-
-#endif

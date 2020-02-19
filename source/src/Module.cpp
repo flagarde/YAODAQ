@@ -38,8 +38,7 @@ Module::Module( const std::string& name,const std::string& type):m_Type(type),m_
 {
   std::cout<<"Creating Module"<<std::endl;
   std::cout<<name<<"  "<<type<<std::endl;
-  m_WebsocketClient.setExtraHeader("Name",m_Name);
-  m_WebsocketClient.setExtraHeader("Type",m_Type);
+  m_WebsocketClient.setExtraHeader("Key","///"+m_Type+"/"+m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
   std::shared_ptr<spdlog::sinks::sink> console = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
@@ -383,10 +382,10 @@ void Module::OnMessage(const ix::WebSocketMessagePtr& msg)
 
 void Module::OnError(const ix::WebSocketMessagePtr& msg)
 {
-  std::stringstream ss;
-  ss << "Error: "         << msg->errorInfo.reason      << std::endl;
-  ss << "#retries: "      << msg->errorInfo.retries     << std::endl;
-  ss << "Wait time(ms): " << msg->errorInfo.wait_time   << std::endl;
-  ss << "HTTP Status: "   << msg->errorInfo.http_status << std::endl;
-  std::cout << ss.str() << std::endl;
+  // The server can send an explicit code and reason for closing.
+  // This data can be accessed through the closeInfo object.
+  spdlog::info("Disconnected !");
+  spdlog::info("{}",msg->closeInfo.code);
+  spdlog::info("{}",msg->closeInfo.reason); 
+  if(msg->closeInfo.code==1002) throw Error(msg->closeInfo.code,msg->closeInfo.reason);
 }

@@ -1,6 +1,6 @@
-#ifndef MESSAGE_HPP
-#define MESSAGE_HPP
+#pragma once
 #include <memory>
+#include <set>
 #include "json.h"
 
 class Message 
@@ -33,4 +33,26 @@ private:
   static Json::CharReaderBuilder m_CharReaderBuilder;
   Json::Value m_Value{};
 };
-#endif
+
+class Info : public Message
+{
+public:
+  Info(const std::string& content="",const std::string& to="",const std::string& from="");
+};
+
+class Log : public Message
+{
+public:
+  Log(const std::string& content="",const std::string& to="",const std::string& from="");
+};
+
+class Status : public Message
+{
+public:
+  Status(const std::string& content="",const std::string& to="",const std::string& from="");
+  virtual void setContent(const std::string&) final;
+private:
+  static std::set<std::string> m_Status;
+  std::string checkContent(const std::string& content);
+};
+ 

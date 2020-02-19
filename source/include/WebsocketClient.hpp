@@ -1,8 +1,9 @@
-#ifndef WEBSOCKETCLIENT_HPP
-#define WEBSOCKETCLIENT_HPP
+#pragma once
+
 #include <string>
-#include "IXWebSocket.h"
 #include <functional>
+
+#include "IXWebSocket.h"
 #include "IXWebSocketMessage.h"
 
 class WebsocketClient 
@@ -13,6 +14,8 @@ public:
   void setHeartBeatPeriod(const int& HeartBeat);
   void start();
   void stop();
+  ix::ReadyState getReadyState();
+  void disableAutomaticReconnection();
   void setOnMessageCallback(std::function<void(const std::shared_ptr<ix::WebSocketMessage>)> m_func);
   ix::WebSocketSendInfo send(const std::string& data,bool binary = false,const ix::OnProgressCallback& onProgressCallback = nullptr);
   ix::WebSocketSendInfo sendBinary(const std::string& text,const ix::OnProgressCallback& onProgressCallback = nullptr);
@@ -25,4 +28,3 @@ private:
   ix::WebSocketHttpHeaders m_Headers;
   std::function<void(const std::shared_ptr<ix::WebSocketMessage>)> m_SocketMessagePtr{nullptr};
 };
-#endif
