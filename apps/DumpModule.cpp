@@ -1,32 +1,42 @@
-#include "Module.hpp"
-#include <string>
-#include "CAENDigitizerBoard.hpp"
+#include "CLI/CLI.hpp"
+#include "Board.hpp"
+//#include <string>
+//#include "CAENDigitizerBoard.hpp"
+//#include "CAENVMEBoard.hpp"
 
-int main()
+int main(int argc, char** argv)
 {  
- 
-  //Status c;
-  //c.setContent("INITIALIZE");
+  CLI::App app{"Dump"};
+  int port{80};
+  app.add_option("-p,--port",port, "Port to listen")->check(CLI::Range(0,65535));
+  std::string host{"127.0.0.1"};
+  app.add_option("-i,--ip",host, "IP of the server")->check(CLI::ValidIPV4);
+  std::string loggerName="Board1";
+  app.add_option("-n,--name",loggerName, "Name of the mode")->check([](const std::string & t){if(t=="") return "Name is empty"; else return "" ;},"Not Empty","Test is name is empty");
+  try 
+  {
+    app.parse(argc, argv);
+  } 
+  catch (const CLI::ParseError &e) 
+  {
+    spdlog::error("{}",e.what());
+    return e.get_exit_code();
+  }
   
- // std::cout<<a.print()<<std::endl;
- // std::cout<<b.print()<<std::endl;
+  WebsocketClient::setURL("ws://"+host+":"+std::to_string(port)+"/");
   
-  WebsocketClient::setURL("ws://127.0.0.1:80/");
   Board::setConfigFile("../confs/Configs.toml");
- // Module Master("MaSter","MyMaster");
- // Module Receiver("Receiver","MyReceiver");
- // toto.sendText(a);
- // toto.sendText(b);
- // toto.sendBinary(a);
- // toto.sendBinary(b);
- // Master.sendText(c);
   
+  Module toto(loggerName);
   
-  CAEN::CAENDigitizerBoard toto("toto");
-  toto.Initialize();
-  //std::cout<<"LL"<<toto.SWRelease()<<std::endl;
-  //std::cout<<"KK"<<toto.BoardFWRelease()<<std::endl;
-  
-  
-  
+   Module toto2("Board2");
+  while(1)
+  {
+    toto.Initialize();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    toto2.Initialize();
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  }
+
+  return 0;
 }

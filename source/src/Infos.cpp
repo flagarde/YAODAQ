@@ -39,7 +39,6 @@ void Infos::setKey(const std::string& key)
     second_pos = tmp.find(separator);
     if(second_pos==std::string::npos)result.push_back(tmp);
   }
-  for(std::size_t i=0;i!=result.size();++i) std::cout<<i<<" "<<result[i]<<"  "<<result.size()<<std::endl;
   if(result.size()==5)
   {
     m_RoomName=result[0];

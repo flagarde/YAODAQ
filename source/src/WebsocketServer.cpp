@@ -3,8 +3,20 @@
 #include "Message.hpp"
 #include "spdlog.h"
 #include "Error.hpp"
+#include "json.h"
 
 #include <iostream>
+void WebsocketServer::setVerbosity(const std::string& verbosity)
+{
+  if(verbosity=="off") m_Verbosity=spdlog::level::off;
+  if(verbosity=="trace") m_Verbosity=spdlog::level::trace;
+  if(verbosity=="info") m_Verbosity=spdlog::level::info;
+  if(verbosity=="debug") m_Verbosity=spdlog::level::debug;
+  if(verbosity=="warning") m_Verbosity=spdlog::level::warn;
+  if(verbosity=="critical") m_Verbosity=spdlog::level::critical;
+  else m_Verbosity=spdlog::level::warn;
+  spdlog::set_level(m_Verbosity);
+}
 
 WebsocketServer::WebsocketServer(const int& port,const std::string& host,const int& backlog,const std::size_t& maxConnections,const int& handshakeTimeoutSecs):m_Server(port,host,backlog,maxConnections,handshakeTimeoutSecs)
 {
@@ -68,16 +80,13 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
               Message error("Error","The Name \""+infos.getName()+"\" is already taken !\n Disconnecting !","","WebSocketServer");
               for(std::map<Infos,std::shared_ptr<ix::WebSocket>>::iterator it=m_Clients.begin();it!=m_Clients.end();++it)
               {
-                std::cout<<"********"<<it->first.getName()<<std::endl;
                 if(it->first.getType()=="Logger") 
                 {
-                  //it->second->send(error.get());
+                  it->second->send(error.get());
                 }
               }
               webSocket->send(error.get());
-              std::this_thread::sleep_for(std::chrono::milliseconds(1));
               if(webSocket->getReadyState()!=ix::ReadyState::Closing&&webSocket->getReadyState()!=ix::ReadyState::Closed) webSocket->stop(1002,"Exit");
-              
             }
             else m_Clients.emplace(infos,webSocket);
             //Print in all the Logger consoles
@@ -90,7 +99,7 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
                 it->second->send("Headers :");
                 for (auto itt : msg->openInfo.headers)
                 {
-                  //it->second->send("\t"+itt.first+" : "+itt.second);
+                  it->second->send("\t"+itt.first+" : "+itt.second);
                 }
               }
             }
@@ -107,25 +116,60 @@ WebsocketServer::WebsocketServer(const int& port,const std::string& host,const i
               }
             }
             erase(webSocket);
-            std::cout<<"After cLOSINNGGGG"<<std::endl;
-            for(std::map<Infos,std::shared_ptr<ix::WebSocket>>::iterator it=m_Clients.begin();it!=m_Clients.end();++it)
-            {
-              std::cout<<"After Clossing "<<it->first.getName()<<std::endl;
-            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
           }
           else if(msg->type == ix::WebSocketMessageType::Message)
           {
-            spdlog::info("Message :");
-            spdlog::info("\t{}",msg->str);
-            for(std::map<Infos,std::shared_ptr<ix::WebSocket>>::iterator it=m_Clients.begin();it!=m_Clients.end();++it)
+            spdlog::info("{}",msg->str);
+            Message message;
+            try
             {
-              if(it->second!=webSocket)it->second->send(msg->str);
+              message.parse(msg->str);
+            }
+            catch(...)
+            {
+              for(std::map<Infos,std::shared_ptr<ix::WebSocket>>::iterator it=m_Clients.begin();it!=m_Clients.end();++it)
+              {
+                if(it->second!=webSocket)it->second->send(msg->str);
+              }
+            }
+            //If it's Log only send to Loggers :)
+            if(message.getType()=="Log")
+            {
+              for(std::map<Infos,std::shared_ptr<ix::WebSocket>>::iterator it=m_Clients.begin();it!=m_Clients.end();++it)
+              {
+                if(it->second!=webSocket&&it->first.getType()=="Logger")
+                {
+                  it->second->send(msg->str);
+                }
+              }
+            }
+            else if(message.getType()=="Log")
+            {
+              
+            }
+            else
+            {
+              for(std::map<Infos,std::shared_ptr<ix::WebSocket>>::iterator it=m_Clients.begin();it!=m_Clients.end();++it)
+              {
+                if(it->second!=webSocket)it->second->send(msg->str);
+              }
             }
           }
         }
       );
     }
   );  
+}
+
+Infos WebsocketServer::getInfos(const std::shared_ptr<ix::WebSocket>& socket)
+{
+  for(std::map<Infos,std::shared_ptr<ix::WebSocket>>::iterator it=m_Clients.begin();it!=m_Clients.end();++it)
+  {
+    if(it->second==socket) return it->first;
+  }
+  //FIX ME a better one;
+  throw ;
 }
 
 void WebsocketServer::erase(const std::shared_ptr<ix::WebSocket>& socket)

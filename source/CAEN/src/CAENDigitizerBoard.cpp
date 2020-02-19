@@ -144,7 +144,7 @@ void CAENDigitizerBoard::initilizeParameters()
 CAENDigitizerBoard::CAENDigitizerBoard(const std::string& name):Board(name,"CAENDigitizerBoard")
 {
   std::cout<<"Creating CAENDigitizerBoard"<<std::endl;
-  initilizeParameters();
+  //initilizeParameters();
   std::cout<<"Exit Creating CAENDigitizerBoard"<<std::endl;
 }
 

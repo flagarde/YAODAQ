@@ -43,7 +43,7 @@ void Configuration::checkFile()
   static int connector_ID{-1};
   for(const auto& rooms : toml::find<toml::array>(m_Conf,"Room"))
   {
-    std::string room_name=toml::find_or<std::string>(rooms,"name","");
+    std::string room_name=toml::find_or<std::string>(rooms,"Name","");
     if(room_name=="" || std::find(m_Room_Names.begin(),m_Room_Names.end(),room_name) != m_Room_Names.end()) 
     {
       std::cout<<"Room must have a (unique) name !"<<std::endl;
@@ -55,7 +55,7 @@ void Configuration::checkFile()
       //std::cout<<"Parsing Room : "<<room_name<<std::endl;
       for(const auto& racks : toml::find<toml::array>(rooms,"Rack"))
       {
-        std::string rack_name=toml::find_or<std::string>(racks,"name","");
+        std::string rack_name=toml::find_or<std::string>(racks,"Name","");
         if(rack_name==""|| std::find(m_Rack_Names.begin(),m_Rack_Names.end(),rack_name) != m_Rack_Names.end())  
         {
           std::cout<<"Rack must have a (unique) name !"<<std::endl;
@@ -68,7 +68,7 @@ void Configuration::checkFile()
           for(const auto& crates : toml::find<toml::array>(racks,"Crate"))
           {
             bool crate_have_connector{true};
-            std::string crate_name=toml::find_or<std::string>(crates,"name","");
+            std::string crate_name=toml::find_or<std::string>(crates,"Name","");
             if(crate_name=="" || std::find(m_Crate_Names.begin(),m_Crate_Names.end(),crate_name) != m_Crate_Names.end()) 
             {
               std::cout<<"Crate must have a (unique) name !"<<std::endl;

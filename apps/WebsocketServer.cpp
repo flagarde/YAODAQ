@@ -15,6 +15,10 @@ int main(int argc, char** argv)
   app.add_option("-m,--max",maxConnections, "Maximun connections")->check(CLI::PositiveNumber);
   int handshakeTimeoutSecs{3};
   app.add_option("-t,--timeout",handshakeTimeoutSecs, "Timeout in seconds")->check(CLI::PositiveNumber);
+  std::string verbosity{"warning"};
+  app.add_option("-v,--verbosity",verbosity,"Verbosity")->check([](const std::string & t){if(t!="off"&&t!="trace"&&t!="info"&&t!="debug"&&t!="warning"&&t!="critical") return "Wrong verbosity level"; else return "" ;},"Verbosity level","Verbosity level");
+  
+  
   try 
   {
     app.parse(argc, argv);
@@ -27,6 +31,7 @@ int main(int argc, char** argv)
   bool stop{false};
   char answer{'a'};
   WebsocketServer server(port,host,backlog,maxConnections,handshakeTimeoutSecs);
+  server.setVerbosity(verbosity);
   server.listen();
   server.start();
   spdlog::info("Websocket server started on IP {0} Port {1}",host,port);

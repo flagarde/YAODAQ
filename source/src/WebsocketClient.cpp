@@ -57,11 +57,7 @@ void WebsocketClient::start()
 
 void WebsocketClient::stop()
 {
-  if(m_WebSocket.getReadyState()!=ix::ReadyState::Closing&&m_WebSocket.getReadyState()!=ix::ReadyState::Closed)m_WebSocket.stop();
-  while(m_WebSocket.getReadyState()!=ix::ReadyState::Closed) 
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  }
+  m_WebSocket.stop();
 }
 
 ix::WebSocketSendInfo WebsocketClient::send(const std::string& data,bool binary,const ix::OnProgressCallback& onProgressCallback)

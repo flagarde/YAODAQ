@@ -2,24 +2,47 @@
 name = "My Configuration"
 
 [[Room]]
-name="LL"
+Name="Room1"
   [[Room.Rack]]
-  name = "Rack1"
+  Name = "Rack1"
     
     [[Room.Rack.Crate]]
-    name = "My Crate "
+    Name = "Crate1"
       
       [[Room.Rack.Crate.Board]]
-      Name = "toto"
+      Name = "Board1"
       Type = "N141X"
       
       [Room.Rack.Crate.Board.Connector]
-        name = "Connector 1"
+        name = "Connector1"
         Type = "CAENVME"
         Model = "V1718"
         "Link Number" = 0
         
       "WRITE_REGISTER"=[[0,1,2],[3,4,5],[6,7,8]]
       
+      [[Room.Rack.Crate.Board]]
+      Name = "Board2"
+      Type = "N141X"
+      
+      [Room.Rack.Crate.Board.Connector]
+        name = "Connector2"
+        Type = "CAENVME"
+        Model = "V1718"
+        "Link Number" = 0
+        
+      "WRITE_REGISTER"=[[0,1,2],[3,4,5],[6,7,8]]
+      
+     [[Room.Rack.Crate]]
+     Name = "Crate2"
 
-
+      [[Room.Rack.Crate.Board]]
+      Name = "Board3"
+      Type = "N141X"
+      
+      [Room.Rack.Crate.Board.Connector]
+        name = "Connector3"
+        Type = "CAENVME"
+        Model = "V1718"
+        "Link Number" = 0
+        

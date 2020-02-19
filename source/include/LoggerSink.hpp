@@ -18,6 +18,7 @@ public:
     void setWebSocketClient(const WebsocketClient& websocketclient)
     {
       m_WebSocketClient=websocketclient;
+      
     }
     void setFrom(const std::string& from)
     {
@@ -35,7 +36,6 @@ protected:
     {
       
     }
-private:
   WebsocketClient& m_WebSocketClient{nullptr};
   Log m_Log;
 };

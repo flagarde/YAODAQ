@@ -1,6 +1,7 @@
 #include "Message.hpp"
 #include <iostream>
 #include "json.h"
+#include "Error.hpp"
 
 Json::StreamWriterBuilder Message::m_StreamWriterBuilder= Json::StreamWriterBuilder();
 
@@ -47,7 +48,7 @@ void Message::parse(const std::string& msg)
   bool ok = m_Reader->parse(&msg[0],&msg[msg.size()],&m_Value, &errs);
   if(!ok)
   {
-      std::cout << "Error: " <<errs<<std::endl;
+      throw Error(ok,"Error: "+errs);
   }
 }
 

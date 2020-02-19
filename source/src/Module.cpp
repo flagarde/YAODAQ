@@ -36,16 +36,14 @@ ix::WebSocketSendInfo Module::sendText(Message& message)
 
 Module::Module( const std::string& name,const std::string& type):m_Type(type),m_Name(name)
 {
-  std::cout<<"Creating Module"<<std::endl;
-  std::cout<<name<<"  "<<type<<std::endl;
+  spdlog::sinks_init_list sink_list={std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),std::make_shared<WebSocketLoguer_mt>(m_WebsocketClient,m_Type+"/"+m_Name)};
+  m_Logger = std::make_shared<spdlog::logger>(m_Type+"/"+m_Name,std::begin(sink_list),std::end(sink_list));
+  //Mimic json to parse the message and the level to change it on Loggers;
+  std::string pattern="{\"Message\" : \"%v\", \"Level\" : \"%l\"}";
+  m_Logger->sinks()[1]->set_pattern(pattern);
   m_WebsocketClient.setExtraHeader("Key","///"+m_Type+"/"+m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
-  std::shared_ptr<spdlog::sinks::sink> console = std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>();
-  std::shared_ptr<spdlog::sinks::sink> websocketlogger = std::make_shared<WebSocketLoguer_mt>(m_WebsocketClient,m_Type+"/"+m_Name);
-  spdlog::sinks_init_list sink_list={console,websocketlogger};
-  m_Logger= std::make_shared<spdlog::logger>(m_Type+"/"+m_Name,sink_list.begin(),sink_list.end());
-  std::cout<<"Finished Creating Module"<<std::endl;
 }
 
 void Module::DoDoConnect()
@@ -65,9 +63,17 @@ void Module::verifyParameters()
 
 void Module::LoadConfig()
 {
+  try
+  {
     m_Config.parse();
     m_Conf=m_Config.getConfig(m_Name);
     this->verifyParameters();
+  }
+  catch(const std::exception& error)
+  {
+    m_Logger->error(error.what());
+    throw error;
+  }
 }
 
 
@@ -78,9 +84,6 @@ void Module::printParameters()
 
 Module::~Module()
 {
-  std::cout<<"Destroying Module"<<std::endl;
-  m_WebsocketClient.stop();
-  std::cout<<"Finished Destroying Module"<<std::endl;
   
 }
 
@@ -91,6 +94,12 @@ void Module::Initialize()
     LoadConfig();
     DoInitialize();
     sendStatus("INITIALIZED");
+    m_Logger->trace("Trace");
+    m_Logger->info("info");
+    m_Logger->debug("debug");
+    m_Logger->warn("warn");
+    m_Logger->error("error");
+    m_Logger->critical("critical");
   }
   catch(const std::exception& error)
   {
@@ -206,7 +215,7 @@ void Module::Release()
   }
   catch(const std::exception& error)
   {
-    m_Logger->error(error.what());
+     m_Logger->error(error.what());
     throw error;
   }
 }
@@ -236,47 +245,47 @@ void Module::sendStatus(const std::string& stat)
 void Module::DoInitialize()
 {
   std::cout<<"Initialize"<<std::endl;
-};
+}
 
 void Module::DoConnect()
 {
   std::cout<<"Connect"<<std::endl;
-};
+}
 
 void Module::DoConfigure()
 {
   std::cout<<"Configure"<<std::endl;
-};
+}
 
 void Module::DoStart()
 {
   std::cout<<"Start"<<std::endl;
-};
+}
 
 void Module::DoPause()
 {
   std::cout<<"Pause"<<std::endl;
-};
+}
 
 void Module::DoStop()
 {
   std::cout<<"Stop"<<std::endl;
-};
+}
 
 void Module::DoClear()
 {
   std::cout<<"Clear"<<std::endl;
-};
+}
 
 void Module::DoDisconnect()
 {
   std::cout<<"Disconnect"<<std::endl;
-};
+}
 
 void Module::DoRelease()
 {
   std::cout<<"Release"<<std::endl;
-};
+}
 
 void Module::DoQuit()
 {
@@ -335,7 +344,6 @@ void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
-  message.print();
   if(message.getType()=="Status")
   {
     DoOnStatus(message);
@@ -347,45 +355,44 @@ void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 
 void Module::OnOpen(const ix::WebSocketMessagePtr& msg)
 {
-  // Headers can be inspected (pairs of string/string)
-  std::cout << "Handshake Headers :" << std::endl;
-  for (auto it : msg->openInfo.headers)
+  m_Logger->info("Connected !");
+  m_Logger->info("Handshake Headers :");
+  for(auto it : msg->openInfo.headers)
   {
-    std::cout << it.first << ": " << it.second << std::endl;
+    m_Logger->info("\t{0}:{1}",it.first,it.second);
   }
+  m_Logger->info("");
 }
 
 void Module::OnClose(const ix::WebSocketMessagePtr& msg)
 {
-  std::cout << "Disconnected !" << std::endl;
-  
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
-  std::cout << msg->closeInfo.code << std::endl;
-  std::cout << msg->closeInfo.reason << std::endl;
+  m_Logger->info("Disconnected !");
+  m_Logger->info("{}",msg->closeInfo.code);
+  m_Logger->info("{}",msg->closeInfo.reason); 
+  if(msg->closeInfo.code==1002) throw Error(msg->closeInfo.code,msg->closeInfo.reason);
 }
 
 void Module::OnPong(const ix::WebSocketMessagePtr& msg)
 {
-  std::cout << "Pong data: " << msg->str << std::endl;
+  m_Logger->info("Pong data : {}",msg->str);
 }
 
 void Module::OnPing(const ix::WebSocketMessagePtr& msg)
 {
-  std::cout << "Ping data: " << msg->str << std::endl;
+  m_Logger->info("Ping data : {}",msg->str);
 }
 
 void Module::OnMessage(const ix::WebSocketMessagePtr& msg)
 {
-  std::cout << msg->str << std::endl;
+  m_Logger->info("{}",msg->str);
 }
 
 void Module::OnError(const ix::WebSocketMessagePtr& msg)
 {
-  // The server can send an explicit code and reason for closing.
-  // This data can be accessed through the closeInfo object.
-  spdlog::info("Disconnected !");
-  spdlog::info("{}",msg->closeInfo.code);
-  spdlog::info("{}",msg->closeInfo.reason); 
-  if(msg->closeInfo.code==1002) throw Error(msg->closeInfo.code,msg->closeInfo.reason);
+  m_Logger->error("Error : {}",msg->errorInfo.reason);
+  m_Logger->error("#retries : {}",msg->errorInfo.retries);
+  m_Logger->error("Wait time(ms) : {}",msg->errorInfo.wait_time);
+  m_Logger->error("HTTP Status : {}",msg->errorInfo.http_status);
 }
