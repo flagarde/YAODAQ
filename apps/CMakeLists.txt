@@ -11,6 +11,11 @@ if(BUILD_WEBSOCKETSERVER)
   install(TARGETS WebSocketServer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
+add_executable(Controller Controller.cpp)
+add_dependencies(Controller Controller_)
+target_link_libraries(Controller Controller_)
+install(TARGETS Controller RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+
 add_executable(Logger Logger.cpp)
 add_dependencies(Logger Logger_)
 target_link_libraries(Logger Logger_)

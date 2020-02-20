@@ -82,6 +82,14 @@ if(BUILD_DAQ)
   set_target_properties(Error PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Error.hpp")
   install(TARGETS Error RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
+  add_library(Controller_ "${YAODAQ_SRC}/Controller.cpp")
+  add_dependencies(Controller_ WebSocketClient Message Error)
+  target_link_libraries(Controller_ PUBLIC WebSocketClient PUBLIC Message PUBLIC Error)
+  target_include_directories(Controller_ PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>  PUBLIC "${INCLUDE_OUTPUT_DIR}/toml")
+  set_target_properties(Controller_ PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Controller.hpp" )
+  install(TARGETS Controller_ RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+  
+  
   add_library(ConnectorInfos "${YAODAQ_SRC}/ConnectorInfos.cpp")
   add_dependencies(ConnectorInfos toml11)
   target_include_directories(ConnectorInfos PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}> PUBLIC "${INCLUDE_OUTPUT_DIR}/toml")
