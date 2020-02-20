@@ -1,5 +1,4 @@
-#ifndef FLASH_OPCODES_H_
-#define FLASH_OPCODES_H_
+#pragma once
 
 /* Read Commands */
 #define MAIN_MEM_PAGE_READ_CMD 0xD2
@@ -88,5 +87,3 @@
 #define SPIFLASH_DEVICEID_64MBIT 0x28
 #define SPIFLASH_DEVICEID_32MBIT 0x27
 #define SPIFLASH_DEVICEID_8MBIT 0x25
-
-#endif /* FLASH_OPCODES_H_ */

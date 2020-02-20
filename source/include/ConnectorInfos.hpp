@@ -1,5 +1,5 @@
-#ifndef CONNECTORINFOS_HPP
-#define CONNECTORINFOS_HPP
+#pragma once
+
 #include "toml.hpp"
 
 class ConnectorInfos
@@ -19,5 +19,3 @@ private:
   bool m_IsSharedConnector{false};
   int m_ID{-1};
 };
-
-#endif

@@ -1,5 +1,5 @@
-#ifndef CAENDIGITIZERCONNECTOR_HPP
-#define CAENDIGITIZERCONNECTOR_HPP
+#pragma once
+
 #include <string>
 #include <unordered_map>
 
@@ -26,4 +26,3 @@ private:
 };
 
 }
-#endif

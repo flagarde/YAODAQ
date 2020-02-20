@@ -1,5 +1,5 @@
-#ifndef CONFIGURATION_HPP
-#define CONFIGURATION_HPP
+#pragma once
+
 #include <string>
 #include <vector>
 #include <map>
@@ -28,5 +28,3 @@ private:
   std::map<std::string,toml::value> m_ModuleConfig;
   std::map<std::string,ConnectorInfos> m_ConnectorInfos;
 };
-
-#endif

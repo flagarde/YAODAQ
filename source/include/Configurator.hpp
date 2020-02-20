@@ -1,5 +1,5 @@
-#ifndef CONFIGURATOR_H
-#define CONFIGURATOR_H
+#pragma once
+
 #include <string>
 #include "WebsocketServer.hpp"
 #include "soci/session.h"
@@ -12,5 +12,3 @@ public:
 private:
   soci::session m_session;
 };
-
-#endif

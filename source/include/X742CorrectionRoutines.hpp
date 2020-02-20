@@ -1,5 +1,4 @@
-#ifndef __X742_CORRECTION_ROUTINES_H
-#define __X742_CORRECTION_ROUTINES_H
+#pragma once
 
 #include "CAENDigitizerType.h"
 
@@ -34,4 +33,3 @@ int SaveCorrectionTables(const char *outputFileName, uint32_t groupMask,
 int LoadCorrectionTable(char *baseInputFileName,
                         CAEN_DGTZ_DRS4Correction_t *tb);
 
-#endif // __X742_CORRECTION_ROUTINES_H

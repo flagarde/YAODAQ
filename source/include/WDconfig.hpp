@@ -1,5 +1,5 @@
-#ifndef _WDCONFIG__H
-#define _WDCONFIG__H
+#pragma once
+
 #include "Data.hpp"
 #include "flash.hpp"
 #include <cstdio>
@@ -17,4 +17,3 @@
  *   \return  0 = Success; negative numbers are error codes
  */
 int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg);
-#endif // _WDCONFIG__H

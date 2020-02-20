@@ -1,5 +1,5 @@
-#ifndef CONNECTOR_HPP
-#define CONNECTOR_HPP
+#pragma once
+
 #include <string>
 #include "ConnectorInfos.hpp"
 
@@ -18,5 +18,3 @@ protected:
   std::int32_t m_Handle{0};
   ConnectorInfos m_Infos;
 };
-
-#endif

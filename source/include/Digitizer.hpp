@@ -1,5 +1,5 @@
-#ifndef DIGITIZER_HPP
-#define DIGITIZER_HPP
+#pragma once
+
 #include "Data.hpp"
 #include "X742CorrectionRoutines.hpp"
 #include <iostream>
@@ -391,4 +391,3 @@ private:
   static std::vector<std::string> ErrMsg;
   TimeOutInfos m_TimeOutInfos;
 };
-#endif

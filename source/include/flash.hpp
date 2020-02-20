@@ -1,7 +1,6 @@
-#ifndef FLASH_H_
-#define FLASH_H_
+#pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 /** @def FLASH_API_ERROR_CODES
  Library Error codes
@@ -94,4 +93,3 @@ FLASH_API SPIFlash_erase_page(int handle, uint16_t page);
 int SPIFlash_is_busy(int handle);
 FLASH_API SPIFlash_wait(int handle);
 
-#endif /* FLASH_H_ */

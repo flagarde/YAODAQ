@@ -1,3 +1,5 @@
+#pragma once
+
 #include <pthread.h>
 #include <string>
 #include <sys/time.h>
@@ -5,8 +7,6 @@
 
 using namespace std;
 
-#ifndef UTIL_h
-#define UTIL_h
 
 class util {
 
@@ -41,4 +41,3 @@ public:
   }
 };
 
-#endif

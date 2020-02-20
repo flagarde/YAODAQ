@@ -1,5 +1,5 @@
-#ifndef CONNECTORFACTORY_HPP
-#define CONNECTORFACTORY_HPP
+#pragma once
+
 #include "Connector.hpp"
 #include "ConnectorInfos.hpp"
 #include <memory>
@@ -13,5 +13,3 @@ public:
 private:
   std::map<int,std::shared_ptr<Connector>> m_SharedConnectors;
 };
-
-#endif

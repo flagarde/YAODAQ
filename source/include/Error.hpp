@@ -1,5 +1,5 @@
-#ifndef ERROR_HPP
-#define ERROR_HPP
+#pragma once
+
 #if __has_include(<source_location>)
 #  include <source_location>
 #  define have_source_location 1
@@ -47,5 +47,3 @@ protected:
     const std::source_location& location;
 #endif
 };
-
-#endif

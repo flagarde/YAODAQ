@@ -1,5 +1,5 @@
-#ifndef PLOTTER_H
-#define PLOTTER_H
+#pragma once
+
 #include "Data.hpp"
 #include "TBufferJSON.h"
 #include "TCanvas.h"
@@ -86,4 +86,3 @@ private:
   double tickSize{0};
   WebServer &server;
 };
-#endif

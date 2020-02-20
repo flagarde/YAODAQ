@@ -1,7 +1,6 @@
-#ifndef DATA_H
-#define DATA_H
+#pragma once
+
 #include <cstdio>
-//#include "CAENDigitizer.h"
 #include "Config.hpp"
 
 
@@ -36,4 +35,3 @@ public:
   int NbrEvents{0};
   WaveDumpRun_t WDrun;
 };
-#endif

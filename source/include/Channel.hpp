@@ -1,5 +1,5 @@
-#ifndef CHANNEL_H
-#define CHANNEL_H
+#pragma once
+
 #include "TObject.h"
 #include <string>
 
@@ -28,5 +28,3 @@ public:
   std::vector<double> Time;
   ClassDef(Channel,1); // Simple event class
 };
-
-#endif

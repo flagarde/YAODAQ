@@ -1,5 +1,5 @@
-#ifndef WEBSERVER_h
-#define WEBSERVER_h
+#pragma once
+
 #include "IXWebSocketServer.h"
 #include <string>
 #include "json/json.h"
@@ -59,4 +59,3 @@ private:
   bool isStarted{false};
   Json::Value Infos;
 };
-#endif

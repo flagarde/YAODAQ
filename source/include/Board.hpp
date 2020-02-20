@@ -1,5 +1,5 @@
-#ifndef BOARD_HPP
-#define BOARD_HPP
+#pragma once
+
 #include <string>
 #include "Connector.hpp"
 #include "ConnectorFactory.hpp"
@@ -24,5 +24,3 @@ private:
 protected:
   std::int32_t m_Handle{-1};
 };
-
-#endif

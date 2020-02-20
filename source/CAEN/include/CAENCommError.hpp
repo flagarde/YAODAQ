@@ -1,5 +1,5 @@
-#ifndef CAENCOMMERROR_HPP
-#define CAENCOMMERROR_HPP
+#pragma once
+
 #include "Error.hpp"
 #include<cstdint>
 
@@ -22,4 +22,3 @@ private:
 };
 
 }
-#endif

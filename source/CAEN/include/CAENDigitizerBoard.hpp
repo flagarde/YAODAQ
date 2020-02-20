@@ -1,5 +1,5 @@
-#ifndef CAENDIGITIZERBOARD_HPP
-#define CAENDIGITIZERBOARD_HPP
+#pragma once
+
 #include "Board.hpp"
 #include <variant>
 #include <memory>
@@ -1053,4 +1053,3 @@ typedef enum {
 };
 
 }
-#endif

@@ -1,5 +1,4 @@
-#ifndef FILEMAN_h
-#define FILEMAN_h
+#pragma once
 
 #include "Channel.hpp"
 #include "Event.hpp"
@@ -7,12 +6,10 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "util.h"
-//#include <CAENDigitizer.h>
 #include <CAENDigitizerType.h>
 #include <bitset>
 #include <iostream>
 #include <vector>
-//#include "CAENdaq.h"
 
 
 const double rolloverAdd = 8e-9 * 2147483647;
@@ -87,4 +84,3 @@ private:
   Event* event{nullptr};
   Data &dat;
 };
-#endif

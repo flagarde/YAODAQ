@@ -1,5 +1,5 @@
- #ifndef EVENT_H
-#define EVENT_H
+#pragma once
+
 #include "TObject.h"
 #include <string>
 #include "Channel.hpp"
@@ -23,5 +23,3 @@ int Pattern{0};
 std::vector<Channel> Channels;
 ClassDef(Event,1); // Simple event class
 };
-
-#endif

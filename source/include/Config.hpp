@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
+
 #include "CAENDigitizerType.h"
 
 
@@ -84,4 +84,3 @@ public:
   int StartupCalibration{1};
   DAC_Calibration_data DAC_Calib;
 };
-#endif

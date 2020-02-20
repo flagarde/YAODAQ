@@ -1,5 +1,5 @@
-#ifndef CAENCOMMBOARD_HPP
-#define CAENCOMMBOARD_HPP
+#pragma once
+
 #include "Board.hpp"
 #include <cstdint>
 namespace CAEN
@@ -226,4 +226,3 @@ public:
 };
 
 }
-#endif
