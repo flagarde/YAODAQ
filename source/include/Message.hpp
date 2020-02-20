@@ -1,6 +1,8 @@
 #pragma once
+
 #include <memory>
 #include <set>
+
 #include "json.h"
 
 class Message 
