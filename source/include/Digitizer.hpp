@@ -1,46 +1,41 @@
 #pragma once
 
+#include "CAENDigitizer.h"
+#include "CAENDigitizerType.h"
 #include "Data.hpp"
 #include "X742CorrectionRoutines.hpp"
+
 #include <iostream>
 #include <string>
 #include <thread>
-#include <vector>
 #include <utility>
-#include "CAENDigitizerType.h"
-#include "CAENDigitizer.h"
+#include <vector>
 
-class TimeOutInfos
-{
+class TimeOutInfos {
 public:
-    TimeOutInfos(double data,double trigger):DataRate(data),TriggerRate(trigger){}
-    TimeOutInfos(){}
-    void set(double data,double trigger)
-    {
-        DataRate=data;
-        TriggerRate=trigger;
-        Changed=true;
-    }
-    double getDataRate()
-    {
-        Changed=false; 
-        return DataRate;
-    }
-    double getTriggerRate()
-    {
-        Changed=false; 
-        return TriggerRate;
-    }
-    bool hasChanged()
-    {
-        return Changed;
-    }
-private:
-    bool Changed{false};
-    double DataRate{0.};
-    double TriggerRate{0.};
-};
+  TimeOutInfos(double data, double trigger)
+      : DataRate(data), TriggerRate(trigger) {}
+  TimeOutInfos() {}
+  void set(double data, double trigger) {
+    DataRate = data;
+    TriggerRate = trigger;
+    Changed = true;
+  }
+  double getDataRate() {
+    Changed = false;
+    return DataRate;
+  }
+  double getTriggerRate() {
+    Changed = false;
+    return TriggerRate;
+  }
+  bool hasChanged() { return Changed; }
 
+private:
+  bool Changed{false};
+  double DataRate{0.};
+  double TriggerRate{0.};
+};
 
 /* Error messages */
 typedef enum {
@@ -60,15 +55,17 @@ typedef enum {
   ERR_DUMMY_LAST,
 } ERROR_CODES;
 
-class Digitizer
-{
+class Digitizer {
 public:
   void GetEvent(std::size_t i);
   void DecodeEvent();
 
   bool Interrupt();
   void Disconnect();
-  void SoftwareTrigger() { if(!m_isPaused && m_continuousTrigger) CAEN_DGTZ_SendSWtrigger(handle); }
+  void SoftwareTrigger() {
+    if (!m_isPaused && m_continuousTrigger)
+      CAEN_DGTZ_SendSWtrigger(handle);
+  }
   void Calibrate_XX740_DC_Offset();
   void Set_relative_Threshold();
   void Calibrate_DC_Offset();
@@ -87,11 +84,11 @@ public:
 
   void ReloadConf() {
     int ret{0};
-      ret = CAEN_DGTZ_GetInfo(handle, &dat.BoardInfo);
-      if (ret) {
-        Quit(ERR_BOARD_INFO_READ);
-      }
-      GetMoreBoardInfo();
+    ret = CAEN_DGTZ_GetInfo(handle, &dat.BoardInfo);
+    if (ret) {
+      Quit(ERR_BOARD_INFO_READ);
+    }
+    GetMoreBoardInfo();
   }
 
   void Read() {
@@ -128,14 +125,13 @@ public:
         (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE ||
          dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE))
 
-    // Read again the board infos, just in case some of them were changed by the
-    // programming (like, for example, the TSample and the number of channels if
-    // DES mode is changed)
-    ReloadConf();
+      // Read again the board infos, just in case some of them were changed by
+      // the programming (like, for example, the TSample and the number of
+      // channels if DES mode is changed)
+      ReloadConf();
 
     // Reload Correction Tables if changed
-    if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) 
-    {
+    if (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) {
       if (dat.WDcfg.useCorrections != -1) { // Use Manual Corrections
         uint32_t GroupMask = 0;
 
@@ -198,7 +194,6 @@ public:
   }
 
   void LoadDACCalibration() {
-
     if (dat.BoardInfo.FamilyCode !=
         CAEN_DGTZ_XX742_FAMILY_CODE) // XX742 not considered
       Load_DAC_Calibration_From_Flash();
@@ -210,7 +205,6 @@ public:
   }
 
   void MaskChannels() {
-
     if ((dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX740_FAMILY_CODE) &&
         (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)) {
       dat.WDcfg.EnableMask &= (1 << dat.WDcfg.Nch) - 1;
@@ -227,47 +221,41 @@ public:
     }
   }
 
-
-
   int32_t BoardSupportsCalibration();
   int32_t BoardSupportsTemperatureRead();
   void setPrevRateTime() { PrevRateTime = get_time(); }
   void Trigger() {
-
- /*   if (!dat.WDrun.ContinuousTrigger) {*/
-      CAEN_DGTZ_SendSWtrigger(handle);
-      std::cout << "Single Software Trigger issued" << std::endl;
-  /*  }*/
+    /*   if (!dat.WDrun.ContinuousTrigger) {*/
+    CAEN_DGTZ_SendSWtrigger(handle);
+    std::cout << "Single Software Trigger issued" << std::endl;
+    /*  }*/
   }
 
-void Start() 
-{
-    
-    if(isStarted&&!m_isPaused) return;
-        m_isPaused=false;
-    //Wait connection is done
+  void Start() {
+    if (isStarted && !m_isPaused)
+      return;
+    m_isPaused = false;
+    // Wait connection is done
     if (dat.BoardInfo.FamilyCode !=
-          CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
-        Set_relative_Threshold();
-      std::cout << "Acquisition started" << std::endl;
-      CAEN_DGTZ_SWStartAcquisition(handle);
-    isStarted=true; 
-    
+        CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
+      Set_relative_Threshold();
+    std::cout << "Acquisition started" << std::endl;
+    CAEN_DGTZ_SWStartAcquisition(handle);
+    isStarted = true;
   }
 
   void Stop() {
-    if(isStarted==false) return;
-     m_isPaused=false;
-      std::cout << "Acquisition stopped" << std::endl;
-      CAEN_DGTZ_SWStopAcquisition(handle);
-      isStarted = false;
-      totalevent=0;
-      std::cout<<"Reseting number "<<getNumberOfEvents()<<std::endl;
-      
+    if (isStarted == false)
+      return;
+    m_isPaused = false;
+    std::cout << "Acquisition stopped" << std::endl;
+    CAEN_DGTZ_SWStopAcquisition(handle);
+    isStarted = false;
+    totalevent = 0;
+    std::cout << "Reseting number " << getNumberOfEvents() << std::endl;
   }
 
   void Temperature() {
-
     if (BoardSupportsTemperatureRead()) {
       if (isStarted == false) {
         int32_t ch;
@@ -291,12 +279,11 @@ void Start()
   }
 
   void D() {
-
     if (isStarted == 0) {
       std::cout << "Disconnect input signal from all channels and press any "
                    "key to start."
                 << std::endl;
-      /// FIX ME PRESS KEY WITH WEBSOCKW 
+      /// FIX ME PRESS KEY WITH WEBSOCKW
       if (dat.BoardInfo.FamilyCode ==
           CAEN_DGTZ_XX740_FAMILY_CODE) /*XX740 specific*/
         Calibrate_XX740_DC_Offset();
@@ -346,28 +333,25 @@ void Start()
   void Save_DAC_Calibration_To_Flash();
 
   static long get_time();
- 
-  uint32_t getTotalOfEvents(){
-	return totalevent;
-}
 
+  uint32_t getTotalOfEvents() { return totalevent; }
 
-void addOneEventProcessed(){totalevent++;}
+  void addOneEventProcessed() { totalevent++; }
 
-  uint32_t getNumberOfEvents(){
-	return NumEvents;
-}
-  void swapContinuousTrigger()
-  {  
-	if(m_continuousTrigger==true) m_continuousTrigger=false;
-        else m_continuousTrigger=true;
-	std::cout<<"Conitnuous trigger set to : "<<m_continuousTrigger<<std::endl;
+  uint32_t getNumberOfEvents() { return NumEvents; }
+  void swapContinuousTrigger() {
+    if (m_continuousTrigger == true)
+      m_continuousTrigger = false;
+    else
+      m_continuousTrigger = true;
+    std::cout << "Conitnuous trigger set to : " << m_continuousTrigger
+              << std::endl;
   }
-  void setPaused(const bool& p){ m_isPaused=p;
-			       }
-  bool isPaused(){return m_isPaused;}
+  void setPaused(const bool &p) { m_isPaused = p; }
+  bool isPaused() { return m_isPaused; }
 
-  TimeOutInfos& getTimeOutInfos(){return m_TimeOutInfos;}
+  TimeOutInfos &getTimeOutInfos() { return m_TimeOutInfos; }
+
 private:
   void FreeEvent();
   void FreeBuffer();

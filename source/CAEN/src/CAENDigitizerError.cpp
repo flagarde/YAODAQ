@@ -1,14 +1,12 @@
 #include "CAENDigitizerError.hpp"
+
 #include "CAENDigitizerType.h"
-#include<cstdint>
 
-namespace CAEN
-{
+#include <cstdint>
 
-const char* CAENDigitizerError::ErrorStrings(const std::int_least32_t& code)
-{ 
-switch (code) 
-  {
+namespace CAEN {
+const char *CAENDigitizerError::ErrorStrings(const std::int_least32_t &code) {
+  switch (code) {
   case CAEN_DGTZ_Success:
     return "Operation completed successfully";
   case CAEN_DGTZ_CommError:
@@ -84,20 +82,25 @@ switch (code)
 }
 
 #if experimental_have_source_location == 1
-CAENDigitizerError::CAENDigitizerError(const int& code,std::experimental::source_location loc):Error(code,ErrorStrings(code),loc)
-{
-    if(code!=CAEN_DGTZ_Success) throw *this;
+CAENDigitizerError::CAENDigitizerError(const int &code,
+                                       std::experimental::source_location loc)
+    : Error(code, ErrorStrings(code), loc) {
+  if (code != CAEN_DGTZ_Success)
+    throw *this;
 };
 #elif have_source_location == 1
-CAENDigitizerError::CAENDigitizerError(const int& code,std::source_location loc):Error(code,ErrorStrings(code),loc)
-{
-   if(code!=CAEN_DGTZ_Success) throw *this;
+CAENDigitizerError::CAENDigitizerError(const int &code,
+                                       std::source_location loc)
+    : Error(code, ErrorStrings(code), loc) {
+  if (code != CAEN_DGTZ_Success)
+    throw *this;
 };
 #else
-CAENDigitizerError::CAENDigitizerError(const int& code):Error(code,ErrorStrings(code))
-{
-    if(code!=CAEN_DGTZ_Success) throw *this;
+CAENDigitizerError::CAENDigitizerError(const int &code)
+    : Error(code, ErrorStrings(code)) {
+  if (code != CAEN_DGTZ_Success)
+    throw *this;
 };
 #endif
 
-}
+} // namespace CAEN

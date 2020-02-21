@@ -2,4 +2,3 @@
 ClassImp(Channel);
 
 Channel::Channel() {}
-

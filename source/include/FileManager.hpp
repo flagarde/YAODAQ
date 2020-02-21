@@ -1,38 +1,36 @@
 #pragma once
 
 #include "Channel.hpp"
-#include "Event.hpp"
 #include "Data.hpp"
+#include "Event.hpp"
 #include "TFile.h"
 #include "TTree.h"
 #include "util.h"
+
 #include <CAENDigitizerType.h>
 #include <bitset>
 #include <iostream>
 #include <vector>
 
-
 const double rolloverAdd = 8e-9 * 2147483647;
 
 class FileManager {
 public:
-  FileManager(Data &data) : dat(data){ initialized = false; }
+  FileManager(Data &data) : dat(data) { initialized = false; }
   void AddEvents();
   FileManager(Data &data, std::string filename, uint16_t EnableMask,
               int nbrChannels, double xinc)
       : dat(data) {
-
-    Init(filename, EnableMask,nbrChannels,xinc);
+    Init(filename, EnableMask, nbrChannels, xinc);
   }
-  ~FileManager() 
-{
+  ~FileManager() {
     delete f;
     delete t;
     delete event;
-    
-}
+  }
 
-  void Init(const std::string& filename, uint16_t EnableMask,int nbrChannels, double xinc);
+  void Init(const std::string &filename, uint16_t EnableMask, int nbrChannels,
+            double xinc);
   void OpenFile();
   void CloseFile();
   void setVerbose(bool v) { verbose = v; }
@@ -48,7 +46,7 @@ public:
     nbrChannels = i;
     lastTrigTime.resize(i);
     nRollover.resize(i);
-    //Channels.resize(i);
+    // Channels.resize(i);
   }
   void setTick(double i) { xinc = i; }
   void addEvent() {
@@ -60,9 +58,10 @@ public:
       addEvent742();
   }
   std::string SHA512();
+
 private:
   void addEvent16();
-  
+
   void addEvent8();
   void addEvent742();
   unsigned int nbrChannels{0};
@@ -81,6 +80,6 @@ private:
   double xinc{0};
   std::string finalFilename{""};
   std::string m_SHA512{""};
-  Event* event{nullptr};
+  Event *event{nullptr};
   Data &dat;
 };

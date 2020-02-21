@@ -32,4 +32,3 @@ int SaveCorrectionTables(const char *outputFileName, uint32_t groupMask,
  */
 int LoadCorrectionTable(char *baseInputFileName,
                         CAEN_DGTZ_DRS4Correction_t *tb);
-

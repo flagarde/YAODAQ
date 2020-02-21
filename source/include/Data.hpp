@@ -1,9 +1,8 @@
 #pragma once
 
-#include <cstdio>
 #include "Config.hpp"
 
-
+#include <cstdio>
 
 class WaveDumpRun_t {
 public:

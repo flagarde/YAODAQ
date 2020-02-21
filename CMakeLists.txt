@@ -1,39 +1,71 @@
-#########################################################
-#               CMakeLists.txt to build DAQ             #
-#                 author LAGARDE Francois               #
-#########################################################
+###################################
+#   CMakeLists.txt to build DAQ   #
+#   Author LAGARDE Francois       #
+###################################
 cmake_minimum_required(VERSION 3.9...3.16.4 FATAL_ERROR)
 
-project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
+project(
+  YAODAQ
+  VERSION "0.0.1.0"
+  DESCRIPTION "YAODAQ for RPClab"
+  HOMEPAGE_URL "https://github.com/RPClab/YAODAQ"
+  LANGUAGES CXX)
 
-# Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
+# Ask CMake to output a compile_commands.json file for use with things like Vim
+# YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/extern")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake"
+                      "${CMAKE_SOURCE_DIR}/extern")
 
 # set the C++ standard to C++ 17
 include(CXXStandards)
 cxx_17()
 
+include(Formatting)
+file(
+  GLOB_RECURSE
+  ALL_CODE_FILES
+  ${PROJECT_SOURCE_DIR}/source/*.[ch]pp
+  ${PROJECT_SOURCE_DIR}/source/*.[ch]
+  ${PROJECT_SOURCE_DIR}/apps/*.[ch]pp
+  ${PROJECT_SOURCE_DIR}/apps/*.[ch]
+  ${PROJECT_SOURCE_DIR}/example/*.[ch]pp
+  ${PROJECT_SOURCE_DIR}/example/*.[ch]
+  ${PROJECT_SOURCE_DIR}/tests/*.[ch]pp
+  ${PROJECT_SOURCE_DIR}/tests/*.[ch])
+
+clang_format(clang-format ${ALL_CODE_FILES})
+
+file(GLOB_RECURSE CMAKE_FILES CMakeLists.txt ${PROJECT_SOURCE_DIR}/cmake
+     ${PROJECT_SOURCE_DIR}/extern ${PROJECT_SOURCE_DIR}/Options.cmake)
+
+cmake_format(cmake-format ${CMAKE_FILES})
+
 # guard against in-source builds
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
+  message(
+    FATAL_ERROR
+      "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
+  )
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
+  set(CMAKE_INSTALL_PREFIX
+      "${PROJECT_SOURCE_DIR}/bin"
+      CACHE PATH "Default Install Prefix" FORCE)
   message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
 endif()
 
 set(LIBRARY_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 set(RUNTIME_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}")
 set(ARCHIVE_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-set(INCLUDE_OUTPUT_DIR  "${CMAKE_INSTALL_PREFIX}/include")
+set(INCLUDE_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/include")
 set(CMAKE_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/cmake")
 
 set(CMAKE_MACOSX_RPATH TRUE)
-set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH "${LIBRARY_OUTPUT_DIR}")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -47,10 +79,19 @@ if(CMAKE_CONFIGURATION_TYPES)
     list(APPEND CMAKE_CONFIGURATION_TYPES Profile)
   endif()
 else()
-  set(allowableBuildTypes Debug MinSizeRel None RelWithDebInfo Release Coverage Profile)
+  set(allowableBuildTypes
+      Debug
+      MinSizeRel
+      None
+      RelWithDebInfo
+      Release
+      Coverage
+      Profile)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "${allowableBuildTypes}")
   if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+    set(CMAKE_BUILD_TYPE
+        Debug
+        CACHE STRING "" FORCE)
   elseif(NOT CMAKE_BUILD_TYPE IN_LIST allowableBuildTypes)
     message(FATAL_ERROR "Invalid build type : ${CMAKE_BUILD_TYPE}")
   endif()
@@ -65,13 +106,14 @@ if(POLICY CMP0083)
   include(CheckPIESupported)
   check_pie_supported(OUTPUT_VARIABLE output LANGUAGES CXX)
   if(NOT CMAKE_CXX_LINK_PIE_SUPPORTED)
-    message(WARNING "PIE is not supported at link time: ${output}.\n" "PIE link options will not be passed to linker.")
+    message(WARNING "PIE is not supported at link time: ${output}.\n"
+                    "PIE link options will not be passed to linker.")
   else()
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
     message(STATUS "PIE link options will be passed to linker.")
-    endif()
+  endif()
 else()
-    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
+  set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
 # Optional IPO. Do not use IPO if it's not supported by compiler.
@@ -94,12 +136,14 @@ option(BUILD_CONFIGURATOR "Build Configurator" ON)
 
 option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
 
-
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
-option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
-                        Tests in tests/*.cpp will still be enabled." OFF)
+option(
+  ENABLE_DOCTESTS
+  "Include tests in the library. Setting this to OFF will remove all doctest related code.
+                        Tests in tests/*.cpp will still be enabled."
+  OFF)
 
-include("${CMAKE_SOURCE_DIR}/settings.cmake")
+include(Options.cmake)
 
 if(BUILD_ANALYSIS)
   find_package(ROOT 6.14 REQUIRED)

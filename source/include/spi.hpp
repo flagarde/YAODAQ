@@ -20,4 +20,3 @@ SPI_API spi_read(int handle, uint8_t *data);
 
 SPI_API spi_write_block(int handle, uint8_t *buf, uint32_t len);
 SPI_API spi_read_block(int handle, uint8_t *buf, uint32_t len);
-

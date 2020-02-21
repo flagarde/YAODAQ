@@ -7,9 +7,7 @@
 
 using namespace std;
 
-
 class util {
-
 public:
   static long get_time() {
     long time_ms;
@@ -40,4 +38,3 @@ public:
     return result;
   }
 };
-

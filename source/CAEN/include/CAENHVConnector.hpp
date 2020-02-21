@@ -2,14 +2,8 @@
 #define CAENHVCONNECTOR_HPP
 #include "Connector.hpp"
 
-namespace CAEN
-{
+namespace CAEN {
+class CAENHVConnector : public Connector {};
 
-class CAENHVConnector : public Connector
-{
-  
-};
-
-
-}
+} // namespace CAEN
 #endif

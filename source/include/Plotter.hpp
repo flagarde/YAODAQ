@@ -3,11 +3,11 @@
 #include "Data.hpp"
 #include "TBufferJSON.h"
 #include "TCanvas.h"
+#include "TGraph.h"
 #include "TH1D.h"
 #include "WebServer.hpp"
-#include <iostream>
-#include "TGraph.h"
 
+#include <iostream>
 
 class Plotter {
 public:
@@ -19,6 +19,7 @@ public:
   void SaveFFT();
   void Plot();
   void Upload();
+
 private:
   void SetLabelsWaveForms() {
     /*	for(std::size_t h=0;h!=histos.size();++h)
@@ -64,20 +65,20 @@ histos[h].GetYaxis()->SetRange(0,(float)(1<<WDcfg.Nbit));*/
   TH1D IM;
   TH1D MAG;
   TH1D PH;
-   
+
 public:
   Data &dat;
   void Init();
-  void swapContinuousPlotting()
-  {
-	if(m_ContinuousPlotting==true) m_ContinuousPlotting=false;
-	else m_ContinuousPlotting=true;
-        std::cout<<"Continuous Plotting is set to : "<<m_ContinuousPlotting<<std::endl;
+  void swapContinuousPlotting() {
+    if (m_ContinuousPlotting == true)
+      m_ContinuousPlotting = false;
+    else
+      m_ContinuousPlotting = true;
+    std::cout << "Continuous Plotting is set to : " << m_ContinuousPlotting
+              << std::endl;
   }
-  bool isContinuousPlotting()
-  {
-	return m_ContinuousPlotting;
-  }
+  bool isContinuousPlotting() { return m_ContinuousPlotting; }
+
 private:
   bool m_ContinuousPlotting{"False"};
   int NbrThreadFFT{0};

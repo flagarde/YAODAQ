@@ -1,7 +1,7 @@
 #pragma once
-
 #include "CAENDigitizerType.h"
-
+#include <cstdint>
+#include <cstdio>
 
 typedef enum {
   OFF_BINARY = 0x00000001, // Bit 0: 1 = BINARY, 0 =ASCII
@@ -19,11 +19,10 @@ public:
   float offset[MAX_SET];
 };
 
-
 class WaveDumpConfig_t {
 public:
   WaveDumpConfig_t() {
-      for (std::size_t i = 0; i < MAX_SET; i++) {
+    for (std::size_t i = 0; i < MAX_SET; i++) {
       DAC_Calib.cal[i] = 1;
       DAC_Calib.offset[i] = 0;
     }
@@ -45,12 +44,12 @@ public:
   int LinkType;
   int LinkNum;
   int ConetNode;
-  uint32_t BaseAddress;
+  std::uint32_t BaseAddress;
   int Nch;
   int Nbit;
   float Ts;
   int NumEvents{1023};
-  uint32_t RecordLength{1024 * 16};
+  std::uint32_t RecordLength{1024 * 16};
   int PostTrigger{50};
   int InterruptNumEvents{0};
   int TestPattern{0};
@@ -60,23 +59,23 @@ public:
   uint16_t EnableMask{0xFFFF};
   CAEN_DGTZ_TriggerMode_t ChannelTriggerMode[MAX_SET];
   CAEN_DGTZ_PulsePolarity_t PulsePolarity[MAX_SET];
-  uint32_t DCoffset[MAX_SET];
-  int32_t DCoffsetGrpCh[MAX_SET][MAX_SET];
-  uint32_t Threshold[MAX_SET];
+  std::uint32_t DCoffset[MAX_SET];
+  std::int32_t DCoffsetGrpCh[MAX_SET][MAX_SET];
+  std::uint32_t Threshold[MAX_SET];
   int Version_used[MAX_SET];
-  uint8_t GroupTrgEnableMask[MAX_SET];
-  uint32_t MaxGroupNumber;
+  std::uint8_t GroupTrgEnableMask[MAX_SET];
+  std::uint32_t MaxGroupNumber;
 
-  uint32_t FTDCoffset[MAX_SET];
-  uint32_t FTThreshold[MAX_SET];
+  std::uint32_t FTDCoffset[MAX_SET];
+  std::uint32_t FTThreshold[MAX_SET];
   CAEN_DGTZ_TriggerMode_t FastTriggerMode{CAEN_DGTZ_TriggerMode_t(0)};
-  uint32_t FastTriggerEnabled{0};
+  std::uint32_t FastTriggerEnabled{0};
   int GWn{0};
-  uint32_t GWaddr[MAX_GW];
-  uint32_t GWdata[MAX_GW];
-  uint32_t GWmask[MAX_GW];
+  std::uint32_t GWaddr[MAX_GW];
+  std::uint32_t GWdata[MAX_GW];
+  std::uint32_t GWmask[MAX_GW];
   OUTFILE_FLAGS OutFileFlags;
-  uint16_t DecimationFactor{1};
+  std::uint16_t DecimationFactor{1};
   int useCorrections{-1};
   int UseManualTables{-1};
   char TablesFilenames[MAX_X742_GROUP_SIZE][1000];

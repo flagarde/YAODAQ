@@ -1,12 +1,10 @@
 #include "CAENFlashError.hpp"
-#include<cstdint>
 
-namespace CAEN
-{
+#include <cstdint>
 
-const char* CAENFlashError::ErrorStrings(const std::int_least32_t& code)
-{ 
-switch (code) {
+namespace CAEN {
+const char *CAENFlashError::ErrorStrings(const std::int_least32_t &code) {
+  switch (code) {
   case 0:
     return "Success";
   case -1:
@@ -28,20 +26,24 @@ switch (code) {
 }
 
 #if experimental_have_source_location == 1
-CAENFlashError::CAENFlashError(const int& code,std::experimental::source_location loc):Error(code,ErrorStrings(code),loc)
-{
-  if(code!=0) throw *this;
+CAENFlashError::CAENFlashError(const int &code,
+                               std::experimental::source_location loc)
+    : Error(code, ErrorStrings(code), loc) {
+  if (code != 0)
+    throw *this;
 };
 #elif have_source_location == 1
-CAENFlashError::CAENFlashError(const int& code,std::source_location loc):Error(code,ErrorStrings(code),loc)
-{
-  if(code!=0) throw *this;
+CAENFlashError::CAENFlashError(const int &code, std::source_location loc)
+    : Error(code, ErrorStrings(code), loc) {
+  if (code != 0)
+    throw *this;
 };
 #else
-CAENFlashError::CAENFlashError(const int& code):Error(code,ErrorStrings(code))
-{
-  if(code!=0) throw *this;
+CAENFlashError::CAENFlashError(const int &code)
+    : Error(code, ErrorStrings(code)) {
+  if (code != 0)
+    throw *this;
 };
 #endif
 
-}
+} // namespace CAEN

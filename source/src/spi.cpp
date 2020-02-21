@@ -14,7 +14,6 @@ static SPI_API errors[MAX_SUPPORTED_PAGE_SIZE];
 static uint32_t datas[MAX_SUPPORTED_PAGE_SIZE];
 
 SPI_API spi_select(int handle) {
-
   CAENComm_ErrorCode ret;
 
   ret = CAENComm_Write32(handle, SPI_SELECT_REG_ADDR, 0x2);
@@ -29,7 +28,6 @@ SPI_API spi_unselect(int handle) {
 }
 
 SPI_API spi_read(int handle, uint8_t *data) {
-
   uint32_t reg;
   CAENComm_ErrorCode ret;
 
@@ -40,7 +38,6 @@ SPI_API spi_read(int handle, uint8_t *data) {
 }
 
 SPI_API spi_write(int handle, uint8_t data) {
-
   uint32_t reg;
   CAENComm_ErrorCode ret;
 
@@ -51,7 +48,6 @@ SPI_API spi_write(int handle, uint8_t data) {
 }
 
 SPI_API spi_write_block(int handle, uint8_t *buf, uint32_t len) {
-
   int i;
   CAENComm_ErrorCode ret;
 
@@ -71,7 +67,6 @@ SPI_API spi_write_block(int handle, uint8_t *buf, uint32_t len) {
 }
 
 SPI_API spi_read_block(int handle, uint8_t *buf, uint32_t len) {
-
   SPI_API ret;
   int i;
 

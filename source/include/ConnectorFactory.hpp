@@ -2,14 +2,15 @@
 
 #include "Connector.hpp"
 #include "ConnectorInfos.hpp"
-#include <memory>
+
 #include <map>
+#include <memory>
 #include <string>
-class ConnectorFactory
-{
+class ConnectorFactory {
 public:
   ConnectorFactory(){};
-  std::shared_ptr<Connector> createConnector(const ConnectorInfos& infos);
+  std::shared_ptr<Connector> createConnector(const ConnectorInfos &infos);
+
 private:
-  std::map<int,std::shared_ptr<Connector>> m_SharedConnectors;
+  std::map<int, std::shared_ptr<Connector>> m_SharedConnectors;
 };

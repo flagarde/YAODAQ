@@ -1,4 +1,5 @@
 #include "X742CorrectionRoutines.hpp"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -107,7 +108,6 @@ void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t *CTable,
                          CAEN_DGTZ_DRS4Frequency_t frequency,
                          int CorrectionLevelMask,
                          CAEN_DGTZ_X742_GROUP_t *data) {
-
   int i, j, size1, trg = 0, k;
   float Time[1024], t0;
   float Tsamp;

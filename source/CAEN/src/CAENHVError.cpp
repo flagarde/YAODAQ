@@ -1,13 +1,12 @@
 #include "CAENHVError.hpp"
+
 #include "CAENHVWrapper.h"
-#include<cstdint>
 
-namespace CAEN
-{
+#include <cstdint>
 
-const char* CAENHVError::ErrorStrings(const std::int_least32_t& code)
-{ 
-switch (code) {
+namespace CAEN {
+const char *CAENHVError::ErrorStrings(const std::int_least32_t &code) {
+  switch (code) {
   case CAENHV_OK:
     return "Command wrapper correctly executed";
   case CAENHV_SYSERR:
@@ -89,20 +88,23 @@ switch (code) {
 }
 
 #if experimental_have_source_location == 1
-CAENHVError::CAENHVError(const int& code,std::experimental::source_location loc):Error(code,ErrorStrings(code),loc)
-{
-  if(code!=CAENHV_OK) throw *this;
+CAENHVError::CAENHVError(const int &code,
+                         std::experimental::source_location loc)
+    : Error(code, ErrorStrings(code), loc) {
+  if (code != CAENHV_OK)
+    throw *this;
 };
 #elif have_source_location == 1
-CAENHVError::CAENHVError(const int& code,std::source_location loc):Error(code,ErrorStrings(code),loc)
-{
-  if(code!=CAENHV_OK) throw *this;
+CAENHVError::CAENHVError(const int &code, std::source_location loc)
+    : Error(code, ErrorStrings(code), loc) {
+  if (code != CAENHV_OK)
+    throw *this;
 };
 #else
-CAENHVError::CAENHVError(const int& code):Error(code,ErrorStrings(code))
-{
-  if(code!=CAENHV_OK) throw *this;
+CAENHVError::CAENHVError(const int &code) : Error(code, ErrorStrings(code)) {
+  if (code != CAENHV_OK)
+    throw *this;
 };
 #endif
 
-}
+} // namespace CAEN

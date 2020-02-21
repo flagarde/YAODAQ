@@ -1,11 +1,13 @@
 #include "Digitizer.hpp"
+
 #include "X742CorrectionRoutines.hpp"
+#include "flash.cpp"
+
 #include <chrono>
 #include <cmath>
 #include <cstring>
 #include <iostream>
 #include <thread>
-#include "flash.cpp"
 
 #define NPOINTS 2
 #define NACQS 50
@@ -47,18 +49,16 @@ int Digitizer::WriteRegisterBitmask(uint32_t address, uint32_t data,
  *   \param   WDcfg:   WaveDumpConfig data structure
  *   \return  0 = Success; negative numbers are error codes
  */
-void Digitizer::ProgramDigitizer() 
-{
-  
+void Digitizer::ProgramDigitizer() {
   int ret = 0;
   /* reset the digitizer */
   ret |= CAEN_DGTZ_Reset(handle);
-  if (ret != 0) 
-  {
+  if (ret != 0) {
     std::cout << "Error: Unable to reset digitizer.\nPlease reset digitizer "
                  "manually then restart the program"
               << std::endl;
-     if (ret) Quit(ERR_DGZ_PROGRAM);
+    if (ret)
+      Quit(ERR_DGZ_PROGRAM);
   }
   // Set the waveform test bit for debugging
   if (dat.WDcfg.TestPattern)
@@ -205,7 +205,8 @@ void Digitizer::ProgramDigitizer()
     std::cout << "Warning: errors found during the programming of the "
                  "digitizer.\nSome settings may not be executed\n"
               << std::endl;
-  if (ret) Quit(ERR_DGZ_PROGRAM);
+  if (ret)
+    Quit(ERR_DGZ_PROGRAM);
 }
 
 /*! \brief   Write the event data on x742 boards into the output files*/
@@ -227,7 +228,6 @@ void Digitizer::calibrate() {
     std::cout << "ADC Calibration not needed for this board family."
               << std::endl;
 }
-
 
 /*! \fn      void Calibrate_XX740_DC_Offset(int handle, WaveDumpConfig_t WDcfg,
  * CAEN_DGTZ_BoardInfo_t BoardInfo) \brief   calibrates DAC of enabled channel
@@ -387,7 +387,6 @@ extern int thr_file[MAX_CH];
  *   \param   BoardInfo: structure with the board info
  */
 void Digitizer::Set_relative_Threshold() {
-
   // preliminary check: if baseline shift is not enabled for any channel quit
   int should_start = 0;
   for (std::size_t ch = 0; ch < (int32_t)dat.BoardInfo.Channels; ch++) {
@@ -834,19 +833,9 @@ std::vector<std::string> Digitizer::ErrMsg{
     "Over Temperature",
     "UNKNOWN"};
 
+void Digitizer::Disconnect() { CAEN_DGTZ_CloseDigitizer(handle); }
 
-
-void Digitizer::Disconnect()
-{
-
-
-CAEN_DGTZ_CloseDigitizer(handle);
-
-
-}
-
-void Digitizer::FreeEvent()
-{
+void Digitizer::FreeEvent() {
   if (dat.Event8)
     CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event8);
   if (dat.Event16)
@@ -855,14 +844,11 @@ void Digitizer::FreeEvent()
     CAEN_DGTZ_FreeEvent(handle, (void **)&dat.Event742);
 }
 
-void Digitizer::FreeBuffer()
-{
-	CAEN_DGTZ_FreeReadoutBuffer(&buffer);
+void Digitizer::FreeBuffer() {
+  CAEN_DGTZ_FreeReadoutBuffer(&buffer);
   if (buffer != nullptr)
     delete buffer;
 }
-
-
 
 Digitizer::~Digitizer() {
   /* stop the acquisition */
@@ -870,7 +856,8 @@ Digitizer::~Digitizer() {
   /* close the device and free the buffers */
   FreeEvent();
   FreeBuffer();
-  if(EventPtr!=nullptr) delete EventPtr;
+  if (EventPtr != nullptr)
+    delete EventPtr;
   CAEN_DGTZ_CloseDigitizer(handle);
 }
 
@@ -1074,14 +1061,13 @@ void Digitizer::DecodeEvent() {
       }
     }
   }
-  dat.WDrun.isNewEvent=true;
+  dat.WDrun.isNewEvent = true;
   if (ret) {
     Quit(ERR_EVENT_BUILD);
   }
 }
 
-void Digitizer::InterruptTimeout() 
-{
+void Digitizer::InterruptTimeout() {
   static uint64_t CurrentTime{0};
   static uint64_t ElapsedTime{0};
   int nCycles = 0;
@@ -1094,32 +1080,23 @@ void Digitizer::InterruptTimeout()
   ElapsedTime = CurrentTime - PrevRateTime;
 
   nCycles++;
-  if (ElapsedTime > 1000) 
-  {
-    if (Nb == 0)
-    {
-      if (dat.isTimeOut==true)
-      {
+  if (ElapsedTime > 1000) {
+    if (Nb == 0) {
+      if (dat.isTimeOut == true) {
         std::cout << "Timeout..." << std::endl;
-        dat.isTimeOut==false;
+        dat.isTimeOut == false;
+      } else {
+        m_TimeOutInfos.set(0., 0.0);
       }
-      else
-      {
-        m_TimeOutInfos.set(0.,0.0);
-      }
-    }
-    else
-    {
-        m_TimeOutInfos.set(Nb /(ElapsedTime * 1048.576),Ne * 1000.0/ElapsedTime);
+    } else {
+      m_TimeOutInfos.set(Nb / (ElapsedTime * 1048.576),
+                         Ne * 1000.0 / ElapsedTime);
     }
     nCycles = 0;
     Nb = 0;
     Ne = 0;
     PrevRateTime = CurrentTime;
   }
-
- 
-
 }
 
 /*! \fn      static long get_time()
@@ -1132,9 +1109,6 @@ long Digitizer::get_time() {
              std::chrono::system_clock::now().time_since_epoch())
       .count();
 }
-
-
-
 
 bool Digitizer::Interrupt() {
   int ret;
@@ -1152,10 +1126,9 @@ bool Digitizer::Interrupt() {
                                &VMEHandle);
   } else
     ret = CAEN_DGTZ_IRQWait(handle, INTERRUPT_TIMEOUT);
-  if (ret == CAEN_DGTZ_Timeout) 
-  { // No active interrupt requests
-    dat.isTimeOut=true;
-    doInterruptTimeout=true;
+  if (ret == CAEN_DGTZ_Timeout) { // No active interrupt requests
+    dat.isTimeOut = true;
+    doInterruptTimeout = true;
     return doInterruptTimeout;
   }
   if (ret != CAEN_DGTZ_Success) {
@@ -1165,8 +1138,8 @@ bool Digitizer::Interrupt() {
   if (isVMEDevice()) {
     ret = CAEN_DGTZ_VMEIACKCycle(VMEHandle, VME_INTERRUPT_LEVEL, &boardId);
     if ((ret != CAEN_DGTZ_Success) || (boardId != VME_INTERRUPT_STATUS_ID)) {
-     doInterruptTimeout=true;
-    return doInterruptTimeout;
+      doInterruptTimeout = true;
+      return doInterruptTimeout;
     } else {
       if (INTERRUPT_MODE == CAEN_DGTZ_IRQ_MODE_ROAK)
         ret = CAEN_DGTZ_RearmInterrupt(handle);
@@ -1174,7 +1147,6 @@ bool Digitizer::Interrupt() {
   }
   return doInterruptTimeout;
 }
-
 
 extern int dc_file[MAX_CH];
 /*! \fn      void Set_calibrated_DCO(int handle, WaveDumpConfig_t *WDcfg,

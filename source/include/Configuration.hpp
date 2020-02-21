@@ -1,20 +1,21 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <map>
 #include "BoardInfos.hpp"
 #include "ConnectorInfos.hpp"
 #include "toml.hpp"
 
-class Configuration 
-{
+#include <map>
+#include <string>
+#include <vector>
+
+class Configuration {
 public:
   void parse();
   std::string getFileName();
-  void setFileName(const std::string&);
-  toml::value getConfig(const std::string&);
-  ConnectorInfos getConnectorInfos(const std::string&);
+  void setFileName(const std::string &);
+  toml::value getConfig(const std::string &);
+  ConnectorInfos getConnectorInfos(const std::string &);
+
 private:
   void checkFile();
   void fillIndexes();
@@ -24,7 +25,7 @@ private:
   std::vector<std::string> m_Room_Names;
   std::vector<std::string> m_Rack_Names;
   std::vector<std::string> m_Crate_Names;
-  std::map<std::string,BoardInfos> m_BoardsInfos;
-  std::map<std::string,toml::value> m_ModuleConfig;
-  std::map<std::string,ConnectorInfos> m_ConnectorInfos;
+  std::map<std::string, BoardInfos> m_BoardsInfos;
+  std::map<std::string, toml::value> m_ModuleConfig;
+  std::map<std::string, ConnectorInfos> m_ConnectorInfos;
 };

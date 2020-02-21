@@ -1,6 +1,9 @@
 if(BUILD_ANALYSIS)
   add_executable(Analysis Analysis.cpp)
-  target_link_libraries(Analysis PRIVATE Event_static PRIVATE Channel_static)
+  target_link_libraries(
+    Analysis
+    PRIVATE Event_static
+    PRIVATE Channel_static)
   install(TARGETS Analysis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
@@ -28,17 +31,33 @@ if(BUILD_CONFIGURATOR)
   install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
-if(BUILD_OLD_WAVEDUMP) 
+if(BUILD_OLD_WAVEDUMP)
   add_executable(WaveDump WaveDump.cpp)
   add_dependencies(WaveDump lib1 lib2 web elogpp)
-  target_include_directories(WaveDump PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIR}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIR}")
-  target_link_libraries(WaveDump lib1 lib2 web  elogcpp jsoncpp m Channel_static Event_static)
+  target_include_directories(
+    WaveDump
+    PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN"
+    PRIVATE "${INCLUDE_OUTPUT_DIR}/elogpp"
+    PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>
+    PRIVATE "${INCLUDE_OUTPUT_DIR}")
+  target_link_libraries(
+    WaveDump
+    lib1
+    lib2
+    web
+    elogcpp
+    jsoncpp
+    m
+    Channel_static
+    Event_static)
   install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-    
+
   add_executable(DumpModule DumpModule.cpp)
   add_dependencies(DumpModule Boards)
-  target_include_directories(DumpModule PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIR}")
+  target_include_directories(
+    DumpModule
+    PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>
+    PRIVATE "${INCLUDE_OUTPUT_DIR}")
   target_link_libraries(DumpModule PRIVATE Boards)
   install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
-

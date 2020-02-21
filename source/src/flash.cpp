@@ -6,8 +6,10 @@
  */
 
 #include "flash.hpp"
+
 #include "flash_opcodes.hpp"
 #include "spi.hpp"
+
 #include <CAENComm.h>
 
 static uint8_t DeviceID;
@@ -125,7 +127,6 @@ static uint16_t get_page_addr_from_block(uint16_t block) {
  */
 
 FLASH_API SPIFlash_init(int handle) {
-
   _read_device_id(handle);
 
   switch (DeviceID) {
@@ -151,7 +152,6 @@ FLASH_API SPIFlash_init(int handle) {
 }
 
 FLASH_API SPIFlash_get_page_size(int *size) {
-
   if (!is_initialized)
     return FLASH_API_UNINITIALIZED;
 
@@ -252,7 +252,6 @@ FLASH_API SPIFlash_read_unique_id(int handle, uint8_t *UniqueId) {
  * 	page  : memory page to load
  */
 FLASH_API SPIFlash_read_page_into_buffer1(int handle, uint16_t page) {
-
   uint32_t page_addr;
   uint32_t byte_addr;
   uint32_t spi_address;
@@ -281,7 +280,6 @@ FLASH_API SPIFlash_read_page_into_buffer1(int handle, uint16_t page) {
 }
 
 FLASH_API SPIFlash_read_page_into_buffer2(int handle, uint16_t page) {
-
   uint32_t page_addr;
   uint32_t byte_addr;
   uint32_t spi_address;
@@ -310,7 +308,6 @@ FLASH_API SPIFlash_read_page_into_buffer2(int handle, uint16_t page) {
 }
 
 FLASH_API SPIFlash_read_byte(int handle, uint32_t addr, uint8_t *data) {
-
   uint32_t page_addr;
   uint32_t byte_addr;
   uint32_t spi_address;
@@ -341,7 +338,6 @@ FLASH_API SPIFlash_read_byte(int handle, uint32_t addr, uint8_t *data) {
 
 FLASH_API SPIFlash_read_bytes(int handle, uint32_t addr, uint8_t *buf,
                               uint16_t len) {
-
   uint32_t page_addr;
   uint32_t byte_addr;
   uint32_t spi_address;
@@ -438,7 +434,6 @@ FLASH_API SPIFlash_read_buffer2(int handle, int buf_addr, uint16_t len,
 }
 
 FLASH_API SPIFlash_write_byte(int handle, uint32_t addr, uint8_t data) {
-
   uint32_t page_addr;
 
   uint32_t byte_addr = addr % PAGE_SIZE;
@@ -461,7 +456,6 @@ FLASH_API SPIFlash_write_byte(int handle, uint32_t addr, uint8_t data) {
 
 FLASH_API SPIFlash_write_bytes(int handle, uint32_t addr, uint8_t *buf,
                                uint16_t len) {
-
   uint16_t n;
   uint32_t page_addr;
 
@@ -476,7 +470,6 @@ FLASH_API SPIFlash_write_bytes(int handle, uint32_t addr, uint8_t *buf,
     return FLASH_API_UNINITIALIZED;
 
   while (len > 0) {
-
     page_addr = addr / PAGE_SIZE;
     byte_addr = addr % PAGE_SIZE;
 
@@ -507,7 +500,6 @@ FLASH_API SPIFlash_write_bytes(int handle, uint32_t addr, uint8_t *buf,
 }
 
 int SPIFlash_is_busy(int handle) {
-
   if (!is_initialized)
     return FLASH_API_UNINITIALIZED;
 

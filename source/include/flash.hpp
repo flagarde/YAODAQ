@@ -92,4 +92,3 @@ FLASH_API SPIFlash_erase_page(int handle, uint16_t page);
 /* wait */
 int SPIFlash_is_busy(int handle);
 FLASH_API SPIFlash_wait(int handle);
-
