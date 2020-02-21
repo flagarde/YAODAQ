@@ -1,11 +1,13 @@
 #include "Controller.hpp"
 
 #include "CLI/CLI.hpp"
+#include "Interrupt.hpp"
 
 int main(int argc, char** argv)
 {
-  CLI::App app{"Dump"};
-  int      port{80};
+  Interrupt interrupt;
+  CLI::App  app{"Dump"};
+  int       port{80};
   app.add_option("-p,--port", port, "Port to listen")
       ->check(CLI::Range(0, 65535));
   std::string host{"127.0.0.1"};

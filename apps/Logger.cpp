@@ -1,12 +1,14 @@
 #include "Logger.hpp"
 
 #include "CLI/CLI.hpp"
+#include "Interrupt.hpp"
 #include "spdlog.h"
 
 int main(int argc, char** argv)
 {
-  CLI::App app{"Logger"};
-  int      port{80};
+  Interrupt interrupt;
+  CLI::App  app{"Logger"};
+  int       port{80};
   app.add_option("-p,--port", port, "Port to listen")
       ->check(CLI::Range(0, 65535));
   std::string host{"127.0.0.1"};
@@ -35,12 +37,7 @@ int main(int argc, char** argv)
   spdlog::info("Logger listening on IP {0} Port {1}", host, port);
   spdlog::info("Type q/Q and ENTER to stop it !");
   Logger logger(loggerName);
-  do
-  {
-    std::cin >> answer;
-    if(answer == 'q' || answer == 'Q') stop = true;
-  } while(stop == false);
-  logger.stop();
+  while(true) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
   spdlog::info("Bye !");
   return 0;
 }

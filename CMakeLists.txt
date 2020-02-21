@@ -132,7 +132,8 @@ include(Architectures)
 include(Sanitizers)
 
 include(DependencyGraph)
-gen_dep_graph(OUTPUT_DIR ${CMAKE_INSTALL_PREFIX} TARGET_NAME dependency-graph OUTPUT_TYPE pdf)
+gen_dep_graph(OUTPUT_DIR ${CMAKE_INSTALL_PREFIX} TARGET_NAME dependency-graph
+              OUTPUT_TYPE pdf)
 
 if(BUILD_ANALYSIS)
   find_package(ROOT 6.14 REQUIRED)

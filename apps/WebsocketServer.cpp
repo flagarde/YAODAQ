@@ -1,12 +1,14 @@
 #include "WebsocketServer.hpp"
 
 #include "CLI/CLI.hpp"
+#include "Interrupt.hpp"
 #include "spdlog.h"
 
 int main(int argc, char** argv)
 {
-  CLI::App app{"Websocket Server"};
-  int      port{ix::SocketServer::kDefaultPort};
+  Interrupt interrupt;
+  CLI::App  app{"Websocket Server"};
+  int       port{ix::SocketServer::kDefaultPort};
   app.add_option("-p,--port", port, "Port to listen")
       ->check(CLI::Range(0, 65535));
   std::string host{ix::SocketServer::kDefaultHost};
@@ -48,13 +50,7 @@ int main(int argc, char** argv)
   server.listen();
   server.start();
   spdlog::info("Websocket server started on IP {0} Port {1}", host, port);
-  spdlog::info("Type q/Q and ENTER to stop it !");
-  do
-  {
-    std::cin >> answer;
-    if(answer == 'q' || answer == 'Q') stop = true;
-  } while(stop == false);
-  server.stop();
+  while(true) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
   spdlog::info("Bye !");
   return 0;
 }
