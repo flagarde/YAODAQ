@@ -3,9 +3,10 @@
 #include "CLI/CLI.hpp"
 #include "spdlog.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv)
+{
   CLI::App app{"Websocket Server"};
-  int port{ix::SocketServer::kDefaultPort};
+  int      port{ix::SocketServer::kDefaultPort};
   app.add_option("-p,--port", port, "Port to listen")
       ->check(CLI::Range(0, 65535));
   std::string host{ix::SocketServer::kDefaultHost};
@@ -21,23 +22,26 @@ int main(int argc, char **argv) {
   std::string verbosity{"warning"};
   app.add_option("-v,--verbosity", verbosity, "Verbosity")
       ->check(
-          [](const std::string &t) {
-            if (t != "off" && t != "trace" && t != "info" && t != "debug" &&
-                t != "warning" && t != "critical")
+          [](const std::string& t) {
+            if(t != "off" && t != "trace" && t != "info" && t != "debug" &&
+               t != "warning" && t != "critical")
               return "Wrong verbosity level";
             else
               return "";
           },
           "Verbosity level", "Verbosity level");
 
-  try {
+  try
+  {
     app.parse(argc, argv);
-  } catch (const CLI::ParseError &e) {
+  }
+  catch(const CLI::ParseError& e)
+  {
     spdlog::error("{}", e.what());
     return e.get_exit_code();
   }
-  bool stop{false};
-  char answer{'a'};
+  bool            stop{false};
+  char            answer{'a'};
   WebsocketServer server(port, host, backlog, maxConnections,
                          handshakeTimeoutSecs);
   server.setVerbosity(verbosity);
@@ -45,11 +49,11 @@ int main(int argc, char **argv) {
   server.start();
   spdlog::info("Websocket server started on IP {0} Port {1}", host, port);
   spdlog::info("Type q/Q and ENTER to stop it !");
-  do {
+  do
+  {
     std::cin >> answer;
-    if (answer == 'q' || answer == 'Q')
-      stop = true;
-  } while (stop == false);
+    if(answer == 'q' || answer == 'Q') stop = true;
+  } while(stop == false);
   server.stop();
   spdlog::info("Bye !");
   return 0;

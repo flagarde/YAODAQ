@@ -6,26 +6,29 @@
 #include <algorithm>
 #include <iostream>
 
-toml::value Configuration::getConfig(const std::string &mmodule) {
-  if (m_ModuleConfig.find(mmodule) == m_ModuleConfig.end()) {
+toml::value Configuration::getConfig(const std::string& mmodule)
+{
+  if(m_ModuleConfig.find(mmodule) == m_ModuleConfig.end())
+  {
     throw Error(-1,
                 "Board/Module " + mmodule + " not found in configuration !");
-  } else
+  }
+  else
     return m_ModuleConfig[mmodule];
 }
 
-ConnectorInfos Configuration::getConnectorInfos(const std::string &mmodule) {
-  if (m_ConnectorInfos.find(mmodule) == m_ConnectorInfos.end()) {
-    throw Error(-1, "Board " + mmodule + " not found in configuration !");
-  }
+ConnectorInfos Configuration::getConnectorInfos(const std::string& mmodule)
+{
+  if(m_ConnectorInfos.find(mmodule) == m_ConnectorInfos.end())
+  { throw Error(-1, "Board " + mmodule + " not found in configuration !"); }
   return m_ConnectorInfos[mmodule];
 }
 
-void Configuration::parse() {
-  if (m_Filename == "") {
-    throw Error(-1, "No Configuration file given !");
-  }
-  if (m_isParsed == false) {
+void Configuration::parse()
+{
+  if(m_Filename == "") { throw Error(-1, "No Configuration file given !"); }
+  if(m_isParsed == false)
+  {
     m_Conf =
         toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
     checkFile();
@@ -34,66 +37,90 @@ void Configuration::parse() {
   }
 }
 
-void Configuration::checkFile() {
+void Configuration::checkFile()
+{
   static int connector_ID{-1};
-  for (const auto &rooms : toml::find<toml::array>(m_Conf, "Room")) {
+  for(const auto& rooms: toml::find<toml::array>(m_Conf, "Room"))
+  {
     std::string room_name = toml::find_or<std::string>(rooms, "Name", "");
-    if (room_name == "" || std::find(m_Room_Names.begin(), m_Room_Names.end(),
-                                     room_name) != m_Room_Names.end()) {
+    if(room_name == "" || std::find(m_Room_Names.begin(), m_Room_Names.end(),
+                                    room_name) != m_Room_Names.end())
+    {
       std::cout << "Room must have a (unique) name !" << std::endl;
       std::exit(2);
-    } else {
+    }
+    else
+    {
       m_Room_Names.push_back(room_name);
       // std::cout<<"Parsing Room : "<<room_name<<std::endl;
-      for (const auto &racks : toml::find<toml::array>(rooms, "Rack")) {
+      for(const auto& racks: toml::find<toml::array>(rooms, "Rack"))
+      {
         std::string rack_name = toml::find_or<std::string>(racks, "Name", "");
-        if (rack_name == "" ||
-            std::find(m_Rack_Names.begin(), m_Rack_Names.end(), rack_name) !=
-                m_Rack_Names.end()) {
+        if(rack_name == "" ||
+           std::find(m_Rack_Names.begin(), m_Rack_Names.end(), rack_name) !=
+               m_Rack_Names.end())
+        {
           std::cout << "Rack must have a (unique) name !" << std::endl;
           std::exit(2);
-        } else {
+        }
+        else
+        {
           m_Rack_Names.push_back(rack_name);
           // std::cout<<"Parsing Rack : "<<rack_name<<std::endl;
-          for (const auto &crates : toml::find<toml::array>(racks, "Crate")) {
-            bool crate_have_connector{true};
+          for(const auto& crates: toml::find<toml::array>(racks, "Crate"))
+          {
+            bool        crate_have_connector{true};
             std::string crate_name =
                 toml::find_or<std::string>(crates, "Name", "");
-            if (crate_name == "" ||
-                std::find(m_Crate_Names.begin(), m_Crate_Names.end(),
-                          crate_name) != m_Crate_Names.end()) {
+            if(crate_name == "" ||
+               std::find(m_Crate_Names.begin(), m_Crate_Names.end(),
+                         crate_name) != m_Crate_Names.end())
+            {
               std::cout << "Crate must have a (unique) name !" << std::endl;
               std::exit(2);
-            } else {
+            }
+            else
+            {
               m_Crate_Names.push_back(crate_name);
               toml::value crate_connector{};
               toml::value board_connector{};
-              try {
+              try
+              {
                 crate_connector = toml::find<toml::table>(crates, "Connector");
-              } catch (const std::out_of_range &e) {
+              }
+              catch(const std::out_of_range& e)
+              {
                 crate_have_connector = false;
               }
               // std::cout<<"Parsing Crate : "<<crate_name<<std::endl;
-              for (const auto &boards :
-                   toml::find<toml::array>(crates, "Board")) {
+              for(const auto& boards: toml::find<toml::array>(crates, "Board"))
+              {
                 std::string board_name =
                     toml::find_or<std::string>(boards, "Name", "");
-                if (board_name == "" ||
-                    m_BoardsInfos.find(board_name) != m_BoardsInfos.end()) {
+                if(board_name == "" ||
+                   m_BoardsInfos.find(board_name) != m_BoardsInfos.end())
+                {
                   std::cout << "Board must have a (unique) Name !" << std::endl;
                   std::exit(2);
                 }
                 std::string type =
                     toml::find_or<std::string>(boards, "Type", "");
-                if (type == "") {
+                if(type == "")
+                {
                   std::cout << "Board must have a Type !" << std::endl;
                   std::exit(2);
-                } else {
-                  try {
+                }
+                else
+                {
+                  try
+                  {
                     board_connector =
                         toml::find<toml::table>(boards, "Connector");
-                  } catch (const std::out_of_range &e) {
-                    if (crate_have_connector == false) {
+                  }
+                  catch(const std::out_of_range& e)
+                  {
+                    if(crate_have_connector == false)
+                    {
                       std::cout
                           << "Board " << board_name
                           << " doesn't have a Connector and the Crate ("
@@ -101,7 +128,9 @@ void Configuration::checkFile() {
                           << ") which is plugged to doesn't have one neither"
                           << std::endl;
                       std::exit(2);
-                    } else {
+                    }
+                    else
+                    {
                       ++connector_ID;
                       board_connector = crate_connector;
                     }
@@ -125,12 +154,14 @@ void Configuration::checkFile() {
   }
 }
 
-void Configuration::fillIndexes() {
+void Configuration::fillIndexes()
+{
   std::sort(m_Room_Names.begin(), m_Room_Names.end());
   std::sort(m_Rack_Names.begin(), m_Rack_Names.end());
   std::sort(m_Crate_Names.begin(), m_Crate_Names.end());
-  for (std::map<std::string, BoardInfos>::iterator it = m_BoardsInfos.begin();
-       it != m_BoardsInfos.end(); ++it) {
+  for(std::map<std::string, BoardInfos>::iterator it = m_BoardsInfos.begin();
+      it != m_BoardsInfos.end(); ++it)
+  {
     static int boardindex = 0;
     it->second.setRoomIndex(
         std::distance(m_Room_Names.begin(),
@@ -149,6 +180,12 @@ void Configuration::fillIndexes() {
   }
 }
 
-std::string Configuration::getFileName() { return m_Filename; }
+std::string Configuration::getFileName()
+{
+  return m_Filename;
+}
 
-void Configuration::setFileName(const std::string &file) { m_Filename = file; }
+void Configuration::setFileName(const std::string& file)
+{
+  m_Filename = file;
+}

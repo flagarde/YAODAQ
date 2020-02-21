@@ -3,10 +3,12 @@
 #include "CAENFlashError.hpp"
 #include "SPI.hpp"
 
-namespace CAEN {
-class Flash {
+namespace CAEN
+{
+class Flash
+{
 public:
-  void setHandle(const std::uint32_t &han);
+  void setHandle(const std::uint32_t& han);
   /* Main functions to access flash with virtual page size (VIRTUAL_PAGE_SIZE)
    */
   /* handle is a CAENComm library handle */
@@ -51,11 +53,11 @@ public:
   /* bool is_busy();
    wait();*/
 private:
-  SPI m_SPI;
-  std::uint32_t m_Handle{0};
-  std::uint8_t m_DeviceID{0};
-  std::uint16_t m_PAGE_SIZE{0};
-  bool m_IsInitialized{false};
+  SPI                  m_SPI;
+  std::uint32_t        m_Handle{0};
+  std::uint8_t         m_DeviceID{0};
+  std::uint16_t        m_PAGE_SIZE{0};
+  bool                 m_IsInitialized{false};
   static constexpr int m_VIRTUAL_PAGE_SIZE{264};
   static constexpr int m_MAX_SUPPORTED_PAGE_SIZE{1056};
   /* Standardized page assignment
@@ -167,6 +169,6 @@ private:
   static constexpr int m_SPIFLASH_DEVICEID_8MBIT{0x25};
 };
 
-} // namespace CAEN
+}  // namespace CAEN
 
 #endif

@@ -2,9 +2,10 @@
 
 #include "CLI/CLI.hpp"
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv)
+{
   CLI::App app{"Dump"};
-  int port{80};
+  int      port{80};
   app.add_option("-p,--port", port, "Port to listen")
       ->check(CLI::Range(0, 65535));
   std::string host{"127.0.0.1"};
@@ -12,18 +13,20 @@ int main(int argc, char **argv) {
   std::string controllerName = "Controller";
   app.add_option("-n,--name", controllerName, "Name of the Controller")
       ->check(
-          [](const std::string &t) {
-            if (t == "")
-              return "Name is empty";
+          [](const std::string& t) {
+            if(t == "") return "Name is empty";
             else
               return "";
           },
           "Not Empty", "Test is name is empty");
   std::string status = "";
   app.add_option("-s,--status", status, "Status");
-  try {
+  try
+  {
     app.parse(argc, argv);
-  } catch (const CLI::ParseError &e) {
+  }
+  catch(const CLI::ParseError& e)
+  {
     spdlog::error("{}", e.what());
     return e.get_exit_code();
   }

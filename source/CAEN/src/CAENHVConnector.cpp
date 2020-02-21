@@ -1,3 +1,5 @@
 #include "CAENHVConnector.hpp"
 
-namespace CAEN {}
+namespace CAEN
+{
+}

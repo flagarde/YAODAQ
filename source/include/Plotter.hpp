@@ -9,9 +9,10 @@
 
 #include <iostream>
 
-class Plotter {
+class Plotter
+{
 public:
-  Plotter(Data &da, WebServer &ser);
+  Plotter(Data& da, WebServer& ser);
   void PlotWaveform();
   void PlotHistograms();
   void SaveWaveForms();
@@ -21,7 +22,8 @@ public:
   void Upload();
 
 private:
-  void SetLabelsWaveForms() {
+  void SetLabelsWaveForms()
+  {
     /*	for(std::size_t h=0;h!=histos.size();++h)
       {
 if (BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)
@@ -36,7 +38,8 @@ histos[h].GetYaxis()->SetRange(0,(float)(1<<WDcfg.Nbit));*/
       PlotVar->Xautoscale = 1;
   }*/
   }
-  void SetLabelsFFT(const std::vector<TH1 *> &histo) {
+  void SetLabelsFFT(const std::vector<TH1*>& histo)
+  {
     /*	for(std::size_t h=0;h!=histos.size();++h)
       {
                     histos[h].SetTitle("FFT;MHz;dB");
@@ -47,7 +50,8 @@ histos[h].GetYaxis()->SetRange(0,(float)(1<<WDcfg.Nbit));*/
       PlotVar->Ymax = 0;
       PlotVar->Xautoscale = 1;*/
   }
-  void SetLabelsHisto() {
+  void SetLabelsHisto()
+  {
     /*for(std::size_t h=0;h!=histos.size();++h)
     {
             histos[h].SetTitle("Histogram;ADC channels;Counts");
@@ -57,21 +61,21 @@ histos[h].GetYaxis()->SetRange(0,(float)(1<<WDcfg.Nbit));*/
         PlotVar->Yautoscale = 1;
         PlotVar->Xautoscale = 1;*/
   }
-  TCanvas can;
-  std::vector<TH1D> histos;
+  TCanvas             can;
+  std::vector<TH1D>   histos;
   std::vector<TGraph> graphs;
-  std::vector<TH1D> histos_histos;
-  TH1D RE;
-  TH1D IM;
-  TH1D MAG;
-  TH1D PH;
+  std::vector<TH1D>   histos_histos;
+  TH1D                RE;
+  TH1D                IM;
+  TH1D                MAG;
+  TH1D                PH;
 
 public:
-  Data &dat;
-  void Init();
-  void swapContinuousPlotting() {
-    if (m_ContinuousPlotting == true)
-      m_ContinuousPlotting = false;
+  Data& dat;
+  void  Init();
+  void  swapContinuousPlotting()
+  {
+    if(m_ContinuousPlotting == true) m_ContinuousPlotting = false;
     else
       m_ContinuousPlotting = true;
     std::cout << "Continuous Plotting is set to : " << m_ContinuousPlotting
@@ -81,9 +85,9 @@ public:
 
 private:
   bool m_ContinuousPlotting{"False"};
-  int NbrThreadFFT{0};
+  int  NbrThreadFFT{0};
   bool isInitialised{false};
   Plotter() = delete;
-  double tickSize{0};
-  WebServer &server;
+  double     tickSize{0};
+  WebServer& server;
 };

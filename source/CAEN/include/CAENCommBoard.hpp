@@ -3,10 +3,12 @@
 #include "Board.hpp"
 
 #include <cstdint>
-namespace CAEN {
-class CAENCommBoard : public Board {
+namespace CAEN
+{
+class CAENCommBoard: public Board
+{
 public:
-  CAENCommBoard(const std::string &name);
+  CAENCommBoard(const std::string& name);
 
   /*##########################################################################*/
   /*
@@ -21,7 +23,7 @@ public:
                                                                                 * \param   [IN]  Address: register address offset
                                                                                 * \param   [IN]  Data: new register content to write into the device
                                                                                 ******************************************************************************/
-  void Write32(const std::uint32_t &Address, const std::uint32_t &Data);
+  void Write32(const std::uint32_t& Address, const std::uint32_t& Data);
 
   /**************************************************************************/ /**
                                                                                 * \fn      void Write16(const uint32_t& Address,const uint16_t& Data)
@@ -30,7 +32,7 @@ public:
                                                                                 * \param   [IN]  Address: register address offset
                                                                                 * \param   [IN]  Data: new register content to write into the device
                                                                                 ******************************************************************************/
-  void Write16(const std::uint32_t &Address, const std::uint16_t &Data);
+  void Write16(const std::uint32_t& Address, const std::uint16_t& Data);
 
   /**************************************************************************/ /**
                                                                                 * \fn      uint32_t CAENComm_Read32(uint32_t Address)
@@ -39,7 +41,7 @@ public:
                                                                                 * \param   [IN]  Address: register address offset
                                                                                 * \return  Data: The data read from the device
                                                                                 ******************************************************************************/
-  std::uint32_t Read32(const std::uint32_t &Address);
+  std::uint32_t Read32(const std::uint32_t& Address);
 
   /**************************************************************************/ /**
                                                                                 * \fn      uint16_t Read16(uint31_t Address)
@@ -48,7 +50,7 @@ public:
                                                                                 * \param   [IN]  Address: register address offset
                                                                                 * \return  Data: The data read from the device
                                                                                 ******************************************************************************/
-  std::uint16_t Read16(const std::uint32_t &Address);
+  std::uint16_t Read16(const std::uint32_t& Address);
 
   /**************************************************************************/ /**
                                                                                 * \fn     std::vector<uint32_t> MultiRead32(const uint32_t Address,const int& nCycles)
@@ -58,8 +60,8 @@ public:
                                                                                 * \param   [IN]  nCycles: the number of read to perform
                                                                                 * \return  std::vector<uint32_t>: The datas read from the device
                                                                                 ******************************************************************************/
-  std::vector<std::uint32_t> MultiRead32(std::uint32_t &Address,
-                                         const int &nCycles);
+  std::vector<std::uint32_t> MultiRead32(std::uint32_t& Address,
+                                         const int&     nCycles);
 
   /**************************************************************************/ /**
                                                                                 * \fn      std::vector<uint16_t> MultiRead16(const uint32_t Address,const int& nCycles)
@@ -69,8 +71,8 @@ public:
                                                                                 * \param   [IN]  nCycles: the number of read to perform
                                                                                 * \return std::vector<uint16_t>: The datas read from the device
                                                                                 ******************************************************************************/
-  std::vector<std::uint16_t> MultiRead16(std::uint32_t &Address,
-                                         const int &nCycles);
+  std::vector<std::uint16_t> MultiRead16(std::uint32_t& Address,
+                                         const int&     nCycles);
 
   /**************************************************************************/ /**
                                                                                 * \fn      void MultiWrite16(const std::uint32_t& Address,const int& nCycles,std::vector<std::uint16_t>& data)
@@ -80,8 +82,8 @@ public:
                                                                                 * \param   [IN]  nCycles: the number of read to perform
                                                                                 * \param   [IN]  data: The datas to write to the device
                                                                                 ******************************************************************************/
-  void MultiWrite16(std::uint32_t &Address, const int &nCycles,
-                    std::vector<std::uint16_t> &data);
+  void MultiWrite16(std::uint32_t& Address, const int& nCycles,
+                    std::vector<std::uint16_t>& data);
 
   /**************************************************************************/ /**
                                                                                 * \fn      void MultiWrite32(const std::uint32_t& Address,const int& nCycles,std::vector<std::uint32_t>& data)
@@ -91,8 +93,8 @@ public:
                                                                                 * \param   [IN]  nCycles: the number of read to perform
                                                                                 * \param   [IN]  data: The datas to write to the device
                                                                                 ******************************************************************************/
-  void MultiWrite32(std::uint32_t &Address, const int &nCycles,
-                    std::vector<std::uint32_t> &data);
+  void MultiWrite32(std::uint32_t& Address, const int& nCycles,
+                    std::vector<std::uint32_t>& data);
 
   /**************************************************************************/ /**
                                                                                 * \fn      CAENComm_ErrorCode STDCALL CAENComm_BLTRead(int handle, uint32_t Address, uint32_t *Buff, int BltSize, int *nw)
@@ -191,7 +193,7 @@ public:
    Bridges
    * \param   [IN]  Timeout: Timeout in milliseconds.
    ******************************************************************************/
-  void IRQWait(const std::uint32_t &Timeout);
+  void IRQWait(const std::uint32_t& Timeout);
 
   /**************************************************************************/ /**
    * \fn      CAENComm_ErrorCode STDCALL CAENComm_VMEIRQWait(int LinkType, int
@@ -234,4 +236,4 @@ public:
   std::string SWRelease();
 };
 
-} // namespace CAEN
+}  // namespace CAEN

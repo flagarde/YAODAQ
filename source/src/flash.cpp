@@ -12,15 +12,16 @@
 
 #include <CAENComm.h>
 
-static uint8_t DeviceID;
+static uint8_t  DeviceID;
 static uint16_t PAGE_SIZE;
-static int is_initialized = 0;
+static int      is_initialized = 0;
 
 /*
  * Static (local) functions
  *
  */
-static void _read_device_id(int handle) {
+static void _read_device_id(int handle)
+{
   uint8_t data;
 
   spi_select(handle);
@@ -34,7 +35,8 @@ static void _read_device_id(int handle) {
   spi_unselect(handle);
 }
 
-static uint8_t read_status(int handle) {
+static uint8_t read_status(int handle)
+{
   uint8_t data;
 
   spi_select(handle);
@@ -47,75 +49,81 @@ static uint8_t read_status(int handle) {
   return data;
 }
 
-static uint32_t get_spi_address(uint16_t page_addr, uint16_t byte_addr) {
+static uint32_t get_spi_address(uint16_t page_addr, uint16_t byte_addr)
+{
   uint32_t spi_address = 0;
 
-  switch (DeviceID) {
-  case SPIFLASH_DEVICEID_64MBIT:
-    spi_address = ((page_addr & 0x1FFF) << 11) |
-                  (byte_addr & 0x7FF); // PA[12:0] & BA[10:0]
-    break;
-  case SPIFLASH_DEVICEID_32MBIT:
-    spi_address = ((page_addr & 0x1FFF) << 10) |
-                  (byte_addr & 0x3FF); // PA[12:0] & BA[9:0]
-    break;
-  case SPIFLASH_DEVICEID_8MBIT:
-    spi_address =
-        ((page_addr & 0x0FFF) << 9) | (byte_addr & 0x1FF); // PA[11:0] & BA[8:0]
-    break;
-  default:
-    break;
+  switch(DeviceID)
+  {
+    case SPIFLASH_DEVICEID_64MBIT:
+      spi_address = ((page_addr & 0x1FFF) << 11) |
+                    (byte_addr & 0x7FF);  // PA[12:0] & BA[10:0]
+      break;
+    case SPIFLASH_DEVICEID_32MBIT:
+      spi_address = ((page_addr & 0x1FFF) << 10) |
+                    (byte_addr & 0x3FF);  // PA[12:0] & BA[9:0]
+      break;
+    case SPIFLASH_DEVICEID_8MBIT:
+      spi_address = ((page_addr & 0x0FFF) << 9) |
+                    (byte_addr & 0x1FF);  // PA[11:0] & BA[8:0]
+      break;
+    default:
+      break;
   }
 
   return spi_address;
 }
 
-static uint32_t get_spi_standard_address(uint16_t page_addr,
-                                         uint16_t byte_addr) {
+static uint32_t get_spi_standard_address(uint16_t page_addr, uint16_t byte_addr)
+{
   uint32_t spi_address = 0;
 
   spi_address =
       ((page_addr & 0x0FFF) << 9) |
-      (byte_addr & 0x1FF); // get address using smallest page size (264)
+      (byte_addr & 0x1FF);  // get address using smallest page size (264)
 
   return spi_address;
 }
 
-static uint16_t get_page_addr_from_sector(uint16_t sector) {
+static uint16_t get_page_addr_from_sector(uint16_t sector)
+{
   uint16_t page_addr = 0;
 
-  switch (DeviceID) {
-  case SPIFLASH_DEVICEID_64MBIT:
-    page_addr = (sector & 0x1F) << 8; // 32 sectors
-    break;
-  case SPIFLASH_DEVICEID_32MBIT:
-    page_addr = (sector & 0x3F) << 7; // 64 sectors
-    break;
-  case SPIFLASH_DEVICEID_8MBIT:
-    page_addr = (sector & 0x0F) << 8; // 16 sectors
-    break;
-  default:
-    break;
+  switch(DeviceID)
+  {
+    case SPIFLASH_DEVICEID_64MBIT:
+      page_addr = (sector & 0x1F) << 8;  // 32 sectors
+      break;
+    case SPIFLASH_DEVICEID_32MBIT:
+      page_addr = (sector & 0x3F) << 7;  // 64 sectors
+      break;
+    case SPIFLASH_DEVICEID_8MBIT:
+      page_addr = (sector & 0x0F) << 8;  // 16 sectors
+      break;
+    default:
+      break;
   }
 
   return page_addr;
 }
 
-static uint16_t get_page_addr_from_block(uint16_t block) {
+static uint16_t get_page_addr_from_block(uint16_t block)
+{
   uint16_t page_addr = 0;
 
-  switch (DeviceID) {
-  case SPIFLASH_DEVICEID_64MBIT:
-    page_addr = block << 10; // 1024 blocks
-    break;
-  case SPIFLASH_DEVICEID_32MBIT:
-    page_addr = block << 10; // 1024 blocks
-    break;
-  case SPIFLASH_DEVICEID_8MBIT:
-    page_addr = block << 10; //  512 blocks
-    break;
-  default:
-    break;
+  switch(DeviceID)
+  {
+    case SPIFLASH_DEVICEID_64MBIT:
+      page_addr = block << 10;  // 1024 blocks
+      break;
+    case SPIFLASH_DEVICEID_32MBIT:
+      page_addr = block << 10;  // 1024 blocks
+      break;
+    case SPIFLASH_DEVICEID_8MBIT:
+      page_addr = block << 10;  //  512 blocks
+      break;
+    default:
+      break;
   }
 
   return page_addr;
@@ -126,44 +134,46 @@ static uint16_t get_page_addr_from_block(uint16_t block) {
  *
  */
 
-FLASH_API SPIFlash_init(int handle) {
+FLASH_API SPIFlash_init(int handle)
+{
   _read_device_id(handle);
 
-  switch (DeviceID) {
-  case SPIFLASH_DEVICEID_64MBIT:
-    PAGE_SIZE = 1056;
-    is_initialized = 1;
-    break;
-  case SPIFLASH_DEVICEID_32MBIT:
-    PAGE_SIZE = 528;
-    is_initialized = 1;
-    break;
-  case SPIFLASH_DEVICEID_8MBIT:
-    PAGE_SIZE = 264;
-    is_initialized = 1;
-    break;
-  default:
-    is_initialized = 0;
-    return FLASH_API_UNSUPPORTED_FLASH_DEVICE;
-    break;
+  switch(DeviceID)
+  {
+    case SPIFLASH_DEVICEID_64MBIT:
+      PAGE_SIZE      = 1056;
+      is_initialized = 1;
+      break;
+    case SPIFLASH_DEVICEID_32MBIT:
+      PAGE_SIZE      = 528;
+      is_initialized = 1;
+      break;
+    case SPIFLASH_DEVICEID_8MBIT:
+      PAGE_SIZE      = 264;
+      is_initialized = 1;
+      break;
+    default:
+      is_initialized = 0;
+      return FLASH_API_UNSUPPORTED_FLASH_DEVICE;
+      break;
   }
 
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_get_page_size(int *size) {
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+FLASH_API SPIFlash_get_page_size(int* size)
+{
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   *size = PAGE_SIZE;
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_read_manufacturer_id(int handle, uint8_t *manufacturerId) {
+FLASH_API SPIFlash_read_manufacturer_id(int handle, uint8_t* manufacturerId)
+{
   uint8_t data;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_select(handle);
 
@@ -176,11 +186,11 @@ FLASH_API SPIFlash_read_manufacturer_id(int handle, uint8_t *manufacturerId) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_read_device_id(int handle, uint8_t *deviceId) {
+FLASH_API SPIFlash_read_device_id(int handle, uint8_t* deviceId)
+{
   uint8_t data;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_select(handle);
 
@@ -195,12 +205,12 @@ FLASH_API SPIFlash_read_device_id(int handle, uint8_t *deviceId) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_read_id(int handle, uint8_t *manufacturerId,
-                           uint8_t *deviceId) {
+FLASH_API SPIFlash_read_id(int handle, uint8_t* manufacturerId,
+                           uint8_t* deviceId)
+{
   uint8_t data;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_select(handle);
 
@@ -220,13 +230,13 @@ FLASH_API SPIFlash_read_id(int handle, uint8_t *manufacturerId,
  * UniqueId must have been preallocated for 128 byets
  *
  */
-FLASH_API SPIFlash_read_unique_id(int handle, uint8_t *UniqueId) {
+FLASH_API SPIFlash_read_unique_id(int handle, uint8_t* UniqueId)
+{
   uint8_t data;
 
   int i;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_select(handle);
 
@@ -237,7 +247,8 @@ FLASH_API SPIFlash_read_unique_id(int handle, uint8_t *UniqueId) {
   spi_write(handle, 0);
   spi_write(handle, 0);
 
-  for (i = 0; i < 128; ++i) {
+  for(i = 0; i < 128; ++i)
+  {
     spi_read(handle, &data);
     UniqueId[i] = data;
   }
@@ -251,13 +262,13 @@ FLASH_API SPIFlash_read_unique_id(int handle, uint8_t *UniqueId) {
  * Inputs:
  * 	page  : memory page to load
  */
-FLASH_API SPIFlash_read_page_into_buffer1(int handle, uint16_t page) {
+FLASH_API SPIFlash_read_page_into_buffer1(int handle, uint16_t page)
+{
   uint32_t page_addr;
   uint32_t byte_addr;
   uint32_t spi_address;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = page;
   byte_addr = 0; /* don't care */
@@ -279,13 +290,13 @@ FLASH_API SPIFlash_read_page_into_buffer1(int handle, uint16_t page) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_read_page_into_buffer2(int handle, uint16_t page) {
+FLASH_API SPIFlash_read_page_into_buffer2(int handle, uint16_t page)
+{
   uint32_t page_addr;
   uint32_t byte_addr;
   uint32_t spi_address;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = page;
   byte_addr = 0; /* don't care */
@@ -307,13 +318,13 @@ FLASH_API SPIFlash_read_page_into_buffer2(int handle, uint16_t page) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_read_byte(int handle, uint32_t addr, uint8_t *data) {
+FLASH_API SPIFlash_read_byte(int handle, uint32_t addr, uint8_t* data)
+{
   uint32_t page_addr;
   uint32_t byte_addr;
   uint32_t spi_address;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = addr / PAGE_SIZE;
   byte_addr = addr % PAGE_SIZE;
@@ -336,14 +347,14 @@ FLASH_API SPIFlash_read_byte(int handle, uint32_t addr, uint8_t *data) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_read_bytes(int handle, uint32_t addr, uint8_t *buf,
-                              uint16_t len) {
+FLASH_API SPIFlash_read_bytes(int handle, uint32_t addr, uint8_t* buf,
+                              uint16_t len)
+{
   uint32_t page_addr;
   uint32_t byte_addr;
   uint32_t spi_address;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = addr / PAGE_SIZE;
   byte_addr = addr % PAGE_SIZE;
@@ -359,7 +370,7 @@ FLASH_API SPIFlash_read_bytes(int handle, uint32_t addr, uint8_t *buf,
   spi_write(handle, ((spi_address >> 8) & 0xFF));
   spi_write(handle, ((spi_address >> 0) & 0xFF));
 
-  spi_read_block(handle, (uint8_t *)buf, len);
+  spi_read_block(handle, (uint8_t*)buf, len);
   //	for (i = 0; i < len; ++i) {
   //		spi_read(&((uint8_t *) buf)[i]);
   //	}
@@ -370,16 +381,16 @@ FLASH_API SPIFlash_read_bytes(int handle, uint32_t addr, uint8_t *buf,
 }
 
 FLASH_API SPIFlash_read_buffer1(int handle, int buf_addr, uint16_t len,
-                                uint8_t *buf) {
+                                uint8_t* buf)
+{
   uint32_t spi_address;
   uint32_t page_addr;
   uint32_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
-  page_addr = 0;
-  byte_addr = buf_addr;
+  page_addr   = 0;
+  byte_addr   = buf_addr;
   spi_address = get_spi_address((uint16_t)page_addr, (uint16_t)byte_addr);
 
   spi_select(handle);
@@ -402,16 +413,16 @@ FLASH_API SPIFlash_read_buffer1(int handle, int buf_addr, uint16_t len,
 }
 
 FLASH_API SPIFlash_read_buffer2(int handle, int buf_addr, uint16_t len,
-                                uint8_t *buf) {
+                                uint8_t* buf)
+{
   uint32_t spi_address;
   uint32_t page_addr;
   uint32_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
-  page_addr = 0;
-  byte_addr = buf_addr;
+  page_addr   = 0;
+  byte_addr   = buf_addr;
   spi_address = get_spi_address((uint16_t)page_addr, (uint16_t)byte_addr);
 
   spi_select(handle);
@@ -426,21 +437,21 @@ FLASH_API SPIFlash_read_buffer2(int handle, int buf_addr, uint16_t len,
   /* Dummy cycle */
   spi_write(handle, 0);
 
-  spi_read_block(handle, (uint8_t *)buf, len);
+  spi_read_block(handle, (uint8_t*)buf, len);
 
   spi_unselect(handle);
 
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_write_byte(int handle, uint32_t addr, uint8_t data) {
+FLASH_API SPIFlash_write_byte(int handle, uint32_t addr, uint8_t data)
+{
   uint32_t page_addr;
 
   uint32_t byte_addr = addr % PAGE_SIZE;
-  uint16_t offset = (uint16_t)byte_addr;
+  uint16_t offset    = (uint16_t)byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = addr / PAGE_SIZE;
 
@@ -454,22 +465,23 @@ FLASH_API SPIFlash_write_byte(int handle, uint32_t addr, uint8_t data) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_write_bytes(int handle, uint32_t addr, uint8_t *buf,
-                               uint16_t len) {
+FLASH_API SPIFlash_write_bytes(int handle, uint32_t addr, uint8_t* buf,
+                               uint16_t len)
+{
   uint16_t n;
   uint32_t page_addr;
 
   uint32_t byte_addr = addr % PAGE_SIZE;
 
   uint16_t maxBytes =
-      PAGE_SIZE - (uint16_t)byte_addr; // force the first set of bytes to stay
-                                       // within the first page
+      PAGE_SIZE - (uint16_t)byte_addr;  // force the first set of bytes to stay
+                                        // within the first page
   uint16_t offset = 0;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
-  while (len > 0) {
+  while(len > 0)
+  {
     page_addr = addr / PAGE_SIZE;
     byte_addr = addr % PAGE_SIZE;
 
@@ -478,39 +490,40 @@ FLASH_API SPIFlash_write_bytes(int handle, uint32_t addr, uint8_t *buf,
     /* Directly write a full flash page if possible to
      * speed-up firmware programmming
      */
-    if ((n == PAGE_SIZE) && (byte_addr == 0)) {
-      SPIFlash_write_page(handle, (uint16_t)page_addr, &buf[offset]);
-    } else {
+    if((n == PAGE_SIZE) && (byte_addr == 0))
+    { SPIFlash_write_page(handle, (uint16_t)page_addr, &buf[offset]); }
+    else
+    {
       SPIFlash_read_page_into_buffer1(handle, (uint16_t)page_addr);
-      SPIFlash_write_buffer1(handle, byte_addr, (uint8_t *)&buf[offset], n);
+      SPIFlash_write_buffer1(handle, byte_addr, (uint8_t*)&buf[offset], n);
       SPIFlash_write_buffer1_to_memory(handle, page_addr);
     }
 
     /* Wait flash is ready before every write operation */
     SPIFlash_wait(handle);
 
-    addr += n; // adjust the addresses and remaining bytes by what we've just
-               // transferred.
+    addr += n;  // adjust the addresses and remaining bytes by what we've just
+                // transferred.
     offset += n;
     len -= n;
-    maxBytes = PAGE_SIZE; // now we can do up to 256 bytes per loop
+    maxBytes = PAGE_SIZE;  // now we can do up to 256 bytes per loop
   }
 
   return FLASH_API_SUCCESS;
 }
 
-int SPIFlash_is_busy(int handle) {
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+int SPIFlash_is_busy(int handle)
+{
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   return (read_status(handle) & 0x80) >> 7;
 }
 
-FLASH_API SPIFlash_wait(int handle) {
+FLASH_API SPIFlash_wait(int handle)
+{
   uint8_t data;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_select(handle);
 
@@ -518,28 +531,28 @@ FLASH_API SPIFlash_wait(int handle) {
 
   do
     spi_read(handle, &data);
-  while (!(data & 0x80));
+  while(!(data & 0x80));
 
   spi_unselect(handle);
 
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_write_buffer1(int handle, uint32_t buf_addr, uint8_t *buf,
-                                 uint16_t len) {
+FLASH_API SPIFlash_write_buffer1(int handle, uint32_t buf_addr, uint8_t* buf,
+                                 uint16_t len)
+{
   CAENComm_ErrorCode ret;
-  uint32_t spi_address;
-  uint32_t page_addr;
-  uint32_t byte_addr;
+  uint32_t           spi_address;
+  uint32_t           page_addr;
+  uint32_t           byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = 0;
   byte_addr = buf_addr;
 
   spi_address = get_spi_address((uint16_t)page_addr, (uint16_t)byte_addr);
-  ret = spi_select(handle);
+  ret         = spi_select(handle);
 
   ret = spi_write(handle, BUFFER_1_WRITE);
   spi_write(handle, ((spi_address >> 16) & 0xFF));
@@ -553,15 +566,15 @@ FLASH_API SPIFlash_write_buffer1(int handle, uint32_t buf_addr, uint8_t *buf,
   return (ret ? FLASH_API_ACCESS_FAILED : FLASH_API_SUCCESS);
 }
 
-FLASH_API SPIFlash_write_buffer2(int handle, uint32_t buf_addr, uint8_t *buf,
-                                 uint16_t len) {
-  int i;
+FLASH_API SPIFlash_write_buffer2(int handle, uint32_t buf_addr, uint8_t* buf,
+                                 uint16_t len)
+{
+  int      i;
   uint32_t spi_address;
   uint32_t page_addr;
   uint32_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = 0;
   byte_addr = buf_addr;
@@ -574,19 +587,18 @@ FLASH_API SPIFlash_write_buffer2(int handle, uint32_t buf_addr, uint8_t *buf,
   spi_write(handle, ((spi_address >> 8) & 0xFF));
   spi_write(handle, ((spi_address)&0xFF));
 
-  for (i = 0; i < len; i++)
-    spi_write(handle, buf[i]);
+  for(i = 0; i < len; i++) spi_write(handle, buf[i]);
 
   spi_unselect(handle);
 
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_write_buffer1_to_memory(int handle, uint32_t page) {
+FLASH_API SPIFlash_write_buffer1_to_memory(int handle, uint32_t page)
+{
   uint32_t spi_address;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_address = get_spi_address((uint16_t)page, 0);
 
@@ -604,11 +616,11 @@ FLASH_API SPIFlash_write_buffer1_to_memory(int handle, uint32_t page) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_write_buffer2_to_memory(int handle, uint32_t page) {
+FLASH_API SPIFlash_write_buffer2_to_memory(int handle, uint32_t page)
+{
   uint32_t spi_address;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_address = get_spi_address((uint16_t)page, 0);
 
@@ -626,11 +638,11 @@ FLASH_API SPIFlash_write_buffer2_to_memory(int handle, uint32_t page) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_write_buffer1_to_memory_no_erase(int handle, uint32_t page) {
+FLASH_API SPIFlash_write_buffer1_to_memory_no_erase(int handle, uint32_t page)
+{
   uint32_t spi_address;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_address = get_spi_address((uint16_t)page, 0);
 
@@ -648,11 +660,11 @@ FLASH_API SPIFlash_write_buffer1_to_memory_no_erase(int handle, uint32_t page) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_write_buffer2_to_memory_no_erase(int handle, uint32_t page) {
+FLASH_API SPIFlash_write_buffer2_to_memory_no_erase(int handle, uint32_t page)
+{
   uint32_t spi_address;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   spi_address = get_spi_address((uint16_t)page, 0);
 
@@ -670,13 +682,13 @@ FLASH_API SPIFlash_write_buffer2_to_memory_no_erase(int handle, uint32_t page) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_erase_page(int handle, uint16_t page) {
+FLASH_API SPIFlash_erase_page(int handle, uint16_t page)
+{
   uint32_t spi_address;
   uint32_t page_addr;
   uint32_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = page;
   byte_addr = 0; /* don't care */
@@ -697,13 +709,13 @@ FLASH_API SPIFlash_erase_page(int handle, uint16_t page) {
   return FLASH_API_SUCCESS;
 }
 
-FLASH_API SPIFlash_block_sector(int handle, uint16_t block) {
+FLASH_API SPIFlash_block_sector(int handle, uint16_t block)
+{
   uint32_t spi_address;
   uint32_t page_addr;
   uint32_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = get_page_addr_from_block(block);
   byte_addr = 0; /* don't care */
@@ -728,13 +740,13 @@ FLASH_API SPIFlash_block_sector(int handle, uint16_t block) {
  * @note Do not support sector 0a/0b erase (yet)
  * @todo sector 0a/0b
  */
-FLASH_API SPIFlash_erase_sector(int handle, uint16_t sector) {
+FLASH_API SPIFlash_erase_sector(int handle, uint16_t sector)
+{
   uint32_t spi_address;
   uint32_t page_addr;
   uint32_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = get_page_addr_from_sector(sector);
   byte_addr = 0; /* don't care */
@@ -761,13 +773,13 @@ FLASH_API SPIFlash_erase_sector(int handle, uint16_t sector) {
  *   \param   page: page number
  *   \param   buf: pointer to the data buffer
  */
-FLASH_API SPIFlash_read_page(int handle, uint16_t page, uint8_t *buf) {
+FLASH_API SPIFlash_read_page(int handle, uint16_t page, uint8_t* buf)
+{
   uint32_t spi_address;
   uint32_t page_addr;
   uint32_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = page;
   byte_addr = 0;
@@ -799,15 +811,15 @@ FLASH_API SPIFlash_read_page(int handle, uint16_t page, uint8_t *buf) {
  *   \param   page: standard page number
  *   \param   buf: pointer to the data buffer
  */
-FLASH_API SPIFlash_read_virtual_page(int handle, uint16_t page, uint8_t *buf) {
+FLASH_API SPIFlash_read_virtual_page(int handle, uint16_t page, uint8_t* buf)
+{
   uint16_t standard_page_addr;
   uint16_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   standard_page_addr = page * VIRTUAL_PAGE_SIZE;
-  byte_addr = 0;
+  byte_addr          = 0;
 
   return SPIFlash_read_bytes(handle, (uint32_t)(standard_page_addr + byte_addr),
                              buf, VIRTUAL_PAGE_SIZE);
@@ -824,15 +836,15 @@ FLASH_API SPIFlash_read_virtual_page(int handle, uint16_t page, uint8_t *buf) {
  */
 FLASH_API SPIFlash_read_virtual_page_ex(int handle, uint16_t page,
                                         uint16_t offset, uint32_t size,
-                                        uint8_t *buf) {
+                                        uint8_t* buf)
+{
   uint16_t standard_page_addr;
   uint16_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   standard_page_addr = page * VIRTUAL_PAGE_SIZE;
-  byte_addr = offset;
+  byte_addr          = offset;
 
   return SPIFlash_read_bytes(handle, (uint32_t)(standard_page_addr + byte_addr),
                              buf, (uint16_t)size);
@@ -844,13 +856,13 @@ FLASH_API SPIFlash_read_virtual_page_ex(int handle, uint16_t page,
  *   \param   page: page number
  *   \param   buf: pointer to the data to write
  */
-FLASH_API SPIFlash_write_page(int handle, uint16_t page, uint8_t *buf) {
+FLASH_API SPIFlash_write_page(int handle, uint16_t page, uint8_t* buf)
+{
   uint32_t spi_address;
   uint16_t page_addr;
   uint16_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   page_addr = page;
   byte_addr = 0;
@@ -858,7 +870,7 @@ FLASH_API SPIFlash_write_page(int handle, uint16_t page, uint8_t *buf) {
   spi_address = get_spi_address((uint16_t)page_addr, (uint16_t)byte_addr);
 
   spi_select(handle);
-  spi_write(handle, MAIN_MEM_PAGE_PROG_TH_BUF_1_CMD); // Byte/Page Program
+  spi_write(handle, MAIN_MEM_PAGE_PROG_TH_BUF_1_CMD);  // Byte/Page Program
   spi_write(handle, ((spi_address >> 16) & 0xFF));
   spi_write(handle, ((spi_address >> 8) & 0xFF));
   spi_write(handle, ((spi_address)&0xFF));
@@ -876,15 +888,15 @@ FLASH_API SPIFlash_write_page(int handle, uint16_t page, uint8_t *buf) {
  *   \param   page:  page number
  *   \param   buf: pointer to the data to write
  */
-FLASH_API SPIFlash_write_virtual_page(int handle, uint16_t page, uint8_t *buf) {
+FLASH_API SPIFlash_write_virtual_page(int handle, uint16_t page, uint8_t* buf)
+{
   uint16_t standard_page_addr;
   uint16_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   standard_page_addr = page * VIRTUAL_PAGE_SIZE;
-  byte_addr = 0;
+  byte_addr          = 0;
 
   return SPIFlash_write_bytes(handle, (standard_page_addr + byte_addr), buf,
                               VIRTUAL_PAGE_SIZE);
@@ -901,15 +913,15 @@ FLASH_API SPIFlash_write_virtual_page(int handle, uint16_t page, uint8_t *buf) {
  */
 FLASH_API SPIFlash_write_virtual_page_ex(int handle, uint16_t page,
                                          uint16_t offset, uint32_t size,
-                                         uint8_t *buf) {
+                                         uint8_t* buf)
+{
   uint16_t standard_page_addr;
   uint16_t byte_addr;
 
-  if (!is_initialized)
-    return FLASH_API_UNINITIALIZED;
+  if(!is_initialized) return FLASH_API_UNINITIALIZED;
 
   standard_page_addr = page * VIRTUAL_PAGE_SIZE;
-  byte_addr = offset;
+  byte_addr          = offset;
 
   return SPIFlash_write_bytes(
       handle, (uint32_t)(standard_page_addr + byte_addr), buf, (uint16_t)size);

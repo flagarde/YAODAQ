@@ -17,4 +17,4 @@
  *   \param   WDcfg:   Pointer to the WaveDumpConfig data structure
  *   \return  0 = Success; negative numbers are error codes
  */
-int ParseConfigFile(FILE *f_ini, WaveDumpConfig_t &WDcfg);
+int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg);

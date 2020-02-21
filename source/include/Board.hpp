@@ -7,9 +7,10 @@
 #include <memory>
 #include <string>
 
-class Board : public Module {
+class Board: public Module
+{
 public:
-  Board(const std::string &name = "", const std::string &type = "Board");
+  Board(const std::string& name = "", const std::string& type = "Board");
   virtual void DoConnect();
   virtual void DoDisconnect();
   virtual void DoInitialize();
@@ -17,10 +18,10 @@ public:
   void printConnectorParameters();
 
 private:
-  virtual void DoDoConnect() final;
-  virtual void DoDoDisconnect() final;
-  virtual void LoadConfig() final;
-  static ConnectorFactory m_ConnectorFactory;
+  virtual void               DoDoConnect() final;
+  virtual void               DoDoDisconnect() final;
+  virtual void               LoadConfig() final;
+  static ConnectorFactory    m_ConnectorFactory;
   std::shared_ptr<Connector> m_Connector;
 
 protected:

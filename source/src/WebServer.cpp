@@ -7,25 +7,22 @@
 #include <iostream>
 #include <sstream>
 
-void WebServer::SendStatus(const std::string &name) {
-  if (status == name)
-    return;
-  if (name == "STARTED")
-    isStarted = true;
-  else if (name == "STOPED")
+void WebServer::SendStatus(const std::string& name)
+{
+  if(status == name) return;
+  if(name == "STARTED") isStarted = true;
+  else if(name == "STOPED")
     isStarted = false;
 
   Json::StreamWriterBuilder builder;
   builder.settings_["indentation"] = "";
   std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-  Json::Value val{};
-  val["Type"] = "Status";
+  Json::Value                         val{};
+  val["Type"]   = "Status";
   val["Status"] = name;
   std::stringstream s{};
   writer->write(val, &s);
-  for (auto &&client : m_server.getClients()) {
-    client->send(s.str());
-  }
+  for(auto&& client: m_server.getClients()) { client->send(s.str()); }
 
   resetCommand();
   status = name;
@@ -33,31 +30,32 @@ void WebServer::SendStatus(const std::string &name) {
             << "Is strated " << isStarted << std::endl;
 }
 
-void WebServer::SendInfos(const std::string &name, const std::string &info) {
+void WebServer::SendInfos(const std::string& name, const std::string& info)
+{
   Json::StreamWriterBuilder builder;
   builder.settings_["indentation"] = "";
   std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-  Json::Value val;
+  Json::Value                         val;
   val["Type"] = "Infos";
   val["Name"] = name;
-  val[name] = info;
+  val[name]   = info;
   std::stringstream s;
   writer->write(val, &s);
-  for (auto &&client : m_server.getClients()) {
-    client->send(s.str());
-  }
+  for(auto&& client: m_server.getClients()) { client->send(s.str()); }
   resetCommand();
 }
 
-WebServer::WebServer(int port, const std::string &host, int backlog,
+WebServer::WebServer(int port, const std::string& host, int backlog,
                      size_t maxConnections)
-    : m_server(port, host, backlog, maxConnections) {
+    : m_server(port, host, backlog, maxConnections)
+{
   m_server.setOnConnectionCallback(
-      [this](std::shared_ptr<ix::WebSocket> webSocket,
+      [this](std::shared_ptr<ix::WebSocket>       webSocket,
              std::shared_ptr<ix::ConnectionState> connectionState) {
         webSocket->setOnMessageCallback([this, webSocket, connectionState](
                                             const ix::WebSocketMessagePtr msg) {
-          if (msg->type == ix::WebSocketMessageType::Open) {
+          if(msg->type == ix::WebSocketMessageType::Open)
+          {
             std::cerr << "New connection" << std::endl;
             // A connection state object is available, and has a default id
             // You can subclass ConnectionState and pass an alternate factory
@@ -70,45 +68,49 @@ WebServer::WebServer(int port, const std::string &host, int backlog,
             std::cerr << "Uri: " << msg->openInfo.uri << std::endl;
 
             std::cerr << "Headers:" << std::endl;
-            for (auto it : msg->openInfo.headers) {
-              std::cerr << it.first << ": " << it.second << std::endl;
-            }
+            for(auto it: msg->openInfo.headers)
+            { std::cerr << it.first << ": " << it.second << std::endl; }
 
             Json::StreamWriterBuilder builder;
             builder.settings_["indentation"] = "";
             std::unique_ptr<Json::StreamWriter> writer(
                 builder.newStreamWriter());
             Json::Value val;
-            val["Type"] = "Status";
-            val["Status"] = status;
+            val["Type"]    = "Status";
+            val["Status"]  = status;
             val["Message"] = "WebSocket Opened";
             std::stringstream s;
             writer->write(val, &s);
             webSocket->send(s.str());
-          } else if (msg->type == ix::WebSocketMessageType::Close) {
+          }
+          else if(msg->type == ix::WebSocketMessageType::Close)
+          {
             std::cout << "Closed" << std::endl;
-          } else if (msg->type == ix::WebSocketMessageType::Message) {
+          }
+          else if(msg->type == ix::WebSocketMessageType::Message)
+          {
             std::cout << "Message " << msg->str << std::endl;
             Json::CharReaderBuilder builder;
             builder["collectComments"] = false;
-            Json::Value value;
-            Json::String errs;
+            Json::Value       value;
+            Json::String      errs;
             std::stringstream s(msg->str);
             bool ok = Json::parseFromStream(builder, s, &value, &errs);
-            if (ok) {
-              if (value["Type"].asString() == "Command") {
-                command = value["Command"].asString();
-              }
-              if (value["Type"].asString() == "Infos")
-                Infos = value;
+            if(ok)
+            {
+              if(value["Type"].asString() == "Command")
+              { command = value["Command"].asString(); }
+              if(value["Type"].asString() == "Infos") Infos = value;
               std::cout << value << std::endl;
-            } else {
+            }
+            else
+            {
               Json::StreamWriterBuilder builder;
               builder.settings_["indentation"] = "";
               std::unique_ptr<Json::StreamWriter> writer(
                   builder.newStreamWriter());
               Json::Value val;
-              val["Type"] = "Status";
+              val["Type"]   = "Status";
               val["Status"] = "ALERT";
               val["Message"] =
                   "<h1> Your command is not readeable !! Do you speak JSON !! "

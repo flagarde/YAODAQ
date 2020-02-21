@@ -6,7 +6,8 @@
 #include <memory>
 #include <variant>
 
-namespace CAEN {
+namespace CAEN
+{
 class CAEN_DGTZ_UINT16_EVENT_t;
 class CAEN_DGTZ_UINT8_EVENT_t;
 class CAEN_DGTZ_X742_EVENT_t;
@@ -23,12 +24,13 @@ class CAEN_DGTZ_730_DAW_Event_t;
 
 class EventInfo;
 
-class DPPAcquisitionMode {
+class DPPAcquisitionMode
+{
 public:
-  DPPAcquisitionMode(const std::string &mode, const std::string &param);
+  DPPAcquisitionMode(const std::string& mode, const std::string& param);
   DPPAcquisitionMode() {}
-  void setAcqMode(const std::string &mode);
-  void setSaveParam(const std::string &param);
+  void        setAcqMode(const std::string& mode);
+  void        setSaveParam(const std::string& param);
   std::string getAcqMode();
   std::string getSaveParam();
 
@@ -37,9 +39,10 @@ private:
   std::string SaveParam{""};
 };
 
-class CAENDigitizerBoard : public Board {
+class CAENDigitizerBoard: public Board
+{
 public:
-  CAENDigitizerBoard(const std::string &name);
+  CAENDigitizerBoard(const std::string& name);
 
   /**************************************************************************/ /**
                                                                                 * \fn          WriteRegister(const std::uint32_t& Address,const  std::uint32_t& Data);
@@ -47,7 +50,7 @@ public:
                                                                                 * \param    [IN] Address : the register address offset
                                                                                 * \param    [IN] Data    : the 32-bit data to write
                                                                                 ******************************************************************************/
-  void WriteRegister(const std::uint32_t &Address, const std::uint32_t &Data);
+  void WriteRegister(const std::uint32_t& Address, const std::uint32_t& Data);
 
   /**************************************************************************/ /**
                                                                                 * \fn        ReadRegister(const std::uint32_t& Address,std::uint32_t& Data);
@@ -55,7 +58,7 @@ public:
                                                                                 * \param    [IN] Address : the register address offset
                                                                                 * \return  Data    : the 32-bit data read from the digitizer
                                                                                 ******************************************************************************/
-  std::uint32_t ReadRegister(const std::uint32_t &Address);
+  std::uint32_t ReadRegister(const std::uint32_t& Address);
 
   /**************************************************************************/ /**
                                                                                 * \fn        void GetInfo()
@@ -103,10 +106,10 @@ public:
                                                                                 * \param     [IN] event_number : number of event required to raise interrupt
                                                                                 * \param     [IN] mode         : interrupt mode [CAEN_DGTZ_IRQ_MODE_RORA|CAEN_DGTZ_IRQ_MODE_ROAK]
                                                                                 ******************************************************************************/
-  void SetInterruptConfig(const std::string &state, const std::uint8_t &level,
-                          const std::uint32_t &status_id,
-                          const std::uint16_t &event_number,
-                          const std::string &mode);
+  void SetInterruptConfig(const std::string& state, const std::uint8_t& level,
+                          const std::uint32_t& status_id,
+                          const std::uint16_t& event_number,
+                          const std::string&   mode);
 
   /**************************************************************************/ /**
                                                                                 * \fn          CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetInterruptConfig(int handle, CAEN_DGTZ_EnaDis_t *state, uint8_t *level, uint32_t *status_id, uint16_t *event_number, CAEN_DGTZ_IRQMode_t *mode)
@@ -128,7 +131,7 @@ public:
                                                                                 * \param     [IN] handle  : digitizer handle
                                                                                 * \param     [IN] timeout : timeout (in milliseconds)
                                                                                 ******************************************************************************/
-  void IRQWait(const uint32_t &timeout);
+  void IRQWait(const uint32_t& timeout);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Waits for an interrupt from a CAEN VME Bridge
@@ -174,7 +177,7 @@ public:
                                                                                 * \brief     Sets Dual Edge Sampling (DES) mode. Valid only for digitizers that supports this acquisiton mode
                                                                                 * \param     [IN] enable : Enable/Disable Dual Edge Sampling mode
                                                                                 ******************************************************************************/
-  void SetDESMode(const std::string &enable);
+  void SetDESMode(const std::string& enable);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets Dual Edge Sampling (DES) mode. Valid only for digitizers that supports this acquisiton mode.
@@ -189,7 +192,7 @@ public:
                                                                                 *                           DPP-PSD and DPP-CI require this parameter,
                                                                                 *                           DPP-PHA ignores it
                                                                                 ******************************************************************************/
-  void SetRecordLength(const std::uint32_t &size = 0, const int &ch = -1);
+  void SetRecordLength(const std::uint32_t& size = 0, const int& ch = -1);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current acquisition record length
@@ -199,13 +202,13 @@ public:
                                                                                 *                           DPP-PHA ignores it
                                                                                 * \return  0 = Success; negative numbers are error codes
                                                                                 ******************************************************************************/
-  std::uint32_t GetRecordLength(const int &ch = -1);
+  std::uint32_t GetRecordLength(const int& ch = -1);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets channels that will be  enabled into events
                                                                                 * \param     [IN] mask   : enabled channels mask.
                                                                                 ******************************************************************************/
-  void SetChannelEnableMask(const std::uint32_t &mask);
+  void SetChannelEnableMask(const std::uint32_t& mask);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current mask of enabled channels in events.
@@ -220,7 +223,7 @@ public:
                                                                                 *           Please refer to digitizers documentation.
                                                                                 * \param     [IN] mask   : channels group mask.
                                                                                 ******************************************************************************/
-  void SetGroupEnableMask(const std::uint32_t &mask);
+  void SetGroupEnableMask(const std::uint32_t& mask);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current mask of enabled channel groups in events.
@@ -233,13 +236,13 @@ public:
                                                                                 * \brief     Sets oneof the available trigger mode
                                                                                 * \param     [IN] mode   : trigger mode
                                                                                 ******************************************************************************/
-  void SetSWTriggerMode(const std::string &mode);
+  void SetSWTriggerMode(const std::string& mode);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets external trigger input mode
                                                                                 * \param     [IN] mode   : external trigger input mode.
                                                                                 ******************************************************************************/
-  void SetExtTriggerInputMode(const std::string &mode);
+  void SetExtTriggerInputMode(const std::string& mode);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current external trigger input mode
@@ -263,15 +266,15 @@ public:
                                                                                 *  user should instead call at maximum once for every pair with the relevant
                                                                                 *  bits of the channelmask already set to the correct value.
                                                                                 ******************************************************************************/
-  void SetChannelSelfTrigger(const std::string &mode,
-                             const std::uint32_t &channelmask);
+  void SetChannelSelfTrigger(const std::string&   mode,
+                             const std::uint32_t& channelmask);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current channel self trigger mode setting.
                                                                                 * \param    [IN] channel : select channel to get the self trigger mode
                                                                                 * \return  mode   : current trigger mode for selected channel
                                                                                 ******************************************************************************/
-  std::string GetChannelSelfTrigger(const std::uint32_t &channel);
+  std::string GetChannelSelfTrigger(const std::uint32_t& channel);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets channel group self trigger mode according to mode
@@ -279,7 +282,7 @@ public:
                                                                                 * \param     [IN] mode      : trigger mode to set for selected channel groups
                                                                                 * \param    [IN] groupmask : channel group selection mask
                                                                                 ******************************************************************************/
-  void SetGroupSelfTrigger(const std::string &mode, const std::uint32_t &group);
+  void SetGroupSelfTrigger(const std::string& mode, const std::uint32_t& group);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets channel group self trigger mode.
@@ -287,7 +290,7 @@ public:
                                                                                 * \param    [IN] group  : the group of channels to get the trigger information
                                                                                 * \return  mode  : the mode of the trigger
                                                                                 ******************************************************************************/
-  std::string GetGroupSelfTrigger(const std::uint32_t &group);
+  std::string GetGroupSelfTrigger(const std::uint32_t& group);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Selects which channel is enabled to contribute to event among available channels of selected channel group.
@@ -295,8 +298,8 @@ public:
                                                                                 * \param     [IN] group       : channel group.
                                                                                 * \param     [IN] channelmask : mask of channels to enable in event readout
                                                                                 ******************************************************************************/
-  void SetChannelGroupMask(const std::uint32_t group,
-                           const std::uint32_t &channelmask);
+  void SetChannelGroupMask(const std::uint32_t  group,
+                           const std::uint32_t& channelmask);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current channel that are enabled to contribute to event among available channels of selected channel group.
@@ -304,13 +307,13 @@ public:
                                                                                 * \param     [IN] group        : the group of channels.
                                                                                 * \return  channelmask : mask of channels to enable in event readout
                                                                                 ******************************************************************************/
-  std::uint32_t GetChannelGroupMask(const std::uint32_t &group);
+  std::uint32_t GetChannelGroupMask(const std::uint32_t& group);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets post trigger for next acquisitions
                                                                                 * \param     [IN] percent : the percent of current record length
                                                                                 ******************************************************************************/
-  void SetPostTriggerSize(const std::uint32_t &percent);
+  void SetPostTriggerSize(const std::uint32_t& percent);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current post trigger length
@@ -328,14 +331,14 @@ public:
    channels must have the same pre-trigger)
    * \param     [IN] sample  : the pre-trigger size, in samples
    ******************************************************************************/
-  void SetDPPPreTriggerSize(const int &ch, const std::uint32_t &samples);
+  void SetDPPPreTriggerSize(const int& ch, const std::uint32_t& samples);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the pre-trigger size
                                                                                 * \param     [IN] ch      : the channel to get the pre-trigger of
                                                                                 * \return  sample : the pre-trigger size, in samples
                                                                                 ******************************************************************************/
-  std::uint32_t GetDPPPreTriggerSize(const int &ch);
+  std::uint32_t GetDPPPreTriggerSize(const int& ch);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets the DC offset for a specified channel
@@ -343,15 +346,15 @@ public:
                                                                                 * \param    [IN] Tvalue  : the DC offset to set. Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
                                                                                 *                          Please refer to digitizer documentation for possible value range.
                                                                                 ******************************************************************************/
-  void SetChannelDCOffset(const std::uint32_t &channel,
-                          const std::uint32_t &Tvalue);
+  void SetChannelDCOffset(const std::uint32_t& channel,
+                          const std::uint32_t& Tvalue);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the DC offset for a specified channel
                                                                                 * \param     [IN]  channel : the channel which takes the information.
                                                                                 * \return  Tvalue  : the DC offset to set. Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
                                                                                 ******************************************************************************/
-  std::uint32_t GetChannelDCOffset(const std::uint32_t &channel);
+  std::uint32_t GetChannelDCOffset(const std::uint32_t& channel);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets the DC offset for a specified group of channels
@@ -360,8 +363,8 @@ public:
                                                                                 *                         Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
                                                                                 *                         Please refer to digitizer documentation for possible value range.
                                                                                 ******************************************************************************/
-  void SetGroupDCOffset(const std::uint32_t &group,
-                        const std::uint32_t &Tvalue);
+  void SetGroupDCOffset(const std::uint32_t& group,
+                        const std::uint32_t& Tvalue);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the DC offset from a specified group of channels
@@ -370,58 +373,58 @@ public:
                                                                                 *                          Tvalue is expressed in channel DAC (Digital to Analog Converter) steps.
                                                                                 *                          Please refer to digitizer documentation for possible value range.
                                                                                 ******************************************************************************/
-  std::uint32_t GetGroupDCOffset(const std::uint32_t &group);
+  std::uint32_t GetGroupDCOffset(const std::uint32_t& group);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets the Trigger Threshold for a specific channel
                                                                                 * \param     [IN] channel : channel to set
                                                                                 * \param    [IN] Tvalue  : threshold value to set
                                                                                 ******************************************************************************/
-  void SetChannelTriggerThreshold(const std::uint32_t &channel,
-                                  const std::uint32_t &Tvalue);
+  void SetChannelTriggerThreshold(const std::uint32_t& channel,
+                                  const std::uint32_t& Tvalue);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current Trigger Threshold from a specified channel
                                                                                 * \param     [IN]  channel : the channel which takes the information.
                                                                                 * \return  Tvalue  : the threshold value set
                                                                                 ******************************************************************************/
-  std::uint32_t GetChannelTriggerThreshold(const std::uint32_t &channel);
+  std::uint32_t GetChannelTriggerThreshold(const std::uint32_t& channel);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Set the pulse polarity for the specified channel
                                                                                 * \param     [IN] channel : channel to set.
                                                                                 * \param     [IN] pol     : the value of the pulse polarity
                                                                                 ******************************************************************************/
-  void SetChannelPulsePolarity(const std::uint32_t &channel,
-                               const std::string &pol);
+  void SetChannelPulsePolarity(const std::uint32_t& channel,
+                               const std::string&   pol);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Get the value of the pulse polarity for the specified channel
                                                                                 * \param     [IN] channel : channel to get information from
                                                                                 * \return  pol    : the value of the pulse polarity
                                                                                 ******************************************************************************/
-  std::string GetChannelPulsePolarity(const std::uint32_t &channel);
+  std::string GetChannelPulsePolarity(const std::uint32_t& channel);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets the Trigger Threshold for a specified group of channels
                                                                                 * \param     [IN] group  : the group of channels to set.
                                                                                 * \param    [IN] Tvalue : the threshold value to set.
                                                                                 ******************************************************************************/
-  void SetGroupTriggerThreshold(const std::uint32_t &group,
-                                const std::uint32_t &Tvalue);
+  void SetGroupTriggerThreshold(const std::uint32_t& group,
+                                const std::uint32_t& Tvalue);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the Trigger Threshold from a specified group of channels
                                                                                 * \param     [IN]  group  : the group of channels which takes the information.
                                                                                 * \return  Tvalue : the threshold value to set.
                                                                                 ******************************************************************************/
-  std::uint32_t GetGroupTriggerThreshold(const std::uint32_t &group);
+  std::uint32_t GetGroupTriggerThreshold(const std::uint32_t& group);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets Zero Suppression mode.
                                                                                 * \param     [IN] mode   : Zero Suppression mode.
                                                                                 ******************************************************************************/
-  void SetZeroSuppressionMode(const std::string &mode);
+  void SetZeroSuppressionMode(const std::string& mode);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current Zero Suppression mode
@@ -456,7 +459,7 @@ public:
                                                                                 * \brief     Sets digitizer acquisition mode
                                                                                 * \param     [IN] mode   : acquisition mode
                                                                                 ******************************************************************************/
-  void SetAcquisitionMode(const std::string &mode);
+  void SetAcquisitionMode(const std::string& mode);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the acquisition mode of the digitizer
@@ -468,7 +471,7 @@ public:
                                                                                 * \brief  Sets the run synchronization mode of the digitizer, used to synchronize an acquisition on multiple boards
                                                                                 * \param     [IN] mode   : the run synchronization mode to set
                                                                                 ******************************************************************************/
-  void SetRunSynchronizationMode(const std::string &mode);
+  void SetRunSynchronizationMode(const std::string& mode);
 
   /**************************************************************************/ /**
                                                                                 * \brief   Gets the run synchronization mode of the digitizer
@@ -480,7 +483,7 @@ public:
                                                                                 * \brief     Sets waveform to output on Digitizer Analog Monitor Front Panel output
                                                                                 * \param     [IN] mode   : Analog Monitor mode.
                                                                                 ******************************************************************************/
-  void SetAnalogMonOutput(const std::string &mode);
+  void SetAnalogMonOutput(const std::string& mode);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets current waveform selected to drive Digitizer Analog Monitor Front Panel output
@@ -524,7 +527,7 @@ public:
                                                                                 * \brief     Enable or disable the Pack 2.5 mode of V1720/DT5720 Digitizers
                                                                                 * \param     [IN] mode: Enable/Disable the Pack 2,5 mode
                                                                                 ******************************************************************************/
-  void SetEventPackaging(const std::string &on);
+  void SetEventPackaging(const std::string& on);
 
   /**************************************************************************/ /**
                                                                                 * \brief     get the information about the Pack 2.5 mode of V1720/DT5720 Digitizers
@@ -537,14 +540,14 @@ public:
                                                                                 * \On DPP-PHA, DPP-PSD and DPP-CI you can use CAEN_DGTZ_SetDPPEventAggregation
                                                                                 * \param     [IN] numAggr : Maximum Event Number for transfer
                                                                                 ******************************************************************************/
-  void SetMaxNumAggregatesBLT(const std::uint32_t &numAggr);
+  void SetMaxNumAggregatesBLT(const std::uint32_t& numAggr);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Sets max event number for each transfer
                                                                                 * \deprecated On DPP-PHA, DPP-PSD and DPP-CI use CAEN_DGTZ_SetDPPEventAggregation
                                                                                 * \param     [IN] numEvents : Maximum Event Number for transfer
                                                                                 ******************************************************************************/
-  void SetMaxNumEventsBLT(const std::uint32_t &numEvents);
+  void SetMaxNumEventsBLT(const std::uint32_t& numEvents);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the max number of aggregates of each block transfer
@@ -569,7 +572,7 @@ public:
                                                                                 * \brief     Reads data (events) from the digitizer.
                                                                                 * \note        Grandfathered into the <b>new readout API</b>
                                                                                 ******************************************************************************/
-  void ReadData(const std::string &mode = "SLAVE_TERMINATED_READOUT_MBLT");
+  void ReadData(const std::string& mode = "SLAVE_TERMINATED_READOUT_MBLT");
 
   /**************************************************************************/ /**
                                                                                 * \brief     Frees memory allocated by the CAEN_DGTZ_MallocReadoutBuffer.
@@ -589,7 +592,7 @@ public:
                                                                                 * \deprecated On DPP-PHA, DPP-PSD and DPP-CI use the <b>new readout API</b>
                                                                                 * \param     [IN] numEvents  : Number of events stored in the acquisition buffer
                                                                                 ******************************************************************************/
-  EventInfo GetEventInfo(const std::int32_t &numEvent);
+  EventInfo GetEventInfo(const std::int32_t& numEvent);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Decodes a specified event stored in the acquisition buffer
@@ -711,7 +714,7 @@ public:
                                                                                 * \param     [IN] mode: The DPP acquisition mode
                                                                                 * \param     [IN] param: The acquisition data to retrieve in acquisition
                                                                                 ******************************************************************************/
-  void SetDPPAcquisitionMode(DPPAcquisitionMode &acq);
+  void SetDPPAcquisitionMode(DPPAcquisitionMode& acq);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Get the information about the DPP acquisition mode.
@@ -727,7 +730,7 @@ public:
                                                                                 *                         - CAEN_DGTZ_DPP_TriggerMode_Normal
                                                                                 *                          - CAEN_DGTZ_DPP_TriggerMode_Coincidence
                                                                                 ******************************************************************************/
-  void SetDPPTriggerMode(const std::string &mode);
+  void SetDPPTriggerMode(const std::string& mode);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the current DPP Trigger mode (DPP-PSD and DPP-CI only)
@@ -740,7 +743,7 @@ public:
                                                                                    * \param     [IN] trace: The Trace to be affected
                                                                                    * \param     [IN] probe:  The Virtual Probe to be set on the given trace
                                                                                    ******************************************************************************/
-  void SetDPP_VirtualProbe(const int &trace, const int &probe);
+  void SetDPP_VirtualProbe(const int& trace, const int& probe);
 
   /*****************************************************************************/ /**
                                                                                    * \brief     Get the virtual probe currently displayed on the given trace
@@ -768,7 +771,7 @@ public:
                                                                                    * \param     [IN] probe: The Virtual Probe to get the name of
                                                                                    * \return  name: The name of the given probe
                                                                                    ******************************************************************************/
-  std::string VirtualProbeName(const int &probe);
+  std::string VirtualProbeName(const int& probe);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Allocate the memory for the event
@@ -779,7 +782,7 @@ public:
                                                                                 * \brief     Sets the IO Level
                                                                                 * \param     [IN] level   : The level to set
                                                                                 ******************************************************************************/
-  void SetIOLevel(const std::string &level);
+  void SetIOLevel(const std::string& level);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the IO Level
@@ -792,15 +795,15 @@ public:
                                                                                 * \param    [IN] channel : select channel to set the trigger polarity
                                                                                 * \param     [IN] Polarity   : The polarity to set
                                                                                 ******************************************************************************/
-  void SetTriggerPolarity(const std::uint32_t &channel,
-                          const std::string &Polarity);
+  void SetTriggerPolarity(const std::uint32_t& channel,
+                          const std::string&   Polarity);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Gets the trigger polarity of a specified channel
                                                                                 * \param    [IN] channel : select channel to get the trigger polarity
                                                                                 * \return  Polarity   : The polarity of the specified channel
                                                                                 ******************************************************************************/
-  std::string GetTriggerPolarity(const std::uint32_t &channel);
+  std::string GetTriggerPolarity(const std::uint32_t& channel);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Rearm the Interrupt
@@ -810,23 +813,23 @@ public:
   /**************************************************************************/ /**
                                                                                 * \brief     CAEN_DGTZ_SetDRS4SamplingFrequency
                                                                                 ******************************************************************************/
-  void SetDRS4SamplingFrequency(const std::string &freq);
+  void        SetDRS4SamplingFrequency(const std::string& freq);
   std::string GetDRS4SamplingFrequency();
   /*
   CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetOutputSignalMode(int handle,
   CAEN_DGTZ_OutputSignalMode_t mode); CAEN_DGTZ_ErrorCode CAENDGTZ_API
   CAEN_DGTZ_GetOutputSignalMode(int handle, CAEN_DGTZ_OutputSignalMode_t *mode);
   */
-  void SetGroupFastTriggerThreshold(const std::uint32_t &group,
-                                    const std::uint32_t &Tvalue);
-  std::uint32_t GetGroupFastTriggerThreshold(const std::uint32_t &group);
-  void SetGroupFastTriggerDCOffset(const std::uint32_t &group,
-                                   const std::uint32_t &DCvalue);
-  std::uint32_t GetGroupFastTriggerDCOffset(const std::uint32_t &group);
-  void SetFastTriggerDigitizing(const std::string &on);
-  std::string GetFastTriggerDigitizing();
-  void SetFastTriggerMode(const std::string &mode);
-  std::string GetFastTriggerMode();
+  void          SetGroupFastTriggerThreshold(const std::uint32_t& group,
+                                             const std::uint32_t& Tvalue);
+  std::uint32_t GetGroupFastTriggerThreshold(const std::uint32_t& group);
+  void          SetGroupFastTriggerDCOffset(const std::uint32_t& group,
+                                            const std::uint32_t& DCvalue);
+  std::uint32_t GetGroupFastTriggerDCOffset(const std::uint32_t& group);
+  void          SetFastTriggerDigitizing(const std::string& on);
+  std::string   GetFastTriggerDigitizing();
+  void          SetFastTriggerMode(const std::string& mode);
+  std::string   GetFastTriggerMode();
   /*
   CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_LoadDRS4CorrectionData(int handle,
   CAEN_DGTZ_DRS4Frequency_t frequency); CAEN_DGTZ_ErrorCode CAENDGTZ_API
@@ -877,7 +880,7 @@ public:
   CAEN_DGTZ_SetChannelPairTriggerLogic(int handle,  uint32_t channelA, uint32_t
   channelB, CAEN_DGTZ_TrigerLogic_t logic, uint16_t coincidenceWindow);
   */
-  void SetDecimationFactor(const std::uint16_t &factor);
+  void          SetDecimationFactor(const std::uint16_t& factor);
   std::uint16_t GetDecimationFactor();
   /*
   CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMTriggerCountVetoParam(int
@@ -896,7 +899,7 @@ public:
                                                                                 * \brief     Read the temperature in celsius for the given channel
                                                                                 * \param     [IN] ch     : channel to read the temperature for
                                                                                 ******************************************************************************/
-  std::uint32_t ReadTemperature(const std::int32_t &ch);
+  std::uint32_t ReadTemperature(const std::int32_t& ch);
 
   /**************************************************************************/ /**
                                                                                 * \brief     Get the DPP firmware type
@@ -914,7 +917,7 @@ public:
    * \brief   sets the calibrated DAC value using calibration data (only if
    * BASELINE_SHIFT is in use)
    */
-  void Set_calibrated_DCO(const int &ch);
+  void Set_calibrated_DCO(const int& ch);
 
   /*! \fn      int WriteRegisterBitmask(int32_t handle, uint32_t address,
    * uint32_t data, uint32_t mask) \brief   writes 'data' on register at
@@ -922,9 +925,9 @@ public:
    * Register to write \param   data   :   Data to Write on the Register \param
    * mask   :   Bitmask to use for data masking
    */
-  void WriteRegisterBitmask(const std::uint32_t &address,
-                            const std::uint32_t &data,
-                            const std::uint32_t &mask);
+  void WriteRegisterBitmask(const std::uint32_t& address,
+                            const std::uint32_t& data,
+                            const std::uint32_t& mask);
 
   /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
    *            calibration or not.
@@ -944,7 +947,8 @@ public:
 
   std::uint32_t get_time();
 
-  virtual ~CAENDigitizerBoard() {
+  virtual ~CAENDigitizerBoard()
+  {
     std::cout << "Destroying CAENDigitizerBoard" << std::endl;
   }
 
@@ -953,114 +957,115 @@ private:
 
   virtual void verifyParameters() final;
 
-  void setModelName(const std::string &name);
+  void        setModelName(const std::string& name);
   std::string m_ModelName{""};
 
-  void setModel(const std::uint32_t &model);
+  void        setModel(const std::uint32_t& model);
   std::string m_Model{""};
 
-  void setNbrChannels(const std::uint32_t &model);
+  void          setNbrChannels(const std::uint32_t& model);
   std::uint32_t m_NbrChannels{0};
 
-  void setFormFactor(const std::uint32_t &form);
+  void        setFormFactor(const std::uint32_t& form);
   std::string m_FormFactor{""};
 
-  void setFamilyCode(const std::uint32_t &fam);
+  void        setFamilyCode(const std::uint32_t& fam);
   std::string m_FamilyCode{""};
 
-  void setROCFirmwareRel(const std::string &firm);
+  void        setROCFirmwareRel(const std::string& firm);
   std::string m_ROC_FirmwareRel{""};
 
-  void setAMCFirmwareRel(const std::string &firm);
+  void        setAMCFirmwareRel(const std::string& firm);
   std::string m_AMC_FirmwareRel{""};
 
-  void setSerialNumber(const std::uint32_t &model);
+  void          setSerialNumber(const std::uint32_t& model);
   std::uint32_t m_SerialNumber{0};
 
-  void setMezzanineSerialNumber(char serials[4][8]);
+  void                       setMezzanineSerialNumber(char serials[4][8]);
   std::array<std::string, 4> m_MezzanineSerialNumber;
 
-  void setPCBRevision(const std::uint32_t &model);
+  void          setPCBRevision(const std::uint32_t& model);
   std::uint32_t m_PCB_Revision{0};
 
-  void setADCNBits(const std::uint32_t &model);
+  void          setADCNBits(const std::uint32_t& model);
   std::uint32_t m_ADC_NBits{0};
 
-  void setSAMCorrectionDataLoaded(const std::uint32_t &model);
+  void          setSAMCorrectionDataLoaded(const std::uint32_t& model);
   std::uint32_t m_SAMCorrectionDataLoaded{0};
 
-  void setLicense(const std::string &name);
+  void        setLicense(const std::string& name);
   std::string m_License{""};
 
-  void setCommHandle(const std::uint32_t &model);
+  void          setCommHandle(const std::uint32_t& model);
   std::uint32_t m_CommHandle{0};
 
-  void setVMEHandle(const std::uint32_t &model);
+  void          setVMEHandle(const std::uint32_t& model);
   std::uint32_t m_VMEHandle{0};
 
   std::unique_ptr<char> m_Buffer{nullptr};
-  std::uint32_t m_AllocatedSize{0};
-  std::uint32_t m_AllocatedSizeDPP{0};
-  std::uint32_t m_BufferSize{0};
+  std::uint32_t         m_AllocatedSize{0};
+  std::uint32_t         m_AllocatedSizeDPP{0};
+  std::uint32_t         m_BufferSize{0};
   std::unique_ptr<char> m_EventPtr{nullptr};
 
-  CAEN_DGTZ_UINT16_EVENT_t *m_Uint16Event{nullptr};
-  CAEN_DGTZ_UINT8_EVENT_t *m_Uint8Event{nullptr};
-  CAEN_DGTZ_X742_EVENT_t *m_X742Event{nullptr};
-  CAEN_DGTZ_X743_EVENT_t *m_X743Event{nullptr};
+  CAEN_DGTZ_UINT16_EVENT_t* m_Uint16Event{nullptr};
+  CAEN_DGTZ_UINT8_EVENT_t*  m_Uint8Event{nullptr};
+  CAEN_DGTZ_X742_EVENT_t*   m_X742Event{nullptr};
+  CAEN_DGTZ_X743_EVENT_t*   m_X743Event{nullptr};
 
-  CAEN_DGTZ_DPP_PHA_Event_t *m_DPPPHAEvent[16];
-  CAEN_DGTZ_DPP_PSD_Event_t *m_DPPPSDEvent[16];
-  CAEN_DGTZ_DPP_CI_Event_t *m_DPPCIEvent[16];
-  CAEN_DGTZ_DPP_QDC_Event_t *m_DPPQDCEvent[16];
-  CAEN_DGTZ_751_ZLE_Event_t *m_751ZLEEvent[8];
-  CAEN_DGTZ_730_ZLE_Event_t *m_730ZLEEvent[16];
-  CAEN_DGTZ_DPP_X743_Event_t *m_DPPX743Event[2 * 8];
-  CAEN_DGTZ_730_DAW_Event_t *m_730DAWEvent[16];
+  CAEN_DGTZ_DPP_PHA_Event_t*  m_DPPPHAEvent[16];
+  CAEN_DGTZ_DPP_PSD_Event_t*  m_DPPPSDEvent[16];
+  CAEN_DGTZ_DPP_CI_Event_t*   m_DPPCIEvent[16];
+  CAEN_DGTZ_DPP_QDC_Event_t*  m_DPPQDCEvent[16];
+  CAEN_DGTZ_751_ZLE_Event_t*  m_751ZLEEvent[8];
+  CAEN_DGTZ_730_ZLE_Event_t*  m_730ZLEEvent[16];
+  CAEN_DGTZ_DPP_X743_Event_t* m_DPPX743Event[2 * 8];
+  CAEN_DGTZ_730_DAW_Event_t*  m_730DAWEvent[16];
 
-  void Exit(const int &error);
+  void Exit(const int& error);
 
-  bool m_Test{false};
-  std::string m_FastTriggerEnabled{"DISABLE"};
-  std::string m_DesMode{"DISABLE"};
-  std::uint32_t m_RecordLength{1024 * 16};
-  std::uint16_t m_DecimationFactor{1};
-  int m_PostTrigger{50};
-  std::string m_FPIOtype{"NIM"};
-  int m_InterruptNumEvents{0};
-  const std::uint8_t m_VME_INTERRUPT_LEVEL{1};
+  bool                m_Test{false};
+  std::string         m_FastTriggerEnabled{"DISABLE"};
+  std::string         m_DesMode{"DISABLE"};
+  std::uint32_t       m_RecordLength{1024 * 16};
+  std::uint16_t       m_DecimationFactor{1};
+  int                 m_PostTrigger{50};
+  std::string         m_FPIOtype{"NIM"};
+  int                 m_InterruptNumEvents{0};
+  const std::uint8_t  m_VME_INTERRUPT_LEVEL{1};
   const std::uint32_t m_VME_INTERRUPT_STATUS_ID{0xAAAA};
-  int m_NumEvents{1023};
-  std::string m_ExtTriggerMode{"ACQ_ONLY"};
-  std::uint16_t m_EnableMask{0xFFFF};
-  int m_Nch{0};
-  int m_Nbit{0};
-  float m_Ts{0};
-  std::uint32_t m_MaxGroupNumber{0};
+  int                 m_NumEvents{1023};
+  std::string         m_ExtTriggerMode{"ACQ_ONLY"};
+  std::uint16_t       m_EnableMask{0xFFFF};
+  int                 m_Nch{0};
+  int                 m_Nbit{0};
+  float               m_Ts{0};
+  std::uint32_t       m_MaxGroupNumber{0};
   //#define MAX_SET 16   /* max. number of independent settings */
   std::array<std::array<int32_t, 16>, 16> m_DCoffsetGrpCh;
-  std::array<std::uint32_t, 16> m_DCoffset;
-  std::array<int, 16> m_Version_used;
-  std::array<std::string, 16> m_ChannelTriggerMode;
-  std::array<std::uint32_t, 16> m_Threshold;
-  std::array<std::uint8_t, 16> m_GroupTrgEnableMask;
-  std::array<std::string, 16> m_PulsePolarity;
-  std::array<int, 64> m_DCfile;
-  std::array<float, 16> m_Cal;
-  std::array<float, 16> m_Offset;
-  std::string m_DRS4Frequency{"5GHz"};
-  std::array<std::uint32_t, 16> m_FTDCoffset;
-  std::array<std::uint32_t, 16> m_FTThreshold;
-  std::vector<std::uint32_t> m_GWaddr;
-  std::vector<std::uint32_t> m_GWdata;
-  std::vector<std::uint32_t> m_GWmask;
-  static std::vector<std::string> ErrMsg;
-  std::array<std::string, 4> m_TablesFilenames;
-  bool m_UseCorrections{false};
-  bool m_UseManualTables{false};
-  Flash m_Flash;
+  std::array<std::uint32_t, 16>           m_DCoffset;
+  std::array<int, 16>                     m_Version_used;
+  std::array<std::string, 16>             m_ChannelTriggerMode;
+  std::array<std::uint32_t, 16>           m_Threshold;
+  std::array<std::uint8_t, 16>            m_GroupTrgEnableMask;
+  std::array<std::string, 16>             m_PulsePolarity;
+  std::array<int, 64>                     m_DCfile;
+  std::array<float, 16>                   m_Cal;
+  std::array<float, 16>                   m_Offset;
+  std::string                             m_DRS4Frequency{"5GHz"};
+  std::array<std::uint32_t, 16>           m_FTDCoffset;
+  std::array<std::uint32_t, 16>           m_FTThreshold;
+  std::vector<std::uint32_t>              m_GWaddr;
+  std::vector<std::uint32_t>              m_GWdata;
+  std::vector<std::uint32_t>              m_GWmask;
+  static std::vector<std::string>         ErrMsg;
+  std::array<std::string, 4>              m_TablesFilenames;
+  bool                                    m_UseCorrections{false};
+  bool                                    m_UseManualTables{false};
+  Flash                                   m_Flash;
   /* Error messages */
-  typedef enum {
+  typedef enum
+  {
     ERR_NONE = 0,
     ERR_CONF_FILE_NOT_FOUND,
     ERR_DGZ_OPEN,
@@ -1078,4 +1083,4 @@ private:
   } ERROR_CODES;
 };
 
-} // namespace CAEN
+}  // namespace CAEN
