@@ -127,6 +127,8 @@ endif()
 
 include(Architectures)
 
+include(Sanitizers)
+
 option(ENABLE_TESTS "Include tests folder" ON)
 option(ENABLE_DOCS "Include docs folder" ON)
 option(BUILD_ANALYSIS "Build the Analysis code" ON)
