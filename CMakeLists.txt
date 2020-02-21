@@ -11,6 +11,8 @@ project(
   HOMEPAGE_URL "https://github.com/RPClab/YAODAQ"
   LANGUAGES CXX)
 
+include(Options.cmake)
+
 # Ask CMake to output a compile_commands.json file for use with things like Vim
 # YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -128,24 +130,6 @@ endif()
 include(Architectures)
 
 include(Sanitizers)
-
-option(ENABLE_TESTS "Include tests folder" ON)
-option(ENABLE_DOCS "Include docs folder" ON)
-option(BUILD_ANALYSIS "Build the Analysis code" ON)
-option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
-option(BUILD_DAQ "Build DAQ" ON)
-option(BUILD_CONFIGURATOR "Build Configurator" ON)
-
-option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
-
-option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
-option(
-  ENABLE_DOCTESTS
-  "Include tests in the library. Setting this to OFF will remove all doctest related code.
-                        Tests in tests/*.cpp will still be enabled."
-  OFF)
-
-include(Options.cmake)
 
 if(BUILD_ANALYSIS)
   find_package(ROOT 6.14 REQUIRED)
