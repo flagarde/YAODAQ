@@ -63,7 +63,6 @@ void Controller::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 
 void Controller::OnOpen(const ix::WebSocketMessagePtr& msg)
 {
-  m_Logger->info("Connected !");
   m_Logger->info("Handshake Headers :");
   for(auto it: msg->openInfo.headers)
   { m_Logger->info("\t{0}:{1}", it.first, it.second); }
@@ -74,7 +73,6 @@ void Controller::OnClose(const ix::WebSocketMessagePtr& msg)
 {
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
-  m_Logger->info("Disconnected !");
   m_Logger->info("{}", msg->closeInfo.code);
   m_Logger->info("{}", msg->closeInfo.reason);
   if(msg->closeInfo.code == 1002)

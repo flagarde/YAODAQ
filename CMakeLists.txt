@@ -37,6 +37,9 @@ file(
   ${PROJECT_SOURCE_DIR}/example/*.[ch]
   ${PROJECT_SOURCE_DIR}/tests/*.[ch]pp
   ${PROJECT_SOURCE_DIR}/tests/*.[ch])
+# Problem with pragme and formating get_filename_component( EXCLUDE_IT
+# ${CMAKE_CURRENT_SOURCE_DIR}/source/include/SupressWarnings.hpp ABSOLUTE)
+# list(REMOVE_ITEM ALL_CODE_FILES "${EXCLUDE_IT}")
 
 clang_format(clang-format ${ALL_CODE_FILES})
 
@@ -134,6 +137,10 @@ include(Sanitizers)
 include(DependencyGraph)
 gen_dep_graph(OUTPUT_DIR ${CMAKE_INSTALL_PREFIX} TARGET_NAME dependency-graph
               OUTPUT_TYPE pdf)
+
+if(BUILD_WEBSERVER)
+  include(civet)
+endif()
 
 if(BUILD_ANALYSIS)
   find_package(ROOT 6.14 REQUIRED)

@@ -23,7 +23,6 @@ Logger::~Logger() {}
 
 void Logger::OnOpen(const ix::WebSocketMessagePtr& msg)
 {
-  spdlog::info("Connected !");
   spdlog::info("Handshake Headers :");
   for(auto it: msg->openInfo.headers)
   { spdlog::info("\t{0}:{1}", it.first, it.second); }
@@ -44,7 +43,6 @@ void Logger::OnClose(const ix::WebSocketMessagePtr& msg)
 {
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
-  spdlog::info("Disconnected !");
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
   if(msg->closeInfo.code == 1002)

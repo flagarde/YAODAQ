@@ -1,8 +1,9 @@
 #pragma once
+// clang-format off
 #if defined(_MSC_VER)
     #define DISABLE_WARNING_PUSH           __pragma(warning( push ))
     #define DISABLE_WARNING_POP            __pragma(warning( pop )) 
-    #define DISABLE_WARNING(warningNumber) __pragma(warning( disable : warningNumber ))
+    #define DISABLE_WARNING(warningNumber) __pragma(warning( disable :  warningNumber))
  
     //#define DISABLE_WARNING_UNREFERENCED_FORMAL_PARAMETER    DISABLE_WARNING(4100)
     //#define DISABLE_WARNING_UNREFERENCED_FUNCTION            DISABLE_WARNING(4505)
@@ -15,12 +16,14 @@
     #define DISABLE_WARNING(warningName)   DO_PRAGMA(GCC diagnostic ignored #warningName)
     
     //#define DISABLE_WARNING_UNREFERENCED_FORMAL_PARAMETER    DISABLE_WARNING(-Wunused-parameter)
-   // #define DISABLE_WARNING_UNREFERENCED_FUNCTION            DISABLE_WARNING(-Wunused-function)
-   // other warnings you want to deactivate... 
+    //#define DISABLE_WARNING_UNREFERENCED_FUNCTION            DISABLE_WARNING(-Wunused-function)
+    #define DISABLE_WARNING_PMFCONVERSIONS DISABLE_WARNING(-Wpmf-conversions)
+    // other warnings you want to deactivate... 
     
 #else
     #define DISABLE_WARNING_PUSH
     #define DISABLE_WARNING_POP
     #define DISABLE_WARNING_UNREFERENCED_FORMAL_PARAMETER
     #define DISABLE_WARNING_UNREFERENCED_FUNCTION
+// clang-format on
 #endif

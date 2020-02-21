@@ -16,3 +16,5 @@ Build Status
 |GCC| - | X | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/1)](https://travis-ci.org/RPClab/YAODAQ) |
 |clang| X | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/3)](https://travis-ci.org/RPClab/YAODAQ) |[![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/2)](https://travis-ci.org/RPClab/YAODAQ)|
 |MSVC|[![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/5)](https://travis-ci.org/RPClab/YAODAQ)|X|X|
+
+To run webserver : civetweb ../confs/civet.conf -cgi_interpreter /usr/bin/php-cgi

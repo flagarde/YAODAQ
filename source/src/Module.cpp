@@ -67,6 +67,7 @@ void Module::LoadConfig()
   {
     m_Config.parse();
     m_Conf = m_Config.getConfig(m_Name);
+    printParameters();
     this->verifyParameters();
   }
   catch(const std::exception& error)
@@ -353,7 +354,6 @@ void Module::OnClose(const ix::WebSocketMessagePtr& msg)
 {
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
-  spdlog::info("Disconnected !");
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
   if(msg->closeInfo.code == 1002)

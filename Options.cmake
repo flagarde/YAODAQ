@@ -25,11 +25,15 @@ set(toml11_version "master")
 # spdlog
 set(spdlog_repository "https://github.com/RPClab/spdlog.git")
 set(spdlog_version "v1.x")
+# civet
+set(civet_repository "https://github.com/civetweb/civetweb.git")
+set(civet_version "master")
 
 option(ENABLE_TESTS "Include tests folder" ON)
 option(ENABLE_DOCS "Include docs folder" ON)
 option(BUILD_ANALYSIS "Build the Analysis code" ON)
 option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
+option(BUILD_WEBSERVER "Build the civet webserver" ON)
 option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_CONFIGURATOR "Build Configurator" ON)
 
