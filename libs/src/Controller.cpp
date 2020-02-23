@@ -76,7 +76,7 @@ void Controller::OnClose(const ix::WebSocketMessagePtr& msg)
   m_Logger->info("{}", msg->closeInfo.code);
   m_Logger->info("{}", msg->closeInfo.reason);
   if(msg->closeInfo.code == 1002)
-    throw Exception(msg->closeInfo.code, msg->closeInfo.reason);
+    throw Exception(STATUS_CODE_ALREADY_PRESENT, "Name already taken");
 }
 
 void Controller::OnPong(const ix::WebSocketMessagePtr& msg)

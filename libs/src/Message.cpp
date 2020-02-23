@@ -51,7 +51,7 @@ void Message::parse(const std::string& msg)
 {
   Json::String errs;
   bool         ok = m_Reader->parse(&msg[0], &msg[msg.size()], &m_Value, &errs);
-  if(!ok) { throw Exception(ok, "Error: " + errs); }
+  if(!ok) { throw Exception(STATUS_CODE_JSON_PARSING, errs); }
 }
 
 std::string Message::print() const

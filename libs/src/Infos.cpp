@@ -51,8 +51,9 @@ void Infos::setKey(const std::string& key)
   }
   else
   {
-    throw Exception(-1, "Number of argument in key should be 5 "
-                        "(RoomName/RackName/CrateName/Type/Name) !");
+    throw Exception(STATUS_CODE_WRONG_NUMBER_PARAMETERS,
+                    "Number of argument in key should be 5 "
+                    "(RoomName/RackName/CrateName/Type/Name) !");
   }
 }
 

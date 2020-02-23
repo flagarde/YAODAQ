@@ -2,11 +2,11 @@
 
 #include "CAENDigitizerType.h"
 
-#include <cstdint>
+#include "magic_enum.hpp"
 
 namespace CAEN
 {
-const char* CAENDigitizerException::errorStrings(const std::int_least32_t& code)
+const char* CAENDigitizerException::errorStrings(const int& code)
 {
   switch(code)
   {
@@ -81,7 +81,13 @@ const char* CAENDigitizerException::errorStrings(const std::int_least32_t& code)
     case CAEN_DGTZ_NotYetImplemented:
       return "The function is not yet implemented";
   }
-  return "Unknown error";
+  throw Exception(STATUS_CODE_INVALID_PARAMETER);
+}
+
+std::string CAENDigitizerException::toString() const
+{
+  return std::string(
+      magic_enum::enum_name(magic_enum::enum_cast<CAEN_DGTZ_ErrorCode>(getCode()).value()));
 }
 
 #if experimental_have_source_location == 1

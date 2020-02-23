@@ -2,11 +2,11 @@
 
 #include "CAENDPPLibTypes.h"
 
-#include <cstdint>
+#include "magic_enum.hpp"
 
 namespace CAEN
 {
-const char* CAENDPPException::errorStrings(const std::int_least32_t& code)
+const char* CAENDPPException::errorStrings(const int& code)
 {
   switch(code)
   {
@@ -104,7 +104,13 @@ const char* CAENDPPException::errorStrings(const std::int_least32_t& code)
     case CAENDPP_RetCode_EventRead:
       return "Event Read Error";
   }
-  return "Unknown error";
+  throw Exception(STATUS_CODE_INVALID_PARAMETER);
+}
+
+std::string CAENDPPException::toString() const
+{
+  return std::string(
+      magic_enum::enum_name(magic_enum::enum_cast<CAENDPP_RetCode_t>(getCode()).value()));
 }
 
 #if experimental_have_source_location == 1

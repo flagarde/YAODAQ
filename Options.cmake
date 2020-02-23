@@ -28,6 +28,9 @@ set(spdlog_version "v1.x")
 # civet
 set(civet_repository "https://github.com/civetweb/civetweb.git")
 set(civet_version "master")
+# civet
+set(magic_enum_repository "https://github.com/Neargye/magic_enum.git")
+set(magic_enum_version "master")
 
 option(ENABLE_TESTS "Include tests folder" ON)
 option(ENABLE_DOCS "Include docs folder" ON)

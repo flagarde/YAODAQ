@@ -46,7 +46,7 @@ void Logger::OnClose(const ix::WebSocketMessagePtr& msg)
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
   if(msg->closeInfo.code == 1002)
-    throw Exception(msg->closeInfo.code, msg->closeInfo.reason);
+    throw Exception(STATUS_CODE_ALREADY_PRESENT, "Name already taken");
 }
 
 void Logger::OnPong(const ix::WebSocketMessagePtr& msg)

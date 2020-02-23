@@ -2,10 +2,9 @@
 
 #include "Exception.hpp"
 
-#include <cstdint>
-
 namespace CAEN
 {
+
 class CAENDigitizerException: public Exception
 {
 public:
@@ -19,9 +18,10 @@ public:
 #else
   CAENDigitizerException(const int& code = 0)
 #endif
+  virtual std::string toString() const final;
 private:
   CAENDigitizerException() = delete;
-  virtual const char* errorStrings(const std::int_least32_t& code) final;
+  virtual const char* errorStrings(const int& code) final;
 };
 
 }  // namespace CAEN

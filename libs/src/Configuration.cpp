@@ -10,8 +10,8 @@ toml::value Configuration::getConfig(const std::string& mmodule)
 {
   if(m_ModuleConfig.find(mmodule) == m_ModuleConfig.end())
   {
-    throw Exception(-1, "Board/Module " + mmodule +
-                            " not found in configuration !");
+    throw Exception(STATUS_CODE_NOT_FOUND, "Board/Module " + mmodule +
+                                               " not found in configuration !");
   }
   else
     return m_ModuleConfig[mmodule];
@@ -21,14 +21,16 @@ ConnectorInfos Configuration::getConnectorInfos(const std::string& mmodule)
 {
   if(m_ConnectorInfos.find(mmodule) == m_ConnectorInfos.end())
   {
-    throw Exception(-1, "Board " + mmodule + " not found in configuration !");
+    throw Exception(STATUS_CODE_NOT_FOUND,
+                    "Board " + mmodule + " not found in configuration !");
   }
   return m_ConnectorInfos[mmodule];
 }
 
 void Configuration::parse()
 {
-  if(m_Filename == "") { throw Exception(-1, "No Configuration file given !"); }
+  if(m_Filename == "")
+  { throw Exception(STATUS_CODE_NOT_FOUND, "No Configuration file given !"); }
   if(m_isParsed == false)
   {
     m_Conf =

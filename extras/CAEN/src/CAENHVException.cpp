@@ -2,11 +2,11 @@
 
 #include "CAENHVWrapper.h"
 
-#include <cstdint>
+#include "magic_enum.hpp"
 
 namespace CAEN
 {
-const char* CAENHVException::errorStrings(const std::int_least32_t& code)
+const char* CAENHVException::errorStrings(const int& code)
 {
   switch(code)
   {
@@ -87,7 +87,13 @@ const char* CAENHVException::errorStrings(const std::int_least32_t& code)
     case CAENHV_USERPASSFAILED:
       return "Login failed for username/password";
   }
-  return "Unknown error";
+  throw Exception(STATUS_CODE_INVALID_PARAMETER);
+}
+
+std::string CAENHVException::toString() const
+{
+  return std::string(
+      magic_enum::enum_name(magic_enum::enum_cast<HV_ERROR>(getCode()).value()));
 }
 
 #if experimental_have_source_location == 1

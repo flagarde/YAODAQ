@@ -95,8 +95,9 @@ if(BUILD_DAQ)
 
   include(CLI11)
   include(spdlog)
+  include(magic_enum)
   add_library(Util INTERFACE)
-  add_dependencies(Util CLI11 spdlog)
+  add_dependencies(Util CLI11 spdlog magic_enum)
   target_link_libraries(Util INTERFACE spdlog)
   target_include_directories(
     Util
@@ -111,12 +112,14 @@ if(BUILD_DAQ)
   add_library(Boards INTERFACE)
 
   add_library(Exception "${YAODAQ_SRC}/Exception.cpp")
+  add_dependencies(Exception Util)
   target_include_directories(
     Exception
     PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
     PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
   set_target_properties(Exception PROPERTIES PUBLIC_HEADER
                                              "${YAODAQ_INCLUDE}/Exception.hpp")
+  target_link_libraries(Exception PUBLIC Util)
   install(
     TARGETS Exception
     RUNTIME DESTINATION bin
@@ -252,7 +255,7 @@ if(BUILD_DAQ)
     PUBLIC_HEADER DESTINATION include)
 
   add_library(Message "${YAODAQ_SRC}/Message.cpp")
-  add_dependencies(Message elogpp)
+  add_dependencies(Message elogpp Exception)
   target_include_directories(
     Message
     PUBLIC "${INCLUDE_OUTPUT_DIR}/json"
@@ -260,7 +263,10 @@ if(BUILD_DAQ)
     PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
   set_target_properties(Message PROPERTIES PUBLIC_HEADER
                                            "${YAODAQ_INCLUDE}/Message.hpp")
-  target_link_libraries(Message PUBLIC jsoncpp)
+  target_link_libraries(
+    Message
+    PUBLIC jsoncpp
+    PUBLIC Exception)
   install(
     TARGETS Message
     RUNTIME DESTINATION bin
@@ -269,11 +275,12 @@ if(BUILD_DAQ)
     PUBLIC_HEADER DESTINATION include)
 
   add_library(WebSocketClient "${YAODAQ_SRC}/WebsocketClient.cpp")
-  add_dependencies(WebSocketClient WebSocket Util)
+  add_dependencies(WebSocketClient WebSocket Util Exception)
   target_link_libraries(
     WebSocketClient
     PUBLIC WebSocket
-    PUBLIC Util)
+    PUBLIC Util
+    PUBLIC Exception)
   target_include_directories(
     WebSocketClient
     PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
@@ -325,18 +332,19 @@ if(BUILD_DAQ)
 
   if(BUILD_WEBSOCKETSERVER)
     add_library(WebsocketServer "${YAODAQ_SRC}/WebsocketServer.cpp")
-    add_dependencies(WebsocketServer Util Message Infos WebSocket)
+    add_dependencies(WebsocketServer Util Message Infos WebSocket Exception)
     target_include_directories(WebsocketServer
                                PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>)
     set_target_properties(
-      WebSocketClient PROPERTIES PUBLIC_HEADER
+      WebsocketServer PROPERTIES PUBLIC_HEADER
                                  "${YAODAQ_INCLUDE}/WebsocketServer.hpp")
     target_link_libraries(
       WebsocketServer
       PUBLIC Util
       PUBLIC Message
       PUBLIC Infos
-      PUBLIC WebSocket)
+      PUBLIC WebSocket
+      PUBLIC Exception)
 
     if(BUILD_CONFIGURATOR)
       add_library(Configurator_ "${YAODAQ_SRC}/Configurator.cpp")

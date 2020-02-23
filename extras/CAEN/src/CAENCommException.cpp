@@ -2,14 +2,14 @@
 
 #include "CAENComm.h"
 
-#include <cstdint>
+#include "magic_enum.hpp"
 
 namespace CAEN
 {
-const char* CAENCommException::errorStrings(const std::int_least32_t& code)
+const char* CAENCommException::errorStrings(const int& code)
 {
   switch(code)
-  {
+ {
     case CAENComm_Success:
       return "Operation completed successfully";
     case CAENComm_VMEBusError:
@@ -39,7 +39,13 @@ const char* CAENCommException::errorStrings(const std::int_least32_t& code)
     case CAENComm_Terminated:
       return "Communication terminated by the Device";
   }
-  return "Unknown error";
+  throw Exception(STATUS_CODE_INVALID_PARAMETER);
+}
+
+std::string CAENCommException::toString() const
+{
+  return std::string(
+      magic_enum::enum_name(magic_enum::enum_cast<CAENComm_ErrorCode>(getCode()).value()));
 }
 
 #if experimental_have_source_location == 1
