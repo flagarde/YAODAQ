@@ -19,7 +19,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake"
-                      "${CMAKE_SOURCE_DIR}/extern")
+                      "${CMAKE_SOURCE_DIR}/external")
 
 include(Architectures)
 
