@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Configuration.hpp"
-#include "Error.hpp"
+#include "Exception.hpp"
 #include "Message.hpp"
 #include "WebsocketClient.hpp"
 #include "spdlog.h"

@@ -1,4 +1,4 @@
-#include "CAENHVError.hpp"
+#include "CAENHVException.hpp"
 
 #include "CAENHVWrapper.h"
 
@@ -6,7 +6,7 @@
 
 namespace CAEN
 {
-const char* CAENHVError::ErrorStrings(const std::int_least32_t& code)
+const char* CAENHVException::errorStrings(const std::int_least32_t& code)
 {
   switch(code)
   {
@@ -91,22 +91,22 @@ const char* CAENHVError::ErrorStrings(const std::int_least32_t& code)
 }
 
 #if experimental_have_source_location == 1
-CAENHVError::CAENHVError(const int&                         code,
+CAENHVException::CAENHVException(const int&                         code,
                          std::experimental::source_location loc)
-    : Error(code, ErrorStrings(code), loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENHV_OK) throw *this;
+  if(code != CAENHV_OK) throw;
 };
 #elif have_source_location == 1
-CAENHVError::CAENHVError(const int& code, std::source_location loc)
-    : Error(code, ErrorStrings(code), loc)
+CAENHVException::CAENHVException(const int& code, std::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENHV_OK) throw *this;
+  if(code != CAENHV_OK) throw;
 };
 #else
-CAENHVError::CAENHVError(const int& code): Error(code, ErrorStrings(code))
+CAENHVException::CAENHVException(const int& code): Exception(code, errorStrings(code))
 {
-  if(code != CAENHV_OK) throw *this;
+  if(code != CAENHV_OK) throw;
 };
 #endif
 

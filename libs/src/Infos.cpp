@@ -1,6 +1,6 @@
 #include "Infos.hpp"
 
-#include "Error.hpp"
+#include "Exception.hpp"
 
 #include <vector>
 
@@ -51,8 +51,8 @@ void Infos::setKey(const std::string& key)
   }
   else
   {
-    throw Error(-1, "Number of argument in key should be 5 "
-                    "(RoomName/RackName/CrateName/Type/Name) !");
+    throw Exception(-1, "Number of argument in key should be 5 "
+                        "(RoomName/RackName/CrateName/Type/Name) !");
   }
 }
 

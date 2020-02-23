@@ -357,7 +357,7 @@ void Module::OnClose(const ix::WebSocketMessagePtr& msg)
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
   if(msg->closeInfo.code == 1002)
-    throw Error(msg->closeInfo.code, msg->closeInfo.reason);
+    throw Exception(msg->closeInfo.code, msg->closeInfo.reason);
 }
 
 void Module::OnPong(const ix::WebSocketMessagePtr& msg)

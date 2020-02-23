@@ -1,6 +1,6 @@
 #include "CAENVMEBoard.hpp"
 
-#include "CAENVMEError.hpp"
+#include "CAENVMEException.hpp"
 #include "CAENVMElib.h"
 
 namespace CAEN
@@ -161,27 +161,27 @@ CAENVMEBoard::CAENVMEBoard(const std::string& name): Board(name, "CAENVMEBoard")
 
 void CAENVMEBoard::StartPulserA()
 {
-  CAENVMEError(CAENVME_StartPulser(m_Handle, cvPulserA));
+  CAENVMEException(CAENVME_StartPulser(m_Handle, cvPulserA));
 }
 
 void CAENVMEBoard::StartPulserB()
 {
-  CAENVMEError(CAENVME_StartPulser(m_Handle, cvPulserB));
+  CAENVMEException(CAENVME_StartPulser(m_Handle, cvPulserB));
 }
 
 void CAENVMEBoard::StopPulserA()
 {
-  CAENVMEError(CAENVME_StopPulser(m_Handle, cvPulserA));
+  CAENVMEException(CAENVME_StopPulser(m_Handle, cvPulserA));
 }
 
 void CAENVMEBoard::StopPulserB()
 {
-  CAENVMEError(CAENVME_StopPulser(m_Handle, cvPulserB));
+  CAENVMEException(CAENVME_StopPulser(m_Handle, cvPulserB));
 }
 
 void CAENVMEBoard::SetPulserAConf(Pulser& p)
 {
-  CAENVMEError(
+  CAENVMEException(
       CAENVME_SetPulserConf(m_Handle, cvPulserA, p.getPeriod(), p.getWidth(),
                             CVTimeUnits(p.returnTimeUnits()), p.getPulseNbr(),
                             CVIOSources(p.returnIOSourcesStart()),
@@ -190,7 +190,7 @@ void CAENVMEBoard::SetPulserAConf(Pulser& p)
 
 void CAENVMEBoard::SetPulserBConf(Pulser& p)
 {
-  CAENVMEError(
+  CAENVMEException(
       CAENVME_SetPulserConf(m_Handle, cvPulserB, p.getPeriod(), p.getWidth(),
                             CVTimeUnits(p.returnTimeUnits()), p.getPulseNbr(),
                             CVIOSources(p.returnIOSourcesStart()),
@@ -206,7 +206,7 @@ Pulser CAENVMEBoard::GetPulserAConf()
   CVIOSources   start;
   CVIOSources   stop;
   Pulser        p;
-  CAENVMEError(CAENVME_GetPulserConf(m_Handle, cvPulserA, &period, &width,
+  CAENVMEException(CAENVME_GetPulserConf(m_Handle, cvPulserA, &period, &width,
                                      &units, &pulseno, &start, &stop));
   p.setPeriod(period);
   p.setWidth(width);
@@ -226,7 +226,7 @@ Pulser CAENVMEBoard::GetPulserBConf()
   CVIOSources   start;
   CVIOSources   stop;
   Pulser        p;
-  CAENVMEError(CAENVME_GetPulserConf(m_Handle, cvPulserB, &period, &width,
+  CAENVMEException(CAENVME_GetPulserConf(m_Handle, cvPulserB, &period, &width,
                                      &units, &pulseno, &start, &stop));
   p.setPeriod(period);
   p.setWidth(width);
@@ -241,28 +241,28 @@ Pulser CAENVMEBoard::GetPulserBConf()
 std::string CAENVMEBoard::SWRelease()
 {
     char swrelease[10];
-    CAENVMEError(CAENVME_SWRelease(swrelease));
+    CAENVMEException(CAENVME_SWRelease(swrelease));
     return swrelease;
 }
 
 std::string CAENVMEBoard::BoardFWRelease()
 {
     char fwrelease[10];
-    CAENVMEError(CAENVME_BoardFWRelease(m_Handle,fwrelease));
+    CAENVMEException(CAENVME_BoardFWRelease(m_Handle,fwrelease));
     return fwrelease;
 }
 
 std::string CAENVMEBoard::DriverRelease()
 {
     char driver[10];
-    CAENVMEError(CAENVME_DriverRelease(m_Handle,driver));
+    CAENVMEException(CAENVME_DriverRelease(m_Handle,driver));
     return driver;
 }
 
 void CAENVMEBoard::DeviceReset()
 {
 #ifdef UNIX
-    CAENVMEError(CAENVME_DeviceReset(m_Handle));
+    CAENVMEException(CAENVME_DeviceReset(m_Handle));
 #else
     std::cout<<"DeviceReset not available on Windows"<<std::endl;
 #endif

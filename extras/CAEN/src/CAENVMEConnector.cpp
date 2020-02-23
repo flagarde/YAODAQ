@@ -1,6 +1,6 @@
 #include "CAENVMEConnector.hpp"
 
-#include "CAENVMEError.hpp"
+#include "CAENVMEException.hpp"
 #include "CAENVMElib.h"
 #include "toml.hpp"
 
@@ -23,14 +23,14 @@ CAENVMEConnector::CAENVMEConnector(const ConnectorInfos& infos)
 
 std::int32_t CAENVMEConnector::Connect()
 {
-  CAENVMEError(CAENVME_Init(static_cast<CVBoardTypes>(m_ModelList[m_Model]),
+  CAENVMEException(CAENVME_Init(static_cast<CVBoardTypes>(m_ModelList[m_Model]),
                             m_LinkNumber, m_ConetNode, &m_Handle));
   return m_Handle;
 }
 
 void CAENVMEConnector::Disconnect()
 {
-  CAENVMEError(CAENVME_End(m_Handle));
+  CAENVMEException(CAENVME_End(m_Handle));
 }
 
 void CAENVMEConnector::verifyParameters()

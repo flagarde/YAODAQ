@@ -1,6 +1,6 @@
 #include "WebsocketServer.hpp"
 
-#include "Error.hpp"
+#include "Exception.hpp"
 #include "IXNetSystem.h"
 #include "Message.hpp"
 #include "json.h"
@@ -60,7 +60,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host,
         {
           infos.setKey(key);
         }
-        catch(const Error& err)
+        catch(const Exception& err)
         {
           spdlog::error(err.what());
           Message error("Error", err.what(), "", "WebSocketServer");

@@ -76,7 +76,7 @@ void Controller::OnClose(const ix::WebSocketMessagePtr& msg)
   m_Logger->info("{}", msg->closeInfo.code);
   m_Logger->info("{}", msg->closeInfo.reason);
   if(msg->closeInfo.code == 1002)
-    throw Error(msg->closeInfo.code, msg->closeInfo.reason);
+    throw Exception(msg->closeInfo.code, msg->closeInfo.reason);
 }
 
 void Controller::OnPong(const ix::WebSocketMessagePtr& msg)

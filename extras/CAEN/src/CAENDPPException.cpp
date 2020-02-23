@@ -1,4 +1,4 @@
-#include "CAENDPPError.hpp"
+#include "CAENDPPException.hpp"
 
 #include "CAENDPPLibTypes.h"
 
@@ -6,7 +6,7 @@
 
 namespace CAEN
 {
-const char* CAENDPPError::ErrorStrings(const std::int_least32_t& code)
+const char* CAENDPPException::errorStrings(const std::int_least32_t& code)
 {
   switch(code)
   {
@@ -108,20 +108,20 @@ const char* CAENDPPError::ErrorStrings(const std::int_least32_t& code)
 }
 
 #if experimental_have_source_location == 1
-CAENDPPError::CAENDPPError(const int&                         code,
+CAENDPPException::CAENDPPException(const int&                         code,
                            std::experimental::source_location loc)
-    : Error(code, ErrorStrings(code), loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENDPP_RetCode_Ok) throw *this;
+  if(code != CAENDPP_RetCode_Ok) throw;
 };
 #elif have_source_location == 1
-CAENDPPError::CAENDPPError(const int& code, std::source_location loc)
-    : Error(code, ErrorStrings(code), loc)
+CAENDPPException::CAENDPPException(const int& code, std::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
   if(code != CAENDPP_RetCode_Ok) throw *this;
 };
 #else
-CAENDPPError::CAENDPPError(const int& code): Error(code, ErrorStrings(code))
+CAENDPPException::CAENDPPException(const int& code): Exception(code, errorStrings(code))
 {
   if(code != CAENDPP_RetCode_Ok) throw *this;
 };

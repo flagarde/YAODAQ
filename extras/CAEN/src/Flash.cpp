@@ -1,6 +1,6 @@
 #include "Flash.hpp"
 
-#include "CAENFlashError.hpp"
+#include "CAENFlashException.hpp"
 
 namespace CAEN
 {
@@ -52,7 +52,7 @@ void Flash::init()
       break;
     default:
       m_IsInitialized = false;
-      CAENFlashError((int)FLASH_API_UNSUPPORTED_FLASH_DEVICE);
+      CAENFlashException((int)FLASH_API_UNSUPPORTED_FLASH_DEVICE);
       break;
   }
 }

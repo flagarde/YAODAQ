@@ -1,27 +1,27 @@
 #pragma once
 
-#include "Error.hpp"
+#include "Exception.hpp"
 
 #include <cstdint>
 
 namespace CAEN
 {
-class CAENCommError: public Error
+class CAENCommException: public Exception
 {
 public:
 #if experimental_have_source_location == 1
-  CAENCommError(const int&                         code = 0,
+  CAENCommException(const int&                         code = 0,
                 std::experimental::source_location loc =
                     std::experimental::source_location::current());
 #elif have_source_location == 1
-  CAENCommError(const int&           code = 0,
+  CAENCommException(const int&           code = 0,
                 std::source_location loc  = std::source_location::current());
 #else
-  CAENCommError(const int& code = 0)
+  CAENCommException(const int& code = 0)
 #endif
 private:
-  CAENCommError() = delete;
-  virtual const char* ErrorStrings(const std::int_least32_t& code) final;
+  CAENCommException() = delete;
+  virtual const char* errorStrings(const std::int_least32_t& code) final;
 };
 
 }  // namespace CAEN

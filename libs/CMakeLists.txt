@@ -110,27 +110,27 @@ if(BUILD_DAQ)
   add_library(Connectors INTERFACE)
   add_library(Boards INTERFACE)
 
-  add_library(Error "${YAODAQ_SRC}/Error.cpp")
+  add_library(Exception "${YAODAQ_SRC}/Exception.cpp")
   target_include_directories(
-    Error
+    Exception
     PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
     PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-  set_target_properties(Error PROPERTIES PUBLIC_HEADER
-                                         "${YAODAQ_INCLUDE}/Error.hpp")
+  set_target_properties(Exception PROPERTIES PUBLIC_HEADER
+                                             "${YAODAQ_INCLUDE}/Exception.hpp")
   install(
-    TARGETS Error
+    TARGETS Exception
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR}
     ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR}
     PUBLIC_HEADER DESTINATION include)
 
   add_library(Controller_ "${YAODAQ_SRC}/Controller.cpp")
-  add_dependencies(Controller_ WebSocketClient Message Error)
+  add_dependencies(Controller_ WebSocketClient Message Exception)
   target_link_libraries(
     Controller_
     PUBLIC WebSocketClient
     PUBLIC Message
-    PUBLIC Error)
+    PUBLIC Exception)
   target_include_directories(
     Controller_
     PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
@@ -199,8 +199,8 @@ if(BUILD_DAQ)
     PUBLIC_HEADER DESTINATION include)
 
   add_library(Infos "${YAODAQ_SRC}/Infos.cpp")
-  add_dependencies(Infos Error)
-  target_link_libraries(Infos PUBLIC Error)
+  add_dependencies(Infos Exception)
+  target_link_libraries(Infos PUBLIC Exception)
   set_target_properties(Infos PROPERTIES PUBLIC_HEADER
                                          "${YAODAQ_INCLUDE}/Infos.hpp")
   target_include_directories(
@@ -307,12 +307,12 @@ if(BUILD_DAQ)
     PUBLIC_HEADER DESTINATION include)
 
   add_library(Logger_ "${YAODAQ_SRC}/Logger.cpp")
-  add_dependencies(Logger_ Message WebSocketClient Error Util)
+  add_dependencies(Logger_ Message WebSocketClient Exception Util)
   target_link_libraries(
     Logger_
     PUBLIC Message
     PUBLIC WebSocketClient
-    PUBLIC Error
+    PUBLIC Exception
     PUBLIC Util)
   set_target_properties(Logger_ PROPERTIES PUBLIC_HEADER
                                            "${YAODAQ_INCLUDE}/Logger.hpp")

@@ -1,4 +1,4 @@
-#include "CAENCommError.hpp"
+#include "CAENCommException.hpp"
 
 #include "CAENComm.h"
 
@@ -6,7 +6,7 @@
 
 namespace CAEN
 {
-const char* CAENCommError::ErrorStrings(const std::int_least32_t& code)
+const char* CAENCommException::errorStrings(const std::int_least32_t& code)
 {
   switch(code)
   {
@@ -43,22 +43,22 @@ const char* CAENCommError::ErrorStrings(const std::int_least32_t& code)
 }
 
 #if experimental_have_source_location == 1
-CAENCommError::CAENCommError(const int&                         code,
+CAENCommException::CAENCommException(const int&                         code,
                              std::experimental::source_location loc)
-    : Error(code, ErrorStrings(code), loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENComm_Success) throw *this;
+  if(code != CAENComm_Success) throw;
 };
 #elif have_source_location == 1
-CAENCommError::CAENCommError(const int& code, std::source_location loc)
-    : Error(code, ErrorStrings(code), loc)
+CAENCommException::CAENCommException(const int& code, std::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENComm_Success) throw *this;
+  if(code != CAENComm_Success) throw;
 };
 #else
-CAENCommError::CAENCommError(const int& code): Error(code, ErrorStrings(code))
+CAENCommException::CAENCommException(const int& code): Exception(code, errorStrings(code))
 {
-  if(code != CAENComm_Success) throw *this;
+  if(code != CAENComm_Success) throw;
 };
 #endif
 

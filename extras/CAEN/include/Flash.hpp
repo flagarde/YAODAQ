@@ -1,6 +1,6 @@
 #ifndef FLASH_HPP
 #define FLASH_HPP
-#include "CAENFlashError.hpp"
+
 #include "SPI.hpp"
 
 namespace CAEN

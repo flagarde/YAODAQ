@@ -1,6 +1,6 @@
 #include "Logger.hpp"
 
-#include "Error.hpp"
+#include "Exception.hpp"
 #include "Message.hpp"
 #include "spdlog.h"
 
@@ -46,7 +46,7 @@ void Logger::OnClose(const ix::WebSocketMessagePtr& msg)
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
   if(msg->closeInfo.code == 1002)
-    throw Error(msg->closeInfo.code, msg->closeInfo.reason);
+    throw Exception(msg->closeInfo.code, msg->closeInfo.reason);
 }
 
 void Logger::OnPong(const ix::WebSocketMessagePtr& msg)

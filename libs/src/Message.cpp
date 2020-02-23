@@ -1,6 +1,6 @@
 #include "Message.hpp"
 
-#include "Error.hpp"
+#include "Exception.hpp"
 #include "json.h"
 
 #include <iostream>
@@ -51,7 +51,7 @@ void Message::parse(const std::string& msg)
 {
   Json::String errs;
   bool         ok = m_Reader->parse(&msg[0], &msg[msg.size()], &m_Value, &errs);
-  if(!ok) { throw Error(ok, "Error: " + errs); }
+  if(!ok) { throw Exception(ok, "Error: " + errs); }
 }
 
 std::string Message::print() const

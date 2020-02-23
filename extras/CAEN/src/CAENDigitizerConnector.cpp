@@ -1,7 +1,7 @@
 #include "CAENDigitizerConnector.hpp"
 
 #include "CAENDigitizer.h"
-#include "CAENDigitizerError.hpp"
+#include "CAENDigitizerException.hpp"
 #include "toml.hpp"
 
 #include <iostream>
@@ -65,7 +65,7 @@ CAENDigitizerConnector::CAENDigitizerConnector(const ConnectorInfos& infos)
 
 std::int32_t CAENDigitizerConnector::Connect()
 {
-  CAENDigitizerError(CAEN_DGTZ_OpenDigitizer(
+  CAENDigitizerException(CAEN_DGTZ_OpenDigitizer(
       static_cast<CAEN_DGTZ_ConnectionType>(
           m_ConnectionTypeList[m_ConnectionType]),
       m_LinkNum, m_ConetNode, m_VMEBaseAddress, &m_Handle));
@@ -74,7 +74,7 @@ std::int32_t CAENDigitizerConnector::Connect()
 
 void CAENDigitizerConnector::Disconnect()
 {
-  CAENDigitizerError(CAEN_DGTZ_CloseDigitizer(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_CloseDigitizer(m_Handle));
 }
 
 void CAENDigitizerConnector::verifyParameters()

@@ -1,7 +1,7 @@
 #include "CAENDigitizerBoard.hpp"
 
 #include "CAENDigitizer.h"
-#include "CAENDigitizerError.hpp"
+#include "CAENDigitizerException.hpp"
 
 namespace CAEN
 {
@@ -130,7 +130,7 @@ EventInfo CAENDigitizerBoard::GetEventInfo(const std::int32_t& numEvent)
 {
   CAEN_DGTZ_EventInfo_t toto;
   char*                 p = m_EventPtr.get();
-  CAENDigitizerError(CAEN_DGTZ_GetEventInfo(m_Handle, m_Buffer.get(),
+  CAENDigitizerException(CAEN_DGTZ_GetEventInfo(m_Handle, m_Buffer.get(),
                                             m_BufferSize, numEvent, &toto, &p));
   EventInfo ret(toto);
   return ret;
@@ -139,20 +139,20 @@ EventInfo CAENDigitizerBoard::GetEventInfo(const std::int32_t& numEvent)
 void CAENDigitizerBoard::WriteRegister(const std::uint32_t& Address,
                                        const std::uint32_t& Data)
 {
-  CAENDigitizerError(CAEN_DGTZ_WriteRegister(m_Handle, Address, Data));
+  CAENDigitizerException(CAEN_DGTZ_WriteRegister(m_Handle, Address, Data));
 }
 
 std::uint32_t CAENDigitizerBoard::ReadRegister(const std::uint32_t& Address)
 {
   std::uint32_t ret{0};
-  CAENDigitizerError(CAEN_DGTZ_ReadRegister(m_Handle, Address, &ret));
+  CAENDigitizerException(CAEN_DGTZ_ReadRegister(m_Handle, Address, &ret));
   return ret;
 }
 
 void CAENDigitizerBoard::GetInfo()
 {
   CAEN_DGTZ_BoardInfo_t boardinfo;
-  CAENDigitizerError(CAEN_DGTZ_GetInfo(m_Handle, &boardinfo));
+  CAENDigitizerException(CAEN_DGTZ_GetInfo(m_Handle, &boardinfo));
   setModelName(boardinfo.ModelName);
   setModel(boardinfo.Model);
   setNbrChannels(boardinfo.Channels);
@@ -449,48 +449,48 @@ void CAENDigitizerBoard::setVMEHandle(const std::uint32_t& han)
 
 void CAENDigitizerBoard::Reset()
 {
-  CAENDigitizerError(CAEN_DGTZ_Reset(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_Reset(m_Handle));
 }
 
 void CAENDigitizerBoard::ClearData()
 {
-  CAENDigitizerError(CAEN_DGTZ_ClearData(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_ClearData(m_Handle));
 }
 
 void CAENDigitizerBoard::SendSWtrigger()
 {
-  CAENDigitizerError(CAEN_DGTZ_SendSWtrigger(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_SendSWtrigger(m_Handle));
 }
 
 void CAENDigitizerBoard::SWStartAcquisition()
 {
-  CAENDigitizerError(CAEN_DGTZ_SWStartAcquisition(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_SWStartAcquisition(m_Handle));
 }
 
 void CAENDigitizerBoard::SWStopAcquisition()
 {
-  CAENDigitizerError(CAEN_DGTZ_SWStopAcquisition(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_SWStopAcquisition(m_Handle));
 }
 
 void CAENDigitizerBoard::IRQWait(const std::uint32_t& timeout)
 {
-  CAENDigitizerError(CAEN_DGTZ_IRQWait(m_Handle, timeout));
+  CAENDigitizerException(CAEN_DGTZ_IRQWait(m_Handle, timeout));
 }
 
 void CAENDigitizerBoard::SetDESMode(const std::string& on)
 {
   if(on == "ENABLE")
-    CAENDigitizerError(CAEN_DGTZ_SetDESMode(m_Handle, CAEN_DGTZ_ENABLE));
+    CAENDigitizerException(CAEN_DGTZ_SetDESMode(m_Handle, CAEN_DGTZ_ENABLE));
   else if(on == "DISABLE")
-    CAENDigitizerError(CAEN_DGTZ_SetDESMode(m_Handle, CAEN_DGTZ_DISABLE));
+    CAENDigitizerException(CAEN_DGTZ_SetDESMode(m_Handle, CAEN_DGTZ_DISABLE));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string CAENDigitizerBoard::GetDESMode()
 {
   CAEN_DGTZ_EnaDis_t enable;
-  CAENDigitizerError(CAEN_DGTZ_GetDESMode(m_Handle, &enable));
+  CAENDigitizerException(CAEN_DGTZ_GetDESMode(m_Handle, &enable));
   if(enable == CAEN_DGTZ_ENABLE) return "ENABLE";
   else
     return "DISABLE";
@@ -498,20 +498,20 @@ std::string CAENDigitizerBoard::GetDESMode()
 
 void CAENDigitizerBoard::Calibrate()
 {
-  CAENDigitizerError(CAEN_DGTZ_Calibrate(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_Calibrate(m_Handle));
 }
 
 std::uint32_t CAENDigitizerBoard::ReadTemperature(const std::int32_t& ch)
 {
   std::uint32_t temp{0};
-  CAENDigitizerError(CAEN_DGTZ_ReadTemperature(m_Handle, ch, &temp));
+  CAENDigitizerException(CAEN_DGTZ_ReadTemperature(m_Handle, ch, &temp));
   return temp;
 }
 
 std::string CAENDigitizerBoard::GetDPPFirmwareType()
 {
   CAEN_DGTZ_DPPFirmware_t firmware;
-  CAENDigitizerError(CAEN_DGTZ_GetDPPFirmwareType(m_Handle, &firmware));
+  CAENDigitizerException(CAEN_DGTZ_GetDPPFirmwareType(m_Handle, &firmware));
   switch(firmware)
   {
     case CAEN_DGTZ_DPPFirmware_PHA:
@@ -535,13 +535,13 @@ std::string CAENDigitizerBoard::GetDPPFirmwareType()
 
 void CAENDigitizerBoard::RearmInterrupt()
 {
-  CAENDigitizerError(CAEN_DGTZ_RearmInterrupt(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_RearmInterrupt(m_Handle));
 }
 
 std::string CAENDigitizerBoard::GetTriggerPolarity(const std::uint32_t& channel)
 {
   CAEN_DGTZ_TriggerPolarity_t polarity;
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_GetTriggerPolarity(m_Handle, channel, &polarity));
   if(channel == CAEN_DGTZ_TriggerOnRisingEdge) return "TriggerOnRisingEdge";
   else
@@ -552,19 +552,19 @@ void CAENDigitizerBoard::SetTriggerPolarity(const std::uint32_t& channel,
                                             const std::string&   Polarity)
 {
   if(Polarity == "TriggerOnRisingEdge")
-    CAENDigitizerError(CAEN_DGTZ_SetTriggerPolarity(
+    CAENDigitizerException(CAEN_DGTZ_SetTriggerPolarity(
         m_Handle, channel, CAEN_DGTZ_TriggerOnRisingEdge));
   else if(Polarity == "TriggerOnFallingEdge")
-    CAENDigitizerError(CAEN_DGTZ_SetTriggerPolarity(
+    CAENDigitizerException(CAEN_DGTZ_SetTriggerPolarity(
         m_Handle, channel, CAEN_DGTZ_TriggerOnFallingEdge));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string CAENDigitizerBoard::CAENDigitizerBoard::GetIOLevel()
 {
   CAEN_DGTZ_IOLevel_t level;
-  CAENDigitizerError(CAEN_DGTZ_GetIOLevel(m_Handle, &level));
+  CAENDigitizerException(CAEN_DGTZ_GetIOLevel(m_Handle, &level));
   if(level == CAEN_DGTZ_IOLevel_NIM) return "NIM";
   else
     return "TTL";
@@ -573,42 +573,42 @@ std::string CAENDigitizerBoard::CAENDigitizerBoard::GetIOLevel()
 void CAENDigitizerBoard::SetIOLevel(const std::string& level)
 {
   if(level == "NIM")
-    CAENDigitizerError(CAEN_DGTZ_SetIOLevel(m_Handle, CAEN_DGTZ_IOLevel_NIM));
+    CAENDigitizerException(CAEN_DGTZ_SetIOLevel(m_Handle, CAEN_DGTZ_IOLevel_NIM));
   else if(level == "TTL")
-    CAENDigitizerError(CAEN_DGTZ_SetIOLevel(m_Handle, CAEN_DGTZ_IOLevel_TTL));
+    CAENDigitizerException(CAEN_DGTZ_SetIOLevel(m_Handle, CAEN_DGTZ_IOLevel_TTL));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string CAENDigitizerBoard::VirtualProbeName(const int& probe)
 {
   char name[256];
-  CAENDigitizerError(CAEN_DGTZ_GetDPP_VirtualProbeName(probe, name));
+  CAENDigitizerException(CAEN_DGTZ_GetDPP_VirtualProbeName(probe, name));
   return name;
 }
 
 void CAENDigitizerBoard::SetAcquisitionMode(const std::string& mode)
 {
   if(mode == "SW_CONTROLLED")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetAcquisitionMode(m_Handle, CAEN_DGTZ_SW_CONTROLLED));
   else if(mode == "IN_CONTROLLED")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetAcquisitionMode(m_Handle, CAEN_DGTZ_S_IN_CONTROLLED));
   else if(mode == "FIRST_TRG_CONTROLLED")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetAcquisitionMode(m_Handle, CAEN_DGTZ_FIRST_TRG_CONTROLLED));
   else if(mode == "LVDS_CONTROLLED")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetAcquisitionMode(m_Handle, CAEN_DGTZ_LVDS_CONTROLLED));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string CAENDigitizerBoard::GetAcquisitionMode()
 {
   CAEN_DGTZ_AcqMode_t mode;
-  CAENDigitizerError(CAEN_DGTZ_GetAcquisitionMode(m_Handle, &mode));
+  CAENDigitizerException(CAEN_DGTZ_GetAcquisitionMode(m_Handle, &mode));
   switch(mode)
   {
     case CAEN_DGTZ_SW_CONTROLLED:
@@ -624,74 +624,74 @@ std::string CAENDigitizerBoard::GetAcquisitionMode()
 
 void CAENDigitizerBoard::SetPostTriggerSize(const std::uint32_t& percent)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetPostTriggerSize(m_Handle, percent));
+  CAENDigitizerException(CAEN_DGTZ_SetPostTriggerSize(m_Handle, percent));
 }
 
 std::uint32_t CAENDigitizerBoard::GetPostTriggerSize()
 {
   std::uint32_t percent{0};
-  CAENDigitizerError(CAEN_DGTZ_GetPostTriggerSize(m_Handle, &percent));
+  CAENDigitizerException(CAEN_DGTZ_GetPostTriggerSize(m_Handle, &percent));
   return percent;
 }
 
 void CAENDigitizerBoard::MallocReadoutBuffer()
 {
   char* ptr = m_Buffer.get();
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_MallocReadoutBuffer(m_Handle, &ptr, &m_AllocatedSize));
 }
 
 void CAENDigitizerBoard::FreeReadoutBuffer()
 {
   char* ptr = m_Buffer.get();
-  CAENDigitizerError(CAEN_DGTZ_FreeReadoutBuffer(&ptr));
+  CAENDigitizerException(CAEN_DGTZ_FreeReadoutBuffer(&ptr));
 }
 
 void CAENDigitizerBoard::ReadData(const std::string& mode)
 {
   if(mode == "SLAVE_TERMINATED_READOUT_MBLT")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT,
                            m_Buffer.get(), &m_BufferSize));
   else if(mode == "SLAVE_TERMINATED_READOUT_2eVME")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_2eVME,
                            m_Buffer.get(), &m_BufferSize));
   else if(mode == "SLAVE_TERMINATED_READOUT_2eSST")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_2eSST,
                            m_Buffer.get(), &m_BufferSize));
   else if(mode == "POLLING_MBLT")
-    CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_POLLING_MBLT,
+    CAENDigitizerException(CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_POLLING_MBLT,
                                           m_Buffer.get(), &m_BufferSize));
   else if(mode == "POLLING_2eVME")
-    CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_POLLING_2eVME,
+    CAENDigitizerException(CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_POLLING_2eVME,
                                           m_Buffer.get(), &m_BufferSize));
   else if(mode == "POLLING_2eSST")
-    CAENDigitizerError(CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_POLLING_2eSST,
+    CAENDigitizerException(CAEN_DGTZ_ReadData(m_Handle, CAEN_DGTZ_POLLING_2eSST,
                                           m_Buffer.get(), &m_BufferSize));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 void CAENDigitizerBoard::SetChannelPulsePolarity(const std::uint32_t& channel,
                                                  const std::string&   pol)
 {
   if(pol == "POSITIVE")
-    CAENDigitizerError(CAEN_DGTZ_SetChannelPulsePolarity(
+    CAENDigitizerException(CAEN_DGTZ_SetChannelPulsePolarity(
         m_Handle, channel, CAEN_DGTZ_PulsePolarityPositive));
   else if(pol == "NEGATIVE")
-    CAENDigitizerError(CAEN_DGTZ_SetChannelPulsePolarity(
+    CAENDigitizerException(CAEN_DGTZ_SetChannelPulsePolarity(
         m_Handle, channel, CAEN_DGTZ_PulsePolarityNegative));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string
 CAENDigitizerBoard::GetChannelPulsePolarity(const std::uint32_t& channel)
 {
   CAEN_DGTZ_PulsePolarity_t pol;
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_GetChannelPulsePolarity(m_Handle, channel, &pol));
   if(pol == CAEN_DGTZ_PulsePolarityPositive) return "POSITIVE";
   else
@@ -701,7 +701,7 @@ CAENDigitizerBoard::GetChannelPulsePolarity(const std::uint32_t& channel)
 void CAENDigitizerBoard::SetGroupTriggerThreshold(const std::uint32_t& group,
                                                   const std::uint32_t& Tvalue)
 {
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_SetGroupTriggerThreshold(m_Handle, group, Tvalue));
 }
 
@@ -709,47 +709,47 @@ std::uint32_t
 CAENDigitizerBoard::GetGroupTriggerThreshold(const std::uint32_t& group)
 {
   std::uint32_t Tvalue{0};
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_GetGroupTriggerThreshold(m_Handle, group, &Tvalue));
   return Tvalue;
 }
 
 void CAENDigitizerBoard::DisableEventAlignedReadout()
 {
-  CAENDigitizerError(CAEN_DGTZ_DisableEventAlignedReadout(m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_DisableEventAlignedReadout(m_Handle));
 }
 
 void CAENDigitizerBoard::SetChannelDCOffset(const std::uint32_t& channel,
                                             const std::uint32_t& Tvalue)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetChannelDCOffset(m_Handle, channel, Tvalue));
+  CAENDigitizerException(CAEN_DGTZ_SetChannelDCOffset(m_Handle, channel, Tvalue));
 }
 
 std::uint32_t
 CAENDigitizerBoard::GetChannelDCOffset(const std::uint32_t& channel)
 {
   std::uint32_t Tvalue{0};
-  CAENDigitizerError(CAEN_DGTZ_GetChannelDCOffset(m_Handle, channel, &Tvalue));
+  CAENDigitizerException(CAEN_DGTZ_GetChannelDCOffset(m_Handle, channel, &Tvalue));
   return Tvalue;
 }
 
 void CAENDigitizerBoard::SetGroupDCOffset(const std::uint32_t& group,
                                           const std::uint32_t& Tvalue)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetGroupDCOffset(m_Handle, group, Tvalue));
+  CAENDigitizerException(CAEN_DGTZ_SetGroupDCOffset(m_Handle, group, Tvalue));
 }
 
 std::uint32_t CAENDigitizerBoard::GetGroupDCOffset(const std::uint32_t& group)
 {
   std::uint32_t Tvalue{0};
-  CAENDigitizerError(CAEN_DGTZ_GetGroupDCOffset(m_Handle, group, &Tvalue));
+  CAENDigitizerException(CAEN_DGTZ_GetGroupDCOffset(m_Handle, group, &Tvalue));
   return Tvalue;
 }
 
 void CAENDigitizerBoard::SetChannelTriggerThreshold(
     const std::uint32_t& channel, const std::uint32_t& Tvalue)
 {
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_SetChannelTriggerThreshold(m_Handle, channel, Tvalue));
 }
 
@@ -757,7 +757,7 @@ std::uint32_t
 CAENDigitizerBoard::GetChannelTriggerThreshold(const std::uint32_t& channel)
 {
   std::uint32_t Tvalue{0};
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_GetChannelTriggerThreshold(m_Handle, channel, &Tvalue));
   return Tvalue;
 }
@@ -765,25 +765,25 @@ CAENDigitizerBoard::GetChannelTriggerThreshold(const std::uint32_t& channel)
 void CAENDigitizerBoard::SetZeroSuppressionMode(const std::string& mode)
 {
   if(mode == "NO")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetZeroSuppressionMode(m_Handle, CAEN_DGTZ_ZS_NO));
   else if(mode == "INT")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetZeroSuppressionMode(m_Handle, CAEN_DGTZ_ZS_INT));
   else if(mode == "ZLE")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetZeroSuppressionMode(m_Handle, CAEN_DGTZ_ZS_ZLE));
   else if(mode == "AMP")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetZeroSuppressionMode(m_Handle, CAEN_DGTZ_ZS_AMP));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string CAENDigitizerBoard::GetZeroSuppressionMode()
 {
   CAEN_DGTZ_ZS_Mode_t mode;
-  CAENDigitizerError(CAEN_DGTZ_GetZeroSuppressionMode(m_Handle, &mode));
+  CAENDigitizerException(CAEN_DGTZ_GetZeroSuppressionMode(m_Handle, &mode));
   switch(mode)
   {
     case CAEN_DGTZ_ZS_NO:
@@ -800,28 +800,28 @@ std::string CAENDigitizerBoard::GetZeroSuppressionMode()
 void CAENDigitizerBoard::SetRunSynchronizationMode(const std::string& mode)
 {
   if(mode == "Disabled")
-    CAENDigitizerError(CAEN_DGTZ_SetRunSynchronizationMode(
+    CAENDigitizerException(CAEN_DGTZ_SetRunSynchronizationMode(
         m_Handle, CAEN_DGTZ_RUN_SYNC_Disabled));
   else if(mode == "TrgOutTrgInDaisyChain")
-    CAENDigitizerError(CAEN_DGTZ_SetRunSynchronizationMode(
+    CAENDigitizerException(CAEN_DGTZ_SetRunSynchronizationMode(
         m_Handle, CAEN_DGTZ_RUN_SYNC_TrgOutTrgInDaisyChain));
   else if(mode == "TrgOutSinDaisyChain")
-    CAENDigitizerError(CAEN_DGTZ_SetRunSynchronizationMode(
+    CAENDigitizerException(CAEN_DGTZ_SetRunSynchronizationMode(
         m_Handle, CAEN_DGTZ_RUN_SYNC_TrgOutSinDaisyChain));
   else if(mode == "SinFanout")
-    CAENDigitizerError(CAEN_DGTZ_SetRunSynchronizationMode(
+    CAENDigitizerException(CAEN_DGTZ_SetRunSynchronizationMode(
         m_Handle, CAEN_DGTZ_RUN_SYNC_SinFanout));
   else if(mode == "CAEN_DGTZ_RUN_SYNC_GpioGpioDaisyChain")
-    CAENDigitizerError(CAEN_DGTZ_SetRunSynchronizationMode(
+    CAENDigitizerException(CAEN_DGTZ_SetRunSynchronizationMode(
         m_Handle, CAEN_DGTZ_RUN_SYNC_GpioGpioDaisyChain));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string CAENDigitizerBoard::GetRunSynchronizationMode()
 {
   CAEN_DGTZ_RunSyncMode_t mode;
-  CAENDigitizerError(CAEN_DGTZ_GetRunSynchronizationMode(m_Handle, &mode));
+  CAENDigitizerException(CAEN_DGTZ_GetRunSynchronizationMode(m_Handle, &mode));
   switch(mode)
   {
     case CAEN_DGTZ_RUN_SYNC_Disabled:
@@ -840,18 +840,18 @@ std::string CAENDigitizerBoard::GetRunSynchronizationMode()
 void CAENDigitizerBoard::SetEventPackaging(const std::string& on)
 {
   if(on == "ENABLE")
-    CAENDigitizerError(CAEN_DGTZ_SetEventPackaging(m_Handle, CAEN_DGTZ_ENABLE));
+    CAENDigitizerException(CAEN_DGTZ_SetEventPackaging(m_Handle, CAEN_DGTZ_ENABLE));
   else if(on == "DISABLE")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetEventPackaging(m_Handle, CAEN_DGTZ_DISABLE));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string CAENDigitizerBoard::GetEventPackaging()
 {
   CAEN_DGTZ_EnaDis_t enable;
-  CAENDigitizerError(CAEN_DGTZ_GetEventPackaging(m_Handle, &enable));
+  CAENDigitizerException(CAEN_DGTZ_GetEventPackaging(m_Handle, &enable));
   if(enable == CAEN_DGTZ_ENABLE) return "ENABLE";
   else
     return "DISABLE";
@@ -859,32 +859,32 @@ std::string CAENDigitizerBoard::GetEventPackaging()
 
 void CAENDigitizerBoard::SetMaxNumAggregatesBLT(const std::uint32_t& numAggr)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetMaxNumAggregatesBLT(m_Handle, numAggr));
+  CAENDigitizerException(CAEN_DGTZ_SetMaxNumAggregatesBLT(m_Handle, numAggr));
 }
 
 void CAENDigitizerBoard::SetMaxNumEventsBLT(const std::uint32_t& numEvents)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetMaxNumEventsBLT(m_Handle, numEvents));
+  CAENDigitizerException(CAEN_DGTZ_SetMaxNumEventsBLT(m_Handle, numEvents));
 }
 
 std::uint32_t CAENDigitizerBoard::GetMaxNumAggregatesBLT()
 {
   std::uint32_t numAggr{0};
-  CAENDigitizerError(CAEN_DGTZ_GetMaxNumAggregatesBLT(m_Handle, &numAggr));
+  CAENDigitizerException(CAEN_DGTZ_GetMaxNumAggregatesBLT(m_Handle, &numAggr));
   return numAggr;
 }
 
 std::uint32_t CAENDigitizerBoard::GetMaxNumEventsBLT()
 {
   std::uint32_t numEvents{0};
-  CAENDigitizerError(CAEN_DGTZ_GetMaxNumEventsBLT(m_Handle, &numEvents));
+  CAENDigitizerException(CAEN_DGTZ_GetMaxNumEventsBLT(m_Handle, &numEvents));
   return numEvents;
 }
 
 std::uint32_t CAENDigitizerBoard::GetNumEvents()
 {
   std::uint32_t numEvents{0};
-  CAENDigitizerError(CAEN_DGTZ_GetNumEvents(m_Handle, m_Buffer.get(),
+  CAENDigitizerException(CAEN_DGTZ_GetNumEvents(m_Handle, m_Buffer.get(),
                                             m_BufferSize, &numEvents));
   return numEvents;
 }
@@ -893,7 +893,7 @@ std::uint32_t
 CAENDigitizerBoard::GetChannelGroupMask(const std::uint32_t& group)
 {
   std::uint32_t channelmask{0};
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_GetChannelGroupMask(m_Handle, group, &channelmask));
   return channelmask;
 }
@@ -901,13 +901,13 @@ CAENDigitizerBoard::GetChannelGroupMask(const std::uint32_t& group)
 void CAENDigitizerBoard::SetDPPPreTriggerSize(const int&           ch,
                                               const std::uint32_t& samples)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetDPPPreTriggerSize(m_Handle, ch, samples));
+  CAENDigitizerException(CAEN_DGTZ_SetDPPPreTriggerSize(m_Handle, ch, samples));
 }
 
 std::uint32_t CAENDigitizerBoard::GetDPPPreTriggerSize(const int& ch)
 {
   std::uint32_t samples{0};
-  CAENDigitizerError(CAEN_DGTZ_GetDPPPreTriggerSize(m_Handle, ch, &samples));
+  CAENDigitizerException(CAEN_DGTZ_GetDPPPreTriggerSize(m_Handle, ch, &samples));
   return samples;
 }
 
@@ -916,46 +916,46 @@ void CAENDigitizerBoard::FreeEvent()
   if(GetDPPFirmwareType() == "NODPP")
   {
     if(m_FamilyCode == "XX742")
-      CAENDigitizerError(CAEN_DGTZ_FreeEvent(m_Handle, (void**)(&m_X742Event)));
+      CAENDigitizerException(CAEN_DGTZ_FreeEvent(m_Handle, (void**)(&m_X742Event)));
     else if(m_FamilyCode == "XX743")
-      CAENDigitizerError(CAEN_DGTZ_FreeEvent(m_Handle, (void**)(&m_X743Event)));
+      CAENDigitizerException(CAEN_DGTZ_FreeEvent(m_Handle, (void**)(&m_X743Event)));
     else if(m_ADC_NBits == 8)
-      CAENDigitizerError(
+      CAENDigitizerException(
           CAEN_DGTZ_FreeEvent(m_Handle, (void**)(&m_Uint8Event)));
     else if(m_ADC_NBits == 16)
-      CAENDigitizerError(
+      CAENDigitizerException(
           CAEN_DGTZ_FreeEvent(m_Handle, (void**)(&m_Uint16Event)));
   }
   else if(GetDPPFirmwareType() == "PHA")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPPHAEvent)));
   else if(GetDPPFirmwareType() == "PSD")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPPSDEvent)));
   else if(GetDPPFirmwareType() == "CI")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPCIEvent)));
   else if(GetDPPFirmwareType() == "QDC")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPQDCEvent)));
   else if(GetDPPFirmwareType() == "ZLE" && m_FamilyCode == "XX751")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_751ZLEEvent)));
   }
   else if(GetDPPFirmwareType() == "ZLE" && m_FamilyCode == "XX730")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_730ZLEEvent)));
   }
   else if(GetDPPFirmwareType() == "DAW" && m_FamilyCode == "XX730")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_730DAWEvent)));
   }
   else if(m_FamilyCode == "XX743")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPX743Event)));
   }
 }
@@ -965,16 +965,16 @@ void CAENDigitizerBoard::DecodeEvent()
   if(GetDPPFirmwareType() == "NODPP")
   {
     if(m_FamilyCode == "XX742")
-      CAENDigitizerError(CAEN_DGTZ_DecodeEvent(m_Handle, m_EventPtr.get(),
+      CAENDigitizerException(CAEN_DGTZ_DecodeEvent(m_Handle, m_EventPtr.get(),
                                                (void**)(&m_X742Event)));
     else if(m_FamilyCode == "XX743")
-      CAENDigitizerError(CAEN_DGTZ_DecodeEvent(m_Handle, m_EventPtr.get(),
+      CAENDigitizerException(CAEN_DGTZ_DecodeEvent(m_Handle, m_EventPtr.get(),
                                                (void**)(&m_X743Event)));
     else if(m_ADC_NBits == 8)
-      CAENDigitizerError(CAEN_DGTZ_DecodeEvent(m_Handle, m_EventPtr.get(),
+      CAENDigitizerException(CAEN_DGTZ_DecodeEvent(m_Handle, m_EventPtr.get(),
                                                (void**)(&m_Uint8Event)));
     else if(m_ADC_NBits == 16)
-      CAENDigitizerError(CAEN_DGTZ_DecodeEvent(m_Handle, m_EventPtr.get(),
+      CAENDigitizerException(CAEN_DGTZ_DecodeEvent(m_Handle, m_EventPtr.get(),
                                                (void**)(&m_Uint16Event)));
   }
 }
@@ -983,42 +983,42 @@ void CAENDigitizerBoard::MallocDPPEvents()
 {
   if(GetDPPFirmwareType() == "PHA")
   {
-    CAENDigitizerError(CAEN_DGTZ_MallocDPPEvents(
+    CAENDigitizerException(CAEN_DGTZ_MallocDPPEvents(
         m_Handle, (void**)(&m_DPPPHAEvent), &m_AllocatedSizeDPP));
   }
   else if(GetDPPFirmwareType() == "PSD")
   {
-    CAENDigitizerError(CAEN_DGTZ_MallocDPPEvents(
+    CAENDigitizerException(CAEN_DGTZ_MallocDPPEvents(
         m_Handle, (void**)(&m_DPPPSDEvent), &m_AllocatedSizeDPP));
   }
   else if(GetDPPFirmwareType() == "CI")
   {
-    CAENDigitizerError(CAEN_DGTZ_MallocDPPEvents(
+    CAENDigitizerException(CAEN_DGTZ_MallocDPPEvents(
         m_Handle, (void**)(&m_DPPCIEvent), &m_AllocatedSizeDPP));
   }
   else if(GetDPPFirmwareType() == "QDC")
   {
-    CAENDigitizerError(CAEN_DGTZ_MallocDPPEvents(
+    CAENDigitizerException(CAEN_DGTZ_MallocDPPEvents(
         m_Handle, (void**)(&m_DPPQDCEvent), &m_AllocatedSizeDPP));
   }
   else if(GetDPPFirmwareType() == "ZLE" && m_FamilyCode == "XX751")
   {
-    CAENDigitizerError(CAEN_DGTZ_MallocDPPEvents(
+    CAENDigitizerException(CAEN_DGTZ_MallocDPPEvents(
         m_Handle, (void**)(&m_751ZLEEvent), &m_AllocatedSizeDPP));
   }
   else if(GetDPPFirmwareType() == "ZLE" && m_FamilyCode == "XX730")
   {
-    CAENDigitizerError(CAEN_DGTZ_MallocDPPEvents(
+    CAENDigitizerException(CAEN_DGTZ_MallocDPPEvents(
         m_Handle, (void**)(&m_730ZLEEvent), &m_AllocatedSizeDPP));
   }
   else if(GetDPPFirmwareType() == "DAW" && m_FamilyCode == "XX730")
   {
-    CAENDigitizerError(CAEN_DGTZ_MallocDPPEvents(
+    CAENDigitizerException(CAEN_DGTZ_MallocDPPEvents(
         m_Handle, (void**)(&m_730DAWEvent), &m_AllocatedSizeDPP));
   }
   else if(m_FamilyCode == "XX743")
   {
-    CAENDigitizerError(CAEN_DGTZ_MallocDPPEvents(
+    CAENDigitizerException(CAEN_DGTZ_MallocDPPEvents(
         m_Handle, (void**)(&m_DPPX743Event), &m_AllocatedSizeDPP));
   }
 }
@@ -1027,42 +1027,42 @@ void CAENDigitizerBoard::FreeDPPEvents()
 {
   if(GetDPPFirmwareType() == "PHA")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPPHAEvent)));
   }
   else if(GetDPPFirmwareType() == "PSD")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPPSDEvent)));
   }
   else if(GetDPPFirmwareType() == "CI")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPCIEvent)));
   }
   else if(GetDPPFirmwareType() == "QDC")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPQDCEvent)));
   }
   else if(GetDPPFirmwareType() == "ZLE" && m_FamilyCode == "XX751")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_751ZLEEvent)));
   }
   else if(GetDPPFirmwareType() == "ZLE" && m_FamilyCode == "XX730")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_730ZLEEvent)));
   }
   else if(GetDPPFirmwareType() == "DAW" && m_FamilyCode == "XX730")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_730DAWEvent)));
   }
   else if(m_FamilyCode == "XX743")
   {
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_FreeDPPEvents(m_Handle, (void**)(&m_DPPX743Event)));
   }
 }
@@ -1074,14 +1074,14 @@ void CAENDigitizerBoard::SetDPPTriggerMode(const std::string& mode)
   else if(mode == "Coincidence")
     t = CAEN_DGTZ_DPP_TriggerMode_Coincidence;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_GetDPPTriggerMode(m_Handle, &t));
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_GetDPPTriggerMode(m_Handle, &t));
 }
 
 std::string CAENDigitizerBoard::GetDPPTriggerMode()
 {
   CAEN_DGTZ_DPP_TriggerMode_t t;
-  CAENDigitizerError(CAENDGTZ_API CAEN_DGTZ_GetDPPTriggerMode(m_Handle, &t));
+  CAENDigitizerException(CAENDGTZ_API CAEN_DGTZ_GetDPPTriggerMode(m_Handle, &t));
   if(t == CAEN_DGTZ_DPP_TriggerMode_Normal) return "Normal";
   else
     return "Coincidence";
@@ -1092,23 +1092,23 @@ void CAENDigitizerBoard::AllocateEvent()
   if(GetDPPFirmwareType() == "NODPP")
   {
     if(m_FamilyCode == "XX742")
-      CAENDigitizerError(
+      CAENDigitizerException(
           CAEN_DGTZ_AllocateEvent(m_Handle, (void**)(&m_X742Event)));
     else if(m_FamilyCode == "XX743")
-      CAENDigitizerError(
+      CAENDigitizerException(
           CAEN_DGTZ_AllocateEvent(m_Handle, (void**)(&m_X743Event)));
     else if(m_ADC_NBits == 8)
-      CAENDigitizerError(
+      CAENDigitizerException(
           CAEN_DGTZ_AllocateEvent(m_Handle, (void**)(&m_Uint8Event)));
     else if(m_ADC_NBits == 16)
-      CAENDigitizerError(
+      CAENDigitizerException(
           CAEN_DGTZ_AllocateEvent(m_Handle, (void**)(&m_Uint16Event)));
   }
 }
 
 void CAENDigitizerBoard::SetDPP_VirtualProbe(const int& trace, const int& probe)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetDPP_VirtualProbe(m_Handle, trace, probe));
+  CAENDigitizerException(CAEN_DGTZ_SetDPP_VirtualProbe(m_Handle, trace, probe));
 }
 
 DPPAcquisitionMode::DPPAcquisitionMode(const std::string& mode,
@@ -1123,7 +1123,7 @@ void DPPAcquisitionMode::setAcqMode(const std::string& mode)
   if(mode == "Oscilloscope" || mode == "List" || mode == "Mixed")
     AcqMode = mode;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 void DPPAcquisitionMode::setSaveParam(const std::string& param)
@@ -1132,7 +1132,7 @@ void DPPAcquisitionMode::setSaveParam(const std::string& param)
      param == "None")
     SaveParam = param;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string DPPAcquisitionMode::getAcqMode()
@@ -1163,7 +1163,7 @@ void CAENDigitizerBoard::SetDPPAcquisitionMode(DPPAcquisitionMode& acq)
     param = CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime;
   else
     param = CAEN_DGTZ_DPP_SAVE_PARAM_None;
-  CAENDigitizerError(CAEN_DGTZ_SetDPPAcquisitionMode(m_Handle, mode, param));
+  CAENDigitizerException(CAEN_DGTZ_SetDPPAcquisitionMode(m_Handle, mode, param));
 }
 
 DPPAcquisitionMode CAENDigitizerBoard::GetDPPAcquisitionMode()
@@ -1171,7 +1171,7 @@ DPPAcquisitionMode CAENDigitizerBoard::GetDPPAcquisitionMode()
   DPPAcquisitionMode        t;
   CAEN_DGTZ_DPP_AcqMode_t   mode;
   CAEN_DGTZ_DPP_SaveParam_t param;
-  CAENDigitizerError(CAEN_DGTZ_GetDPPAcquisitionMode(m_Handle, &mode, &param));
+  CAENDigitizerException(CAEN_DGTZ_GetDPPAcquisitionMode(m_Handle, &mode, &param));
   if(mode == CAEN_DGTZ_DPP_ACQ_MODE_Oscilloscope) t.setAcqMode("Oscilloscope");
   else if(mode == CAEN_DGTZ_DPP_ACQ_MODE_List)
     t.setAcqMode("List");
@@ -1189,25 +1189,25 @@ DPPAcquisitionMode CAENDigitizerBoard::GetDPPAcquisitionMode()
 
 void CAENDigitizerBoard::SetChannelEnableMask(const std::uint32_t& mask)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetChannelEnableMask(m_Handle, mask));
+  CAENDigitizerException(CAEN_DGTZ_SetChannelEnableMask(m_Handle, mask));
 }
 
 std::uint32_t CAENDigitizerBoard::GetChannelEnableMask()
 {
   std::uint32_t ret{0};
-  CAENDigitizerError(CAEN_DGTZ_GetChannelEnableMask(m_Handle, &ret));
+  CAENDigitizerException(CAEN_DGTZ_GetChannelEnableMask(m_Handle, &ret));
   return ret;
 }
 
 void CAENDigitizerBoard::SetGroupEnableMask(const std::uint32_t& mask)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetGroupEnableMask(m_Handle, mask));
+  CAENDigitizerException(CAEN_DGTZ_SetGroupEnableMask(m_Handle, mask));
 }
 
 std::uint32_t CAENDigitizerBoard::GetGroupEnableMask()
 {
   std::uint32_t ret{0};
-  CAENDigitizerError(CAEN_DGTZ_GetGroupEnableMask(m_Handle, &ret));
+  CAENDigitizerException(CAEN_DGTZ_GetGroupEnableMask(m_Handle, &ret));
   return ret;
 }
 
@@ -1222,8 +1222,8 @@ void CAENDigitizerBoard::SetSWTriggerMode(const std::string& mode)
   else if(mode == "ACQ_AND_EXTOUT")
     t = CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_SetSWTriggerMode(m_Handle, t));
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetSWTriggerMode(m_Handle, t));
 }
 
 void CAENDigitizerBoard::SetExtTriggerInputMode(const std::string& mode)
@@ -1237,14 +1237,14 @@ void CAENDigitizerBoard::SetExtTriggerInputMode(const std::string& mode)
   else if(mode == "ACQ_AND_EXTOUT")
     t = CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_SetExtTriggerInputMode(m_Handle, t));
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetExtTriggerInputMode(m_Handle, t));
 }
 
 std::string CAENDigitizerBoard::GetExtTriggerInputMode()
 {
   CAEN_DGTZ_TriggerMode_t t;
-  CAENDigitizerError(CAEN_DGTZ_GetExtTriggerInputMode(m_Handle, &t));
+  CAENDigitizerException(CAEN_DGTZ_GetExtTriggerInputMode(m_Handle, &t));
   if(t == CAEN_DGTZ_TRGMODE_DISABLED) return "DISABLED";
   else if(t == CAEN_DGTZ_TRGMODE_EXTOUT_ONLY)
     return "EXTOUT_ONLY";
@@ -1257,7 +1257,7 @@ std::string CAENDigitizerBoard::GetExtTriggerInputMode()
 std::string CAENDigitizerBoard::GetSWTriggerMode()
 {
   CAEN_DGTZ_TriggerMode_t t;
-  CAENDigitizerError(CAEN_DGTZ_GetSWTriggerMode(m_Handle, &t));
+  CAENDigitizerException(CAEN_DGTZ_GetSWTriggerMode(m_Handle, &t));
   if(t == CAEN_DGTZ_TRGMODE_DISABLED) return "DISABLED";
   else if(t == CAEN_DGTZ_TRGMODE_EXTOUT_ONLY)
     return "EXTOUT_ONLY";
@@ -1270,7 +1270,7 @@ std::string CAENDigitizerBoard::GetSWTriggerMode()
 void CAENDigitizerBoard::SetChannelGroupMask(const std::uint32_t  group,
                                              const std::uint32_t& channelmask)
 {
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_SetChannelGroupMask(m_Handle, group, channelmask));
 }
 
@@ -1286,8 +1286,8 @@ void CAENDigitizerBoard::SetChannelSelfTrigger(const std::string&   mode,
   else if(mode == "ACQ_AND_EXTOUT")
     t = CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_SetChannelSelfTrigger(m_Handle, t, channelmask));
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetChannelSelfTrigger(m_Handle, t, channelmask));
 }
 
 void CAENDigitizerBoard::SetGroupSelfTrigger(const std::string&   mode,
@@ -1302,15 +1302,15 @@ void CAENDigitizerBoard::SetGroupSelfTrigger(const std::string&   mode,
   else if(mode == "ACQ_AND_EXTOUT")
     t = CAEN_DGTZ_TRGMODE_ACQ_AND_EXTOUT;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_SetGroupSelfTrigger(m_Handle, t, group));
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetGroupSelfTrigger(m_Handle, t, group));
 }
 
 std::string
 CAENDigitizerBoard::GetChannelSelfTrigger(const std::uint32_t& channel)
 {
   CAEN_DGTZ_TriggerMode_t t;
-  CAENDigitizerError(CAEN_DGTZ_GetChannelSelfTrigger(m_Handle, channel, &t));
+  CAENDigitizerException(CAEN_DGTZ_GetChannelSelfTrigger(m_Handle, channel, &t));
   if(t == CAEN_DGTZ_TRGMODE_DISABLED) return "DISABLED";
   else if(t == CAEN_DGTZ_TRGMODE_EXTOUT_ONLY)
     return "EXTOUT_ONLY";
@@ -1323,7 +1323,7 @@ CAENDigitizerBoard::GetChannelSelfTrigger(const std::uint32_t& channel)
 std::string CAENDigitizerBoard::GetGroupSelfTrigger(const std::uint32_t& group)
 {
   CAEN_DGTZ_TriggerMode_t t;
-  CAENDigitizerError(CAEN_DGTZ_GetGroupSelfTrigger(m_Handle, group, &t));
+  CAENDigitizerException(CAEN_DGTZ_GetGroupSelfTrigger(m_Handle, group, &t));
   if(t == CAEN_DGTZ_TRGMODE_DISABLED) return "DISABLED";
   else if(t == CAEN_DGTZ_TRGMODE_EXTOUT_ONLY)
     return "EXTOUT_ONLY";
@@ -1346,14 +1346,14 @@ void CAENDigitizerBoard::SetAnalogMonOutput(const std::string& mode)
   else if(mode == "VOLTAGE_LEVEL")
     t = CAEN_DGTZ_AM_VOLTAGE_LEVEL;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_SetAnalogMonOutput(m_Handle, t));
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetAnalogMonOutput(m_Handle, t));
 }
 
 std::string CAENDigitizerBoard::GetAnalogMonOutput()
 {
   CAEN_DGTZ_AnalogMonitorOutputMode_t t;
-  CAENDigitizerError(CAEN_DGTZ_GetAnalogMonOutput(m_Handle, &t));
+  CAENDigitizerException(CAEN_DGTZ_GetAnalogMonOutput(m_Handle, &t));
   if(t == CAEN_DGTZ_AM_TRIGGER_MAJORITY) return "TRIGGER_MAJORITY";
   else if(t == CAEN_DGTZ_AM_TEST)
     return "TEST";
@@ -1368,19 +1368,19 @@ std::string CAENDigitizerBoard::GetAnalogMonOutput()
 void CAENDigitizerBoard::SetFastTriggerDigitizing(const std::string& on)
 {
   if(on == "ENABLE")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetFastTriggerDigitizing(m_Handle, CAEN_DGTZ_ENABLE));
   else if(on == "DISABLE")
-    CAENDigitizerError(
+    CAENDigitizerException(
         CAEN_DGTZ_SetFastTriggerDigitizing(m_Handle, CAEN_DGTZ_DISABLE));
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
 std::string CAENDigitizerBoard::GetFastTriggerDigitizing()
 {
   CAEN_DGTZ_EnaDis_t enable;
-  CAENDigitizerError(CAEN_DGTZ_GetFastTriggerDigitizing(m_Handle, &enable));
+  CAENDigitizerException(CAEN_DGTZ_GetFastTriggerDigitizing(m_Handle, &enable));
   if(enable == CAEN_DGTZ_ENABLE) return "ENABLE";
   else
     return "DISABLE";
@@ -1393,14 +1393,14 @@ void CAENDigitizerBoard::SetFastTriggerMode(const std::string& mode)
   else if(mode == "ACQ_ONLY")
     t = CAEN_DGTZ_TRGMODE_ACQ_ONLY;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_SetFastTriggerMode(m_Handle, t));
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetFastTriggerMode(m_Handle, t));
 }
 
 std::string CAENDigitizerBoard::GetFastTriggerMode()
 {
   CAEN_DGTZ_TriggerMode_t t;
-  CAENDigitizerError(CAEN_DGTZ_GetFastTriggerMode(m_Handle, &t));
+  CAENDigitizerException(CAEN_DGTZ_GetFastTriggerMode(m_Handle, &t));
   if(t == CAEN_DGTZ_TRGMODE_DISABLED) return "DISABLE";
   else
     return "ACQ_ONLY";
@@ -1409,29 +1409,29 @@ std::string CAENDigitizerBoard::GetFastTriggerMode()
 void CAENDigitizerBoard::SetRecordLength(const std::uint32_t& size,
                                          const int&           ch)
 {
-  if(ch == -1) CAENDigitizerError(CAEN_DGTZ_SetRecordLength(m_Handle, size));
+  if(ch == -1) CAENDigitizerException(CAEN_DGTZ_SetRecordLength(m_Handle, size));
   else
-    CAENDigitizerError(CAEN_DGTZ_SetRecordLength(m_Handle, size, ch));
+    CAENDigitizerException(CAEN_DGTZ_SetRecordLength(m_Handle, size, ch));
 }
 
 std::uint32_t CAENDigitizerBoard::GetRecordLength(const int& ch)
 {
   std::uint32_t size{0};
-  if(ch == -1) CAENDigitizerError(CAEN_DGTZ_GetRecordLength(m_Handle, &size));
+  if(ch == -1) CAENDigitizerException(CAEN_DGTZ_GetRecordLength(m_Handle, &size));
   else
-    CAENDigitizerError(CAEN_DGTZ_GetRecordLength(m_Handle, &size, ch));
+    CAENDigitizerException(CAEN_DGTZ_GetRecordLength(m_Handle, &size, ch));
   return size;
 }
 
 void CAENDigitizerBoard::SetDecimationFactor(const std::uint16_t& factor)
 {
-  CAENDigitizerError(CAEN_DGTZ_SetDecimationFactor(m_Handle, factor));
+  CAENDigitizerException(CAEN_DGTZ_SetDecimationFactor(m_Handle, factor));
 }
 
 std::uint16_t CAENDigitizerBoard::GetDecimationFactor()
 {
   std::uint16_t factor{0};
-  CAENDigitizerError(CAEN_DGTZ_GetDecimationFactor(m_Handle, &factor));
+  CAENDigitizerException(CAEN_DGTZ_GetDecimationFactor(m_Handle, &factor));
   return factor;
 }
 
@@ -1446,14 +1446,14 @@ void CAENDigitizerBoard::SetInterruptConfig(const std::string&   state,
   else if(state == "DISABLE")
     st = CAEN_DGTZ_DISABLE;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
   CAEN_DGTZ_IRQMode_t mod;
   if(mode == "RORA") mod = CAEN_DGTZ_IRQ_MODE_RORA;
   else if(mode == "ROAK")
     mod = CAEN_DGTZ_IRQ_MODE_ROAK;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_SetInterruptConfig(
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetInterruptConfig(
       m_Handle, st, level, status_id, event_number, mod));
 }
 
@@ -1512,14 +1512,14 @@ void CAENDigitizerBoard::SetDRS4SamplingFrequency(const std::string& freq)
   else if(freq == "750MHz")
     frequency = CAEN_DGTZ_DRS4_750MHz;
   else
-    throw CAENDigitizerError(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerError(CAEN_DGTZ_SetDRS4SamplingFrequency(m_Handle, frequency));
+    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetDRS4SamplingFrequency(m_Handle, frequency));
 }
 
 std::string CAENDigitizerBoard::GetDRS4SamplingFrequency()
 {
   CAEN_DGTZ_DRS4Frequency_t frequency;
-  CAENDigitizerError(CAEN_DGTZ_GetDRS4SamplingFrequency(m_Handle, &frequency));
+  CAENDigitizerException(CAEN_DGTZ_GetDRS4SamplingFrequency(m_Handle, &frequency));
   if(frequency == CAEN_DGTZ_DRS4_5GHz) return "5GHz";
   else if(frequency == CAEN_DGTZ_DRS4_2_5GHz)
     return "2.5GHz";
@@ -1531,7 +1531,7 @@ std::string CAENDigitizerBoard::GetDRS4SamplingFrequency()
 void CAENDigitizerBoard::SetGroupFastTriggerDCOffset(
     const std::uint32_t& group, const std::uint32_t& DCvalue)
 {
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_SetGroupFastTriggerDCOffset(m_Handle, group, DCvalue));
 }
 
@@ -1539,7 +1539,7 @@ std::uint32_t
 CAENDigitizerBoard::GetGroupFastTriggerDCOffset(const std::uint32_t& group)
 {
   std::uint32_t value{0};
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_GetGroupFastTriggerDCOffset(m_Handle, group, &value));
   return value;
 }
@@ -1547,7 +1547,7 @@ CAENDigitizerBoard::GetGroupFastTriggerDCOffset(const std::uint32_t& group)
 void CAENDigitizerBoard::SetGroupFastTriggerThreshold(
     const std::uint32_t& group, const std::uint32_t& Tvalue)
 {
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_SetGroupFastTriggerThreshold(m_Handle, group, Tvalue));
 }
 
@@ -1555,7 +1555,7 @@ std::uint32_t
 CAENDigitizerBoard::GetGroupFastTriggerThreshold(const std::uint32_t& group)
 {
   std::uint32_t value{0};
-  CAENDigitizerError(
+  CAENDigitizerException(
       CAEN_DGTZ_GetGroupFastTriggerThreshold(m_Handle, group, &value));
   return value;
 }
@@ -1586,7 +1586,7 @@ void CAENDigitizerBoard::Set_calibrated_DCO(const int& ch)
     {
       SetGroupDCOffset((uint32_t)ch, m_DCoffset[ch]);
     }
-    catch(const Error& error)
+    catch(const Exception& error)
     {
       std::cout << "Error setting group " << ch << " offset" << std::endl;
     }
@@ -1597,7 +1597,7 @@ void CAENDigitizerBoard::Set_calibrated_DCO(const int& ch)
     {
       SetChannelDCOffset((uint32_t)ch, m_DCoffset[ch]);
     }
-    catch(const Error& error)
+    catch(const Exception& error)
     {
       std::cout << "Error setting channel " << ch << " offset" << std::endl;
     }
@@ -1623,7 +1623,7 @@ void CAENDigitizerBoard::ProgramDigitizer()
   {
     Reset();
   }
-  catch(const Error& error)
+  catch(const Exception& error)
   {
     std::cout << "Error: Unable to reset digitizer." << std::endl;
     std::cout << "Please reset digitizer manually then restart the program"
@@ -1667,7 +1667,7 @@ void CAENDigitizerBoard::ProgramDigitizer()
                            m_VME_INTERRUPT_STATUS_ID, m_InterruptNumEvents,
                            "ROAK");
       }
-      catch(const Error& error)
+      catch(const Exception& error)
       {
         std::cout << "Error configuring interrupts. Interrupts disabled"
                   << std::endl;
@@ -1769,7 +1769,7 @@ void CAENDigitizerBoard::ProgramDigitizer()
     for(std::size_t i = 0; i < m_GWaddr.size(); i++)
       WriteRegisterBitmask(m_GWaddr[i], m_GWdata[i], m_GWmask[i]);
   }
-  catch(const Error& error)
+  catch(const Exception& error)
   {
     std::cout
         << "Warning: errors found during the programming of the digitizer."
