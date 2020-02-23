@@ -21,6 +21,8 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake"
                       "${CMAKE_SOURCE_DIR}/extern")
 
+include(Architectures)
+
 # set the C++ standard to C++ 17
 include(CXXStandards)
 cxx_17()
@@ -130,13 +132,19 @@ else()
   message(WARNING "IPO is not supported: ${output}")
 endif()
 
-include(Architectures)
-
 include(Sanitizers)
 
 include(DependencyGraph)
 gen_dep_graph(OUTPUT_DIR ${CMAKE_INSTALL_PREFIX} TARGET_NAME dependency-graph
               OUTPUT_TYPE pdf)
+
+include(Tools)
+clang_tidy(-format-style=file -checks=* -header-filter='${CMAKE_SOURCE_DIR}/*')
+cppcheck(
+  --enable=warning,performance,portability,missingInclude
+  --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)"
+  --suppress=missingIncludeSystem --quiet --verbose --force)
+include_what_you_use(-Xiwyu)
 
 if(BUILD_WEBSERVER)
   include(civet)
