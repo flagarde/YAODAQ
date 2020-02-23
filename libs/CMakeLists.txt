@@ -1,10 +1,10 @@
 find_package(Git REQUIRED)
 
-set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(YAODAQ_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
-
 find_package(Threads)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+
+set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(YAODAQ_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 if(BUILD_ANALYSIS OR BUILD_DAQ)
   root_generate_dictionary(G__Channel "${YAODAQ_INCLUDE}/Channel.hpp" LINKDEF
@@ -109,23 +109,6 @@ if(BUILD_DAQ)
 
   add_library(Connectors INTERFACE)
   add_library(Boards INTERFACE)
-  if(CAEN_HARDWARE)
-    add_subdirectory(CAEN)
-    add_dependencies(Connectors CAENlibs)
-    target_link_libraries(Connectors INTERFACE CAENConnectors)
-    target_include_directories(
-      Connectors
-      INTERFACE $<BUILD_INTERFACE:${YAODAQ_SRC}/CAEN/include>
-      INTERFACE $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}/CAEN>)
-    target_compile_definitions(Connectors INTERFACE CAENLIBS)
-    add_dependencies(Boards CAENBoard)
-    target_link_libraries(Boards INTERFACE CAENBoard)
-    target_include_directories(
-      Boards
-      INTERFACE $<BUILD_INTERFACE:${YAODAQ_SRC}/CAEN/include>
-      INTERFACE $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}/CAEN>)
-    target_compile_definitions(Boards INTERFACE CAENLIBS)
-  endif()
 
   add_library(Error "${YAODAQ_SRC}/Error.cpp")
   target_include_directories(

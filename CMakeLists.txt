@@ -157,6 +157,8 @@ endif()
 
 add_subdirectory(libs)
 
+add_subdirectory(extras)
+
 add_subdirectory(apps)
 
 if(ENABLE_TESTS)
