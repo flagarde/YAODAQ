@@ -11,15 +11,6 @@ if(BUILD_ANALYSIS OR BUILD_DAQ)
                            "${YAODAQ_INCLUDE}/ChannelLinkDef.hpp")
   add_library(Channel OBJECT "${YAODAQ_SRC}/Channel.cpp" G__Channel.cxx)
   target_include_directories(Channel PRIVATE "${YAODAQ_INCLUDE}")
-  add_library(Channel_shared SHARED $<TARGET_OBJECTS:Channel>)
-  target_include_directories(
-    Channel_shared
-    PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
-    PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-  target_link_libraries(
-    Channel_shared
-    INTERFACE ${ROOT_LIBRARIES}
-    INTERFACE Threads::Threads)
   add_library(Channel_static STATIC $<TARGET_OBJECTS:Channel>)
   target_link_libraries(
     Channel_static
@@ -48,15 +39,6 @@ if(BUILD_ANALYSIS OR BUILD_DAQ)
   add_library(Event OBJECT "${YAODAQ_SRC}/Event.cpp" G__Event.cxx)
   target_include_directories(Event PRIVATE "${YAODAQ_INCLUDE}")
   target_link_libraries(Event INTERFACE ${ROOT_LIBRARIES})
-  add_library(Event_shared SHARED $<TARGET_OBJECTS:Event>)
-  target_include_directories(
-    Event_shared
-    PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
-    PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-  target_link_libraries(
-    Event_shared
-    INTERFACE ${ROOT_LIBRARIES}
-    INTERFACE Threads::Threads)
   add_library(Event_static STATIC $<TARGET_OBJECTS:Event>)
   target_include_directories(
     Event_static
@@ -133,14 +115,14 @@ if(BUILD_DAQ)
     target_link_libraries(Connectors INTERFACE CAENConnectors)
     target_include_directories(
       Connectors
-      INTERFACE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/source/CAEN/include>
+      INTERFACE $<BUILD_INTERFACE:${YAODAQ_SRC}/CAEN/include>
       INTERFACE $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}/CAEN>)
     target_compile_definitions(Connectors INTERFACE CAENLIBS)
     add_dependencies(Boards CAENBoard)
     target_link_libraries(Boards INTERFACE CAENBoard)
     target_include_directories(
       Boards
-      INTERFACE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/source/CAEN/include>
+      INTERFACE $<BUILD_INTERFACE:${YAODAQ_SRC}/CAEN/include>
       INTERFACE $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}/CAEN>)
     target_compile_definitions(Boards INTERFACE CAENLIBS)
   endif()

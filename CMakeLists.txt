@@ -31,12 +31,12 @@ include(Formatting)
 file(
   GLOB_RECURSE
   ALL_CODE_FILES
-  ${PROJECT_SOURCE_DIR}/source/*.[ch]pp
-  ${PROJECT_SOURCE_DIR}/source/*.[ch]
+  ${PROJECT_SOURCE_DIR}/libs/*.[ch]pp
+  ${PROJECT_SOURCE_DIR}/libs/*.[ch]
   ${PROJECT_SOURCE_DIR}/apps/*.[ch]pp
   ${PROJECT_SOURCE_DIR}/apps/*.[ch]
-  ${PROJECT_SOURCE_DIR}/example/*.[ch]pp
-  ${PROJECT_SOURCE_DIR}/example/*.[ch]
+  ${PROJECT_SOURCE_DIR}/examples/*.[ch]pp
+  ${PROJECT_SOURCE_DIR}/examples/*.[ch]
   ${PROJECT_SOURCE_DIR}/tests/*.[ch]pp
   ${PROJECT_SOURCE_DIR}/tests/*.[ch])
 # Problem with pragme and formating get_filename_component( EXCLUDE_IT
@@ -155,7 +155,7 @@ if(BUILD_ANALYSIS)
   include(${ROOT_USE_FILE})
 endif()
 
-add_subdirectory(source)
+add_subdirectory(libs)
 
 add_subdirectory(apps)
 
