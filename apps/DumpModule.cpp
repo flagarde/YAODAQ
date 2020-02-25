@@ -33,8 +33,6 @@ int main(int argc, char** argv)
 
   Board::setConfigFile("../confs/Configs.toml");
 
-  bool stop{false};
-  char answer{'a'};
   spdlog::info("Listening on IP {0} Port {1}", host, port);
   Module toto(loggerName);
   while(true) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }

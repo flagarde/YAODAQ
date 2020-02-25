@@ -26,5 +26,6 @@ private:
   std::map<Infos, std::shared_ptr<ix::WebSocket>> m_Clients;
   Infos                                           getInfos(const std::shared_ptr<ix::WebSocket>& socket);
   void                                            erase(const std::shared_ptr<ix::WebSocket>& socket);
-  spdlog::level::level_enum                       m_Verbosity{spdlog::level::warn};
+  spdlog::level::level_enum                       m_Verbosity{spdlog::level::trace};
+  void                                            try_emplace(const std::string& key, const std::shared_ptr<ix::WebSocket>& socket);
 };

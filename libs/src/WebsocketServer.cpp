@@ -50,38 +50,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         // Error coming from Error here should not crash the Webserver but
         // disconnect the websocket of the bad guy !" Look if the name is
         // already taken an put an erro if it is
-        Infos infos;
-        try
-        {
-          infos.setKey(key);
-        }
-        catch(const Exception& err)
-        {
-          spdlog::error(err.what());
-          Message error("Error", err.what(), "", "WebSocketServer");
-          for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
-          {
-            if(it->first.getType() == "Logger") { it->second->send(error.get()); }
-          }
-          webSocket->send(error.get());
-          std::this_thread::sleep_for(std::chrono::milliseconds(1));
-          if(webSocket->getReadyState() != ix::ReadyState::Closing && webSocket->getReadyState() != ix::ReadyState::Closed)
-            webSocket->stop(1002, "Exit");
-        }
-        if(m_Clients.find(infos) != m_Clients.end())
-        {
-          spdlog::error("The Name \"{}\" is already taken !\n Disconnecting !", infos.getName());
-          Message error("Error", "The Name \"" + infos.getName() + "\" is already taken !\n Disconnecting !", "", "WebSocketServer");
-          for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
-          {
-            if(it->first.getType() == "Logger") { it->second->send(error.get()); }
-          }
-          webSocket->send(error.get());
-          if(webSocket->getReadyState() != ix::ReadyState::Closing && webSocket->getReadyState() != ix::ReadyState::Closed)
-            webSocket->stop(1002, "Exit");
-        }
-        else
-          m_Clients.emplace(infos, webSocket);
+        try_emplace(key, webSocket);
         // Print in all the Logger consoles
         for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
         {
@@ -162,6 +131,37 @@ void WebsocketServer::erase(const std::shared_ptr<ix::WebSocket>& socket)
       m_Clients.erase(it);
       break;
     }
+  }
+}
+
+void WebsocketServer::try_emplace(const std::string& key, const std::shared_ptr<ix::WebSocket>& socket)
+{
+  std::pair<std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator, bool> ret;
+  try
+  {
+    ret = m_Clients.try_emplace(Infos(key), socket);
+  }
+  catch(...)
+  {
+    spdlog::error("The Name \"{}\" is already taken so it cannot be connected !", ret.first->first.getName());
+    Error error("The Name \"" + ret.first->first.getName() + "\" is already taken so it cannot be connected !", "", "WebSocketServer");
+    for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
+    {
+      if(it->first.getType() == "Logger") { it->second->send(error.get()); }
+    }
+    socket->send(error.get());
+    socket->stop(200, "Exit");
+  }
+  if(ret.second == false)
+  {
+    spdlog::error("The Name \"{}\" is already taken so it cannot be connected !", ret.first->first.getName());
+    Error error("The Name \"" + ret.first->first.getName() + "\" is already taken so it cannot be connected !", "", "WebSocketServer");
+    for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
+    {
+      if(it->first.getType() == "Logger") { it->second->send(error.get()); }
+    }
+    socket->send(error.get());
+    socket->stop(200, "Exit");
   }
 }
 

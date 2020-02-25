@@ -18,7 +18,7 @@ int main(int argc, char** argv)
   app.add_option("-m,--max", maxConnections, "Maximun connections")->check(CLI::PositiveNumber);
   int handshakeTimeoutSecs{3};
   app.add_option("-t,--timeout", handshakeTimeoutSecs, "Timeout in seconds")->check(CLI::PositiveNumber);
-  std::string verbosity{"warning"};
+  std::string verbosity{"trace"};
   app.add_option("-v,--verbosity", verbosity, "Verbosity")
       ->check(
           [](const std::string& t) {
@@ -37,14 +37,13 @@ int main(int argc, char** argv)
     spdlog::error("{}", e.what());
     return e.get_exit_code();
   }
-  bool            stop{false};
-  char            answer{'a'};
+
   WebsocketServer server(port, host, backlog, maxConnections, handshakeTimeoutSecs);
   server.setVerbosity(verbosity);
   server.listen();
   server.start();
   spdlog::info("Websocket server started on IP {0} Port {1}", host, port);
   while(true) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
-  spdlog::info("Bye !");
+
   return 0;
 }

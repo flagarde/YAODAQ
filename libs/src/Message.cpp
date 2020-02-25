@@ -134,4 +134,6 @@ void Status::setContent(const std::string& content)
   Message::setContent(checkContent(content));
 }
 
+Error::Error(const std::string& content, const std::string& to, const std::string& from): Message("Error", content, to, from) {}
+
 Log::Log(const std::string& content, const std::string& to, const std::string& from): Message("Log", content, to, from) {}

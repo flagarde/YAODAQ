@@ -38,6 +38,12 @@ private:
   Json::Value                         m_Value{};
 };
 
+class Error: public Message
+{
+public:
+  Error(const std::string& content = "", const std::string& to = "", const std::string& from = "");
+};
+
 class Info: public Message
 {
 public:

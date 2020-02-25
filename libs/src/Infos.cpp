@@ -15,6 +15,11 @@ Infos::Infos(const std::string& roomName, const std::string& rackName, const std
 
 Infos::Infos() {}
 
+Infos::Infos(const std::string& key)
+{
+  setKey(key);
+}
+
 bool Infos::operator<(const Infos& infos) const
 {
   return this->getName() < infos.getName();

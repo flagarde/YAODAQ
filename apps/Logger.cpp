@@ -21,7 +21,6 @@ int main(int argc, char** argv)
               return "";
           },
           "Not Empty", "Test is name is empty");
-  WebsocketClient::setURL("ws://" + host + ":" + std::to_string(port) + "/");
   try
   {
     app.parse(argc, argv);
@@ -31,12 +30,11 @@ int main(int argc, char** argv)
     spdlog::error("{}", e.what());
     return e.get_exit_code();
   }
-  bool stop{false};
-  char answer{'a'};
+  WebsocketClient::setURL("ws://" + host + ":" + std::to_string(port) + "/");
   spdlog::info("Logger listening on IP {0} Port {1}", host, port);
-  spdlog::info("Type q/Q and ENTER to stop it !");
+
   Logger logger(loggerName);
   while(true) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
-  spdlog::info("Bye !");
+
   return 0;
 }
