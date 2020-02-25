@@ -70,8 +70,7 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
       if(strstr(str, "TR"))
       {
         sscanf(str + 1, "TR%d", &val);
-        if(val < 0 || val >= MAX_SET)
-        { printf("%s: Invalid channel number\n", str); }
+        if(val < 0 || val >= MAX_SET) { printf("%s: Invalid channel number\n", str); }
         else
         {
           tr = val;
@@ -80,8 +79,7 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
       else
       {
         sscanf(str + 1, "%d", &val);
-        if(val < 0 || val >= MAX_SET)
-        { printf("%s: Invalid channel number\n", str); }
+        if(val < 0 || val >= MAX_SET) { printf("%s: Invalid channel number\n", str); }
         else
         {
           ch = val;
@@ -151,8 +149,8 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
         char  Buf[1000];
         char* ptr = Buf;
 
-        WDcfg.useCorrections = atoi(str1);
-        pread = fgets(Buf, 1000, f_ini);  // Get the remaining line
+        WDcfg.useCorrections  = atoi(str1);
+        pread                 = fgets(Buf, 1000, f_ini);  // Get the remaining line
         WDcfg.UseManualTables = -1;
         if(sscanf(ptr, "%s", str1) == 0)
         {
@@ -160,15 +158,13 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
           continue;
         }
         if(strcmp(str1, "AUTO") != 0)
-        {  // The user wants to use custom correction tables
+        {                                     // The user wants to use custom correction tables
           WDcfg.UseManualTables = atoi(ptr);  // Save the group mask
           ptr                   = strstr(ptr, str1);
           ptr += strlen(str1);
           while(sscanf(ptr, "%s", str1) == 1 && gr < MAX_X742_GROUP_SIZE)
           {
-            while(((WDcfg.UseManualTables) & (0x1 << gr)) == 0 &&
-                  gr < MAX_X742_GROUP_SIZE)
-              gr++;
+            while(((WDcfg.UseManualTables) & (0x1 << gr)) == 0 && gr < MAX_X742_GROUP_SIZE) gr++;
             if(gr >= MAX_X742_GROUP_SIZE)
             {
               printf("Error parsing values for parameter %s\n", str);
@@ -186,8 +182,7 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
       if(PrevUseCorrections != WDcfg.useCorrections) changed = 1;
       else if(PrevUseManualTables != WDcfg.UseManualTables)
         changed = 1;
-      else if(memcmp(TabBuf, WDcfg.TablesFilenames,
-                     sizeof(WDcfg.TablesFilenames)))
+      else if(memcmp(TabBuf, WDcfg.TablesFilenames, sizeof(WDcfg.TablesFilenames)))
         changed = 1;
       if(changed == 1) ret |= 0x1;
       continue;
@@ -224,8 +219,7 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
     if(strstr(str, "EXTERNAL_TRIGGER") != NULL)
     {
       read = fscanf(f_ini, "%s", str1);
-      if(strcmp(str1, "DISABLED") == 0)
-        WDcfg.ExtTriggerMode = CAEN_DGTZ_TRGMODE_DISABLED;
+      if(strcmp(str1, "DISABLED") == 0) WDcfg.ExtTriggerMode = CAEN_DGTZ_TRGMODE_DISABLED;
       else if(strcmp(str1, "ACQUISITION_ONLY") == 0)
         WDcfg.ExtTriggerMode = CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       else if(strcmp(str1, "ACQUISITION_AND_TRGOUT") == 0)
@@ -301,8 +295,7 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
     if(!strcmp(str, "FAST_TRIGGER"))
     {
       read = fscanf(f_ini, "%s", str1);
-      if(strcmp(str1, "DISABLED") == 0)
-        WDcfg.FastTriggerMode = CAEN_DGTZ_TRGMODE_DISABLED;
+      if(strcmp(str1, "DISABLED") == 0) WDcfg.FastTriggerMode = CAEN_DGTZ_TRGMODE_DISABLED;
       else if(strcmp(str1, "ACQUISITION_ONLY") == 0)
         WDcfg.FastTriggerMode = CAEN_DGTZ_TRGMODE_ACQ_ONLY;
       else
@@ -385,9 +378,7 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
         {
           WDcfg.Version_used[i] = 1;
           dc_file[i]            = dc;
-          if(WDcfg.PulsePolarity[i] == CAEN_DGTZ_PulsePolarityPositive)
-            WDcfg.DCoffset[i] =
-                (uint32_t)((float)(std::fabs(dc - 100)) * (655.35));
+          if(WDcfg.PulsePolarity[i] == CAEN_DGTZ_PulsePolarityPositive) WDcfg.DCoffset[i] = (uint32_t)((float)(std::fabs(dc - 100)) * (655.35));
 
           else if(WDcfg.PulsePolarity[i] == CAEN_DGTZ_PulsePolarityNegative)
             WDcfg.DCoffset[i] = (uint32_t)((float)(dc) * (655.35));
@@ -399,8 +390,7 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
         dc_file[ch]            = dc;
         if(WDcfg.PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityPositive)
         {
-          WDcfg.DCoffset[ch] =
-              (uint32_t)((float)(std::fabs(dc - 100)) * (655.35));
+          WDcfg.DCoffset[ch] = (uint32_t)((float)(std::fabs(dc - 100)) * (655.35));
           // printf("ch %d positive, offset %d\n",ch, WDcfg->DCoffset[ch]);
         }
 
@@ -417,16 +407,13 @@ int ParseConfigFile(FILE* f_ini, WaveDumpConfig_t& WDcfg)
     if(strstr(str, "GRP_CH_DC_OFFSET") != NULL)  /// xx742
     {
       float dc[8];
-      read  = fscanf(f_ini, "%f,%f,%f,%f,%f,%f,%f,%f", &dc[0], &dc[1], &dc[2],
-                    &dc[3], &dc[4], &dc[5], &dc[6], &dc[7]);
+      read  = fscanf(f_ini, "%f,%f,%f,%f,%f,%f,%f,%f", &dc[0], &dc[1], &dc[2], &dc[3], &dc[4], &dc[5], &dc[6], &dc[7]);
       int j = 0;
       for(j = 0; j < 8; j++) dc_8file[j] = dc[j];
 
       for(i = 0; i < 8; i++)  // MAX_SET
       {
-        val =
-            (int)((dc[i] + 50) * 65535 /
-                  100);  /// DC offset (percent of the dynamic range, -50 to 50)
+        val                        = (int)((dc[i] + 50) * 65535 / 100);  /// DC offset (percent of the dynamic range, -50 to 50)
         WDcfg.DCoffsetGrpCh[ch][i] = val;
       }
       continue;

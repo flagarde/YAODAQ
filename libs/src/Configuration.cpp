@@ -9,10 +9,7 @@
 toml::value Configuration::getConfig(const std::string& mmodule)
 {
   if(m_ModuleConfig.find(mmodule) == m_ModuleConfig.end())
-  {
-    throw Exception(STATUS_CODE_NOT_FOUND, "Board/Module " + mmodule +
-                                               " not found in configuration !");
-  }
+  { throw Exception(STATUS_CODE_NOT_FOUND, "Board/Module " + mmodule + " not found in configuration !"); }
   else
     return m_ModuleConfig[mmodule];
 }
@@ -20,21 +17,16 @@ toml::value Configuration::getConfig(const std::string& mmodule)
 ConnectorInfos Configuration::getConnectorInfos(const std::string& mmodule)
 {
   if(m_ConnectorInfos.find(mmodule) == m_ConnectorInfos.end())
-  {
-    throw Exception(STATUS_CODE_NOT_FOUND,
-                    "Board " + mmodule + " not found in configuration !");
-  }
+  { throw Exception(STATUS_CODE_NOT_FOUND, "Board " + mmodule + " not found in configuration !"); }
   return m_ConnectorInfos[mmodule];
 }
 
 void Configuration::parse()
 {
-  if(m_Filename == "")
-  { throw Exception(STATUS_CODE_NOT_FOUND, "No Configuration file given !"); }
+  if(m_Filename == "") { throw Exception(STATUS_CODE_NOT_FOUND, "No Configuration file given !"); }
   if(m_isParsed == false)
   {
-    m_Conf =
-        toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
+    m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
     checkFile();
     fillIndexes();
     m_isParsed = true;
@@ -47,8 +39,7 @@ void Configuration::checkFile()
   for(const auto& rooms: toml::find<toml::array>(m_Conf, "Room"))
   {
     std::string room_name = toml::find_or<std::string>(rooms, "Name", "");
-    if(room_name == "" || std::find(m_Room_Names.begin(), m_Room_Names.end(),
-                                    room_name) != m_Room_Names.end())
+    if(room_name == "" || std::find(m_Room_Names.begin(), m_Room_Names.end(), room_name) != m_Room_Names.end())
     {
       std::cout << "Room must have a (unique) name !" << std::endl;
       std::exit(2);
@@ -60,9 +51,7 @@ void Configuration::checkFile()
       for(const auto& racks: toml::find<toml::array>(rooms, "Rack"))
       {
         std::string rack_name = toml::find_or<std::string>(racks, "Name", "");
-        if(rack_name == "" ||
-           std::find(m_Rack_Names.begin(), m_Rack_Names.end(), rack_name) !=
-               m_Rack_Names.end())
+        if(rack_name == "" || std::find(m_Rack_Names.begin(), m_Rack_Names.end(), rack_name) != m_Rack_Names.end())
         {
           std::cout << "Rack must have a (unique) name !" << std::endl;
           std::exit(2);
@@ -74,11 +63,8 @@ void Configuration::checkFile()
           for(const auto& crates: toml::find<toml::array>(racks, "Crate"))
           {
             bool        crate_have_connector{true};
-            std::string crate_name =
-                toml::find_or<std::string>(crates, "Name", "");
-            if(crate_name == "" ||
-               std::find(m_Crate_Names.begin(), m_Crate_Names.end(),
-                         crate_name) != m_Crate_Names.end())
+            std::string crate_name = toml::find_or<std::string>(crates, "Name", "");
+            if(crate_name == "" || std::find(m_Crate_Names.begin(), m_Crate_Names.end(), crate_name) != m_Crate_Names.end())
             {
               std::cout << "Crate must have a (unique) name !" << std::endl;
               std::exit(2);
@@ -99,16 +85,13 @@ void Configuration::checkFile()
               // std::cout<<"Parsing Crate : "<<crate_name<<std::endl;
               for(const auto& boards: toml::find<toml::array>(crates, "Board"))
               {
-                std::string board_name =
-                    toml::find_or<std::string>(boards, "Name", "");
-                if(board_name == "" ||
-                   m_BoardsInfos.find(board_name) != m_BoardsInfos.end())
+                std::string board_name = toml::find_or<std::string>(boards, "Name", "");
+                if(board_name == "" || m_BoardsInfos.find(board_name) != m_BoardsInfos.end())
                 {
                   std::cout << "Board must have a (unique) Name !" << std::endl;
                   std::exit(2);
                 }
-                std::string type =
-                    toml::find_or<std::string>(boards, "Type", "");
+                std::string type = toml::find_or<std::string>(boards, "Type", "");
                 if(type == "")
                 {
                   std::cout << "Board must have a Type !" << std::endl;
@@ -118,19 +101,14 @@ void Configuration::checkFile()
                 {
                   try
                   {
-                    board_connector =
-                        toml::find<toml::table>(boards, "Connector");
+                    board_connector = toml::find<toml::table>(boards, "Connector");
                   }
                   catch(const std::out_of_range& e)
                   {
                     if(crate_have_connector == false)
                     {
-                      std::cout
-                          << "Board " << board_name
-                          << " doesn't have a Connector and the Crate ("
-                          << crate_name
-                          << ") which is plugged to doesn't have one neither"
-                          << std::endl;
+                      std::cout << "Board " << board_name << " doesn't have a Connector and the Crate (" << crate_name
+                                << ") which is plugged to doesn't have one neither" << std::endl;
                       std::exit(2);
                     }
                     else
@@ -139,15 +117,9 @@ void Configuration::checkFile()
                       board_connector = crate_connector;
                     }
                   }
-                  m_BoardsInfos.emplace(board_name,
-                                        BoardInfos(room_name, rack_name,
-                                                   crate_name, board_name, type,
-                                                   boards, board_connector));
+                  m_BoardsInfos.emplace(board_name, BoardInfos(room_name, rack_name, crate_name, board_name, type, boards, board_connector));
                   m_ModuleConfig.emplace(board_name, boards);
-                  m_ConnectorInfos.emplace(board_name,
-                                           ConnectorInfos(board_connector,
-                                                          crate_have_connector,
-                                                          connector_ID));
+                  m_ConnectorInfos.emplace(board_name, ConnectorInfos(board_connector, crate_have_connector, connector_ID));
                 }
               }
             }
@@ -163,22 +135,12 @@ void Configuration::fillIndexes()
   std::sort(m_Room_Names.begin(), m_Room_Names.end());
   std::sort(m_Rack_Names.begin(), m_Rack_Names.end());
   std::sort(m_Crate_Names.begin(), m_Crate_Names.end());
-  for(std::map<std::string, BoardInfos>::iterator it = m_BoardsInfos.begin();
-      it != m_BoardsInfos.end(); ++it)
+  for(std::map<std::string, BoardInfos>::iterator it = m_BoardsInfos.begin(); it != m_BoardsInfos.end(); ++it)
   {
     static int boardindex = 0;
-    it->second.setRoomIndex(
-        std::distance(m_Room_Names.begin(),
-                      std::find(m_Room_Names.begin(), m_Room_Names.end(),
-                                it->second.getRoomName())));
-    it->second.setRackIndex(
-        std::distance(m_Rack_Names.begin(),
-                      std::find(m_Rack_Names.begin(), m_Rack_Names.end(),
-                                it->second.getRackName())));
-    it->second.setCrateIndex(
-        std::distance(m_Crate_Names.begin(),
-                      std::find(m_Crate_Names.begin(), m_Crate_Names.end(),
-                                it->second.getCrateName())));
+    it->second.setRoomIndex(std::distance(m_Room_Names.begin(), std::find(m_Room_Names.begin(), m_Room_Names.end(), it->second.getRoomName())));
+    it->second.setRackIndex(std::distance(m_Rack_Names.begin(), std::find(m_Rack_Names.begin(), m_Rack_Names.end(), it->second.getRackName())));
+    it->second.setCrateIndex(std::distance(m_Crate_Names.begin(), std::find(m_Crate_Names.begin(), m_Crate_Names.end(), it->second.getCrateName())));
     it->second.setIndex(boardindex);
     ++boardindex;
   }

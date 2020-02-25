@@ -4,13 +4,11 @@
 #include "Message.hpp"
 #include "spdlog.h"
 
-Json::StreamWriterBuilder Logger::m_StreamWriterBuilder =
-    Json::StreamWriterBuilder();
+Json::StreamWriterBuilder Logger::m_StreamWriterBuilder = Json::StreamWriterBuilder();
 
 Json::CharReaderBuilder Logger::m_CharReaderBuilder = Json::CharReaderBuilder();
 
-Logger::Logger(const std::string& name, const std::string& type)
-    : m_Name(name), m_Type(type)
+Logger::Logger(const std::string& name, const std::string& type): m_Name(name), m_Type(type)
 {
   m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
   m_Reader.reset(m_CharReaderBuilder.newCharReader());
@@ -24,8 +22,7 @@ Logger::~Logger() {}
 void Logger::OnOpen(const ix::WebSocketMessagePtr& msg)
 {
   spdlog::info("Handshake Headers :");
-  for(auto it: msg->openInfo.headers)
-  { spdlog::info("\t{0}:{1}", it.first, it.second); }
+  for(auto it: msg->openInfo.headers) { spdlog::info("\t{0}:{1}", it.first, it.second); }
   spdlog::info("");
 }
 
@@ -45,8 +42,7 @@ void Logger::OnClose(const ix::WebSocketMessagePtr& msg)
   // This data can be accessed through the closeInfo object.
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
-  if(msg->closeInfo.code == 1002)
-    throw Exception(STATUS_CODE_ALREADY_PRESENT, "Name already taken");
+  if(msg->closeInfo.code == 1002) throw Exception(STATUS_CODE_ALREADY_PRESENT, "Name already taken");
 }
 
 void Logger::OnPong(const ix::WebSocketMessagePtr& msg)
@@ -75,20 +71,13 @@ void Logger::OnMessage(const ix::WebSocketMessagePtr& msg)
 
   if(message.getType() == "Log")
   {
-    bool ok = m_Reader->parse(
-        &(message.getContent()[0]),
-        &message.getContent()[message.getContent().size()], &m_Value, &m_Errs);
-    if(!ok)
-    {
-      spdlog::error("Problem parsing Log message to JSON {}",
-                    message.getContent());
-    }
+    bool ok = m_Reader->parse(&(message.getContent()[0]), &message.getContent()[message.getContent().size()], &m_Value, &m_Errs);
+    if(!ok) { spdlog::error("Problem parsing Log message to JSON {}", message.getContent()); }
     else
     {
       std::string Level   = m_Value["Level"].asString();
       std::string content = m_Value["Message"].asString();
-      if(Level == "trace")
-        spdlog::trace("[" + message.getFrom() + "] " + content);
+      if(Level == "trace") spdlog::trace("[" + message.getFrom() + "] " + content);
       else if(Level == "debug")
         spdlog::debug("[" + message.getFrom() + "] " + content);
       else if(Level == "info")

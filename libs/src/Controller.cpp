@@ -28,15 +28,11 @@ ix::WebSocketSendInfo Controller::sendText(Message& message)
   return m_WebsocketClient.sendText(message.get());
 }
 
-Controller::Controller(const std::string& name, const std::string& type)
-    : m_Type(type), m_Name(name)
+Controller::Controller(const std::string& name, const std::string& type): m_Type(type), m_Name(name)
 {
-  spdlog::sinks_init_list sink_list = {
-      std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
-      std::make_shared<WebSocketLoguer_mt>(m_WebsocketClient,
-                                           m_Type + "/" + m_Name)};
-  m_Logger = std::make_shared<spdlog::logger>(
-      m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
+  spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
+                                       std::make_shared<WebSocketLoguer_mt>(m_WebsocketClient, m_Type + "/" + m_Name)};
+  m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
   // Mimic json to parse the message and the level to change it on Loggers;
   std::string pattern = "{\"Message\" : \"%v\", \"Level\" : \"%l\"}";
   m_Logger->sinks()[1]->set_pattern(pattern);
@@ -64,8 +60,7 @@ void Controller::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 void Controller::OnOpen(const ix::WebSocketMessagePtr& msg)
 {
   m_Logger->info("Handshake Headers :");
-  for(auto it: msg->openInfo.headers)
-  { m_Logger->info("\t{0}:{1}", it.first, it.second); }
+  for(auto it: msg->openInfo.headers) { m_Logger->info("\t{0}:{1}", it.first, it.second); }
   m_Logger->info("");
 }
 
@@ -75,8 +70,7 @@ void Controller::OnClose(const ix::WebSocketMessagePtr& msg)
   // This data can be accessed through the closeInfo object.
   m_Logger->info("{}", msg->closeInfo.code);
   m_Logger->info("{}", msg->closeInfo.reason);
-  if(msg->closeInfo.code == 1002)
-    throw Exception(STATUS_CODE_ALREADY_PRESENT, "Name already taken");
+  if(msg->closeInfo.code == 1002) throw Exception(STATUS_CODE_ALREADY_PRESENT, "Name already taken");
 }
 
 void Controller::OnPong(const ix::WebSocketMessagePtr& msg)

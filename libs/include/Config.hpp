@@ -44,8 +44,7 @@ public:
       FTThreshold[i] = 0;
       FTDCoffset[i]  = 0;
     }
-    for(std::size_t i = 0; i < MAX_X742_GROUP_SIZE; i++)
-      sprintf(TablesFilenames[i], "Tables_gr%d", i);
+    for(std::size_t i = 0; i < MAX_X742_GROUP_SIZE; i++) sprintf(TablesFilenames[i], "Tables_gr%d", i);
   }
   int                       LinkType;
   int                       LinkNum;

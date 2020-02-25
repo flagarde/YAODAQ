@@ -5,14 +5,11 @@
 
 #include <iostream>
 
-Json::StreamWriterBuilder Message::m_StreamWriterBuilder =
-    Json::StreamWriterBuilder();
+Json::StreamWriterBuilder Message::m_StreamWriterBuilder = Json::StreamWriterBuilder();
 
-Json::CharReaderBuilder Message::m_CharReaderBuilder =
-    Json::CharReaderBuilder();
+Json::CharReaderBuilder Message::m_CharReaderBuilder = Json::CharReaderBuilder();
 
-Message::Message(const std::string& type, const std::string& content,
-                 const std::string& to, const std::string& from)
+Message::Message(const std::string& type, const std::string& content, const std::string& to, const std::string& from)
 {
   m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
   m_Reader.reset(m_CharReaderBuilder.newCharReader());
@@ -117,24 +114,13 @@ std::string Message::getType() const
   return getType();
 }
 
-Info::Info(const std::string& content, const std::string& to,
-           const std::string& from)
-    : Message("Info", content, to, from)
-{
-}
+Info::Info(const std::string& content, const std::string& to, const std::string& from): Message("Info", content, to, from) {}
 
-std::set<std::string> Status::m_Status{
-    "UNINITIALIZED", "INITIALIZED", "CONNECTED", "CONFIGURED",   "STARTED",
-    "PAUSED",        "STOPED",      "CLEARED",   "DISCONNECTED", "RELEASED",
-    "QUITED",        "INITIALIZE",  "CONNECT",   "CONFIGURE",    "START",
-    "PAUSE",         "STOP",        "CLEAR",     "DISCONNECT",   "RELEASE",
-    "QUIT"};
+std::set<std::string> Status::m_Status{"UNINITIALIZED", "INITIALIZED",  "CONNECTED", "CONFIGURED", "STARTED",    "PAUSED",  "STOPED",
+                                       "CLEARED",       "DISCONNECTED", "RELEASED",  "QUITED",     "INITIALIZE", "CONNECT", "CONFIGURE",
+                                       "START",         "PAUSE",        "STOP",      "CLEAR",      "DISCONNECT", "RELEASE", "QUIT"};
 
-Status::Status(const std::string& content, const std::string& to,
-               const std::string& from)
-    : Message("Status", checkContent(content), to, from)
-{
-}
+Status::Status(const std::string& content, const std::string& to, const std::string& from): Message("Status", checkContent(content), to, from) {}
 
 std::string Status::checkContent(const std::string& content)
 {
@@ -148,8 +134,4 @@ void Status::setContent(const std::string& content)
   Message::setContent(checkContent(content));
 }
 
-Log::Log(const std::string& content, const std::string& to,
-         const std::string& from)
-    : Message("Log", content, to, from)
-{
-}
+Log::Log(const std::string& content, const std::string& to, const std::string& from): Message("Log", content, to, from) {}

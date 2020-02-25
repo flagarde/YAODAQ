@@ -6,8 +6,7 @@
 
 #include <iostream>
 
-std::shared_ptr<Connector>
-ConnectorFactory::createConnector(const ConnectorInfos& infos)
+std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfos& infos)
 {
   infos.printParameters();
   // First I need to see if a type is given to create it
@@ -23,11 +22,9 @@ ConnectorFactory::createConnector(const ConnectorInfos& infos)
   }
   if(m_Type == "CAENVME")
   {
-    if(infos.isSharedConnector() &&
-       m_SharedConnectors.find(infos.getID()) == m_SharedConnectors.end())
+    if(infos.isSharedConnector() && m_SharedConnectors.find(infos.getID()) == m_SharedConnectors.end())
     {
-      m_SharedConnectors.emplace(
-          infos.getID(), std::make_shared<CAEN::CAENVMEConnector>(infos));
+      m_SharedConnectors.emplace(infos.getID(), std::make_shared<CAEN::CAENVMEConnector>(infos));
       return m_SharedConnectors[infos.getID()];
     }
     else
@@ -35,11 +32,9 @@ ConnectorFactory::createConnector(const ConnectorInfos& infos)
   }
   if(m_Type == "CAENDigitizer")
   {
-    if(infos.isSharedConnector() &&
-       m_SharedConnectors.find(infos.getID()) == m_SharedConnectors.end())
+    if(infos.isSharedConnector() && m_SharedConnectors.find(infos.getID()) == m_SharedConnectors.end())
     {
-      m_SharedConnectors.emplace(
-          infos.getID(), std::make_shared<CAEN::CAENDigitizerConnector>(infos));
+      m_SharedConnectors.emplace(infos.getID(), std::make_shared<CAEN::CAENDigitizerConnector>(infos));
       return m_SharedConnectors[infos.getID()];
     }
     else

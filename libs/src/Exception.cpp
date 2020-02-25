@@ -8,16 +8,14 @@
 #include "magic_enum.hpp"
 
 #if experimental_have_source_location == 1
-Exception::Exception(const StatusCode statusCode, const std::string& message,
-                     std::experimental::source_location location)
+Exception::Exception(const StatusCode statusCode, const std::string& message, std::experimental::source_location location)
     : m_Code(statusCode), m_Message(message), m_Location(location)
 {
   constructMessage();
   createBackTrace();
 }
 #elif have_source_location == 1
-Exception::Exception(const StatusCode statusCode, std::source_location location)
-    : m_Code(statusCode), m_Location(location)
+Exception::Exception(const StatusCode statusCode, std::source_location location): m_Code(statusCode), m_Location(location)
 {
   constructMessage();
   createBackTrace();
@@ -52,16 +50,14 @@ void Exception::createBackTrace()
 }
 
 #if experimental_have_source_location == 1
-Exception::Exception(const int& code, const std::string& message,
-                     std::experimental::source_location location)
+Exception::Exception(const int& code, const std::string& message, std::experimental::source_location location)
     : m_Code(code), m_Message(message), m_Location(location)
 {
   constructMessage();
   createBackTrace();
 }
 #elif have_source_location == 1
-Exception::Exception(const int& code, std::source_location location)
-    : m_Code(code), m_Location(location)
+Exception::Exception(const int& code, std::source_location location): m_Code(code), m_Location(location)
 {
   constructMessage();
   createBackTrace();
@@ -88,16 +84,14 @@ void Exception::constructMessage()
   m_Message = "Error " + std::to_string(m_Code) + "\n\t-> " + m_Message;
 #if have_source_location == 1
   m_Message +=
-      (" in function \"" + std::string(getFunctionName()) + "\" in file \"" +
-       std::string(getFileName()) + "\" line " + std::to_string(getLine()))
+      (" in function \"" + std::string(getFunctionName()) + "\" in file \"" + std::string(getFileName()) + "\" line " + std::to_string(getLine()))
           .c_str();
 #endif
 }
 
 std::string Exception::toString() const
 {
-  return std::string(
-      magic_enum::enum_name(magic_enum::enum_cast<StatusCode>(m_Code).value()));
+  return std::string(magic_enum::enum_name(magic_enum::enum_cast<StatusCode>(m_Code).value()));
 }
 
 const std::string& Exception::getBackTrace() const

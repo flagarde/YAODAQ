@@ -5,8 +5,7 @@
 class ConnectorInfos
 {
 public:
-  ConnectorInfos(const toml::value& params = {}, const bool& isShared = false,
-                 const int& id = -1);
+  ConnectorInfos(const toml::value& params = {}, const bool& isShared = false, const int& id = -1);
   bool         isSharedConnector();
   bool         isSharedConnector() const;
   int          getID();

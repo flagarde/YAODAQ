@@ -14,10 +14,7 @@
 class TimeOutInfos
 {
 public:
-  TimeOutInfos(double data, double trigger)
-      : DataRate(data), TriggerRate(trigger)
-  {
-  }
+  TimeOutInfos(double data, double trigger): DataRate(data), TriggerRate(trigger) {}
   TimeOutInfos() {}
   void set(double data, double trigger)
   {
@@ -101,8 +98,7 @@ public:
   void Read()
   {
     int ret{0};
-    ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT,
-                             buffer, &BufferSize);
+    ret = CAEN_DGTZ_ReadData(handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, buffer, &BufferSize);
     if(ret) { Quit(ERR_READOUT); }
     NumEvents = 0;
     if(BufferSize != 0)
@@ -114,11 +110,7 @@ public:
     {
       uint32_t lstatus;
       ret = CAEN_DGTZ_ReadRegister(handle, CAEN_DGTZ_ACQ_STATUS_ADD, &lstatus);
-      if(ret)
-      {
-        printf("Warning: Failure reading reg:%x (%d)\n",
-               CAEN_DGTZ_ACQ_STATUS_ADD, ret);
-      }
+      if(ret) { printf("Warning: Failure reading reg:%x (%d)\n", CAEN_DGTZ_ACQ_STATUS_ADD, ret); }
       else
       {
         if(lstatus & (0x1 << 19)) { Quit(ERR_OVERTEMP); }
@@ -130,9 +122,7 @@ public:
   {
     int ret{0};
     // Select the next enabled group for plotting
-    if((dat.WDcfg.EnableMask) &&
-       (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE ||
-        dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE))
+    if((dat.WDcfg.EnableMask) && (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE))
 
       // Read again the board infos, just in case some of them were changed by
       // the programming (like, for example, the TSample and the number of
@@ -147,13 +137,10 @@ public:
         uint32_t GroupMask = 0;
 
         // Disable Automatic Corrections
-        if((ret = CAEN_DGTZ_DisableDRS4Correction(handle)) != CAEN_DGTZ_Success)
-          Quit(ERR_INVALID_BOARD_TYPE);
+        if((ret = CAEN_DGTZ_DisableDRS4Correction(handle)) != CAEN_DGTZ_Success) Quit(ERR_INVALID_BOARD_TYPE);
 
         // Load the Correction Tables from the Digitizer flash
-        if((ret = CAEN_DGTZ_GetCorrectionTables(handle, dat.WDcfg.DRS4Frequency,
-                                                (void*)X742Tables)) !=
-           CAEN_DGTZ_Success)
+        if((ret = CAEN_DGTZ_GetCorrectionTables(handle, dat.WDcfg.DRS4Frequency, (void*)X742Tables)) != CAEN_DGTZ_Success)
           Quit(ERR_INVALID_BOARD_TYPE);
 
         if(dat.WDcfg.UseManualTables != -1)
@@ -164,8 +151,7 @@ public:
           for(gr = 0; gr < dat.WDcfg.MaxGroupNumber; gr++)
           {
             if(((GroupMask >> gr) & 0x1) == 0) continue;
-            LoadCorrectionTable(dat.WDcfg.TablesFilenames[gr],
-                                &(X742Tables[gr]));
+            LoadCorrectionTable(dat.WDcfg.TablesFilenames[gr], &(X742Tables[gr]));
           }
         }
         // Save to file the Tables read from flash
@@ -174,11 +160,8 @@ public:
       }
       else
       {  // Use Automatic Corrections
-        if((ret = CAEN_DGTZ_LoadDRS4CorrectionData(
-                handle, dat.WDcfg.DRS4Frequency)) != CAEN_DGTZ_Success)
-          Quit(ERR_INVALID_BOARD_TYPE);
-        if((ret = CAEN_DGTZ_EnableDRS4Correction(handle)) != CAEN_DGTZ_Success)
-          Quit(ERR_INVALID_BOARD_TYPE);
+        if((ret = CAEN_DGTZ_LoadDRS4CorrectionData(handle, dat.WDcfg.DRS4Frequency)) != CAEN_DGTZ_Success) Quit(ERR_INVALID_BOARD_TYPE);
+        if((ret = CAEN_DGTZ_EnableDRS4Correction(handle)) != CAEN_DGTZ_Success) Quit(ERR_INVALID_BOARD_TYPE);
       }
     }
   }
@@ -186,28 +169,24 @@ public:
   void Allocate()
   {
     int ret{0};
-    if(dat.WDcfg.Nbit == 8)
-      ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&dat.Event8);
+    if(dat.WDcfg.Nbit == 8) ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&dat.Event8);
     else
     {
-      if(dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
-      { ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&dat.Event16); }
+      if(dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) { ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&dat.Event16); }
       else
       {
         ret = CAEN_DGTZ_AllocateEvent(handle, (void**)&dat.Event742);
       }
     }
     if(ret != CAEN_DGTZ_Success) { Quit(ERR_MALLOC); }
-    ret = CAEN_DGTZ_MallocReadoutBuffer(
-        handle, &buffer, &AllocatedSize); /* WARNING: This malloc must be done
+    ret = CAEN_DGTZ_MallocReadoutBuffer(handle, &buffer, &AllocatedSize); /* WARNING: This malloc must be done
                                              after the digitizer programming */
     if(ret) { Quit(ERR_MALLOC); }
   }
 
   void LoadDACCalibration()
   {
-    if(dat.BoardInfo.FamilyCode !=
-       CAEN_DGTZ_XX742_FAMILY_CODE)  // XX742 not considered
+    if(dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)  // XX742 not considered
       Load_DAC_Calibration_From_Flash();
   }
 
@@ -218,19 +197,14 @@ public:
 
   void MaskChannels()
   {
-    if((dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX740_FAMILY_CODE) &&
-       (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE))
+    if((dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX740_FAMILY_CODE) && (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE))
     { dat.WDcfg.EnableMask &= (1 << dat.WDcfg.Nch) - 1; }
     else
     {
       dat.WDcfg.EnableMask &= (1 << (dat.WDcfg.Nch / 8)) - 1;
     }
-    if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE) &&
-       dat.WDcfg.DesMode)
-    { dat.WDcfg.EnableMask &= 0xAA; }
-    if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX731_FAMILY_CODE) &&
-       dat.WDcfg.DesMode)
-    { dat.WDcfg.EnableMask &= 0x55; }
+    if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE) && dat.WDcfg.DesMode) { dat.WDcfg.EnableMask &= 0xAA; }
+    if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX731_FAMILY_CODE) && dat.WDcfg.DesMode) { dat.WDcfg.EnableMask &= 0x55; }
   }
 
   int32_t BoardSupportsCalibration();
@@ -249,8 +223,7 @@ public:
     if(isStarted && !m_isPaused) return;
     m_isPaused = false;
     // Wait connection is done
-    if(dat.BoardInfo.FamilyCode !=
-       CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
+    if(dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
       Set_relative_Threshold();
     std::cout << "Acquisition started" << std::endl;
     CAEN_DGTZ_SWStartAcquisition(handle);
@@ -287,13 +260,10 @@ public:
         std::cout << std::endl;
       }
       else
-        std::cout
-            << "Can't run temperature monitor while acquisition is running."
-            << std::endl;
+        std::cout << "Can't run temperature monitor while acquisition is running." << std::endl;
     }
     else
-      std::cout << "Board Family doesn't support ADC Temperature Monitor."
-                << std::endl;
+      std::cout << "Board Family doesn't support ADC Temperature Monitor." << std::endl;
   }
 
   void D()
@@ -304,11 +274,9 @@ public:
                    "key to start."
                 << std::endl;
       /// FIX ME PRESS KEY WITH WEBSOCKW
-      if(dat.BoardInfo.FamilyCode ==
-         CAEN_DGTZ_XX740_FAMILY_CODE) /*XX740 specific*/
+      if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) /*XX740 specific*/
         Calibrate_XX740_DC_Offset();
-      else if(dat.BoardInfo.FamilyCode !=
-              CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
+      else if(dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE) /*XX742 not considered*/
         Calibrate_DC_Offset();
       // set new dco values using calibration data
       for(std::size_t i = 0; i < dat.BoardInfo.Channels; i++)
@@ -318,11 +286,8 @@ public:
           if(dat.WDcfg.Version_used[i] == 1) Set_calibrated_DCO(i);
           else
           {
-            CAEN_DGTZ_ErrorCode err = CAEN_DGTZ_SetChannelDCOffset(
-                handle, (uint32_t)i, dat.WDcfg.DCoffset[i]);
-            if(err)
-              std::cout << "Error setting channel " << i << " offset"
-                        << std::endl;
+            CAEN_DGTZ_ErrorCode err = CAEN_DGTZ_SetChannelDCOffset(handle, (uint32_t)i, dat.WDcfg.DCoffset[i]);
+            if(err) std::cout << "Error setting channel " << i << " offset" << std::endl;
           }
         }
       }
@@ -367,8 +332,7 @@ public:
     if(m_continuousTrigger == true) m_continuousTrigger = false;
     else
       m_continuousTrigger = true;
-    std::cout << "Conitnuous trigger set to : " << m_continuousTrigger
-              << std::endl;
+    std::cout << "Conitnuous trigger set to : " << m_continuousTrigger << std::endl;
   }
   void setPaused(const bool& p) { m_isPaused = p; }
   bool isPaused() { return m_isPaused; }
@@ -376,22 +340,22 @@ public:
   TimeOutInfos& getTimeOutInfos() { return m_TimeOutInfos; }
 
 private:
-  void     FreeEvent();
-  void     FreeBuffer();
-  uint32_t totalevent{0};
-  char*    EventPtr{nullptr};
-  bool     isStarted{false};
-  bool     m_continuousTrigger{false};
-  bool     m_isPaused{false};
-  bool     isVMEDevice() { return dat.WDcfg.BaseAddress ? 1 : 0; }
-  uint32_t AllocatedSize{0};
-  uint32_t BufferSize{0};
-  uint32_t NumEvents{0};
-  uint64_t PrevRateTime{0};
-  char*    buffer{nullptr};
+  void                             FreeEvent();
+  void                             FreeBuffer();
+  uint32_t                         totalevent{0};
+  char*                            EventPtr{nullptr};
+  bool                             isStarted{false};
+  bool                             m_continuousTrigger{false};
+  bool                             m_isPaused{false};
+  bool                             isVMEDevice() { return dat.WDcfg.BaseAddress ? 1 : 0; }
+  uint32_t                         AllocatedSize{0};
+  uint32_t                         BufferSize{0};
+  uint32_t                         NumEvents{0};
+  uint64_t                         PrevRateTime{0};
+  char*                            buffer{nullptr};
   const static CAEN_DGTZ_IRQMode_t INTERRUPT_MODE{CAEN_DGTZ_IRQ_MODE_ROAK};
-  int WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
-  CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];
+  int                              WriteRegisterBitmask(uint32_t address, uint32_t data, uint32_t mask);
+  CAEN_DGTZ_DRS4Correction_t       X742Tables[MAX_X742_GROUP_SIZE];
   Digitizer() = delete;
   int                             handle{-1};
   Data&                           dat;

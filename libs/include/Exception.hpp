@@ -36,11 +36,9 @@ class Exception: public std::exception
 public:
 #if experimental_have_source_location == 1
   Exception(const StatusCode statusCode, const std::string& message = "",
-            std::experimental::source_location location =
-                std::experimental::source_location::current());
+            std::experimental::source_location location = std::experimental::source_location::current());
 #elif have_source_location == 1
-  Exception(const StatusCode statusCode, const std::string& message = "",
-            std::source_location location = std::source_location::current());
+  Exception(const StatusCode statusCode, const std::string& message = "", std::source_location location = std::source_location::current());
 #else
   Exception(const StatusCode statusCode, const std::string& message = "");
 #endif
@@ -64,11 +62,9 @@ public:
 protected:
 #if experimental_have_source_location == 1
   Exception(const int& code = 0, const std::string& message = "",
-            std::experimental::source_location location =
-                std::experimental::source_location::current());
+            std::experimental::source_location location = std::experimental::source_location::current());
 #elif have_source_location == 1
-  Exception(const int& code = 0, const std::string& message = "",
-            std::source_location location = std::source_location::current());
+  Exception(const int& code = 0, const std::string& message = "", std::source_location location = std::source_location::current());
 #else
   Exception(const int& code = 0, const std::string& message = "");
 #endif

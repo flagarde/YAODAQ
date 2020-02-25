@@ -8,8 +8,7 @@
 class Message
 {
 public:
-  Message(const std::string& type = "Message", const std::string& content = "",
-          const std::string& to = "", const std::string& from = "");
+  Message(const std::string& type = "Message", const std::string& content = "", const std::string& to = "", const std::string& from = "");
   void         parse(const std::string&);
   void         setFrom(const std::string&);
   void         setTo(const std::string&);
@@ -42,22 +41,19 @@ private:
 class Info: public Message
 {
 public:
-  Info(const std::string& content = "", const std::string& to = "",
-       const std::string& from = "");
+  Info(const std::string& content = "", const std::string& to = "", const std::string& from = "");
 };
 
 class Log: public Message
 {
 public:
-  Log(const std::string& content = "", const std::string& to = "",
-      const std::string& from = "");
+  Log(const std::string& content = "", const std::string& to = "", const std::string& from = "");
 };
 
 class Status: public Message
 {
 public:
-  Status(const std::string& content = "", const std::string& to = "",
-         const std::string& from = "");
+  Status(const std::string& content = "", const std::string& to = "", const std::string& from = "");
   virtual void setContent(const std::string&) final;
 
 private:

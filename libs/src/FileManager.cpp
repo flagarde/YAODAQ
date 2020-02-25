@@ -3,8 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-void FileManager::Init(const std::string& filename, uint16_t EnableMask,
-                       int nbrChannels, double xinc)
+void FileManager::Init(const std::string& filename, uint16_t EnableMask, int nbrChannels, double xinc)
 {
   fname = filename;
   setNbrChannels(nbrChannels);
@@ -117,9 +116,7 @@ void FileManager::addEvent742()
         chan.RecordLength = dat.Event742->DataGroup[gr].ChSize[ch];
         chan.Number       = gr * 9 + ch;
         chan.Group        = gr;
-        if((gr * 9 + ch) == 8 || (gr * 9 + ch) == 17 || (gr * 9 + ch) == 26 ||
-           (gr * 9 + ch) == 35)
-          chan.Name = "Trigger" + std::to_string(gr);
+        if((gr * 9 + ch) == 8 || (gr * 9 + ch) == 17 || (gr * 9 + ch) == 26 || (gr * 9 + ch) == 35) chan.Name = "Trigger" + std::to_string(gr);
         else
           chan.Name = "Channel" + std::to_string((gr * 8) + ch);
         chan.TriggerTimeTag = dat.Event742->DataGroup[gr].TriggerTimeTag;

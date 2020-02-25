@@ -4,10 +4,7 @@
 
 ConnectorFactory Board::m_ConnectorFactory = ConnectorFactory();
 
-Board::Board(const std::string& name, const std::string& type)
-    : Module(name, type)
-{
-}
+Board::Board(const std::string& name, const std::string& type): Module(name, type) {}
 
 void Board::DoDoConnect()
 {

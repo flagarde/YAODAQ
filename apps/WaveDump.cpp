@@ -18,12 +18,9 @@ using namespace elogpp;
 int main(int argc, char* argv[])
 {
   ProgramInfos infos;
-  std::cout << "**************************************************************"
-            << std::endl;
-  std::cout << "                        Wave Dump " << infos.getVersion()
-            << std::endl;
-  std::cout << "**************************************************************"
-            << std::endl;
+  std::cout << "**************************************************************" << std::endl;
+  std::cout << "                        Wave Dump " << infos.getVersion() << std::endl;
+  std::cout << "**************************************************************" << std::endl;
   if(argc != 3) { std::cout << " config file and ip " << std::endl; }
   ElogManager       manager;
   const std::string WaveDump_Release{"3.9.0"};
@@ -71,12 +68,9 @@ int main(int argc, char* argv[])
     {
       int MajorNumber{0};
       digi.GetInfos();
-      std::cout << "Connected to CAEN Digitizer Model "
-                << dat.BoardInfo.ModelName << std::endl;
-      std::cout << "ROC FPGA Release is " << dat.BoardInfo.ROC_FirmwareRel
-                << std::endl;
-      std::cout << "AMC FPGA Release is " << dat.BoardInfo.AMC_FirmwareRel
-                << std::endl;
+      std::cout << "Connected to CAEN Digitizer Model " << dat.BoardInfo.ModelName << std::endl;
+      std::cout << "ROC FPGA Release is " << dat.BoardInfo.ROC_FirmwareRel << std::endl;
+      std::cout << "AMC FPGA Release is " << dat.BoardInfo.AMC_FirmwareRel << std::endl;
       // Check firmware rivision (DPP firmwares cannot be used with WaveDump */
       sscanf(dat.BoardInfo.AMC_FirmwareRel, "%d", &MajorNumber);
       if(MajorNumber >= 128)
@@ -113,14 +107,11 @@ int main(int argc, char* argv[])
     else if(server.Command() == "STOP")
     {
       digi.Stop();
-      ElogEntry                             entry = manager.CreateEntry();
-      std::chrono::system_clock::time_point now =
-          std::chrono::system_clock::now();
-      std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
-      std::chrono::nanoseconds now2 =
-          std::chrono::duration_cast<std::chrono::nanoseconds>(
-              now.time_since_epoch());
-      long second = now2.count() / 1000000000;
+      ElogEntry                             entry       = manager.CreateEntry();
+      std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
+      std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
+      std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+      long                                  second      = now2.count() / 1000000000;
       entry.SetAttribute("End", std::to_string(second));
       entry.User("DAQ").To("NAS", "Runs").Edit(RunNumber).Send();
       file.CloseFile();
@@ -137,15 +128,12 @@ int main(int argc, char* argv[])
         entry2.User("DAQ").To("NAS", "Runs").ReceiveEntry("last");
         int ID = std::stoi(entry2.GetAttribute("ID"));
         ++ID;
-        RunNumber = std::to_string(ID);
-        std::chrono::system_clock::time_point now =
-            std::chrono::system_clock::now();
-        std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
-        std::chrono::nanoseconds now2 =
-            std::chrono::duration_cast<std::chrono::nanoseconds>(
-                now.time_since_epoch());
-        long        second = now2.count() / 1000000000;
-        std::string fname  = "Run_" + std::to_string(ID) + ".root";
+        RunNumber                                         = std::to_string(ID);
+        std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
+        std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
+        std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+        long                                  second      = now2.count() / 1000000000;
+        std::string                           fname       = "Run_" + std::to_string(ID) + ".root";
         entry.SetAttribute("Begin", std::to_string(second));
         entry.SetAttribute("Run Number", RunNumber);
         entry.SetMessage("Please say something !");
@@ -198,19 +186,12 @@ int main(int argc, char* argv[])
             digi.InterruptTimeout();
             if(digi.getTimeOutInfos().hasChanged())
             {
-              if(digi.getTimeOutInfos().getDataRate() == 0)
-                std::cout << "No data..." << std::endl;
+              if(digi.getTimeOutInfos().getDataRate() == 0) std::cout << "No data..." << std::endl;
               else
               {
-                server.SendInfos(
-                    "DataRate",
-                    std::to_string(digi.getTimeOutInfos().getDataRate()));
-                server.SendInfos(
-                    "TriggerRate",
-                    std::to_string(digi.getTimeOutInfos().getTriggerRate()));
-                printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n",
-                       digi.getTimeOutInfos().getDataRate(),
-                       digi.getTimeOutInfos().getTriggerRate());
+                server.SendInfos("DataRate", std::to_string(digi.getTimeOutInfos().getDataRate()));
+                server.SendInfos("TriggerRate", std::to_string(digi.getTimeOutInfos().getTriggerRate()));
+                printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n", digi.getTimeOutInfos().getDataRate(), digi.getTimeOutInfos().getTriggerRate());
               }
             }
             for(std::size_t i = 0; i < digi.getNumberOfEvents(); i++)
@@ -221,8 +202,7 @@ int main(int argc, char* argv[])
               if(plot.isContinuousPlotting()) plot.Plot();
               file.AddEvents();
               digi.addOneEventProcessed();
-              server.SendInfos("EventNbr",
-                               std::to_string(digi.getTotalOfEvents()));
+              server.SendInfos("EventNbr", std::to_string(digi.getTotalOfEvents()));
             }
           }
           continue;
@@ -231,19 +211,12 @@ int main(int argc, char* argv[])
         digi.InterruptTimeout();
         if(digi.getTimeOutInfos().hasChanged())
         {
-          if(digi.getTimeOutInfos().getDataRate() == 0)
-            std::cout << "No data..." << std::endl;
+          if(digi.getTimeOutInfos().getDataRate() == 0) std::cout << "No data..." << std::endl;
           else
           {
-            server.SendInfos(
-                "DataRate",
-                std::to_string(digi.getTimeOutInfos().getDataRate()));
-            server.SendInfos(
-                "TriggerRate",
-                std::to_string(digi.getTimeOutInfos().getTriggerRate()));
-            printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n",
-                   digi.getTimeOutInfos().getDataRate(),
-                   digi.getTimeOutInfos().getTriggerRate());
+            server.SendInfos("DataRate", std::to_string(digi.getTimeOutInfos().getDataRate()));
+            server.SendInfos("TriggerRate", std::to_string(digi.getTimeOutInfos().getTriggerRate()));
+            printf("Reading at %.2f MB/s (Trg Rate: %.2f Hz)\n", digi.getTimeOutInfos().getDataRate(), digi.getTimeOutInfos().getTriggerRate());
           }
         }
 

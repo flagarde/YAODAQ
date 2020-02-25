@@ -29,29 +29,27 @@ protected:
 
 private:
   WebsocketClient                                     m_WebsocketClient;
-  std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack{
-      [this](const ix::WebSocketMessagePtr& msg) {
-        if(msg->type == ix::WebSocketMessageType::Message)
-        { this->OnMessage(msg); }
-        else if(msg->type == ix::WebSocketMessageType::Open)
-        {
-          this->OnOpen(msg);
-        }
-        else if(msg->type == ix::WebSocketMessageType::Close)
-        {
-          this->OnClose(msg);
-        }
-        else if(msg->type == ix::WebSocketMessageType::Error)
-        {
-          this->OnError(msg);
-        }
-        else if(msg->type == ix::WebSocketMessageType::Ping)
-        {
-          this->OnPing(msg);
-        }
-        else if(msg->type == ix::WebSocketMessageType::Pong)
-        {
-          this->OnPong(msg);
-        }
-      }};
+  std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack{[this](const ix::WebSocketMessagePtr& msg) {
+    if(msg->type == ix::WebSocketMessageType::Message) { this->OnMessage(msg); }
+    else if(msg->type == ix::WebSocketMessageType::Open)
+    {
+      this->OnOpen(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Close)
+    {
+      this->OnClose(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Error)
+    {
+      this->OnError(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Ping)
+    {
+      this->OnPing(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Pong)
+    {
+      this->OnPong(msg);
+    }
+  }};
 };

@@ -60,33 +60,31 @@ protected:
   std::shared_ptr<spdlog::logger> m_Logger{nullptr};
 
 private:
-  void            DoOnStatus(Message& message);
-  void            sendStatus(const std::string&);
-  void            DoOnMessage(const ix::WebSocketMessagePtr& msg);
-  WebsocketClient m_WebsocketClient;
-  std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack{
-      [this](const ix::WebSocketMessagePtr& msg) {
-        if(msg->type == ix::WebSocketMessageType::Message)
-        { this->DoOnMessage(msg); }
-        else if(msg->type == ix::WebSocketMessageType::Open)
-        {
-          this->OnOpen(msg);
-        }
-        else if(msg->type == ix::WebSocketMessageType::Close)
-        {
-          this->OnClose(msg);
-        }
-        else if(msg->type == ix::WebSocketMessageType::Error)
-        {
-          this->OnError(msg);
-        }
-        else if(msg->type == ix::WebSocketMessageType::Ping)
-        {
-          this->OnPing(msg);
-        }
-        else if(msg->type == ix::WebSocketMessageType::Pong)
-        {
-          this->OnPong(msg);
-        }
-      }};
+  void                                                DoOnStatus(Message& message);
+  void                                                sendStatus(const std::string&);
+  void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
+  WebsocketClient                                     m_WebsocketClient;
+  std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack{[this](const ix::WebSocketMessagePtr& msg) {
+    if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
+    else if(msg->type == ix::WebSocketMessageType::Open)
+    {
+      this->OnOpen(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Close)
+    {
+      this->OnClose(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Error)
+    {
+      this->OnError(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Ping)
+    {
+      this->OnPing(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Pong)
+    {
+      this->OnPong(msg);
+    }
+  }};
 };

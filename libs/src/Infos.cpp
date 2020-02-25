@@ -4,9 +4,7 @@
 
 #include <vector>
 
-Infos::Infos(const std::string& roomName, const std::string& rackName,
-             const std::string& crateName, const std::string& name,
-             const std::string& type)
+Infos::Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type)
 {
   m_RoomName  = roomName;
   m_RackName  = rackName;
@@ -51,16 +49,14 @@ void Infos::setKey(const std::string& key)
   }
   else
   {
-    throw Exception(STATUS_CODE_WRONG_NUMBER_PARAMETERS,
-                    "Number of argument in key should be 5 "
-                    "(RoomName/RackName/CrateName/Type/Name) !");
+    throw Exception(STATUS_CODE_WRONG_NUMBER_PARAMETERS, "Number of argument in key should be 5 "
+                                                         "(RoomName/RackName/CrateName/Type/Name) !");
   }
 }
 
 std::string Infos::getKey() const
 {
-  return m_RoomName + "/" + m_RackName + "/" + m_CrateName + "/" + m_Type +
-         "/" + m_Name;
+  return m_RoomName + "/" + m_RackName + "/" + m_CrateName + "/" + m_Type + "/" + m_Name;
 }
 
 void Infos::setRoomIndex(const int& index)

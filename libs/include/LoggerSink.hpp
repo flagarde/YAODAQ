@@ -5,19 +5,11 @@
 #include "details/null_mutex.h"
 #include "sinks/base_sink.h"
 
-template<typename Mutex>
-class WebSocketLoguer: public spdlog::sinks::base_sink<Mutex>
+template<typename Mutex> class WebSocketLoguer: public spdlog::sinks::base_sink<Mutex>
 {
 public:
-  WebSocketLoguer(WebsocketClient& websocketclient, const std::string& from)
-      : m_WebSocketClient(websocketclient)
-  {
-    m_Log.setFrom(from);
-  }
-  void setWebSocketClient(const WebsocketClient& websocketclient)
-  {
-    m_WebSocketClient = websocketclient;
-  }
+  WebSocketLoguer(WebsocketClient& websocketclient, const std::string& from): m_WebSocketClient(websocketclient) { m_Log.setFrom(from); }
+  void setWebSocketClient(const WebsocketClient& websocketclient) { m_WebSocketClient = websocketclient; }
   void setFrom(const std::string& from) { m_Log.setFrom(from); }
 
 protected:

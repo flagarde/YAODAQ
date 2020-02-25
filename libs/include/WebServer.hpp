@@ -9,11 +9,8 @@
 class WebServer
 {
 public:
-  WebServer(
-      int                port    = ix::SocketServer::kDefaultPort,
-      const std::string& host    = ix::SocketServer::kDefaultHost,
-      int                backlog = ix::SocketServer::kDefaultTcpBacklog,
-      std::size_t maxConnections = ix::SocketServer::kDefaultMaxConnections);
+  WebServer(int port = ix::SocketServer::kDefaultPort, const std::string& host = ix::SocketServer::kDefaultHost,
+            int backlog = ix::SocketServer::kDefaultTcpBacklog, std::size_t maxConnections = ix::SocketServer::kDefaultMaxConnections);
   void start() { m_server.start(); }
   void stop() { m_server.stop(); }
   void listen()

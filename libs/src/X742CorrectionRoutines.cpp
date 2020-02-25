@@ -15,8 +15,7 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
   int          j;
 
   chaux_en = (dataout->ChSize[8] == 0) ? 0 : 1;
-  for(j = 0; j < (8 + chaux_en); j++)
-  { dataout->DataChannel[j][0] = dataout->DataChannel[j][1]; }
+  for(j = 0; j < (8 + chaux_en); j++) { dataout->DataChannel[j][0] = dataout->DataChannel[j][1]; }
   for(i = 1; i < dataout->ChSize[0]; i++)
   {
     offset = 0;
@@ -24,34 +23,26 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
     {
       if(i == 1)
       {
-        if((dataout->DataChannel[j][2] - dataout->DataChannel[j][1]) > 30)
-        { offset++; }
+        if((dataout->DataChannel[j][2] - dataout->DataChannel[j][1]) > 30) { offset++; }
         else
         {
-          if(((dataout->DataChannel[j][3] - dataout->DataChannel[j][1]) > 30) &&
-             ((dataout->DataChannel[j][3] - dataout->DataChannel[j][2]) > 30))
+          if(((dataout->DataChannel[j][3] - dataout->DataChannel[j][1]) > 30) && ((dataout->DataChannel[j][3] - dataout->DataChannel[j][2]) > 30))
           { offset++; }
         }
       }
       else
       {
         if((i == dataout->ChSize[j] - 1) &&
-           ((dataout->DataChannel[j][dataout->ChSize[j] - 2] -
-             dataout->DataChannel[j][dataout->ChSize[j] - 1]) > 30))
+           ((dataout->DataChannel[j][dataout->ChSize[j] - 2] - dataout->DataChannel[j][dataout->ChSize[j] - 1]) > 30))
         { offset++; }
         else
         {
           if((dataout->DataChannel[j][i - 1] - dataout->DataChannel[j][i]) > 30)
           {
-            if((dataout->DataChannel[j][i + 1] - dataout->DataChannel[j][i]) >
-               30)
-              offset++;
+            if((dataout->DataChannel[j][i + 1] - dataout->DataChannel[j][i]) > 30) offset++;
             else
             {
-              if((i == dataout->ChSize[j] - 2) ||
-                 ((dataout->DataChannel[j][i + 2] -
-                   dataout->DataChannel[j][i]) > 30))
-                offset++;
+              if((i == dataout->ChSize[j] - 2) || ((dataout->DataChannel[j][i + 2] - dataout->DataChannel[j][i]) > 30)) offset++;
             }
           }
         }
@@ -78,36 +69,22 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
         }
         else
         {
-          if(i == dataout->ChSize[j] - 1)
-          {
-            dataout->DataChannel[j][dataout->ChSize[j] - 1] =
-                dataout->DataChannel[j][dataout->ChSize[j] - 2];
-          }
+          if(i == dataout->ChSize[j] - 1) { dataout->DataChannel[j][dataout->ChSize[j] - 1] = dataout->DataChannel[j][dataout->ChSize[j] - 2]; }
           else
           {
-            if((dataout->DataChannel[j][i + 1] - dataout->DataChannel[j][i]) >
-               30)
-              dataout->DataChannel[j][i] = ((dataout->DataChannel[j][i + 1] +
-                                             dataout->DataChannel[j][i - 1]) /
-                                            2);
+            if((dataout->DataChannel[j][i + 1] - dataout->DataChannel[j][i]) > 30)
+              dataout->DataChannel[j][i] = ((dataout->DataChannel[j][i + 1] + dataout->DataChannel[j][i - 1]) / 2);
             else
             {
               if(i == dataout->ChSize[j] - 2)
               {
-                dataout->DataChannel[j][dataout->ChSize[j] - 2] =
-                    dataout->DataChannel[j][dataout->ChSize[j] - 3];
-                dataout->DataChannel[j][dataout->ChSize[j] - 1] =
-                    dataout->DataChannel[j][dataout->ChSize[j] - 3];
+                dataout->DataChannel[j][dataout->ChSize[j] - 2] = dataout->DataChannel[j][dataout->ChSize[j] - 3];
+                dataout->DataChannel[j][dataout->ChSize[j] - 1] = dataout->DataChannel[j][dataout->ChSize[j] - 3];
               }
               else
               {
-                dataout->DataChannel[j][i] = ((dataout->DataChannel[j][i + 2] +
-                                               dataout->DataChannel[j][i - 1]) /
-                                              2);
-                dataout->DataChannel[j][i + 1] =
-                    ((dataout->DataChannel[j][i + 2] +
-                      dataout->DataChannel[j][i - 1]) /
-                     2);
+                dataout->DataChannel[j][i]     = ((dataout->DataChannel[j][i + 2] + dataout->DataChannel[j][i - 1]) / 2);
+                dataout->DataChannel[j][i + 1] = ((dataout->DataChannel[j][i + 2] + dataout->DataChannel[j][i - 1]) / 2);
               }
             }
           }
@@ -124,9 +101,8 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
  * board \param   CorrectionLevelMask :  Mask of Corrections to be applied
  *   \param   data                :  Data to be corrected
  */
-void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable,
-                         CAEN_DGTZ_DRS4Frequency_t   frequency,
-                         int CorrectionLevelMask, CAEN_DGTZ_X742_GROUP_t* data)
+void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequency_t frequency, int CorrectionLevelMask,
+                         CAEN_DGTZ_X742_GROUP_t* data)
 {
   int      i, j, size1, trg = 0, k;
   float    Time[1024], t0;
@@ -161,8 +137,7 @@ void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable,
     size1 = data->ChSize[i];
     for(j = 0; j < size1; j++)
     {
-      if(cellCorrection)
-        data->DataChannel[i][j] -= CTable->cell[i][((st_ind + j) % 1024)];
+      if(cellCorrection) data->DataChannel[i][j] -= CTable->cell[i][((st_ind + j) % 1024)];
       if(nsampleCorrection) data->DataChannel[i][j] -= CTable->nsample[i][j];
     }
   }
@@ -192,9 +167,7 @@ void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable,
     for(i = 1; i < 1024; i++)
     {
       while((k < 1024 - 1) && (Time[k] < (i * Tsamp))) k++;
-      vcorr = (((float)(data->DataChannel[j][k] - data->DataChannel[j][k - 1]) /
-                (Time[k] - Time[k - 1])) *
-               ((i * Tsamp) - Time[k - 1]));
+      vcorr       = (((float)(data->DataChannel[j][k] - data->DataChannel[j][k - 1]) / (Time[k] - Time[k - 1])) * ((i * Tsamp) - Time[k - 1]));
       wave_tmp[i] = data->DataChannel[j][k - 1] + vcorr;
       k--;
     }
@@ -208,15 +181,13 @@ void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable,
  *   \param   Group Mask of Tables to be saved
  *   \param   Pointer to the DataCorrection group tables
  */
-int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask,
-                         CAEN_DGTZ_DRS4Correction_t* tables)
+int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask, CAEN_DGTZ_DRS4Correction_t* tables)
 {
   char  fnStr[MAX_BASE_INPUT_FILE_LENGTH + 1];
   int   ch, i, j, gr;
   FILE* outputfile;
 
-  if((int)(strlen(outputFileName) - 17) > MAX_BASE_INPUT_FILE_LENGTH)
-    return -1;  // Too long base filename
+  if((int)(strlen(outputFileName) - 17) > MAX_BASE_INPUT_FILE_LENGTH) return -1;  // Too long base filename
 
   for(gr = 0; gr < MAX_X742_GROUP_SIZE; gr++)
   {
@@ -229,8 +200,7 @@ int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask,
     if((outputfile = fopen(fnStr, "w")) == NULL) return -2;
     for(ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
     {
-      fprintf(outputfile,
-              "Calibration values from cell 0 to 1024 for channel %d:\n\n", ch);
+      fprintf(outputfile, "Calibration values from cell 0 to 1024 for channel %d:\n\n", ch);
       for(i = 0; i < 1024; i += 8)
       {
         for(j = 0; j < 8; j++) fprintf(outputfile, "%d\t", tb->cell[ch][i + j]);
@@ -244,12 +214,10 @@ int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask,
     if((outputfile = fopen(fnStr, "w")) == NULL) return -3;
     for(ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
     {
-      fprintf(outputfile,
-              "Calibration values from cell 0 to 1024 for channel %d:\n\n", ch);
+      fprintf(outputfile, "Calibration values from cell 0 to 1024 for channel %d:\n\n", ch);
       for(i = 0; i < 1024; i += 8)
       {
-        for(j = 0; j < 8; j++)
-          fprintf(outputfile, "%d\t", tb->nsample[ch][i + j]);
+        for(j = 0; j < 8; j++) fprintf(outputfile, "%d\t", tb->nsample[ch][i + j]);
         fprintf(outputfile, "cell = %d to %d\n", i, i + 7);
       }
     }
@@ -261,8 +229,7 @@ int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask,
     fprintf(outputfile, "Calibration values (ps) from cell 0 to 1024 :\n\n");
     for(i = 0; i < 1024; i += 8)
     {
-      for(ch = 0; ch < 8; ch++)
-        fprintf(outputfile, "%09.3f\t", tb->time[i + ch]);
+      for(ch = 0; ch < 8; ch++) fprintf(outputfile, "%09.3f\t", tb->time[i + ch]);
       fprintf(outputfile, "cell = %d to %d\n", i, i + 7);
     }
     fclose(outputfile);
@@ -285,8 +252,7 @@ int LoadCorrectionTable(char* baseInputFileName, CAEN_DGTZ_DRS4Correction_t* tb)
   FILE* inputfile;
   char  Buf[MAX_READ_CHAR + 1], *pread;
 
-  if(strlen(baseInputFileName) - 13 > MAX_BASE_INPUT_FILE_LENGTH)
-    return -1;  // Too long base filename
+  if(strlen(baseInputFileName) - 13 > MAX_BASE_INPUT_FILE_LENGTH) return -1;  // Too long base filename
 
   strcpy(fnStr, baseInputFileName);
   strcat(fnStr, "_cell.txt");
@@ -294,13 +260,11 @@ int LoadCorrectionTable(char* baseInputFileName, CAEN_DGTZ_DRS4Correction_t* tb)
   if((inputfile = fopen(fnStr, "r")) == NULL) return -2;
   for(ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
   {
-    while(strstr(Buf, "Calibration") != Buf)
-      pread = fgets(Buf, MAX_READ_CHAR, inputfile);
+    while(strstr(Buf, "Calibration") != Buf) pread = fgets(Buf, MAX_READ_CHAR, inputfile);
 
     for(i = 0; i < 1024; i += 8)
     {
-      for(j = 0; j < 8; j++)
-        read = fscanf(inputfile, "%hd", &(tb->cell[ch][i + j]));
+      for(j = 0; j < 8; j++) read = fscanf(inputfile, "%hd", &(tb->cell[ch][i + j]));
       pread = fgets(Buf, MAX_READ_CHAR, inputfile);
     }
   }
@@ -312,13 +276,11 @@ int LoadCorrectionTable(char* baseInputFileName, CAEN_DGTZ_DRS4Correction_t* tb)
   if((inputfile = fopen(fnStr, "r")) == NULL) return -3;
   for(ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
   {
-    while(strstr(Buf, "Calibration") != Buf)
-      pread = fgets(Buf, MAX_READ_CHAR, inputfile);
+    while(strstr(Buf, "Calibration") != Buf) pread = fgets(Buf, MAX_READ_CHAR, inputfile);
 
     for(i = 0; i < 1024; i += 8)
     {
-      for(j = 0; j < 8; j++)
-        read = fscanf(inputfile, "%hhd", &(tb->nsample[ch][i + j]));
+      for(j = 0; j < 8; j++) read = fscanf(inputfile, "%hhd", &(tb->nsample[ch][i + j]));
       pread = fgets(Buf, MAX_READ_CHAR, inputfile);
     }
   }
@@ -328,8 +290,7 @@ int LoadCorrectionTable(char* baseInputFileName, CAEN_DGTZ_DRS4Correction_t* tb)
   strcat(fnStr, "_time.txt");
   printf("Loading correction table time values from %s\n", fnStr);
   if((inputfile = fopen(fnStr, "r")) == NULL) return -4;
-  while(strstr(Buf, "Calibration") != Buf)
-    pread = fgets(Buf, MAX_READ_CHAR, inputfile);
+  while(strstr(Buf, "Calibration") != Buf) pread = fgets(Buf, MAX_READ_CHAR, inputfile);
   pread = fgets(Buf, MAX_READ_CHAR, inputfile);
 
   for(i = 0; i < 1024; i += 8)

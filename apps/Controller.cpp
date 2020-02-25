@@ -8,8 +8,7 @@ int main(int argc, char** argv)
   Interrupt interrupt;
   CLI::App  app{"Dump"};
   int       port{80};
-  app.add_option("-p,--port", port, "Port to listen")
-      ->check(CLI::Range(0, 65535));
+  app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
   std::string host{"127.0.0.1"};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
   std::string controllerName = "Controller";

@@ -78,8 +78,7 @@ public:
     if(m_ContinuousPlotting == true) m_ContinuousPlotting = false;
     else
       m_ContinuousPlotting = true;
-    std::cout << "Continuous Plotting is set to : " << m_ContinuousPlotting
-              << std::endl;
+    std::cout << "Continuous Plotting is set to : " << m_ContinuousPlotting << std::endl;
   }
   bool isContinuousPlotting() { return m_ContinuousPlotting; }
 

@@ -19,9 +19,7 @@ class FileManager
 public:
   FileManager(Data& data): dat(data) { initialized = false; }
   void AddEvents();
-  FileManager(Data& data, std::string filename, uint16_t EnableMask,
-              int nbrChannels, double xinc)
-      : dat(data)
+  FileManager(Data& data, std::string filename, uint16_t EnableMask, int nbrChannels, double xinc): dat(data)
   {
     Init(filename, EnableMask, nbrChannels, xinc);
   }
@@ -32,8 +30,7 @@ public:
     delete event;
   }
 
-  void Init(const std::string& filename, uint16_t EnableMask, int nbrChannels,
-            double xinc);
+  void Init(const std::string& filename, uint16_t EnableMask, int nbrChannels, double xinc);
   void OpenFile();
   void CloseFile();
   void setVerbose(bool v) { verbose = v; }

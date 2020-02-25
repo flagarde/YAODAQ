@@ -20,8 +20,7 @@ void Help()
   std::exit(0);
 }
 
-void ParseArguments(const int& argc, char** argv, std::string& file,
-                    int& NbrEvents)
+void ParseArguments(const int& argc, char** argv, std::string& file, int& NbrEvents)
 {
   if(argc <= 1 || argc > 3) { Help(); }
   else if(argc == 3)
@@ -31,9 +30,7 @@ void ParseArguments(const int& argc, char** argv, std::string& file,
   }
   else if(argc == 2)
   {
-    if(std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help" ||
-       std::string(argv[1]) == "help")
-      Help();
+    if(std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help" || std::string(argv[1]) == "help") Help();
     file = std::string(argv[1]);
   }
 }
@@ -42,15 +39,13 @@ int NbrEventToProcess(int& nbrEvents, const Long64_t& nentries)
 {
   if(nbrEvents < 0)
   {
-    std::cout << "Come on dude do you really want to crash my program !!!"
-              << std::endl;
+    std::cout << "Come on dude do you really want to crash my program !!!" << std::endl;
     std::exit(-2);
   }
   if(nbrEvents == 0) return nentries;
   else if(nbrEvents > nentries)
   {
-    std::cout << "WARNING : You ask to process " << nbrEvents
-              << " but this run only have " << nentries << " !!!";
+    std::cout << "WARNING : You ask to process " << nbrEvents << " but this run only have " << nentries << " !!!";
     return nbrEvents = nentries;
   }
   else
@@ -73,8 +68,7 @@ public:
 private:
   void Parse(const std::string& PN)
   {
-    if(PN == "Positive" || PN == "POSITIVE" || PN == "P" || PN == "+")
-      m_positive = true;
+    if(PN == "Positive" || PN == "POSITIVE" || PN == "P" || PN == "+") m_positive = true;
     else if(PN == "Negative" || PN == "NEGATIVE" || PN == "N" || PN == "-")
       m_positive = false;
     else
@@ -89,9 +83,7 @@ private:
 class channel
 {
 public:
-  channel(const int& chn, const std::string& PN): m_channelNumber(chn), m_PN(PN)
-  {
-  }
+  channel(const int& chn, const std::string& PN): m_channelNumber(chn), m_PN(PN) {}
   channel(){};
   int         getChannelNumber() { return m_channelNumber; }
   bool        isPositive() { return m_PN.IsPositiveSignal(); }
@@ -107,19 +99,12 @@ class Channels
 {
 public:
   std::size_t getNumberOfChannelActivated() { return m_Channel.size(); }
-  void        activateChannel(const int& chn, const std::string& PN)
-  {
-    m_Channel.emplace(chn, channel(chn, PN));
-  }
-  void print()
+  void        activateChannel(const int& chn, const std::string& PN) { m_Channel.emplace(chn, channel(chn, PN)); }
+  void        print()
   {
     std::cout << "Channels ENABLED for the analysis : \n";
-    for(std::map<int, channel>::iterator it = m_Channel.begin();
-        it != m_Channel.end(); ++it)
-    {
-      std::cout << "\t--> Channel " << it->first << " is declared to have "
-                << it->second.PNasString() << " signal" << std::endl;
-    }
+    for(std::map<int, channel>::iterator it = m_Channel.begin(); it != m_Channel.end(); ++it)
+    { std::cout << "\t--> Channel " << it->first << " is declared to have " << it->second.PNasString() << " signal" << std::endl; }
   }
   bool DontAnalyseIt(const int& channel)
   {
@@ -133,31 +118,21 @@ private:
   std::map<int, channel> m_Channel;
 };
 
-TH1D CreateAndFillWaveform(const int& eventNbr, const Channel& channel,
-                           const std::string& name  = "",
-                           const std::string  title = "")
+TH1D CreateAndFillWaveform(const int& eventNbr, const Channel& channel, const std::string& name = "", const std::string title = "")
 {
-  std::string my_name = name + "_Event_" + std::to_string(eventNbr) +
-                        "_Channel_" + std::to_string(int(channel.Number));
-  std::string my_title = title + " Event " + std::to_string(eventNbr) +
-                         " Channel " + std::to_string(int(channel.Number));
-  TH1D th1(my_title.c_str(), my_name.c_str(), channel.Data.size(), 0,
-           channel.Data.size());
-  for(std::size_t i = 0; i != channel.Data.size(); ++i)
-    th1.Fill(i, channel.Data[i]);
-  auto result = std::minmax_element(channel.Data.begin(), channel.Data.end());
+  std::string my_name  = name + "_Event_" + std::to_string(eventNbr) + "_Channel_" + std::to_string(int(channel.Number));
+  std::string my_title = title + " Event " + std::to_string(eventNbr) + " Channel " + std::to_string(int(channel.Number));
+  TH1D        th1(my_title.c_str(), my_name.c_str(), channel.Data.size(), 0, channel.Data.size());
+  for(std::size_t i = 0; i != channel.Data.size(); ++i) th1.Fill(i, channel.Data[i]);
+  auto                      result = std::minmax_element(channel.Data.begin(), channel.Data.end());
   std::pair<double, double> minmax((*result.first), (*result.second));
-  th1.GetYaxis()->SetRangeUser(
-      (minmax.first - ((minmax.second - minmax.first)) / 20.0),
-      (minmax.second + ((minmax.second - minmax.first)) / 20.0));
+  th1.GetYaxis()->SetRangeUser((minmax.first - ((minmax.second - minmax.first)) / 20.0), (minmax.second + ((minmax.second - minmax.first)) / 20.0));
   th1.SetLineColor(kBlue);
   return std::move(th1);
 }
 
 std::pair<std::pair<double, double>, std::pair<double, double>>
-MeanSTD(const Channel&                   channel,
-        const std::pair<double, double>& window = std::pair<double, double>{
-            99999999, -999999})
+MeanSTD(const Channel& channel, const std::pair<double, double>& window = std::pair<double, double>{99999999, -999999})
 {
   double meanwindows{0};
   double sigmawindows{0};
@@ -188,23 +163,17 @@ MeanSTD(const Channel&                   channel,
     /////FIX THIS
     if(channel.Data[j] == 0) continue;
     ////////////////////////////////
-    if(j <= window.first || j >= window.second)
-    {
-      sigmanoise +=
-          (channel.Data[j] - meannoise) * (channel.Data[j] - meannoise);
-    }
+    if(j <= window.first || j >= window.second) { sigmanoise += (channel.Data[j] - meannoise) * (channel.Data[j] - meannoise); }
     else
     {
-      sigmawindows +=
-          (channel.Data[j] - meanwindows) * (channel.Data[j] - meanwindows);
+      sigmawindows += (channel.Data[j] - meanwindows) * (channel.Data[j] - meanwindows);
     }
   }
   sigmanoise   = std::sqrt(sigmanoise / (binusednoise - 1));
   sigmawindows = std::sqrt(sigmawindows / (binusedwindows - 1));
   std::pair<double, double> noise(meannoise, sigmanoise);
   std::pair<double, double> signal(meanwindows, sigmawindows);
-  return std::pair<std::pair<double, double>, std::pair<double, double>>(
-      noise, signal);
+  return std::pair<std::pair<double, double>, std::pair<double, double>>(noise, signal);
 }
 
 /*
@@ -223,8 +192,8 @@ TH1D CreateSelectionPlot(const TH1D& th)
 
 int main(int argc, char** argv)
 {
-  TH1D sigmas_event("Ration_event", "Ration_event", 100, 0, 5);
-  TH1D sigmas_noise("Ration_event", "Ration_event", 100, 0, 5);
+  TH1D                      sigmas_event("Ration_event", "Ration_event", 100, 0, 5);
+  TH1D                      sigmas_noise("Ration_event", "Ration_event", 100, 0, 5);
   std::pair<double, double> SignalWindow{310, 380};
   double                    scalefactor = (4.2 * 20) / (20 * 20);
   Channels                  channels;
@@ -268,10 +237,8 @@ int main(int argc, char** argv)
         continue;  // Data for channel X is in file but i dont give a *** to
                    // analyse it !
       if(evt == 0) Efficiency[ch] = 0;
-      TH1D waveform = CreateAndFillWaveform(evt, event->Channels[ch],
-                                            "Waveform", "Waveform");
-      std::pair<std::pair<double, double>, std::pair<double, double>> meanstd =
-          MeanSTD(event->Channels[ch], SignalWindow);
+      TH1D waveform = CreateAndFillWaveform(evt, event->Channels[ch], "Waveform", "Waveform");
+      std::pair<std::pair<double, double>, std::pair<double, double>> meanstd = MeanSTD(event->Channels[ch], SignalWindow);
       // std::cout<<"Event "<<evt<<" Channel "<<ch<<"/n";
       // std::cout<<" Mean : "<<meanstd.first<<" STD :
       // "<<meanstd.second<<std::endl;
@@ -282,16 +249,11 @@ int main(int argc, char** argv)
       // 0
       // Substract the mean value of amplitudes ( center to 0 )
       for(std::size_t i = 0; i != event->Channels[ch].Data.size(); ++i)
-      {
-        event->Channels[ch].Data[i] =
-            (event->Channels[ch].Data[i]) - meanstd.first.first;
-      }
-      TH1D after0 =
-          CreateAndFillWaveform(evt, event->Channels[ch], "Step_0", "Step 0");
+      { event->Channels[ch].Data[i] = (event->Channels[ch].Data[i]) - meanstd.first.first; }
+      TH1D after0 = CreateAndFillWaveform(evt, event->Channels[ch], "Step_0", "Step 0");
 
       // Check the mean if 0
-      std::pair<std::pair<double, double>, std::pair<double, double>>
-          testmeanstd = MeanSTD(event->Channels[ch]);
+      std::pair<std::pair<double, double>, std::pair<double, double>> testmeanstd = MeanSTD(event->Channels[ch]);
       // assert(testmeanstd.first.first==0);
       testmeanstd = MeanSTD(event->Channels[ch], SignalWindow);
       std::vector<TH1D> IterationPlots;
@@ -307,27 +269,22 @@ int main(int argc, char** argv)
         // or the negative one if signal should be NEGATIVE
         for(std::size_t i = 0; i != event->Channels[ch].Data.size(); ++i)
         {
-          if(channels.ShouldBePositive(ch) == true &&
-             event->Channels[ch].Data[i] > 0)
+          if(channels.ShouldBePositive(ch) == true && event->Channels[ch].Data[i] > 0)
           {
-            if(i > SignalWindow.first && i < SignalWindow.second)
-              NbrBinStillHereInSignalRegions++;
+            if(i > SignalWindow.first && i < SignalWindow.second) NbrBinStillHereInSignalRegions++;
             NbrBinStillHere++;
           }
-          else if(channels.ShouldBePositive(ch) == false &&
-                  event->Channels[ch].Data[i] < 0)
+          else if(channels.ShouldBePositive(ch) == false && event->Channels[ch].Data[i] < 0)
           {
             NbrBinStillHere++;
-            if(i > SignalWindow.first && i < SignalWindow.second)
-              NbrBinStillHereInSignalRegions++;
+            if(i > SignalWindow.first && i < SignalWindow.second) NbrBinStillHereInSignalRegions++;
           }
           else
             event->Channels[ch].Data[i] = 0;
         }
         std::string name  = "Iter_" + std::to_string(2 * Iter + 1);
         std::string title = "Iter " + std::to_string(2 * Iter + 1);
-        IterationPlots.push_back(CreateAndFillWaveform(
-            evt, event->Channels[ch], name.c_str(), title.c_str()));
+        IterationPlots.push_back(CreateAndFillWaveform(evt, event->Channels[ch], name.c_str(), title.c_str()));
         if(NbrBinStillHereInSignalRegions == 0)
         {
           ImEvent = false;
@@ -342,8 +299,7 @@ int main(int argc, char** argv)
         else if(NbrBinStillHere == 1)
           ;
         MeanSTD(event->Channels[ch]);
-        std::pair<std::pair<double, double>, std::pair<double, double>>
-            meanstd = MeanSTD(event->Channels[ch] /*,SignalWindow*/);
+        std::pair<std::pair<double, double>, std::pair<double, double>> meanstd = MeanSTD(event->Channels[ch] /*,SignalWindow*/);
         // std::cout<<"Iteration "<<Iter<<" Mean  : "<<meanstd.first<<" STD :
         // "<<meanstd.second<<std::endl;
         // Part 2
@@ -354,31 +310,23 @@ int main(int argc, char** argv)
         {
           if(event->Channels[ch].Data[i] == 0) event->Channels[ch].Data[i] = 0;
           else
-            event->Channels[ch].Data[i] =
-                event->Channels[ch].Data[i] - meanstd.first.first;
+            event->Channels[ch].Data[i] = event->Channels[ch].Data[i] - meanstd.first.first;
         }
-        IterationPlots.push_back(CreateAndFillWaveform(
-            evt, event->Channels[ch], name.c_str(), title.c_str()));
+        IterationPlots.push_back(CreateAndFillWaveform(evt, event->Channels[ch], name.c_str(), title.c_str()));
         Iter++;
       }
 
       if(ImEvent == true)
       {
         waveform.SetLineColor(kGreen);
-        std::cout << "EVENT   " << testmeanstd.first.first << "   "
-                  << testmeanstd.first.second << "   "
-                  << testmeanstd.second.first << "   "
-                  << testmeanstd.second.second << "  "
-                  << testmeanstd.second.second / testmeanstd.first.second
-                  << std::endl;
+        std::cout << "EVENT   " << testmeanstd.first.first << "   " << testmeanstd.first.second << "   " << testmeanstd.second.first << "   "
+                  << testmeanstd.second.second << "  " << testmeanstd.second.second / testmeanstd.first.second << std::endl;
         sigmas_event.Fill(testmeanstd.second.second);
       }
       else
       {
         waveform.SetLineColor(kRed);
-        std::cout << testmeanstd.first.first << "   "
-                  << testmeanstd.first.second << "   "
-                  << testmeanstd.second.first << "   "
+        std::cout << testmeanstd.first.first << "   " << testmeanstd.first.second << "   " << testmeanstd.second.first << "   "
                   << testmeanstd.second.second << std::endl;
         sigmas_noise.Fill(testmeanstd.second.second);
       }
@@ -436,20 +384,13 @@ int main(int argc, char** argv)
          can.SaveAs(("Ratio"+std::to_string(j)+".pdf").c_str());
      }*/
 
-    std::cout
-        << "*******************************************************************"
-        << std::endl;
-    for(std::map<int, int>::iterator it = Efficiency.begin();
-        it != Efficiency.end(); ++it)
+    std::cout << "*******************************************************************" << std::endl;
+    for(std::map<int, int>::iterator it = Efficiency.begin(); it != Efficiency.end(); ++it)
     {
-      std::cout << "NUMBER EVENT " << it->second << " TOTAL EVENT " << evt
-                << " EFFICIENCY CHANNEL " << it->first << " : "
-                << (it->second * 100.0) / (evt * scalefactor) << " % "
-                << std::endl;
+      std::cout << "NUMBER EVENT " << it->second << " TOTAL EVENT " << evt << " EFFICIENCY CHANNEL " << it->first << " : "
+                << (it->second * 100.0) / (evt * scalefactor) << " % " << std::endl;
     }
-    std::cout
-        << "*******************************************************************"
-        << std::endl;
+    std::cout << "*******************************************************************" << std::endl;
   }
   if(event != nullptr) delete event;
   if(Run != nullptr) delete Run;

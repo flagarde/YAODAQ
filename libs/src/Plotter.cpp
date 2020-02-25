@@ -38,8 +38,7 @@ void Plotter::Init()
     // Generate TH1 for waveforms;
     int   NbrBins = /*FindMaxBin();*/ dat.WDcfg.RecordLength;
     float maxValue{0};
-    if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)
-      tickSize = dat.WDcfg.Ts;
+    if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) tickSize = dat.WDcfg.Ts;
     else
       tickSize = (dat.WDcfg.Ts * dat.WDcfg.DecimationFactor / 1000);
     maxValue = NbrBins;
@@ -47,8 +46,7 @@ void Plotter::Init()
     {
       static int  erasetrigger{0};
       std::string title = "";
-      if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) &&
-         ((ch != 0) && (((ch + 1) % 9) == 0)))
+      if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (((ch + 1) % 9) == 0)))
       { title = "Trigger" + std::to_string((int)((ch) / 8) - 1); }
       else
       {
@@ -58,8 +56,7 @@ void Plotter::Init()
       }
       // graphs.push_back(TGraph(NbrBins));
       // graphs[ch].SetNameTitle(title.c_str(), title.c_str());
-      histos.push_back(
-          TH1D((title).c_str(), (title).c_str(), NbrBins, 0, maxValue));
+      histos.push_back(TH1D((title).c_str(), (title).c_str(), NbrBins, 0, maxValue));
       // histos[ch].GetYaxis()->SetLimits(-1.0,1.0);
       histos[ch].GetYaxis()->SetRangeUser(-1.0, 1.0);
 
@@ -72,8 +69,7 @@ void Plotter::Init()
     {
       static int  erasetrigger{0};
       std::string title = "";
-      if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) &&
-         ((ch != 0) && (((ch + 1) % 9) == 0)))
+      if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (((ch + 1) % 9) == 0)))
       { title = "HistoTrigger" + std::to_string((int)((ch) / 8) - 1); }
       else
       {
@@ -82,8 +78,7 @@ void Plotter::Init()
         erasetrigger++;
       }
 
-      histos_histos.push_back(
-          TH1D(title.c_str(), title.c_str(), Nbrbins, 0, Nbrbins));
+      histos_histos.push_back(TH1D(title.c_str(), title.c_str(), Nbrbins, 0, Nbrbins));
       if(ch == dat.WDcfg.Nch - 1) erasetrigger = 0;
     }
 
@@ -185,8 +180,7 @@ void Plotter::PlotWaveform()
     {
       int Size = dat.Event8->ChSize[ch];
       if(Size <= 0) continue;
-      for(int j = 0; j < Size; j++)
-      { histos[ch].Fill(j, dat.Event8->DataChannel[ch][j] * ti); }
+      for(int j = 0; j < Size; j++) { histos[ch].Fill(j, dat.Event8->DataChannel[ch][j] * ti); }
     }
   }
   else if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE)
@@ -199,11 +193,7 @@ void Plotter::PlotWaveform()
         {
           int Size = dat.Event742->DataGroup[gr].ChSize[ch];
           if(Size <= 0) continue;
-          for(int j = 0; j < Size; j++)
-          {
-            histos[gr * 9 + ch].Fill(
-                j, dat.Event742->DataGroup[gr].DataChannel[ch][j] * ti);
-          }
+          for(int j = 0; j < Size; j++) { histos[gr * 9 + ch].Fill(j, dat.Event742->DataGroup[gr].DataChannel[ch][j] * ti); }
         }
       }
     }
@@ -214,8 +204,7 @@ void Plotter::PlotWaveform()
     {
       int Size = dat.Event16->ChSize[ch];
       if(Size <= 0) continue;
-      for(int j = 0; j < Size; j++)
-      { histos[ch].Fill(j, dat.Event16->DataChannel[ch][j] * ti); }
+      for(int j = 0; j < Size; j++) { histos[ch].Fill(j, dat.Event16->DataChannel[ch][j] * ti); }
     }
   }
 
@@ -270,8 +259,7 @@ void Plotter::SaveFFT()
   for(std::size_t i = 0; i != histos.size(); ++i)
   {
     toto = histos[i].FFT(&RE, "RE R2C ES");
-    toto->SetTitle(
-        ("FFT Real Part " + std::string(histos[i].GetName())).c_str());
+    toto->SetTitle(("FFT Real Part " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("RE" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
     /* for (auto&& client : server.getClients())
@@ -281,8 +269,7 @@ void Plotter::SaveFFT()
 
                               }*/
     toto = histos[i].FFT(&IM, "IM R2C ES");
-    toto->SetTitle(
-        ("FFT Imaginary Part " + std::string(histos[i].GetName())).c_str());
+    toto->SetTitle(("FFT Imaginary Part " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("IM" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
     /* for (auto&& client : server.getClients())
@@ -292,8 +279,7 @@ void Plotter::SaveFFT()
 
                              }*/
     toto = histos[i].FFT(&MAG, "MAG R2C ES");
-    toto->SetTitle(
-        ("FFT Magnitude " + std::string(histos[i].GetName())).c_str());
+    toto->SetTitle(("FFT Magnitude " + std::string(histos[i].GetName())).c_str());
     toto->SetName(("MAG" + std::string(histos[i].GetName())).c_str());
     json = TBufferJSON::ToJSON(toto);
     /*for (auto&& client : server.getClients())
