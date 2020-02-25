@@ -1,5 +1,5 @@
 # IXWebSocket
-set(IXWebSocket_repository "https://github.com/machinezone/IXWebSocket.git")
+set(IXWebSocket_repository "https://github.com/RPClab/IXWebSocket.git")
 set(IXWebSocket_version "master")
 # CAENlibs
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
