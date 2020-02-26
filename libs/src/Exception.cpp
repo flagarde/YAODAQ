@@ -1,6 +1,5 @@
 #include "Exception.hpp"
 
-#include "Internal.hpp"
 #if(PLATFORM_IS(LINUX) || PLATFORM_IS(MACOSX)) && defined(BACKTRACE)
   #include <execinfo.h>
 #endif
@@ -101,12 +100,12 @@ const std::string& Exception::getBackTrace() const
 
 Exception::~Exception(){};
 
-const std::uint_least32_t Exception::getLine() const
+const uint_least32_t Exception::getLine() const
 {
   return m_Location.line();
 }
 
-const std::uint_least32_t Exception::getColumn() const
+const uint_least32_t Exception::getColumn() const
 {
   return m_Location.column();
 }

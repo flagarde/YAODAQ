@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Internal.hpp"
+
 #if __has_include(<source_location>)
   #include <source_location>
   #define have_source_location 1
@@ -10,7 +12,7 @@
 #else
   #define have_source_location 0
 #endif
-#include <cstdint>
+
 #include <exception>
 #include <string>
 
@@ -49,10 +51,10 @@ public:
   virtual ~Exception() override;
   virtual const char* what() const noexcept;
 #if have_source_location == 1
-  const std::uint_least32_t getLine() const;
-  const std::uint_least32_t getColumn() const;
-  const char*               getFileName() const;
-  const char*               getFunctionName() const;
+  const uint_least32_t getLine() const;
+  const uint_least32_t getColumn() const;
+  const char*          getFileName() const;
+  const char*          getFunctionName() const;
 #endif
   const int getCode() const;
   /** Get status code as a string
@@ -68,7 +70,7 @@ protected:
 #else
   Exception(const int& code = 0, const std::string& message = "");
 #endif
-  virtual const char* errorStrings(const std::int_least32_t& code);
+  virtual const char* errorStrings(const int_least32_t& code);
 
 private:
   void        createBackTrace();

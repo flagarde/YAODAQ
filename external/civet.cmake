@@ -11,7 +11,7 @@ endif()
 
 # ----- civet package -----
 ExternalProject_Add(
-                    civet
+                    civet DEPENDS jsroot
                     GIT_REPOSITORY ${civet_repository}
                     GIT_TAG ${civet_version}
                     GIT_PROGRESS TRUE

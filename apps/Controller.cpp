@@ -35,9 +35,10 @@ int main(int argc, char** argv)
   WebsocketClient::setURL("ws://" + host + ":" + std::to_string(port) + "/");
 
   Controller toto(controllerName);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   toto.sendStatus(status);
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   toto.stop();
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   return 0;
 }

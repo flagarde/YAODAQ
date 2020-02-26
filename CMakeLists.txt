@@ -147,6 +147,7 @@ cppcheck(
 include_what_you_use(-Xiwyu)
 
 if(BUILD_WEBSERVER)
+  include(jsroot)
   include(civet)
 endif()
 

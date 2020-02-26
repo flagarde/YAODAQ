@@ -2,7 +2,7 @@
 <head>
     <script> var DEBUG=false ; var ws; var status;var data_rate=0; var trigger_rate=0; var RunNumber;</script>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <script type="text/javascript" src="./JsRoot/scripts/JSRootCore.js?gui"></script>
+    <script type="text/javascript" src="./jsroot/scripts/JSRootCore.js?gui"></script>
     <script src="./gauge.min.js"></script>
     <title>DAQ Control</title>
 
