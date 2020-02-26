@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IXWebSocketCloseConstants.h"
 #include "IXWebSocketServer.h"
 #include "Infos.hpp"
 #include "json.h"
@@ -24,8 +25,11 @@ public:
 private:
   ix::WebSocketServer                             m_Server;
   std::map<Infos, std::shared_ptr<ix::WebSocket>> m_Clients;
-  Infos                                           getInfos(const std::shared_ptr<ix::WebSocket>& socket);
   void                                            erase(const std::shared_ptr<ix::WebSocket>& socket);
   spdlog::level::level_enum                       m_Verbosity{spdlog::level::trace};
   void                                            try_emplace(const std::string& key, const std::shared_ptr<ix::WebSocket>& socket);
+  void                                            sendToLogger(const std::string& message);
+  void                                            sendToAll(const std::string& message);
+  std::mutex                                      m_Mutex;
+  static int                                      m_BrowserNumber;
 };

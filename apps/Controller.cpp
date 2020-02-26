@@ -38,6 +38,6 @@ int main(int argc, char** argv)
 
   toto.sendStatus(status);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
+  toto.stop();
   return 0;
 }

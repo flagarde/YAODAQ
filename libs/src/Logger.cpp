@@ -4,6 +4,8 @@
 #include "Message.hpp"
 #include "spdlog.h"
 
+#include <iostream>
+
 Json::StreamWriterBuilder Logger::m_StreamWriterBuilder = Json::StreamWriterBuilder();
 
 Json::CharReaderBuilder Logger::m_CharReaderBuilder = Json::CharReaderBuilder();
@@ -40,9 +42,9 @@ void Logger::OnClose(const ix::WebSocketMessagePtr& msg)
 {
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
+  if(ix::WebSocketCloseConstants::kInternalErrorCode) { throw Exception(STATUS_CODE_ALREADY_PRESENT, msg->closeInfo.reason); }
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
-  if(msg->closeInfo.code == 1002) throw Exception(STATUS_CODE_ALREADY_PRESENT, "Name already taken");
 }
 
 void Logger::OnPong(const ix::WebSocketMessagePtr& msg)
@@ -65,33 +67,40 @@ void Logger::OnMessage(const ix::WebSocketMessagePtr& msg)
   catch(...)
   {
     spdlog::info("{}", msg->str);
-    return;
   }
-  // If it's Log only send to Loggers :)
-
-  if(message.getType() == "Log")
+  if(message.getType() == "Trace") { spdlog::trace("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo()); }
+  else if(message.getType() == "Info")
   {
-    bool ok = m_Reader->parse(&(message.getContent()[0]), &message.getContent()[message.getContent().size()], &m_Value, &m_Errs);
-    if(!ok) { spdlog::error("Problem parsing Log message to JSON {}", message.getContent()); }
-    else
-    {
-      std::string Level   = m_Value["Level"].asString();
-      std::string content = m_Value["Message"].asString();
-      if(Level == "trace") spdlog::trace("[" + message.getFrom() + "] " + content);
-      else if(Level == "debug")
-        spdlog::debug("[" + message.getFrom() + "] " + content);
-      else if(Level == "info")
-        spdlog::info("[" + message.getFrom() + "] " + content);
-      else if(Level == "warning")
-        spdlog::warn("[" + message.getFrom() + "] " + content);
-      else if(Level == "error")
-        spdlog::error("[" + message.getFrom() + "] " + content);
-      else if(Level == "critical")
-        spdlog::critical("[" + message.getFrom() + "] " + content);
-    }
+    if(!message.isEmpty()) spdlog::info("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
+  else if(message.getType() == "Debug")
+  {
+    spdlog::debug("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
+  else if(message.getType() == "Warning")
+  {
+    spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
+  else if(message.getType() == "Critical")
+  {
+    spdlog::critical("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
+  else if(message.getType() == "Error")
+  {
+    spdlog::error("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
+  else if(message.getType() == "Status")
+  {
+    spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
+  else if(message.getType() == "Command")
+  {
+    spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
   }
   else
-    spdlog::info("{}", msg->str);
+  {
+    spdlog::info("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
 }
 
 void Logger::OnError(const ix::WebSocketMessagePtr& msg)

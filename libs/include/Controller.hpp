@@ -15,6 +15,7 @@ public:
   virtual ~Controller();
   std::string           getName();
   std::string           getType();
+  void                  stop();
   virtual void          OnOpen(const ix::WebSocketMessagePtr& msg);
   virtual void          OnClose(const ix::WebSocketMessagePtr& msg);
   virtual void          OnPong(const ix::WebSocketMessagePtr& msg);

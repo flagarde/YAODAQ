@@ -255,7 +255,7 @@ if(BUILD_DAQ)
     PUBLIC_HEADER DESTINATION include)
 
   add_library(Message "${YAODAQ_SRC}/Message.cpp")
-  add_dependencies(Message elogpp Exception)
+  add_dependencies(Message elogpp Exception Util)
   target_include_directories(
     Message
     PUBLIC "${INCLUDE_OUTPUT_DIR}/json"

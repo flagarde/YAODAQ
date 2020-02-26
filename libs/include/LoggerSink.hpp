@@ -10,7 +10,7 @@ template<typename Mutex> class WebSocketLoguer: public spdlog::sinks::base_sink<
 public:
   WebSocketLoguer(WebsocketClient& websocketclient, const std::string& from): m_WebSocketClient(websocketclient) { m_Log.setFrom(from); }
   void setWebSocketClient(const WebsocketClient& websocketclient) { m_WebSocketClient = websocketclient; }
-  void setFrom(const std::string& from) { m_Log.setFrom(from); }
+  void setFrom(const std::string& from) { m_Message.setFrom(from); }
 
 protected:
   void sink_it_(const spdlog::details::log_msg& msg) override
@@ -22,7 +22,7 @@ protected:
   }
   void             flush_() override {}
   WebsocketClient& m_WebSocketClient{nullptr};
-  Log              m_Log;
+  Message          m_Message;
 };
 
 using WebSocketLoguer_mt = WebSocketLoguer<std::mutex>;

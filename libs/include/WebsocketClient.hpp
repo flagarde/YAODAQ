@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IXWebSocket.h"
+#include "IXWebSocketCloseConstants.h"
 #include "IXWebSocketMessage.h"
 
 #include <functional>

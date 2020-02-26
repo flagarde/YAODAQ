@@ -2,6 +2,7 @@
 
 #include "Exception.hpp"
 #include "json.h"
+#include "magic_enum.hpp"
 
 #include <iostream>
 
@@ -9,7 +10,7 @@ Json::StreamWriterBuilder Message::m_StreamWriterBuilder = Json::StreamWriterBui
 
 Json::CharReaderBuilder Message::m_CharReaderBuilder = Json::CharReaderBuilder();
 
-Message::Message(const std::string& type, const std::string& content, const std::string& to, const std::string& from)
+Message::Message(const Type& type, const std::string& content, const std::string& to, const std::string& from)
 {
   m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
   m_Reader.reset(m_CharReaderBuilder.newCharReader());
@@ -17,6 +18,13 @@ Message::Message(const std::string& type, const std::string& content, const std:
   setFrom(from);
   setTo(to);
   setContent(content);
+}
+
+bool Message::isEmpty()
+{
+  if(getContent() == "") return true;
+  else
+    return false;
 }
 
 void Message::setFrom(const std::string& from)
@@ -29,9 +37,9 @@ void Message::setTo(const std::string& to)
   m_Value["To"] = to;
 }
 
-void Message::setType(const std::string& type)
+void Message::setType(const Type& type)
 {
-  m_Value["Type"] = type;
+  m_Value["Type"] = std::string(magic_enum::enum_name(type));
 }
 
 void Message::setContent(const std::string& content)
@@ -114,13 +122,25 @@ std::string Message::getType() const
   return getType();
 }
 
-Info::Info(const std::string& content, const std::string& to, const std::string& from): Message("Info", content, to, from) {}
+Info::Info(const std::string& content, const std::string& to, const std::string& from): Message(Type::Info, content, to, from) {}
+
+Status::Status(const std::string& content, const std::string& to, const std::string& from): Message(Type::Status, checkContent(content), to, from) {}
+
+Error::Error(const std::string& content, const std::string& to, const std::string& from): Message(Type::Error, content, to, from) {}
+
+Trace::Trace(const std::string& content, const std::string& to, const std::string& from): Message(Type::Trace, content, to, from) {}
+
+Debug::Debug(const std::string& content, const std::string& to, const std::string& from): Message(Type::Debug, content, to, from) {}
+
+Warning::Warning(const std::string& content, const std::string& to, const std::string& from): Message(Type::Debug, content, to, from) {}
+
+Critical::Critical(const std::string& content, const std::string& to, const std::string& from): Message(Type::Debug, content, to, from) {}
+
+Command::Command(const std::string& content, const std::string& to, const std::string& from): Message(Type::Debug, content, to, from) {}
 
 std::set<std::string> Status::m_Status{"UNINITIALIZED", "INITIALIZED",  "CONNECTED", "CONFIGURED", "STARTED",    "PAUSED",  "STOPED",
                                        "CLEARED",       "DISCONNECTED", "RELEASED",  "QUITED",     "INITIALIZE", "CONNECT", "CONFIGURE",
                                        "START",         "PAUSE",        "STOP",      "CLEAR",      "DISCONNECT", "RELEASE", "QUIT"};
-
-Status::Status(const std::string& content, const std::string& to, const std::string& from): Message("Status", checkContent(content), to, from) {}
 
 std::string Status::checkContent(const std::string& content)
 {
@@ -133,7 +153,3 @@ void Status::setContent(const std::string& content)
 {
   Message::setContent(checkContent(content));
 }
-
-Error::Error(const std::string& content, const std::string& to, const std::string& from): Message("Error", content, to, from) {}
-
-Log::Log(const std::string& content, const std::string& to, const std::string& from): Message("Log", content, to, from) {}

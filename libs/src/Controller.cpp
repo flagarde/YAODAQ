@@ -1,6 +1,5 @@
 #include "Controller.hpp"
 
-#include "LoggerSink.hpp"
 #include "sinks/ansicolor_sink.h"
 #include "sinks/ostream_sink.h"
 #include "sinks/stdout_color_sinks.h"
@@ -30,12 +29,9 @@ ix::WebSocketSendInfo Controller::sendText(Message& message)
 
 Controller::Controller(const std::string& name, const std::string& type): m_Type(type), m_Name(name)
 {
-  spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>(),
-                                       std::make_shared<WebSocketLoguer_mt>(m_WebsocketClient, m_Type + "/" + m_Name)};
+  spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
   m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
   // Mimic json to parse the message and the level to change it on Loggers;
-  std::string pattern = "{\"Message\" : \"%v\", \"Level\" : \"%l\"}";
-  m_Logger->sinks()[1]->set_pattern(pattern);
   m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
@@ -57,6 +53,11 @@ void Controller::DoOnMessage(const ix::WebSocketMessagePtr& msg)
   if(message.getType() == "Status") {}
 }
 
+void Controller::stop()
+{
+  m_WebsocketClient.stop();
+}
+
 void Controller::OnOpen(const ix::WebSocketMessagePtr& msg)
 {
   m_Logger->info("Handshake Headers :");
@@ -68,9 +69,8 @@ void Controller::OnClose(const ix::WebSocketMessagePtr& msg)
 {
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
-  m_Logger->info("{}", msg->closeInfo.code);
-  m_Logger->info("{}", msg->closeInfo.reason);
-  if(msg->closeInfo.code == 1002) throw Exception(STATUS_CODE_ALREADY_PRESENT, "Name already taken");
+  spdlog::info("{}", msg->closeInfo.code);
+  spdlog::info("{}", msg->closeInfo.reason);
 }
 
 void Controller::OnPong(const ix::WebSocketMessagePtr& msg)
