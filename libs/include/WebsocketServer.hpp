@@ -32,4 +32,5 @@ private:
   void                                            sendToAll(const std::string& message);
   std::mutex                                      m_Mutex;
   static int                                      m_BrowserNumber;
+  std::shared_ptr<ix::WebSocket>                  m_Actual;
 };

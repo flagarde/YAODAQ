@@ -115,7 +115,7 @@ void Module::Configure()
   try
   {
     DoConfigure();
-    sendStatus("CONFIGURE");
+    sendStatus("CONFIGURED");
   }
   catch(const std::exception& error)
   {

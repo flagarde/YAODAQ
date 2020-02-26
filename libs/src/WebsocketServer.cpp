@@ -34,6 +34,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
   ix::initNetSystem();
   m_Server.setOnConnectionCallback([this](std::shared_ptr<ix::WebSocket> webSocket, std::shared_ptr<ix::ConnectionState> connectionState) {
     webSocket->setOnMessageCallback([webSocket, connectionState, this](const ix::WebSocketMessagePtr& msg) {
+      m_Actual = webSocket;
       if(msg->type == ix::WebSocketMessageType::Open)
       {
         std::string key = "///";
@@ -47,16 +48,18 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         else
         {
           key += "Browser/Browser" + std::to_string(m_BrowserNumber);
+          spdlog::info("Key : {}", key);
           ++m_BrowserNumber;
         }
         try_emplace(key, webSocket);
         sendToLogger("New connection ID : " + connectionState->getId() + " Key : " + key + " Host : " + msg->openInfo.headers["Host"]);
+        webSocket->send(Status("INITIALIZED").get());
       }
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
         spdlog::info("Closed connection ID : {}", connectionState->getId());
         sendToLogger("Closed connection ID : " + connectionState->getId());
-        erase(webSocket);
+        //erase(webSocket);
       }
       else if(msg->type == ix::WebSocketMessageType::Message)
       {
@@ -122,9 +125,10 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
 
 void WebsocketServer::sendToLogger(const std::string& message)
 {
+  std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
-    if(it->first.getType() == "Logger") it->second->send(message);
+    if(it->first.getType() == "Logger" && m_Actual != it->second) it->second->send(message);
   }
 }
 
@@ -133,7 +137,7 @@ void WebsocketServer::erase(const std::shared_ptr<ix::WebSocket>& socket)
   std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
-    if(it->second == socket) m_Clients.erase(it->first);
+    if(it->second == socket || it->second == nullptr) m_Clients.erase(it->first);
   }
 }
 
@@ -157,13 +161,15 @@ void WebsocketServer::try_emplace(const std::string& key, const std::shared_ptr<
 
 void WebsocketServer::sendToAll(const std::string& message)
 {
-  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it) { it->second->send(message); }
+  std::lock_guard<std::mutex> guard(m_Mutex);
+  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
+  {
+    if(m_Actual != it->second) it->second->send(message);
+  }
 }
 
 WebsocketServer::~WebsocketServer()
 {
-  m_Clients.clear();
-  stop();
   ix::uninitNetSystem();
 }
 

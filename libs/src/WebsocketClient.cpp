@@ -27,7 +27,6 @@ void WebsocketClient::setOnMessageCallback(std::function<void(const std::shared_
 
 WebsocketClient::~WebsocketClient()
 {
-  stop();
   ix::uninitNetSystem();
 }
 
