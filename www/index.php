@@ -105,7 +105,7 @@
 			send(JSON.stringify(obj));
 		}
 
-		function Infos(...args)
+		function Info(...args)
 		{
 			var obj = new Object();
 			obj.Type = "Info";
@@ -417,7 +417,7 @@
  
   <!-- Run info form -->
   <div class="form-popup" id="myForm">
-    <form action="#" class="form-container">
+    <form action="#" class="form-container"  method="post">
       <center id="RunInfos">Run Infos</center>
       <label for="Comment"><b>Comment</b></label>
       <input type="text" placeholder="Enter Comment" id="Comment" name="Comment">
@@ -426,6 +426,10 @@
     </form>
   </div>
  
+ 
+ 
+ 
+
   <!-- Script for the form -->
   <script>
     function openForm() 
@@ -437,7 +441,7 @@
 
     function startAquisition(oForm)
     {
-      //Info("RunInfos ="+oForm.elements["Comment"].value);
+      Info("RunInfos ="+oForm.elements["Comment"].value);
       Action("START");
     }
     function closeForm() 

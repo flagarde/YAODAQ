@@ -24,14 +24,7 @@ void Board::DoConnect() {}
 
 void Board::DoDisconnect() {}
 
-void Board::LoadConfig()
-{
-  // Module::LoadConfig();
-  // m_Connector=m_ConnectorFactory.createConnector(m_Config.getConnectorInfos(m_Name));
-  // m_Connector->verifyParameters();
-}
-
 void Board::printConnectorParameters()
 {
-  // m_Connector->printParameters();
+  m_Connector->printParameters();
 }

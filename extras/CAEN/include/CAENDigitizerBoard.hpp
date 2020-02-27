@@ -951,7 +951,9 @@ public:
   {
     std::cout << "Destroying CAENDigitizerBoard" << std::endl;
   }
-
+  
+  void  DoInitialize() final;
+  
 private:
   void initilizeParameters();
 
@@ -1023,11 +1025,14 @@ private:
   CAEN_DGTZ_730_DAW_Event_t*  m_730DAWEvent[16];
 
   void Exit(const int& error);
-
+  static constexpr int m_MAX_CH{64};/* max. number of channels */
+  static constexpr int m_MAX_SET{16};/* max. number of independent settings */
+  static constexpr int m_MAX_GROUPS{8};/* max. number of groups */
   bool                m_Test{false};
-  std::string         m_FastTriggerEnabled{"DISABLE"};
-  std::string         m_DesMode{"DISABLE"};
-  std::uint32_t       m_RecordLength{1024 * 16};
+  std::string         m_FastTriggerEnabled{"DISABLED"};
+  std::string         m_DesMode{"DISABLED"};
+  std::uint32_t       m_RecordLength{1024};
+  int                 m_NumberEvent{1023};
   std::uint16_t       m_DecimationFactor{1};
   int                 m_PostTrigger{50};
   std::string         m_FPIOtype{"NIM"};
@@ -1040,24 +1045,25 @@ private:
   int                 m_Nch{0};
   int                 m_Nbit{0};
   float               m_Ts{0};
+  bool                m_Header{true};
   std::uint32_t       m_MaxGroupNumber{0};
+  std::string         m_FileFormat{"ROOT"};
+  bool                m_StartupCalibration{false};
   //#define MAX_SET 16   /* max. number of independent settings */
-  std::array<std::array<int32_t, 16>, 16> m_DCoffsetGrpCh;
-  std::array<std::uint32_t, 16>           m_DCoffset;
-  std::array<int, 16>                     m_Version_used;
-  std::array<std::string, 16>             m_ChannelTriggerMode;
-  std::array<std::uint32_t, 16>           m_Threshold;
-  std::array<std::uint8_t, 16>            m_GroupTrgEnableMask;
-  std::array<std::string, 16>             m_PulsePolarity;
+  std::array<std::array<int32_t,m_MAX_SET>,m_MAX_SET> m_DCoffsetGrpCh;
+  std::array<std::uint32_t,m_MAX_SET>           m_DCoffset;
+  std::array<int,m_MAX_SET>                     m_Version_used;
+  std::array<std::string,m_MAX_SET>             m_ChannelTriggerMode;
+  std::array<std::uint32_t,m_MAX_SET>           m_Threshold;
+  std::array<std::uint8_t,m_MAX_SET>            m_GroupTrgEnableMask;
+  std::array<std::string,m_MAX_SET>             m_PulsePolarity;
   std::array<int, 64>                     m_DCfile;
-  std::array<float, 16>                   m_Cal;
-  std::array<float, 16>                   m_Offset;
+  std::array<float,m_MAX_SET>                   m_Cal;
+  std::array<float,m_MAX_SET>                   m_Offset;
   std::string                             m_DRS4Frequency{"5GHz"};
-  std::array<std::uint32_t, 16>           m_FTDCoffset;
-  std::array<std::uint32_t, 16>           m_FTThreshold;
-  std::vector<std::uint32_t>              m_GWaddr;
-  std::vector<std::uint32_t>              m_GWdata;
-  std::vector<std::uint32_t>              m_GWmask;
+  std::array<std::uint32_t,m_MAX_SET>           m_FTDCoffset;
+  std::array<std::uint32_t,m_MAX_SET>           m_FTThreshold;
+  std::vector<std::array<uint32_t,3>> m_WriteRgisters;
   static std::vector<std::string>         ErrMsg;
   std::array<std::string, 4>              m_TablesFilenames;
   bool                                    m_UseCorrections{false};

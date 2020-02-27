@@ -1,5 +1,6 @@
 #include "Module.hpp"
 
+#include "magic_enum.hpp"
 #include "sinks/ansicolor_sink.h"
 #include "sinks/ostream_sink.h"
 #include "sinks/stdout_color_sinks.h"
@@ -20,6 +21,21 @@ std::string Module::getName()
 std::string Module::getType()
 {
   return m_Type;
+}
+
+void Module::setState(const States& state)
+{
+  m_State = state;
+}
+
+std::string Module::getStateString()
+{
+  return std::string(magic_enum::enum_name(m_State));
+}
+
+States Module::getState()
+{
+  return m_State;
 }
 
 ix::WebSocketSendInfo Module::sendBinary(Message& message)
@@ -47,17 +63,13 @@ void Module::DoDoConnect() {}
 
 void Module::DoDoDisconnect() {}
 
-void Module::verifyParameters()
-{
-  std::cout << "Module VerifyParameters" << std::endl;
-}
+void Module::verifyParameters() {}
 
 void Module::LoadConfig()
 {
   m_Config.parse();
   m_Conf = m_Config.getConfig(m_Name);
-  printParameters();
-  this->verifyParameters();
+  verifyParameters();
 }
 
 void Module::printParameters()
@@ -73,13 +85,8 @@ void Module::Initialize()
   {
     LoadConfig();
     DoInitialize();
-    sendState(States::INITIALIZED);
-    m_Logger->trace("Trace");
-    m_Logger->info("info");
-    m_Logger->debug("debug");
-    m_Logger->warn("warn");
-    m_Logger->error("error");
-    m_Logger->critical("critical");
+    setState(States::INITIALIZED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -93,7 +100,8 @@ void Module::Connect()
   try
   {
     DoDoConnect();
-    sendState(States::CONNECTED);
+    setState(States::CONNECTED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -107,7 +115,8 @@ void Module::Configure()
   try
   {
     DoConfigure();
-    sendState(States::CONFIGURED);
+    setState(States::CONFIGURED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -121,7 +130,8 @@ void Module::Start()
   try
   {
     DoStart();
-    sendState(States::STARTED);
+    setState(States::STARTED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -135,7 +145,8 @@ void Module::Pause()
   try
   {
     DoPause();
-    sendState(States::PAUSED);
+    setState(States::PAUSED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -149,7 +160,8 @@ void Module::Stop()
   try
   {
     DoStop();
-    sendState(States::STOPED);
+    setState(States::STOPED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -163,7 +175,8 @@ void Module::Clear()
   try
   {
     DoClear();
-    sendState(States::CLEARED);
+    setState(States::CLEARED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -177,7 +190,8 @@ void Module::Disconnect()
   try
   {
     DoDoDisconnect();
-    sendState(States::DISCONNECTED);
+    setState(States::DISCONNECTED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -191,7 +205,8 @@ void Module::Release()
   try
   {
     DoRelease();
-    sendState(States::RELEASED);
+    setState(States::RELEASED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -205,7 +220,8 @@ void Module::Quit()
   try
   {
     DoQuit();
-    sendState(States::QUITED);
+    setState(States::QUITED);
+    sendState();
   }
   catch(const Exception& error)
   {
@@ -214,9 +230,9 @@ void Module::Quit()
   }
 }
 
-void Module::sendState(const States& m_state)
+void Module::sendState()
 {
-  State state(m_state);
+  State state(m_State);
   sendText(state);
 }
 

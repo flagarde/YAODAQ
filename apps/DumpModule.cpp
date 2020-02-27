@@ -1,4 +1,4 @@
-#include "Board.hpp"
+#include "CAENDigitizerBoard.hpp"
 #include "CLI/CLI.hpp"
 #include "Interrupt.hpp"
 
@@ -35,7 +35,9 @@ int main(int argc, char** argv)
 
   spdlog::info("Listening on IP {0} Port {1}", host, port);
 
-  Module toto(loggerName);
+  CAEN::CAENDigitizerBoard toto(loggerName);
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  toto.Initialize();
   while(1) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
   return 0;
 }

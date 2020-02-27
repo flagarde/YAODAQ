@@ -479,9 +479,9 @@ void CAENDigitizerBoard::IRQWait(const std::uint32_t& timeout)
 
 void CAENDigitizerBoard::SetDESMode(const std::string& on)
 {
-  if(on == "ENABLE")
+  if(on == "ENABLED")
     CAENDigitizerException(CAEN_DGTZ_SetDESMode(m_Handle, CAEN_DGTZ_ENABLE));
-  else if(on == "DISABLE")
+  else if(on == "DISABLED")
     CAENDigitizerException(CAEN_DGTZ_SetDESMode(m_Handle, CAEN_DGTZ_DISABLE));
   else
     throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
@@ -491,9 +491,9 @@ std::string CAENDigitizerBoard::GetDESMode()
 {
   CAEN_DGTZ_EnaDis_t enable;
   CAENDigitizerException(CAEN_DGTZ_GetDESMode(m_Handle, &enable));
-  if(enable == CAEN_DGTZ_ENABLE) return "ENABLE";
+  if(enable == CAEN_DGTZ_ENABLE) return "ENABLED";
   else
-    return "DISABLE";
+    return "DISABLED";
 }
 
 void CAENDigitizerBoard::Calibrate()
@@ -839,9 +839,9 @@ std::string CAENDigitizerBoard::GetRunSynchronizationMode()
 
 void CAENDigitizerBoard::SetEventPackaging(const std::string& on)
 {
-  if(on == "ENABLE")
+  if(on == "ENABLED")
     CAENDigitizerException(CAEN_DGTZ_SetEventPackaging(m_Handle, CAEN_DGTZ_ENABLE));
-  else if(on == "DISABLE")
+  else if(on == "DISABLED")
     CAENDigitizerException(
         CAEN_DGTZ_SetEventPackaging(m_Handle, CAEN_DGTZ_DISABLE));
   else
@@ -852,9 +852,9 @@ std::string CAENDigitizerBoard::GetEventPackaging()
 {
   CAEN_DGTZ_EnaDis_t enable;
   CAENDigitizerException(CAEN_DGTZ_GetEventPackaging(m_Handle, &enable));
-  if(enable == CAEN_DGTZ_ENABLE) return "ENABLE";
+  if(enable == CAEN_DGTZ_ENABLE) return "ENABLED";
   else
-    return "DISABLE";
+    return "DISABLED";
 }
 
 void CAENDigitizerBoard::SetMaxNumAggregatesBLT(const std::uint32_t& numAggr)
@@ -1367,10 +1367,10 @@ std::string CAENDigitizerBoard::GetAnalogMonOutput()
 
 void CAENDigitizerBoard::SetFastTriggerDigitizing(const std::string& on)
 {
-  if(on == "ENABLE")
+  if(on == "ENABLED")
     CAENDigitizerException(
         CAEN_DGTZ_SetFastTriggerDigitizing(m_Handle, CAEN_DGTZ_ENABLE));
-  else if(on == "DISABLE")
+  else if(on == "DISABLED")
     CAENDigitizerException(
         CAEN_DGTZ_SetFastTriggerDigitizing(m_Handle, CAEN_DGTZ_DISABLE));
   else
@@ -1381,15 +1381,15 @@ std::string CAENDigitizerBoard::GetFastTriggerDigitizing()
 {
   CAEN_DGTZ_EnaDis_t enable;
   CAENDigitizerException(CAEN_DGTZ_GetFastTriggerDigitizing(m_Handle, &enable));
-  if(enable == CAEN_DGTZ_ENABLE) return "ENABLE";
+  if(enable == CAEN_DGTZ_ENABLE) return "ENABLED";
   else
-    return "DISABLE";
+    return "DISABLED";
 }
 
 void CAENDigitizerBoard::SetFastTriggerMode(const std::string& mode)
 {
   CAEN_DGTZ_TriggerMode_t t;
-  if(mode == "DISABLE") t = CAEN_DGTZ_TRGMODE_DISABLED;
+  if(mode == "DISABLED") t = CAEN_DGTZ_TRGMODE_DISABLED;
   else if(mode == "ACQ_ONLY")
     t = CAEN_DGTZ_TRGMODE_ACQ_ONLY;
   else
@@ -1401,7 +1401,7 @@ std::string CAENDigitizerBoard::GetFastTriggerMode()
 {
   CAEN_DGTZ_TriggerMode_t t;
   CAENDigitizerException(CAEN_DGTZ_GetFastTriggerMode(m_Handle, &t));
-  if(t == CAEN_DGTZ_TRGMODE_DISABLED) return "DISABLE";
+  if(t == CAEN_DGTZ_TRGMODE_DISABLED) return "DISABLED";
   else
     return "ACQ_ONLY";
 }
@@ -1442,8 +1442,8 @@ void CAENDigitizerBoard::SetInterruptConfig(const std::string&   state,
                                             const std::string&   mode)
 {
   CAEN_DGTZ_EnaDis_t st;
-  if(state == "ENABLE") st = CAEN_DGTZ_ENABLE;
-  else if(state == "DISABLE")
+  if(state == "ENABLED") st = CAEN_DGTZ_ENABLE;
+  else if(state == "DISABLED")
     st = CAEN_DGTZ_DISABLE;
   else
     throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
@@ -1457,26 +1457,41 @@ void CAENDigitizerBoard::SetInterruptConfig(const std::string&   state,
       m_Handle, st, level, status_id, event_number, mod));
 }
 
+void  CAENDigitizerBoard::DoInitialize()
+{
+}
+  
+
+
+
 void CAENDigitizerBoard::verifyParameters()
 {
-  std::cout << "Test" << std::endl;
+  bool change=false;
   // Save previous values (for compare)
   std::string                PrevDesMode         = m_DesMode;
   bool                       PrevUseCorrections  = m_UseCorrections;
   bool                       PrevUseManualTables = m_UseManualTables;
   std::array<std::string, 4> PrevTablesFilenames = m_TablesFilenames;
-
-  m_Test = toml::find_or(m_Conf, "Test", false);
-  m_FastTriggerEnabled =
-      toml::find_or<std::string>(m_Conf, "FAST_TRIGGER", "DISABLE");
-  if(m_FastTriggerEnabled != "DISABLE" && m_FastTriggerEnabled != "ACQ_ONLY")
+  std::string PrevDRS4Freq=m_DRS4Frequency;
+  try
   {
-    std::cout << "FAST_TRIGGER can be DISABLE or ACQ_ONLY" << std::endl;
-    std::exit(1);
+    const auto writeRegisters = toml::find(m_Conf,"WRITE_REGISTER");
+    try
+    {
+      m_WriteRgisters = toml::get<std::vector<std::array<uint32_t,3>>>(writeRegisters);
+    }
+    catch(...)
+    {
+      spdlog::warn("WRITE_REGISTER should be of the form [[address,data,mask],...]");
+    }
   }
-  m_DesMode =
-      toml::find_or<std::string>(m_Conf, "DUAL_EDGE_SAMPLING", "DISABLE");
-  m_RecordLength = toml::find_or<std::uint32_t>(m_Conf, "RECORD_LENGTH", 1024);
+  catch(...){}
+  m_RecordLength = toml::find_or(m_Conf,"RECORD_LENGTH",1024);
+  if(m_RecordLength>1024)
+  {
+    spdlog::warn("RECORD_LENGTH should not be > 1024");
+    m_RecordLength=1024;
+  }
   m_DecimationFactor =
       toml::find_or<std::uint16_t>(m_Conf, "DECIMATION_FACTOR", 1);
   if(m_DecimationFactor != 1 && m_DecimationFactor != 2 &&
@@ -1484,21 +1499,67 @@ void CAENDigitizerBoard::verifyParameters()
      m_DecimationFactor != 16 && m_DecimationFactor != 32 &&
      m_DecimationFactor != 64 && m_DecimationFactor != 128)
   {
-    std::cout << "DECIMATION_FACTOR can be 1 2 4 8 16 32 64 128 only"
-              << std::endl;
-    std::exit(1);
+    spdlog::warn("DECIMATION_FACTOR can be 1 2 4 8 16 32 64 128 only");
   }
-  m_PostTrigger = toml::find_or<int>(m_Conf, "POST_TRIGGER", 50);
-  m_FPIOtype    = toml::find_or<std::string>(m_Conf, "FPIO_LEVEL", "NIM");
+  m_PostTrigger=toml::find_or<int>(m_Conf, "POST_TRIGGER",50);
+  if(m_PostTrigger<0||m_PostTrigger>100)
+  {
+    spdlog::warn("POST_TRIGGER must be between 0% to 100%");
+  }
   m_ExtTriggerMode =
       toml::find_or<std::string>(m_Conf, "EXTERNAL_TRIGGER", "ACQ_ONLY");
   if(m_ExtTriggerMode != "DISABLED" && m_ExtTriggerMode != "ACQ_ONLY" &&
      m_ExtTriggerMode != "ACQ_AND_EXTOUT")
   {
-    std::cout << "EXTERNAL_TRIGGER can be DISABLED ACQ_ONLY ACQ_AND_EXTOUT"
-              << std::endl;
-    std::exit(1);
+    spdlog::warn("EXTERNAL_TRIGGER can be DISABLED ACQ_ONLY ACQ_AND_EXTOUT");
   }
+  m_FPIOtype    = toml::find_or<std::string>(m_Conf, "FPIO_LEVEL", "NIM");
+  if(m_FPIOtype!="NIM"&&m_FPIOtype!="TTL")
+  {
+    spdlog::warn("FPIO_LEVEL can be NIM or TTL");
+  }
+  m_Test = toml::find_or(m_Conf, "TEST_PATTERN", false);
+  m_FastTriggerEnabled =toml::find_or<std::string>(m_Conf, "FAST_TRIGGER","DISABLED");
+  if(m_FastTriggerEnabled != "DISABLED" && m_FastTriggerEnabled != "ACQ_ONLY")
+  {
+    spdlog::warn("FAST_TRIGGER can be DISABLED or ACQ_ONLY");
+  }
+  m_Header = toml::find_or(m_Conf, "OUTPUT_FILE_HEADER", true);
+  m_FileFormat=toml::find_or<std::string>(m_Conf, "OUTPUT_FILE_FORMAT", "ROOT");
+  if(m_FileFormat != "ASCII" && m_FileFormat != "ROOT" && m_FileFormat != "BINARY")
+  {
+    spdlog::warn("OUTPUT_FILE_FORMAT can be ROOT, ASCII or BINARY");
+  }
+  m_FileFormat=toml::find_or<std::string>(m_Conf, "OUTPUT_FILE_FORMAT", "ROOT");
+  if(m_FileFormat != "ASCII" && m_FileFormat != "ROOT" && m_FileFormat != "BINARY")
+  {
+    spdlog::warn("OUTPUT_FILE_FORMAT can be ROOT, ASCII or BINARY");
+  }
+  m_DRS4Frequency =
+      toml::find_or<std::string>(m_Conf, "DRS4_FREQUENCY","5GHz");
+  if(m_DRS4Frequency != "5GHz" && m_DRS4Frequency != "2.5GHz" && m_DRS4Frequency != "1GHz" &&m_DRS4Frequency != "750MHz")
+  {
+    spdlog::warn("DRS4_FREQUENCY can be 5GHz 2.5GHz 1GHz or 750MHz");
+  }
+  if(PrevDRS4Freq != m_DRS4Frequency) change=true;
+  std::string pulsePolarity =toml::find_or<std::string>(m_Conf, "PULSE_POLARITY","NEGATIVE");
+  if(pulsePolarity!= "NEGATIVE" && pulsePolarity != "POSITIVE")
+  {
+    spdlog::warn("PULSE_POLARITY can be POSITIVE or NEGATIVE");
+  }
+  for(size_t i=0;i!=m_MAX_SET;++i) m_PulsePolarity[i]=pulsePolarity;
+  m_FastTriggerEnabled=toml::find_or<bool>(m_Conf, "ENABLED_FAST_TRIGGER_DIGITIZING",true);
+  m_InterruptNumEvents=toml::find_or<int>(m_Conf, "USE_INTERRUPT",0);
+  m_StartupCalibration=toml::find_or<bool>(m_Conf, "SKIP_STARTUP_CALIBRATION",false);
+  m_NumberEvent= toml::find_or(m_Conf,"MAX_NUM_EVENTS_BLT",1023);
+  if(m_RecordLength>1023)
+  {
+    spdlog::warn("MAX_NUM_EVENTS_BLT should not be > 1023");
+    m_RecordLength=1023;
+  }
+  
+  
+  
 }
 
 void CAENDigitizerBoard::SetDRS4SamplingFrequency(const std::string& freq)
@@ -1766,8 +1827,8 @@ void CAENDigitizerBoard::ProgramDigitizer()
       }
     }
     /* execute generic write commands */
-    for(std::size_t i = 0; i < m_GWaddr.size(); i++)
-      WriteRegisterBitmask(m_GWaddr[i], m_GWdata[i], m_GWmask[i]);
+    for(std::size_t i = 0; i < m_WriteRgisters.size(); i++)
+      WriteRegisterBitmask(m_WriteRgisters[i][0],m_WriteRgisters[i][1],m_WriteRgisters[i][2]);
   }
   catch(const Exception& error)
   {

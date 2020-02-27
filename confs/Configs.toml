@@ -12,14 +12,75 @@ Name="Room1"
       [[Room.Rack.Crate.Board]]
       Name = "Board1"
       Type = "N141X"
-      
+      # WRITE_REGISTER: generic write register access. This command allows the user to have a direct write access
+      # to the registers of the board. NOTE: all the direct write accesses are executed AFTER the other settings,
+      # thus it might happen that the direct write overwrites a specific setting.
+      # To avoid this use the right "MASK".
+      # Syntax: WRITE_REGISTER ADDRESS DATA MASK, where ADDRESS is the address offset of the register (16 bit hex), DATA
+      # is the value being written (32 bit hex) and MASK is the bitmask to be used for DATA masking.
+      # Example: Set only bit [8] of register 1080 to 1, leaving the other bits to their previous value
+      # WRITE_REGISTER=[[1080,0100,0100]]
+      # Example: Set only bit [8] of register 1080 to 0, leaving the other bits to their previous value
+      # WRITE_REGISTER [[1080,0000,0100]]
+      # Example: Set register 1080 to the value of 0x45:
+      # WRITE_REGISTER [[1080,45,FFFFFFFF]]
+      WRITE_REGISTER=[[0,1,2],[3,4,5],[6,7,8]]
+      # RECORD_LENGTH = number of samples in the acquisition window
+      # For 742 family the options available are only 1024, 520, 256 and 136
+      RECORD_LENGTH=128
+      # DECIMATION_FACTOR: ONLY FOR 740 and 724 MODELS. change the decimation factor for the acquisition.
+      # Options: 1 2 4 8 16 32 64 128  
+      DECIMATION_FACTOR =1
+      # POST_TRIGGER: post trigger size in percent of the whole acquisition window
+      # options: 0 to 100 
+      # For x742 there is a delay of about 42 nsec on Fast Trigger TR, and about 115 nsec on TRG-IN; 
+      # the post trigger is added to this delay  
+      POST_TRIGGER=50
+      # EXTERNAL_TRIGGER: external trigger input settings. When enabled, the ext. trg. can be either 
+      # propagated (ACQUISITION_AND_TRGOUT) or not (ACQ_ONLY) through the TRGOUT
+      # options: DISABLED, ACQ_ONLY, ACQUISITION_AND_TRGOUT
+      EXTERNAL_TRIGGER ="DISABLED"
+      # FPIO_LEVEL: type of the front panel I/O LEMO connectors 
+      # options: NIM, TTL
+      FPIO_LEVEL="NIM"
+      # TEST_PATTERN: if enabled, data from ADC are replaced by test pattern (triangular wave)
+      # options: true, false
+      TEST_PATTERN=false
+      # FAST_TRIGGER: fast trigger input settings. ONLY FOR 742 MODELS. When enabled, the fast trigger is used
+      # for the data acquisition 
+      # options: DISABLED, ACQ_ONLY
+      FAST_TRIGGER="DISABLED"
+      # OUTPUT_FILE_HEADER: if enabled, the header is included in the output file data
+      # options: true, false
+      OUTPUT_FILE_HEADER=true
+      # OUTPUT_FILE_FORMAT: output file can be either ASCII (column of decimal numbers) or binary 
+      # (2 bytes per sample, except for Mod 721 and Mod 731 that is 1 byte per sample)
+      # options: BINARY, ASCII, ROOT
+      OUTPUT_FILE_FORMAT="ROOT"
+      # Set the DRS4 Chip Frequency (for X742 boards only)
+      # Values: 5GHz, 2.5 GHz ,1GHz ,750MHz
+      DRS4_FREQUENCY="5GHz"
+      #PULSE_POLARITY: input signal polarity.
+      #options: POSITIVE, NEGATIVE
+      PULSE_POLARITY="NEGATIVE"
+      # FAST_TRIGGER_DIGITIZING: ONLY FOR 742 MODELS. If enabled the fast trigger signal is digitized and it is
+      # present in data readout as channel n.8 for each group.
+      # options: true, false
+      ENABLED_FAST_TRIGGER_DIGITIZING=true
+      #Interrupt settings (request interrupt when there are at least N events to
+      #read; 0=disable interrupts (polling mode))
+      USE_INTERRUPT=0
+      #Skip startup calibration
+      SKIP_STARTUP_CALIBRATION=false
+      #Max. number of events for a block transfer (0 to 1023)
+      MAX_NUM_EVENTS_BLT=1023
       [Room.Rack.Crate.Board.Connector]
         name = "Connector1"
         Type = "CAENVME"
         Model = "V1718"
         "Link Number" = 0
         
-      "WRITE_REGISTER"=[[0,1,2],[3,4,5],[6,7,8]]
+      
       
       [[Room.Rack.Crate.Board]]
       Name = "Board2"

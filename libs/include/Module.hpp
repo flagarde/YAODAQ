@@ -26,6 +26,8 @@ public:
   void                  Disconnect();
   void                  Release();
   void                  Quit();
+  std::string           getStateString();
+  States                getState();
   std::string           getName();
   std::string           getType();
   virtual void          OnOpen(const ix::WebSocketMessagePtr& msg);
@@ -50,7 +52,7 @@ protected:
   virtual void                    DoDisconnect();
   virtual void                    DoRelease();
   virtual void                    DoQuit();
-  virtual void                    LoadConfig();
+  void                            LoadConfig();
   virtual void                    DoDoConnect();
   virtual void                    DoDoDisconnect();
   virtual void                    verifyParameters();
@@ -59,10 +61,12 @@ protected:
   std::string                     m_Name{"Unknown"};
   std::string                     m_Type{"Unknown"};
   std::shared_ptr<spdlog::logger> m_Logger{nullptr};
+  States                          m_State{States::UNINITIALIZED};
 
 private:
   void                                                DoOnAction(Message& message);
-  void                                                sendState(const States& m_state);
+  void                                                sendState();
+  void                                                setState(const States& state);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
   WebsocketClient                                     m_WebsocketClient;
   std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack{[this](const ix::WebSocketMessagePtr& msg) {
