@@ -10,7 +10,7 @@ Json::StreamWriterBuilder Message::m_StreamWriterBuilder = Json::StreamWriterBui
 
 Json::CharReaderBuilder Message::m_CharReaderBuilder = Json::CharReaderBuilder();
 
-Message::Message(const Type& type, const std::string& content, const std::string& to, const std::string& from)
+Message::Message(const Types& type, const std::string& content, const std::string& to, const std::string& from)
 {
   m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
   m_Reader.reset(m_CharReaderBuilder.newCharReader());
@@ -37,7 +37,7 @@ void Message::setTo(const std::string& to)
   m_Value["To"] = to;
 }
 
-void Message::setType(const Type& type)
+void Message::setType(const Types& type)
 {
   m_Value["Type"] = std::string(magic_enum::enum_name(type));
 }
@@ -122,34 +122,26 @@ std::string Message::getType() const
   return getType();
 }
 
-Info::Info(const std::string& content, const std::string& to, const std::string& from): Message(Type::Info, content, to, from) {}
+Info::Info(const std::string& content, const std::string& to, const std::string& from): Message(Types::Info, content, to, from) {}
 
-Status::Status(const std::string& content, const std::string& to, const std::string& from): Message(Type::Status, checkContent(content), to, from) {}
-
-Error::Error(const std::string& content, const std::string& to, const std::string& from): Message(Type::Error, content, to, from) {}
-
-Trace::Trace(const std::string& content, const std::string& to, const std::string& from): Message(Type::Trace, content, to, from) {}
-
-Debug::Debug(const std::string& content, const std::string& to, const std::string& from): Message(Type::Debug, content, to, from) {}
-
-Warning::Warning(const std::string& content, const std::string& to, const std::string& from): Message(Type::Debug, content, to, from) {}
-
-Critical::Critical(const std::string& content, const std::string& to, const std::string& from): Message(Type::Debug, content, to, from) {}
-
-Command::Command(const std::string& content, const std::string& to, const std::string& from): Message(Type::Debug, content, to, from) {}
-
-std::set<std::string> Status::m_Status{"UNINITIALIZED", "INITIALIZED",  "CONNECTED", "CONFIGURED", "STARTED",    "PAUSED",  "STOPED",
-                                       "CLEARED",       "DISCONNECTED", "RELEASED",  "QUITED",     "INITIALIZE", "CONNECT", "CONFIGURE",
-                                       "START",         "PAUSE",        "STOP",      "CLEAR",      "DISCONNECT", "RELEASE", "QUIT"};
-
-std::string Status::checkContent(const std::string& content)
+State::State(const States& state, const std::string& to, const std::string& from)
+    : Message(Types::State, std::string(magic_enum::enum_name(state)), to, from)
 {
-  if(m_Status.find(content) == m_Status.end()) return "UNKNOWN_STATUS";
-  else
-    return content;
 }
 
-void Status::setContent(const std::string& content)
+Action::Action(const Actions& action, const std::string& to, const std::string& from)
+    : Message(Types::Action, std::string(magic_enum::enum_name(action)), to, from)
 {
-  Message::setContent(checkContent(content));
 }
+
+Error::Error(const std::string& content, const std::string& to, const std::string& from): Message(Types::Error, content, to, from) {}
+
+Trace::Trace(const std::string& content, const std::string& to, const std::string& from): Message(Types::Trace, content, to, from) {}
+
+Debug::Debug(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}
+
+Warning::Warning(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}
+
+Critical::Critical(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}
+
+Command::Command(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}

@@ -1,11 +1,12 @@
 #pragma once
 
+#include "States.hpp"
 #include "json.h"
 
 #include <memory>
 #include <set>
 
-enum class Type
+enum class Types
 {
   Trace,
   Info,
@@ -13,14 +14,29 @@ enum class Type
   Warning,
   Critical,
   Error,
-  Status,
+  State,
+  Action,
   Command
+};
+
+enum class Actions
+{
+  INITIALIZE,
+  CONNECT,
+  CONFIGURE,
+  START,
+  PAUSE,
+  STOP,
+  CLEAR,
+  DISCONNECT,
+  RELEASE,
+  QUIT
 };
 
 class Message
 {
 public:
-  Message(const Type& type = Type::Info, const std::string& content = "", const std::string& to = "", const std::string& from = "");
+  Message(const Types& type = Types::Info, const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
   void         parse(const std::string&);
   void         setFrom(const std::string&);
   void         setTo(const std::string&);
@@ -38,7 +54,7 @@ public:
   std::string  getType() const;
   std::string  getStyled(const std::string& indent = "\t");
   void         print(const std::string& indent = "\t");
-  void         setType(const Type&);
+  void         setType(const Types&);
   bool         isEmpty();
 
 private:
@@ -52,52 +68,53 @@ private:
 class Command: public Message
 {
 public:
-  Command(const std::string& content = "", const std::string& to = "", const std::string& from = "");
+  Command(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
 };
 
 class Critical: public Message
 {
 public:
-  Critical(const std::string& content = "", const std::string& to = "", const std::string& from = "");
+  Critical(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
 };
 
 class Warning: public Message
 {
 public:
-  Warning(const std::string& content = "", const std::string& to = "", const std::string& from = "");
+  Warning(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
 };
 
 class Debug: public Message
 {
 public:
-  Debug(const std::string& content = "", const std::string& to = "", const std::string& from = "");
+  Debug(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
 };
 
 class Trace: public Message
 {
 public:
-  Trace(const std::string& content = "", const std::string& to = "", const std::string& from = "");
+  Trace(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
 };
 
 class Error: public Message
 {
 public:
-  Error(const std::string& content = "", const std::string& to = "", const std::string& from = "");
+  Error(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
 };
 
 class Info: public Message
 {
 public:
-  Info(const std::string& content = "", const std::string& to = "", const std::string& from = "");
+  Info(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
 };
 
-class Status: public Message
+class State: public Message
 {
 public:
-  Status(const std::string& content = "", const std::string& to = "", const std::string& from = "");
-  virtual void setContent(const std::string&) final;
+  State(const States& state, const std::string& to = "ALL", const std::string& from = "");
+};
 
-private:
-  static std::set<std::string> m_Status;
-  std::string                  checkContent(const std::string& content);
+class Action: public Message
+{
+public:
+  Action(const Actions& action, const std::string& to = "ALL", const std::string& from = "");
 };

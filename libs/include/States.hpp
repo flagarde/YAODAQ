@@ -1,0 +1,16 @@
+#pragma once
+
+enum class States
+{
+  UNINITIALIZED,
+  INITIALIZED,
+  CONNECTED,
+  CONFIGURED,
+  STARTED,
+  PAUSED,
+  STOPED,
+  CLEARED,
+  DISCONNECTED,
+  RELEASED,
+  QUITED
+};

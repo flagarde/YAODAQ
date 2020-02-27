@@ -8,6 +8,12 @@ BoardInfos::BoardInfos(const std::string& roomName, const std::string& rackName,
   m_Parameters          = parameters;
 }
 
+BoardInfos::BoardInfos(const Infos& infos, const toml::value& parameters, const toml::value& connectorParameters): Infos(infos)
+{
+  m_ConnectorParameters = connectorParameters;
+  m_Parameters          = parameters;
+}
+
 void BoardInfos::print(std::ostream& os, const std::string shift)
 {
   Infos::print(os, shift);

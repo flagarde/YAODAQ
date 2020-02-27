@@ -24,7 +24,7 @@ public:
   virtual void          OnError(const ix::WebSocketMessagePtr& msg);
   ix::WebSocketSendInfo sendBinary(Message& message);
   ix::WebSocketSendInfo sendText(Message& message);
-  void                  sendStatus(const std::string&);
+  void                  sendAction(const std::string& action);
 
 protected:
   std::string                     m_Name{"Unknown"};

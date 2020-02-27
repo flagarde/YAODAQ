@@ -50,13 +50,11 @@ void WebsocketClient::start()
   m_WebSocket.setUrl(m_Url);
   m_WebSocket.setExtraHeaders(m_Headers);
   m_WebSocket.start();
-  while(m_WebSocket.getReadyState() != ix::ReadyState::Open) { std::this_thread::sleep_for(std::chrono::milliseconds(1)); }
 }
 
 void WebsocketClient::stop()
 {
   m_WebSocket.stop();
-  while(m_WebSocket.getReadyState() != ix::ReadyState::Closed) { std::this_thread::sleep_for(std::chrono::milliseconds(1)); }
 }
 
 ix::WebSocketSendInfo WebsocketClient::send(const std::string& data, bool binary, const ix::OnProgressCallback& onProgressCallback)

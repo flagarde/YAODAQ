@@ -3,6 +3,7 @@
 #include "Configuration.hpp"
 #include "Exception.hpp"
 #include "Message.hpp"
+#include "States.hpp"
 #include "WebsocketClient.hpp"
 #include "spdlog.h"
 
@@ -60,8 +61,8 @@ protected:
   std::shared_ptr<spdlog::logger> m_Logger{nullptr};
 
 private:
-  void                                                DoOnStatus(Message& message);
-  void                                                sendStatus(const std::string&);
+  void                                                DoOnAction(Message& message);
+  void                                                sendState(const States& m_state);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
   WebsocketClient                                     m_WebsocketClient;
   std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack{[this](const ix::WebSocketMessagePtr& msg) {

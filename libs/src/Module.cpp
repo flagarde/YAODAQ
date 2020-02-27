@@ -54,18 +54,10 @@ void Module::verifyParameters()
 
 void Module::LoadConfig()
 {
-  try
-  {
-    m_Config.parse();
-    m_Conf = m_Config.getConfig(m_Name);
-    printParameters();
-    this->verifyParameters();
-  }
-  catch(const std::exception& error)
-  {
-    m_Logger->error(error.what());
-    throw error;
-  }
+  m_Config.parse();
+  m_Conf = m_Config.getConfig(m_Name);
+  printParameters();
+  this->verifyParameters();
 }
 
 void Module::printParameters()
@@ -81,7 +73,7 @@ void Module::Initialize()
   {
     LoadConfig();
     DoInitialize();
-    sendStatus("INITIALIZED");
+    sendState(States::INITIALIZED);
     m_Logger->trace("Trace");
     m_Logger->info("info");
     m_Logger->debug("debug");
@@ -89,10 +81,10 @@ void Module::Initialize()
     m_Logger->error("error");
     m_Logger->critical("critical");
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -101,12 +93,12 @@ void Module::Connect()
   try
   {
     DoDoConnect();
-    sendStatus("CONNECTED");
+    sendState(States::CONNECTED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -115,12 +107,12 @@ void Module::Configure()
   try
   {
     DoConfigure();
-    sendStatus("CONFIGURED");
+    sendState(States::CONFIGURED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -129,12 +121,12 @@ void Module::Start()
   try
   {
     DoStart();
-    sendStatus("STARTED");
+    sendState(States::STARTED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -143,12 +135,12 @@ void Module::Pause()
   try
   {
     DoPause();
-    sendStatus("PAUSED");
+    sendState(States::PAUSED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -157,12 +149,12 @@ void Module::Stop()
   try
   {
     DoStop();
-    sendStatus("STOPED");
+    sendState(States::STOPED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -171,12 +163,12 @@ void Module::Clear()
   try
   {
     DoClear();
-    sendStatus("CLEARED");
+    sendState(States::CLEARED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -185,12 +177,12 @@ void Module::Disconnect()
   try
   {
     DoDoDisconnect();
-    sendStatus("DISCONNECTED");
+    sendState(States::DISCONNECTED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -199,12 +191,12 @@ void Module::Release()
   try
   {
     DoRelease();
-    sendStatus("RELEASED");
+    sendState(States::RELEASED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
@@ -213,20 +205,19 @@ void Module::Quit()
   try
   {
     DoQuit();
-    sendStatus("QUITED");
+    sendState(States::QUITED);
   }
-  catch(const std::exception& error)
+  catch(const Exception& error)
   {
     m_Logger->error(error.what());
-    throw error;
+    throw;
   }
 }
 
-void Module::sendStatus(const std::string& stat)
+void Module::sendState(const States& m_state)
 {
-  Status status;
-  status.setContent(stat);
-  sendText(status);
+  State state(m_state);
+  sendText(state);
 }
 
 void Module::DoInitialize()
@@ -279,7 +270,7 @@ void Module::DoQuit()
   std::cout << "Quit" << std::endl;
 }
 
-void Module::DoOnStatus(Message& message)
+void Module::DoOnAction(Message& message)
 {
   if(message.getContent() == "INITIALIZE") { Initialize(); }
   else if(message.getContent() == "CONNECT")
@@ -318,17 +309,13 @@ void Module::DoOnStatus(Message& message)
   {
     Quit();
   }
-  else if(message.getContent() == "UNKNOWN_STATUS")
-  {
-    std::cout << "You type an UNKNOWN_STATUS " << std::endl;
-  }
 }
 
 void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
-  if(message.getType() == "Status") { DoOnStatus(message); }
+  if(message.getType() == "Action") { DoOnAction(message); }
   else
     OnMessage(msg);
 }

@@ -1,5 +1,6 @@
 #include "Controller.hpp"
 
+#include "magic_enum.hpp"
 #include "sinks/ansicolor_sink.h"
 #include "sinks/ostream_sink.h"
 #include "sinks/stdout_color_sinks.h"
@@ -39,18 +40,23 @@ Controller::Controller(const std::string& name, const std::string& type): m_Type
 
 Controller::~Controller() {}
 
-void Controller::sendStatus(const std::string& stat)
+void Controller::sendAction(const std::string& action)
 {
-  Status status;
-  status.setContent(stat);
-  sendText(status);
+  auto ac = magic_enum::enum_cast<Actions>(action);
+  if(ac.has_value())
+  {
+    Action a(ac.value());
+    sendText(a);
+  }
+  else
+    throw Exception(STATUS_CODE_INVALID_PARAMETER, action + " is not a valid Action");
 }
 
 void Controller::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
-  if(message.getType() == "Status") {}
+  if(message.getType() == "State") {}
 }
 
 void Controller::stop()

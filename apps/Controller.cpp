@@ -20,8 +20,8 @@ int main(int argc, char** argv)
               return "";
           },
           "Not Empty", "Test is name is empty");
-  std::string status = "";
-  app.add_option("-s,--status", status, "Status");
+  std::string action = "";
+  app.add_option("-a,--action", action, "Action");
   try
   {
     app.parse(argc, argv);
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 
   Controller toto(controllerName);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  toto.sendStatus(status);
+  toto.sendAction(action);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   toto.stop();
   std::this_thread::sleep_for(std::chrono::milliseconds(100));

@@ -1,24 +1,27 @@
 #include "Configuration.hpp"
 
 #include "Exception.hpp"
+#include "spdlog.h"
 #include "toml.hpp"
 
 #include <algorithm>
 #include <iostream>
 
-toml::value Configuration::getConfig(const std::string& mmodule)
+int Configuration::m_ConnectorID = 1;
+
+toml::value Configuration::getConfig(const std::string& module)
 {
-  if(m_ModuleConfig.find(mmodule) == m_ModuleConfig.end())
-  { throw Exception(STATUS_CODE_NOT_FOUND, "Board/Module " + mmodule + " not found in configuration !"); }
+  if(m_ModuleConfig.find(module) == m_ModuleConfig.end())
+  { throw Exception(STATUS_CODE_NOT_FOUND, "Board/Module " + module + " not found in configuration !"); }
   else
-    return m_ModuleConfig[mmodule];
+    return m_ModuleConfig[module];
 }
 
-ConnectorInfos Configuration::getConnectorInfos(const std::string& mmodule)
+ConnectorInfos Configuration::getConnectorInfos(const std::string& module)
 {
-  if(m_ConnectorInfos.find(mmodule) == m_ConnectorInfos.end())
-  { throw Exception(STATUS_CODE_NOT_FOUND, "Board " + mmodule + " not found in configuration !"); }
-  return m_ConnectorInfos[mmodule];
+  if(m_ConnectorInfos.find(module) == m_ConnectorInfos.end())
+  { throw Exception(STATUS_CODE_NOT_FOUND, "Board " + module + " not found in configuration !"); }
+  return m_ConnectorInfos[module];
 }
 
 void Configuration::parse()
@@ -27,106 +30,98 @@ void Configuration::parse()
   if(m_isParsed == false)
   {
     m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
-    checkFile();
+    parseRooms();
     fillIndexes();
     m_isParsed = true;
   }
 }
 
-void Configuration::checkFile()
+void Configuration::throwIfExists(std::vector<std::string>& type, const std::string& typeName, const std::string& name)
 {
-  static int connector_ID{-1};
-  for(const auto& rooms: toml::find<toml::array>(m_Conf, "Room"))
+  if(std::find(type.begin(), type.end(), name) != type.end())
+  { throw Exception(STATUS_CODE_ALREADY_PRESENT, typeName + " name \"" + name + "\" is already taken"); }
+  else
+    type.push_back(name);
+}
+
+void Configuration::parseRooms()
+{
+  for(const auto& room: toml::find<toml::array>(m_Conf, "Room"))
   {
-    std::string room_name = toml::find_or<std::string>(rooms, "Name", "");
-    if(room_name == "" || std::find(m_Room_Names.begin(), m_Room_Names.end(), room_name) != m_Room_Names.end())
+    actualRoomName = toml::find_or<std::string>(room, "Name", "");
+    if(actualRoomName == "") spdlog::warn("No Room table");
+    throwIfExists(m_Room_Names, "Room", actualRoomName);
+    parseRacks(room);
+  }
+}
+
+void Configuration::parseRacks(const toml::value& room)
+{
+  for(const auto& rack: toml::find<toml::array>(room, "Rack"))
+  {
+    actualRackName = toml::find_or<std::string>(rack, "Name", "");
+    if(actualRackName == "") spdlog::warn("No Rack table");
+    throwIfExists(m_Rack_Names, "Rsck", actualRackName);
+    parseCrates(rack);
+  }
+}
+
+void Configuration::parseCrates(const toml::value& rack)
+{
+  for(const auto& crate: toml::find<toml::array>(rack, "Crate"))
+  {
+    bool crateHaveConnector{true};
+    actualCrateName = toml::find_or<std::string>(crate, "Name", "");
+    if(actualCrateName == "") spdlog::warn("No Crate table");
+    throwIfExists(m_Crate_Names, "Crate", actualCrateName);
+    toml::value crate_connector{};
+    try
     {
-      std::cout << "Room must have a (unique) name !" << std::endl;
-      std::exit(2);
+      crate_connector = toml::find<toml::table>(crate, "Connector");
     }
-    else
+    catch(const std::out_of_range& e)
     {
-      m_Room_Names.push_back(room_name);
-      // std::cout<<"Parsing Room : "<<room_name<<std::endl;
-      for(const auto& racks: toml::find<toml::array>(rooms, "Rack"))
+      crateHaveConnector = false;
+    }
+    parseModules(crate, crate_connector, crateHaveConnector);
+  }
+}
+
+void Configuration::parseModules(const toml::value& crate, const toml::value& crateConnectorParameters, bool haveCrateConnector)
+{
+  toml::value boardConnectorParameters{};
+  for(const auto& board: toml::find<toml::array>(crate, "Board"))
+  {
+    std::string moduleName = toml::find_or<std::string>(board, "Name", "");
+    if(moduleName == "")
+    {
+      spdlog::error("Board have no Name");
+      throw Exception(STATUS_CODE_NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a \"Name\" key");
+    }
+    throwIfExists(m_Module_Names, "Module", moduleName);
+    std::string type = toml::find_or<std::string>(board, "Type", "");
+    if(type == "") { throw Exception(STATUS_CODE_NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a \"Type\" key"); }
+    try
+    {
+      boardConnectorParameters = toml::find<toml::table>(board, "Connector");
+    }
+    catch(const std::out_of_range& e)
+    {
+      if(haveCrateConnector == false)
       {
-        std::string rack_name = toml::find_or<std::string>(racks, "Name", "");
-        if(rack_name == "" || std::find(m_Rack_Names.begin(), m_Rack_Names.end(), rack_name) != m_Rack_Names.end())
-        {
-          std::cout << "Rack must have a (unique) name !" << std::endl;
-          std::exit(2);
-        }
-        else
-        {
-          m_Rack_Names.push_back(rack_name);
-          // std::cout<<"Parsing Rack : "<<rack_name<<std::endl;
-          for(const auto& crates: toml::find<toml::array>(racks, "Crate"))
-          {
-            bool        crate_have_connector{true};
-            std::string crate_name = toml::find_or<std::string>(crates, "Name", "");
-            if(crate_name == "" || std::find(m_Crate_Names.begin(), m_Crate_Names.end(), crate_name) != m_Crate_Names.end())
-            {
-              std::cout << "Crate must have a (unique) name !" << std::endl;
-              std::exit(2);
-            }
-            else
-            {
-              m_Crate_Names.push_back(crate_name);
-              toml::value crate_connector{};
-              toml::value board_connector{};
-              try
-              {
-                crate_connector = toml::find<toml::table>(crates, "Connector");
-              }
-              catch(const std::out_of_range& e)
-              {
-                crate_have_connector = false;
-              }
-              // std::cout<<"Parsing Crate : "<<crate_name<<std::endl;
-              for(const auto& boards: toml::find<toml::array>(crates, "Board"))
-              {
-                std::string board_name = toml::find_or<std::string>(boards, "Name", "");
-                if(board_name == "" || m_BoardsInfos.find(board_name) != m_BoardsInfos.end())
-                {
-                  std::cout << "Board must have a (unique) Name !" << std::endl;
-                  std::exit(2);
-                }
-                std::string type = toml::find_or<std::string>(boards, "Type", "");
-                if(type == "")
-                {
-                  std::cout << "Board must have a Type !" << std::endl;
-                  std::exit(2);
-                }
-                else
-                {
-                  try
-                  {
-                    board_connector = toml::find<toml::table>(boards, "Connector");
-                  }
-                  catch(const std::out_of_range& e)
-                  {
-                    if(crate_have_connector == false)
-                    {
-                      std::cout << "Board " << board_name << " doesn't have a Connector and the Crate (" << crate_name
-                                << ") which is plugged to doesn't have one neither" << std::endl;
-                      std::exit(2);
-                    }
-                    else
-                    {
-                      ++connector_ID;
-                      board_connector = crate_connector;
-                    }
-                  }
-                  m_BoardsInfos.emplace(board_name, BoardInfos(room_name, rack_name, crate_name, board_name, type, boards, board_connector));
-                  m_ModuleConfig.emplace(board_name, boards);
-                  m_ConnectorInfos.emplace(board_name, ConnectorInfos(board_connector, crate_have_connector, connector_ID));
-                }
-              }
-            }
-          }
-        }
+        throw Exception(STATUS_CODE_NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a Connector and the Crate \"" + actualCrateName +
+                                                   "\" in which is plugged to doesn't have one neither");
+      }
+      else
+      {
+        ++m_ConnectorID;
+        boardConnectorParameters = crateConnectorParameters;
       }
     }
+    Infos infos(actualRoomName, actualRackName, actualCrateName, moduleName, type);
+    m_BoardsInfos.emplace(moduleName, BoardInfos(infos, board, boardConnectorParameters));
+    m_ModuleConfig.emplace(moduleName, board);
+    m_ConnectorInfos.emplace(moduleName, ConnectorInfos(boardConnectorParameters, haveCrateConnector, m_ConnectorID));
   }
 }
 

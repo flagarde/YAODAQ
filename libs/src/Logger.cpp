@@ -89,7 +89,11 @@ void Logger::OnMessage(const ix::WebSocketMessagePtr& msg)
   {
     spdlog::error("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
   }
-  else if(message.getType() == "Status")
+  else if(message.getType() == "State")
+  {
+    spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
+  else if(message.getType() == "Action")
   {
     spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
   }

@@ -4,6 +4,7 @@
 #include "IXNetSystem.h"
 #include "Message.hpp"
 #include "json.h"
+#include "magic_enum.hpp"
 #include "spdlog.h"
 
 #include <algorithm>
@@ -52,8 +53,8 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
           ++m_BrowserNumber;
         }
         try_emplace(key, webSocket);
+        webSocket->send(State(m_State, "ALL", "WebServer").get());
         sendToLogger("New connection ID : " + connectionState->getId() + " Key : " + key + " Host : " + msg->openInfo.headers["Host"]);
-        webSocket->send(Status("INITIALIZED").get());
       }
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
@@ -103,7 +104,14 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
           spdlog::error("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
           sendToLogger(msg->str);
         }
-        else if(message.getType() == "Status")
+        else if(message.getType() == "State")
+        {
+          spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          auto state = magic_enum::enum_cast<States>(message.getContent());
+          if(state.has_value()) { m_State = state.value(); }
+          sendToAll(msg->str);
+        }
+        else if(message.getType() == "Action")
         {
           spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
           sendToAll(msg->str);
