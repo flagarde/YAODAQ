@@ -19,14 +19,14 @@ with section("parse"):
 with section("format"):
 
   # How wide to allow formatted cmake files
-  line_width = 80
+  line_width = 150
 
   # How many spaces to tab for indent
   tab_size = 2
 
   # If an argument group contains more than this many sub-groups (parg or kwarg
   # groups) then force it to a vertical layout.
-  max_subgroups_hwrap = 2
+  max_subgroups_hwrap = 6
 
   # If a positional argument group contains more than this many arguments, then
   # force it to a vertical layout.

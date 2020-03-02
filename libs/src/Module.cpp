@@ -1,5 +1,6 @@
 #include "Module.hpp"
 
+#include "Interrupt.hpp"
 #include "magic_enum.hpp"
 #include "sinks/ansicolor_sink.h"
 #include "sinks/ostream_sink.h"
@@ -12,6 +13,21 @@ Configuration Module::m_Config = Configuration();
 void Module::setConfigFile(const std::string& file)
 {
   m_Config.setFileName(file);
+}
+
+void Module::setName(const std::string& name)
+{
+  m_Name = name;
+}
+
+void Module::stopListening()
+{
+  m_WebsocketClient.stop();
+}
+
+void Module::startListening()
+{
+  m_WebsocketClient.start();
 }
 
 std::string Module::getName()
@@ -56,12 +72,7 @@ Module::Module(const std::string& name, const std::string& type): m_Type(type), 
   m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
   m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
-  m_WebsocketClient.start();
 }
-
-void Module::DoDoConnect() {}
-
-void Module::DoDoDisconnect() {}
 
 void Module::verifyParameters() {}
 
@@ -99,7 +110,7 @@ void Module::Connect()
 {
   try
   {
-    DoDoConnect();
+    CallModuleConnect();
     setState(States::CONNECTED);
     sendState();
   }
@@ -189,7 +200,7 @@ void Module::Disconnect()
 {
   try
   {
-    DoDoDisconnect();
+    CallModuleDisconnect();
     setState(States::DISCONNECTED);
     sendState();
   }
@@ -241,11 +252,6 @@ void Module::DoInitialize()
   std::cout << "Initialize" << std::endl;
 }
 
-void Module::DoConnect()
-{
-  std::cout << "Connect" << std::endl;
-}
-
 void Module::DoConfigure()
 {
   std::cout << "Configure" << std::endl;
@@ -269,11 +275,6 @@ void Module::DoStop()
 void Module::DoClear()
 {
   std::cout << "Clear" << std::endl;
-}
-
-void Module::DoDisconnect()
-{
-  std::cout << "Disconnect" << std::endl;
 }
 
 void Module::DoRelease()

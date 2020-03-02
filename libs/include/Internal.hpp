@@ -1,7 +1,5 @@
 #pragma once
 
-#include "SupressWarnings.hpp"
-
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -24,3 +22,8 @@ using std::uint8_t;
 #define PLATFORM_WIN32  4
 
 #define PLATFORM_IS(P) (PLATFORM == PLATFORM_##P)
+
+#include "SupressWarnings.hpp"
+#include "Utilities.hpp"
+#include "magic_enum.hpp"
+#include "spdlog.h"

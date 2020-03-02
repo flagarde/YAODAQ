@@ -4,9 +4,9 @@
 
 int main(int argc, char** argv)
 {
-  Interrupt interrupt;
-  CLI::App  app{"Dump"};
-  int       port{80};
+  //Interrupt interrupt;
+  CLI::App app{"Dump"};
+  int      port{8080};
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
   std::string host{"127.0.0.1"};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
@@ -36,6 +36,7 @@ int main(int argc, char** argv)
   spdlog::info("Listening on IP {0} Port {1}", host, port);
 
   CAEN::CAENDigitizerBoard toto(loggerName);
+  toto.startListening();
   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   toto.Initialize();
   while(1) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }

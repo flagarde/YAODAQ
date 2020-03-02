@@ -1,11 +1,10 @@
 #include "CAENCommException.hpp"
 
 #include "CAENComm.h"
-
-#include "magic_enum.hpp"
-
 namespace CAEN
 {
+
+  
 const char* CAENCommException::errorStrings(const int& code)
 {
   switch(code)
@@ -44,28 +43,23 @@ const char* CAENCommException::errorStrings(const int& code)
 
 std::string CAENCommException::toString() const
 {
-  return std::string(
-      magic_enum::enum_name(magic_enum::enum_cast<CAENComm_ErrorCode>(getCode()).value()));
+  return std::string(magic_enum::enum_name(magic_enum::enum_cast<CAENComm_ErrorCode>(getCode()).value()));
 }
 
 #if experimental_have_source_location == 1
-CAENCommException::CAENCommException(const int&                         code,
-                             std::experimental::source_location loc)
-    : Exception(code, errorStrings(code), loc)
+CAENCommException::CAENCommException(const int& code,std::experimental::source_location loc): Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENComm_Success) throw;
+  if(code != CAENComm_Success) throw *this;
 };
 #elif have_source_location == 1
-CAENCommException::CAENCommException(const int& code, std::source_location loc)
-    : Exception(code, errorStrings(code), loc)
+CAENCommException::CAENCommException(const int& code, std::source_location loc): Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENComm_Success) throw;
+  if(code != CAENComm_Success) throw *this;
 };
 #else
 CAENCommException::CAENCommException(const int& code): Exception(code, errorStrings(code))
 {
-  if(code != CAENComm_Success) throw;
+  if(code != CAENComm_Success) throw *this;
 };
 #endif
-
-}  // namespace CAEN
+}

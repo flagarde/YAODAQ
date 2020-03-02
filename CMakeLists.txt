@@ -4,22 +4,15 @@
 ###################################
 cmake_minimum_required(VERSION 3.9...3.16.4 FATAL_ERROR)
 
-project(
-  YAODAQ
-  VERSION "0.0.1.0"
-  DESCRIPTION "YAODAQ for RPClab"
-  HOMEPAGE_URL "https://github.com/RPClab/YAODAQ"
-  LANGUAGES CXX)
+project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
 include(Options.cmake)
 
-# Ask CMake to output a compile_commands.json file for use with things like Vim
-# YCM.
+# Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake"
-                      "${CMAKE_SOURCE_DIR}/external")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/macro" "${CMAKE_SOURCE_DIR}/external")
 
 include(Architectures)
 
@@ -39,29 +32,22 @@ file(
   ${PROJECT_SOURCE_DIR}/examples/*.[ch]
   ${PROJECT_SOURCE_DIR}/tests/*.[ch]pp
   ${PROJECT_SOURCE_DIR}/tests/*.[ch])
-# Problem with pragme and formating get_filename_component( EXCLUDE_IT
-# ${CMAKE_CURRENT_SOURCE_DIR}/source/include/SupressWarnings.hpp ABSOLUTE)
+# Problem with pragme and formating get_filename_component( EXCLUDE_IT ${CMAKE_CURRENT_SOURCE_DIR}/source/include/SupressWarnings.hpp ABSOLUTE)
 # list(REMOVE_ITEM ALL_CODE_FILES "${EXCLUDE_IT}")
 
 clang_format(clang-format ${ALL_CODE_FILES})
 
-file(GLOB_RECURSE CMAKE_FILES CMakeLists.txt ${PROJECT_SOURCE_DIR}/cmake
-     ${PROJECT_SOURCE_DIR}/extern ${PROJECT_SOURCE_DIR}/Options.cmake)
+file(GLOB_RECURSE CMAKE_FILES CMakeLists.txt ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/extern ${PROJECT_SOURCE_DIR}/Options.cmake)
 
 cmake_format(cmake-format ${CMAKE_FILES})
 
 # guard against in-source builds
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(
-    FATAL_ERROR
-      "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
-  )
+  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
 endif()
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX
-      "${PROJECT_SOURCE_DIR}/bin"
-      CACHE PATH "Default Install Prefix" FORCE)
+  set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
   message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
 endif()
 
@@ -96,9 +82,7 @@ else()
       Profile)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "${allowableBuildTypes}")
   if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE
-        Debug
-        CACHE STRING "" FORCE)
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
   elseif(NOT CMAKE_BUILD_TYPE IN_LIST allowableBuildTypes)
     message(FATAL_ERROR "Invalid build type : ${CMAKE_BUILD_TYPE}")
   endif()
@@ -113,8 +97,7 @@ if(POLICY CMP0083)
   include(CheckPIESupported)
   check_pie_supported(OUTPUT_VARIABLE output LANGUAGES CXX)
   if(NOT CMAKE_CXX_LINK_PIE_SUPPORTED)
-    message(WARNING "PIE is not supported at link time: ${output}.\n"
-                    "PIE link options will not be passed to linker.")
+    message(WARNING "PIE is not supported at link time: ${output}.\n" "PIE link options will not be passed to linker.")
   else()
     set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
     message(STATUS "PIE link options will be passed to linker.")
@@ -135,15 +118,12 @@ endif()
 include(Sanitizers)
 
 include(DependencyGraph)
-gen_dep_graph(OUTPUT_DIR ${CMAKE_INSTALL_PREFIX} TARGET_NAME dependency-graph
-              OUTPUT_TYPE pdf)
+gen_dep_graph(OUTPUT_DIR ${CMAKE_INSTALL_PREFIX} TARGET_NAME dependency-graph OUTPUT_TYPE pdf)
 
 include(Tools)
 clang_tidy(-format-style=file -checks=* -header-filter='${CMAKE_SOURCE_DIR}/*')
-cppcheck(
-  --enable=warning,performance,portability,missingInclude
-  --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)"
-  --suppress=missingIncludeSystem --quiet --verbose --force)
+cppcheck(--enable=warning,performance,portability,missingInclude --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)"
+         --suppress=missingIncludeSystem --quiet --verbose --force)
 include_what_you_use(-Xiwyu)
 
 if(BUILD_WEBSERVER)

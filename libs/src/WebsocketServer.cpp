@@ -28,6 +28,16 @@ void WebsocketServer::setVerbosity(const std::string& verbosity)
   spdlog::set_level(m_Verbosity);
 }
 
+std::string WebsocketServer::getkey(const std::shared_ptr<ix::WebSocket>& websocket)
+{
+  std::lock_guard<std::mutex> guard(m_Mutex);
+  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
+  {
+    if(it->second == websocket) return it->first.getKey();
+  }
+  throw Exception(STATUS_CODE_NOT_FOUND, "Client not found !");
+}
+
 WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections,
                                  const int& handshakeTimeoutSecs)
     : m_Server(port, host, backlog, maxConnections, handshakeTimeoutSecs)
@@ -58,9 +68,10 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
       }
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
+        erase(webSocket);
+        webSocket->close();
         spdlog::info("Closed connection ID : {}", connectionState->getId());
         sendToLogger("Closed connection ID : " + connectionState->getId());
-        //erase(webSocket);
       }
       else if(msg->type == ix::WebSocketMessageType::Message)
       {
@@ -68,6 +79,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         try
         {
           message.parse(msg->str);
+          message.setFrom(getkey(webSocket));
         }
         catch(...)
         {
@@ -143,9 +155,11 @@ void WebsocketServer::sendToLogger(const std::string& message)
 void WebsocketServer::erase(const std::shared_ptr<ix::WebSocket>& socket)
 {
   std::lock_guard<std::mutex> guard(m_Mutex);
-  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
+  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end();)
   {
-    if(it->second == socket || it->second == nullptr) m_Clients.erase(it->first);
+    if(it->second == socket) { m_Clients.erase(it->first); }
+    else
+      ++it;
   }
 }
 
@@ -199,9 +213,5 @@ void WebsocketServer::wait()
 void WebsocketServer::listen()
 {
   std::pair<bool, std::string> res = m_Server.listen();
-  if(!res.first)
-  {
-    spdlog::error("{}", res.second);
-    std::exit(1);
-  }
+  if(!res.first) { Exception(STATUS_CODE_FAILURE, res.second); }
 }

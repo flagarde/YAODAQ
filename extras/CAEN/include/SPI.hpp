@@ -1,5 +1,4 @@
-#ifndef SPI_HPP
-#define SPI_HPP
+#pragma once
 #include <array>
 #include <cstdint>
 #include <vector>
@@ -29,4 +28,3 @@ private:
 };
 
 }  // namespace CAEN
-#endif

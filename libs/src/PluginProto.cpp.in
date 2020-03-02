@@ -1,0 +1,18 @@
+#include "PluginRegistry.hpp"
+
+@INCLUDES@
+
+FlakedTuna::PluginRegistry* pr = nullptr;                            
+extern "C" FT_EXPORT FlakedTuna::PluginRegistry* GetPluginRegistry() 
+{                                                                    
+  pr = new FlakedTuna::PluginRegistry();
+  @REGISTERS@
+  return pr;                                      
+} 
+  
+extern "C" FT_EXPORT void ClosePluginRegistry() 
+{                                               
+  if(pr != nullptr) { delete pr; }              
+}
+  
+FLAKED_TUNA_PLUGIN_VERSION(@VERSION@)

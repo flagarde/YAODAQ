@@ -47,14 +47,9 @@ option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
 
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
 
-option(ENABLE_ALL_WARNINGS "Compile with all warnings for the major compilers"
-       ON)
+option(ENABLE_ALL_WARNINGS "Compile with all warnings for the major compilers" ON)
 option(ENABLE_EFFECTIVE_CXX "Enable Effective C++ warnings" OFF)
-option(GENERATE_DEPENDENCY_DATA "Generates .d files with header dependencies"
-       ON)
+option(GENERATE_DEPENDENCY_DATA "Generates .d files with header dependencies" ON)
 
-option(
-  ENABLE_DOCTESTS
-  "Include tests in the library. Setting this to OFF will remove all doctest related code.
-                        Tests in tests/*.cpp will still be enabled."
-  OFF)
+option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
+                        Tests in tests/*.cpp will still be enabled." OFF)
