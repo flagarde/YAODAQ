@@ -8,6 +8,7 @@
 
 namespace CAEN
 {
+  
 class CAEN_DGTZ_UINT16_EVENT_t;
 class CAEN_DGTZ_UINT8_EVENT_t;
 class CAEN_DGTZ_X742_EVENT_t;

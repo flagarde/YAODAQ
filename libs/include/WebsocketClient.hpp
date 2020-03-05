@@ -3,6 +3,7 @@
 #include "IXWebSocket.h"
 #include "IXWebSocketCloseConstants.h"
 #include "IXWebSocketMessage.h"
+#include "Internal.hpp"
 
 #include <functional>
 #include <string>

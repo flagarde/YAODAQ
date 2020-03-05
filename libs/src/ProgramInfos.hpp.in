@@ -1,5 +1,4 @@
-#ifndef PROGRAM_INFOS_H
-#define PROGRAM_INFOS_H
+#pragma once
 #include <string>
 
 class ProgramInfos
@@ -20,4 +19,3 @@ private:
     const std::string PROJECT_DESCRIPTION{"@PROJECT_DESCRIPTION@"};
     const std::string HOMEPAGE_URL{"@PROJECT_HOMEPAGE_URL@"};
 };
-#endif

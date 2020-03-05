@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Internal.hpp"
+
 #include <iostream>
 #include <string>
 

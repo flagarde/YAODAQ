@@ -9,17 +9,15 @@
 
 static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
 {
-  int          offset;
-  int          chaux_en;
-  unsigned int i;
-  int          j;
+  int offset;
+  int chaux_en;
 
   chaux_en = (dataout->ChSize[8] == 0) ? 0 : 1;
-  for(j = 0; j < (8 + chaux_en); j++) { dataout->DataChannel[j][0] = dataout->DataChannel[j][1]; }
-  for(i = 1; i < dataout->ChSize[0]; i++)
+  for(size_t j = 0; j < (8 + chaux_en); j++) { dataout->DataChannel[j][0] = dataout->DataChannel[j][1]; }
+  for(size_t i = 1; i < dataout->ChSize[0]; i++)
   {
     offset = 0;
-    for(j = 0; j < 8; j++)
+    for(size_t j = 0; j < 8; j++)
     {
       if(i == 1)
       {
@@ -51,7 +49,7 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
 
     if(offset == 8)
     {
-      for(j = 0; j < (8 + chaux_en); j++)
+      for(size_t j = 0; j < (8 + chaux_en); j++)
       {
         if(i == 1)
         {
@@ -104,7 +102,7 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
 void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequency_t frequency, int CorrectionLevelMask,
                          CAEN_DGTZ_X742_GROUP_t* data)
 {
-  int      i, j, size1, trg = 0, k;
+  int      size1, trg = 0, k;
   float    Time[1024], t0;
   float    Tsamp;
   float    vcorr;
@@ -132,10 +130,10 @@ void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequ
 
   if(data->ChSize[8] != 0) trg = 1;
   st_ind = (uint16_t)(data->StartIndexCell);
-  for(i = 0; i < MAX_X742_CHANNEL_SIZE; i++)
+  for(size_t i = 0; i < MAX_X742_CHANNEL_SIZE; i++)
   {
     size1 = data->ChSize[i];
-    for(j = 0; j < size1; j++)
+    for(size_t j = 0; j < size1; j++)
     {
       if(cellCorrection) data->DataChannel[i][j] -= CTable->cell[i][((st_ind + j) % 1024)];
       if(nsampleCorrection) data->DataChannel[i][j] -= CTable->nsample[i][j];
@@ -147,24 +145,22 @@ void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequ
 
   t0      = CTable->time[st_ind];
   Time[0] = 0.0;
-  for(j = 1; j < 1024; j++)
+  for(size_t j = 1; j < 1024; j++)
   {
     t0 = CTable->time[(st_ind + j) % 1024] - t0;
     if(t0 > 0) Time[j] = Time[j - 1] + t0;
     else
       Time[j] = Time[j - 1] + t0 + (Tsamp * 1024);
-
     t0 = CTable->time[(st_ind + j) % 1024];
   }
-  for(j = 0; j < 8 + trg; j++)
+  for(size_t j = 0; j < 8 + trg; j++)
   {
     data->DataChannel[j][0] = data->DataChannel[j][1];
     wave_tmp[0]             = data->DataChannel[j][0];
     vcorr                   = 0.0;
     k                       = 0;
-    i                       = 0;
 
-    for(i = 1; i < 1024; i++)
+    for(size_t i = 1; i < 1024; i++)
     {
       while((k < 1024 - 1) && (Time[k] < (i * Tsamp))) k++;
       vcorr       = (((float)(data->DataChannel[j][k] - data->DataChannel[j][k - 1]) / (Time[k] - Time[k - 1])) * ((i * Tsamp) - Time[k - 1]));
@@ -184,12 +180,11 @@ void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequ
 int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask, CAEN_DGTZ_DRS4Correction_t* tables)
 {
   char  fnStr[MAX_BASE_INPUT_FILE_LENGTH + 1];
-  int   ch, i, j, gr;
   FILE* outputfile;
 
   if((int)(strlen(outputFileName) - 17) > MAX_BASE_INPUT_FILE_LENGTH) return -1;  // Too long base filename
 
-  for(gr = 0; gr < MAX_X742_GROUP_SIZE; gr++)
+  for(size_t gr = 0; gr < MAX_X742_GROUP_SIZE; gr++)
   {
     CAEN_DGTZ_DRS4Correction_t* tb;
 
@@ -198,12 +193,12 @@ int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask, CAEN_DG
     sprintf(fnStr, "%s_gr%d_cell.txt", outputFileName, gr);
     printf("Saving correction table cell values to %s\n", fnStr);
     if((outputfile = fopen(fnStr, "w")) == NULL) return -2;
-    for(ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
+    for(size_t ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
     {
       fprintf(outputfile, "Calibration values from cell 0 to 1024 for channel %d:\n\n", ch);
-      for(i = 0; i < 1024; i += 8)
+      for(size_t i = 0; i < 1024; i += 8)
       {
-        for(j = 0; j < 8; j++) fprintf(outputfile, "%d\t", tb->cell[ch][i + j]);
+        for(size_t j = 0; j < 8; j++) fprintf(outputfile, "%d\t", tb->cell[ch][i + j]);
         fprintf(outputfile, "cell = %d to %d\n", i, i + 7);
       }
     }
@@ -212,12 +207,12 @@ int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask, CAEN_DG
     sprintf(fnStr, "%s_gr%d_nsample.txt", outputFileName, gr);
     printf("Saving correction table nsamples values to %s\n", fnStr);
     if((outputfile = fopen(fnStr, "w")) == NULL) return -3;
-    for(ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
+    for(size_t ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
     {
       fprintf(outputfile, "Calibration values from cell 0 to 1024 for channel %d:\n\n", ch);
-      for(i = 0; i < 1024; i += 8)
+      for(size_t i = 0; i < 1024; i += 8)
       {
-        for(j = 0; j < 8; j++) fprintf(outputfile, "%d\t", tb->nsample[ch][i + j]);
+        for(size_t j = 0; j < 8; j++) fprintf(outputfile, "%d\t", tb->nsample[ch][i + j]);
         fprintf(outputfile, "cell = %d to %d\n", i, i + 7);
       }
     }
@@ -227,9 +222,9 @@ int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask, CAEN_DG
     printf("Saving correction table time values to %s\n", fnStr);
     if((outputfile = fopen(fnStr, "w")) == NULL) return -4;
     fprintf(outputfile, "Calibration values (ps) from cell 0 to 1024 :\n\n");
-    for(i = 0; i < 1024; i += 8)
+    for(size_t i = 0; i < 1024; i += 8)
     {
-      for(ch = 0; ch < 8; ch++) fprintf(outputfile, "%09.3f\t", tb->time[i + ch]);
+      for(size_t ch = 0; ch < 8; ch++) fprintf(outputfile, "%09.3f\t", tb->time[i + ch]);
       fprintf(outputfile, "cell = %d to %d\n", i, i + 7);
     }
     fclose(outputfile);
@@ -248,7 +243,7 @@ int SaveCorrectionTables(const char* outputFileName, uint32_t groupMask, CAEN_DG
 int LoadCorrectionTable(char* baseInputFileName, CAEN_DGTZ_DRS4Correction_t* tb)
 {
   char  fnStr[MAX_BASE_INPUT_FILE_LENGTH + 1];
-  int   ch, i, j, read;
+  int   read;
   FILE* inputfile;
   char  Buf[MAX_READ_CHAR + 1], *pread;
 
@@ -258,13 +253,13 @@ int LoadCorrectionTable(char* baseInputFileName, CAEN_DGTZ_DRS4Correction_t* tb)
   strcat(fnStr, "_cell.txt");
   printf("Loading correction table cell values from %s\n", fnStr);
   if((inputfile = fopen(fnStr, "r")) == NULL) return -2;
-  for(ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
+  for(size_t ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
   {
     while(strstr(Buf, "Calibration") != Buf) pread = fgets(Buf, MAX_READ_CHAR, inputfile);
 
-    for(i = 0; i < 1024; i += 8)
+    for(size_t i = 0; i < 1024; i += 8)
     {
-      for(j = 0; j < 8; j++) read = fscanf(inputfile, "%hd", &(tb->cell[ch][i + j]));
+      for(size_t j = 0; j < 8; j++) read = fscanf(inputfile, "%hd", &(tb->cell[ch][i + j]));
       pread = fgets(Buf, MAX_READ_CHAR, inputfile);
     }
   }
@@ -274,13 +269,13 @@ int LoadCorrectionTable(char* baseInputFileName, CAEN_DGTZ_DRS4Correction_t* tb)
   strcat(fnStr, "_nsample.txt");
   printf("Loading correction table nsamples values from %s\n", fnStr);
   if((inputfile = fopen(fnStr, "r")) == NULL) return -3;
-  for(ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
+  for(size_t ch = 0; ch < MAX_X742_CHANNEL_SIZE; ch++)
   {
     while(strstr(Buf, "Calibration") != Buf) pread = fgets(Buf, MAX_READ_CHAR, inputfile);
 
-    for(i = 0; i < 1024; i += 8)
+    for(size_t i = 0; i < 1024; i += 8)
     {
-      for(j = 0; j < 8; j++) read = fscanf(inputfile, "%hhd", &(tb->nsample[ch][i + j]));
+      for(size_t j = 0; j < 8; j++) read = fscanf(inputfile, "%hhd", &(tb->nsample[ch][i + j]));
       pread = fgets(Buf, MAX_READ_CHAR, inputfile);
     }
   }
@@ -293,9 +288,9 @@ int LoadCorrectionTable(char* baseInputFileName, CAEN_DGTZ_DRS4Correction_t* tb)
   while(strstr(Buf, "Calibration") != Buf) pread = fgets(Buf, MAX_READ_CHAR, inputfile);
   pread = fgets(Buf, MAX_READ_CHAR, inputfile);
 
-  for(i = 0; i < 1024; i += 8)
+  for(size_t i = 0; i < 1024; i += 8)
   {
-    for(j = 0; j < 8; j++) read = fscanf(inputfile, "%f", &(tb->time[i + j]));
+    for(size_t j = 0; j < 8; j++) read = fscanf(inputfile, "%f", &(tb->time[i + j]));
     pread = fgets(Buf, MAX_READ_CHAR, inputfile);
   }
   fclose(inputfile);
