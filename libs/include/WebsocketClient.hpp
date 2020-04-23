@@ -5,7 +5,6 @@
 #include "IXWebSocketMessage.h"
 #include "Internal.hpp"
 
-#include <functional>
 #include <string>
 
 class WebsocketClient
@@ -26,8 +25,7 @@ public:
   static void           setURL(const std::string& url);
 
 private:
-  static std::string                                  m_Url;
-  ix::WebSocket                                       m_WebSocket;
-  ix::WebSocketHttpHeaders                            m_Headers;
-  std::function<void(const ix::WebSocketMessagePtr&)> m_SocketMessagePtr{nullptr};
+  static std::string       m_Url;
+  ix::WebSocket            m_WebSocket;
+  ix::WebSocketHttpHeaders m_Headers;
 };

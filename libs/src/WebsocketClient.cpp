@@ -21,7 +21,6 @@ void WebsocketClient::setExtraHeader(const std::string& key, const std::string& 
 
 void WebsocketClient::setOnMessageCallback(std::function<void(const ix::WebSocketMessagePtr&)> m_func)
 {
-  m_SocketMessagePtr = m_func;
   m_WebSocket.setOnMessageCallback(m_func);
 }
 
