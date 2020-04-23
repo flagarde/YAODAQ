@@ -7,7 +7,6 @@
 
 namespace CAEN
 {
-
 CAENCommBoard::CAENCommBoard(const std::string& name)
     : Board(name, "CAENCommBoard")
 {
@@ -170,7 +169,6 @@ std::string CAENCommBoard::GetVMEFirmwareRelease()
   return ret;
 }
 
-
 std::string CAENCommBoard::GetVMEOpticalChipsetFirmwareRelease()
 {
   char ret[10];
@@ -178,4 +176,4 @@ std::string CAENCommBoard::GetVMEOpticalChipsetFirmwareRelease()
   return ret;
 }
 
-}
+}  // namespace CAEN

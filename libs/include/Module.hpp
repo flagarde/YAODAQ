@@ -3,7 +3,6 @@
 #include "Configuration.hpp"
 #include "Exception.hpp"
 #include "Message.hpp"
-#include "PluginRegistry.hpp"
 #include "States.hpp"
 #include "WebsocketClient.hpp"
 #include "spdlog.h"
@@ -31,22 +30,31 @@ public:
   States                getState();
   std::string           getName();
   std::string           getType();
-  void                  setName(const std::string& name);
+  virtual void          OnOpen(const ix::WebSocketMessagePtr& msg);
+  virtual void          OnClose(const ix::WebSocketMessagePtr& msg);
+  virtual void          OnPong(const ix::WebSocketMessagePtr& msg);
+  virtual void          OnPing(const ix::WebSocketMessagePtr& msg);
+  virtual void          OnMessage(const ix::WebSocketMessagePtr& msg);
+  virtual void          OnError(const ix::WebSocketMessagePtr& msg);
   ix::WebSocketSendInfo sendBinary(Message& message);
   ix::WebSocketSendInfo sendText(Message& message);
   static void           setConfigFile(const std::string&);
   void                  printParameters();
-  void                  stopListening();
-  void                  startListening();
 
 protected:
-  virtual void                    OnOpen(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnClose(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnPong(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnPing(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnMessage(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnError(const ix::WebSocketMessagePtr& msg);
+  virtual void                    DoInitialize();
+  virtual void                    DoConnect();
+  virtual void                    DoConfigure();
+  virtual void                    DoStart();
+  virtual void                    DoPause();
+  virtual void                    DoStop();
+  virtual void                    DoClear();
+  virtual void                    DoDisconnect();
+  virtual void                    DoRelease();
+  virtual void                    DoQuit();
   void                            LoadConfig();
+  virtual void                    DoDoConnect();
+  virtual void                    DoDoDisconnect();
   virtual void                    verifyParameters();
   toml::value                     m_Conf;
   static Configuration            m_Config;
@@ -56,17 +64,6 @@ protected:
   States                          m_State{States::UNINITIALIZED};
 
 private:
-  Module() = delete;
-  virtual void                                        DoInitialize();
-  virtual void                                        CallModuleConnect() { std::cout << "Connect" << std::endl; };
-  virtual void                                        DoConfigure();
-  virtual void                                        DoStart();
-  virtual void                                        DoPause();
-  virtual void                                        DoStop();
-  virtual void                                        DoClear();
-  virtual void                                        CallModuleDisconnect() { std::cout << "Disconnect" << std::endl; };
-  virtual void                                        DoRelease();
-  virtual void                                        DoQuit();
   void                                                DoOnAction(Message& message);
   void                                                sendState();
   void                                                setState(const States& state);

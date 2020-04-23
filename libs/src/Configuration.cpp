@@ -1,7 +1,7 @@
 #include "Configuration.hpp"
 
 #include "Exception.hpp"
-#include "Internal.hpp"
+#include "spdlog.h"
 #include "toml.hpp"
 
 #include <algorithm>
@@ -77,9 +77,7 @@ void Configuration::parseCrates(const toml::value& rack)
     toml::value crate_connector{};
     try
     {
-      ++m_ConnectorID;
-      m_CrateConnectorID = m_ConnectorID;
-      crate_connector    = toml::find<toml::table>(crate, "Connector");
+      crate_connector = toml::find<toml::table>(crate, "Connector");
     }
     catch(const std::out_of_range& e)
     {
@@ -91,7 +89,6 @@ void Configuration::parseCrates(const toml::value& rack)
 
 void Configuration::parseModules(const toml::value& crate, const toml::value& crateConnectorParameters, bool haveCrateConnector)
 {
-  int         boardConnectorID{0};
   toml::value boardConnectorParameters{};
   for(const auto& board: toml::find<toml::array>(crate, "Board"))
   {
@@ -107,8 +104,6 @@ void Configuration::parseModules(const toml::value& crate, const toml::value& cr
     try
     {
       boardConnectorParameters = toml::find<toml::table>(board, "Connector");
-      ++m_ConnectorID;
-      boardConnectorID = m_ConnectorID;
     }
     catch(const std::out_of_range& e)
     {
@@ -119,14 +114,14 @@ void Configuration::parseModules(const toml::value& crate, const toml::value& cr
       }
       else
       {
+        ++m_ConnectorID;
         boardConnectorParameters = crateConnectorParameters;
-        boardConnectorID         = m_CrateConnectorID;
       }
     }
     Infos infos(actualRoomName, actualRackName, actualCrateName, moduleName, type);
     m_BoardsInfos.emplace(moduleName, BoardInfos(infos, board, boardConnectorParameters));
     m_ModuleConfig.emplace(moduleName, board);
-    m_ConnectorInfos.emplace(moduleName, ConnectorInfos(boardConnectorParameters, haveCrateConnector, boardConnectorID));
+    m_ConnectorInfos.emplace(moduleName, ConnectorInfos(boardConnectorParameters, haveCrateConnector, m_ConnectorID));
   }
 }
 

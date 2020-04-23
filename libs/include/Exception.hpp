@@ -74,7 +74,7 @@ protected:
 
 private:
   void        createBackTrace();
-  std::string m_Message{"Compile with source_location support for better informations !"};
+  std::string m_Message{"Compile with C++20 for better informations !"};
   const int   m_Code{STATUS_CODE_SUCCESS};
 #if experimental_have_source_location == 1
   std::experimental::source_location m_Location;
@@ -83,5 +83,5 @@ private:
 #endif
   Exception() = delete;
   void        constructMessage();
-  std::string m_BackTrace = {""};
+  std::string m_backTrace = {""};
 };

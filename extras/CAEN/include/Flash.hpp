@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FLASH_HPP
+#define FLASH_HPP
 
 #include "SPI.hpp"
 
@@ -170,3 +171,4 @@ private:
 
 }  // namespace CAEN
 
+#endif

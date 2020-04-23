@@ -2,9 +2,10 @@
 
 #include "CAENDPPLibTypes.h"
 
+#include "magic_enum.hpp"
+
 namespace CAEN
 {
-  
 const char* CAENDPPException::errorStrings(const int& code)
 {
   switch(code)
@@ -108,16 +109,20 @@ const char* CAENDPPException::errorStrings(const int& code)
 
 std::string CAENDPPException::toString() const
 {
-  return std::string(magic_enum::enum_name(magic_enum::enum_cast<CAENDPP_RetCode_t>(getCode()).value()));
+  return std::string(
+      magic_enum::enum_name(magic_enum::enum_cast<CAENDPP_RetCode_t>(getCode()).value()));
 }
 
 #if experimental_have_source_location == 1
-CAENDPPException::CAENDPPException(const int& code,std::experimental::source_location loc): Exception(code, errorStrings(code), loc)
+CAENDPPException::CAENDPPException(const int&                         code,
+                           std::experimental::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENDPP_RetCode_Ok) throw *this;
+  if(code != CAENDPP_RetCode_Ok) throw;
 };
 #elif have_source_location == 1
-CAENDPPException::CAENDPPException(const int& code, std::source_location loc): Exception(code, errorStrings(code), loc)
+CAENDPPException::CAENDPPException(const int& code, std::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
   if(code != CAENDPP_RetCode_Ok) throw *this;
 };

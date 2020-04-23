@@ -3,14 +3,12 @@
 #include "Board.hpp"
 
 #include <cstdint>
-
 namespace CAEN
 {
-
 class CAENCommBoard: public Board
 {
 public:
-  CAENCommBoard(const std::string& name="");
+  CAENCommBoard(const std::string& name);
 
   /*##########################################################################*/
   /*
@@ -237,4 +235,5 @@ public:
                                                                                 ******************************************************************************/
   std::string SWRelease();
 };
-}
+
+}  // namespace CAEN

@@ -2,9 +2,10 @@
 
 #include "CAENDigitizerType.h"
 
+#include "magic_enum.hpp"
+
 namespace CAEN
 {
-  
 const char* CAENDigitizerException::errorStrings(const int& code)
 {
   switch(code)
@@ -85,24 +86,29 @@ const char* CAENDigitizerException::errorStrings(const int& code)
 
 std::string CAENDigitizerException::toString() const
 {
-  return std::string(magic_enum::enum_name(magic_enum::enum_cast<CAEN_DGTZ_ErrorCode>(getCode()).value()));
+  return std::string(
+      magic_enum::enum_name(magic_enum::enum_cast<CAEN_DGTZ_ErrorCode>(getCode()).value()));
 }
 
 #if experimental_have_source_location == 1
-CAENDigitizerException::CAENDigitizerException(const int& code,std::experimental::source_location loc): Exception(code, errorStrings(code), loc)
+CAENDigitizerException::CAENDigitizerException(const int&                         code,
+                                       std::experimental::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAEN_DGTZ_Success) throw *this;
+  if(code != CAEN_DGTZ_Success) throw;
 };
 #elif have_source_location == 1
-CAENDigitizerException::CAENDigitizerException(const int& code,std::source_location loc) : Exception(code, errorStrings(code), loc)
+CAENDigitizerException::CAENDigitizerException(const int&           code,
+                                       std::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAEN_DGTZ_Success) throw *this;
+  if(code != CAEN_DGTZ_Success) throw;
 };
 #else
 CAENDigitizerException::CAENDigitizerException(const int& code)
     : Exception(code, errorStrings(code))
 {
-  if(code != CAEN_DGTZ_Success) throw *this;
+  if(code != CAEN_DGTZ_Success) throw;
 };
 #endif
 

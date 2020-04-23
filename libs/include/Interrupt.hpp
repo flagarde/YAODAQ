@@ -2,6 +2,7 @@
 #include "spdlog.h"
 
 #include <csignal>
+#include <functional>
 
 class Interrupt
 {

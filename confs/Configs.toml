@@ -77,9 +77,9 @@ SKIP_STARTUP_CALIBRATION=false
 MAX_NUM_EVENTS_BLT=1023
 [Room.Rack.Crate.Board.Connector]
 Name = "Connector1"
-Model = "V1718"
 Type = "CAENVME"
-"Link Number" = 1
+Model = "V1718"
+"Link Number" = 0
 
 [Room.Rack.Crate.Board.Trigger1]
 # ----------------------------------------------------------------

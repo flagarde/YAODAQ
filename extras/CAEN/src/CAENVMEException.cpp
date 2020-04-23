@@ -3,6 +3,8 @@
 #include "CAENVMElib.h"
 #include "CAENVMEtypes.h"
 
+#include "magic_enum.hpp"
+
 namespace CAEN
 {
 const char* CAENVMEException::errorStrings(const int& code)
@@ -11,25 +13,29 @@ const char* CAENVMEException::errorStrings(const int& code)
 }
 
 #if experimental_have_source_location == 1
-CAENVMEException::CAENVMEException(const int& code,std::experimental::source_location loc): Exception(code, errorStrings(code), loc)
+CAENVMEException::CAENVMEException(const int&                         code,
+                           std::experimental::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != cvSuccess) throw *this;
+  if(code != 0) throw;
 };
 #elif have_source_location == 1
-CAENVMEException::CAENVMEException(const int& code, std::source_location loc): Exception(code, errorStrings(code), loc)
+CAENVMEException::CAENVMEException(const int& code, std::source_location loc)
+    : Exception(code, errorStrings(code), loc)
 {
-  if(code != cvSuccess) throw *this;
+  if(code != 0) throw;
 };
 #else
 CAENVMEException::CAENVMEException(const int& code): Exception(code, errorStrings(code))
 {
-  if(code != cvSuccess) throw *this;
+  if(code != 0) throw;
 };
 #endif
 
 std::string CAENVMEException::toString() const
 {
-  return std::string(magic_enum::enum_name(magic_enum::enum_cast<CVErrorCodes>(getCode()).value()));
+  return std::string(
+      magic_enum::enum_name(magic_enum::enum_cast<CVErrorCodes>(getCode()).value()));
 }
 
 }  // namespace CAEN
