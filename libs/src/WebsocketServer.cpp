@@ -30,7 +30,6 @@ void WebsocketServer::setVerbosity(const std::string& verbosity)
 
 std::string WebsocketServer::getkey(const std::shared_ptr<ix::WebSocket>& websocket)
 {
-  std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
     if(it->second == websocket) return it->first.getKey();
@@ -81,10 +80,8 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
           message.parse(msg->str);
           message.setFrom(getkey(webSocket));
         }
-        catch(...)
+        catch(const Exception& exception)
         {
-          spdlog::info("{}", msg->str);
-          sendToAll(msg->str);
         }
         if(message.getType() == "Trace")
         {
@@ -175,6 +172,7 @@ void WebsocketServer::try_emplace(const std::string& key, const std::shared_ptr<
   }
   else
   {
+    std::cout << "EMplace " << key << std::endl;
     m_Clients.try_emplace(Infos(key), socket);
   }
 }
