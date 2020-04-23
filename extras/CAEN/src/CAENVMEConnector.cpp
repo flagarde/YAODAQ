@@ -8,12 +8,13 @@
 
 namespace CAEN
 {
-std::unordered_map<std::string, int> CAENVMEConnector::m_ModelList{
-    {"V1718", cvV1718}, /*!< \brief The board is V1718  */
-    {"V2718", cvV2718}, /*!< \brief The board is V2718  */
-    {"A2818", cvA2818}, /*!< \brief The board is A2818  */
-    {"A2719", cvA2719}, /*!< \brief The board is A2719  */
-    {"A3818", cvA3818}, /*!< \brief The board is A3818  */
+enum class VMEBridgeModel
+{
+  V1718,
+  V2718,
+  A2818,
+  A2719,
+  A3818
 };
 
 CAENVMEConnector::CAENVMEConnector(const ConnectorInfos& infos)
@@ -21,42 +22,36 @@ CAENVMEConnector::CAENVMEConnector(const ConnectorInfos& infos)
 {
 }
 
-std::int32_t CAENVMEConnector::Connect()
+void CAENVMEConnector::DoConnect()
 {
-  CAENVMEException(CAENVME_Init(static_cast<CVBoardTypes>(m_ModelList[m_Model]),
-                            m_LinkNumber, m_ConetNode, &m_Handle));
-  return m_Handle;
+  CAENVMEException(CAENVME_Init(static_cast<CVBoardTypes>(magic_enum::enum_cast<VMEBridgeModel>(m_Model).value()),m_LinkNumber, m_ConetNode, &m_Handle));
 }
 
-void CAENVMEConnector::Disconnect()
+void CAENVMEConnector::DoDisconnect()
 {
   CAENVMEException(CAENVME_End(m_Handle));
 }
 
 void CAENVMEConnector::verifyParameters()
 {
+  printParameters();
   try
   {
     m_Model = toml::find_or<std::string>(getParameters(), "Model", "");
-    if(m_ModelList.find(m_Model) == m_ModelList.end())
-    {
-      std::cout << "Model " << m_Model << " Unknown !" << std::endl;
-      std::exit(2);
-    }
   }
-  catch(const std::out_of_range& e)
+  catch(...)
   {
-    std::cout << "Model key not set !" << std::endl;
-    std::exit(2);
+    throw Exception(STATUS_CODE_NOT_FOUND,"key \"Model\" not set !");
   }
+  auto bridge = magic_enum::enum_cast<VMEBridgeModel>(m_Model);
+  if(!bridge.has_value()) throw Exception(STATUS_CODE_INVALID_PARAMETER,"Model \""+m_Model+"\" Unknown ! \n Only V1718, V2718, A2818, A2719 and A3818 are implemented !");
   try
   {
     m_LinkNumber = toml::find<short>(getParameters(), "Link Number");
   }
-  catch(const std::out_of_range& e)
+  catch(...)
   {
-    std::cout << "\"Link Number\" key not set !" << std::endl;
-    std::exit(2);
+   throw Exception(STATUS_CODE_NOT_FOUND,"key \"Link Number\" not set !");
   }
   if(m_Model == "A2818" || m_Model == "A2719" || m_Model == "A3818")
   {
@@ -64,10 +59,9 @@ void CAENVMEConnector::verifyParameters()
     {
       m_ConetNode = toml::find<short>(getParameters(), "Conet Node");
     }
-    catch(const std::out_of_range& e)
+    catch(...)
     {
-      std::cout << "\"Board Number\" key not set !" << std::endl;
-      std::exit(2);
+      throw Exception(STATUS_CODE_NOT_FOUND,"key \"Board Number\" not set !");
     }
   }
 }

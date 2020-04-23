@@ -45,4 +45,5 @@ std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfo
     std::cout << "Connector Type not known or not loaded !" << std::endl;
     std::exit(2);
   }
+  return std::shared_ptr<Connector>{nullptr};
 }

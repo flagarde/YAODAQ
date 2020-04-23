@@ -20,6 +20,17 @@ private:
   CAEN_DGTZ_EventInfo_t t;
 };
 
+std::string InterruptConfig::getState()const{return m_State;}
+std::uint8_t InterruptConfig::getLevel()const{return m_Level;}
+std::uint32_t InterruptConfig::getStatusID()const{return m_StatusID;}
+std::string InterruptConfig::getMode()const{return m_Mode;}
+std::uint16_t InterruptConfig::getEventNumber()const{return m_EventNumber;}
+void InterruptConfig::setState(const std::string& state){m_State=state;}
+void InterruptConfig::setLevel(const std::uint8_t& level){m_Level=level;}
+void InterruptConfig::setStatusID(const std::uint32_t statusID){m_StatusID=statusID;}
+void InterruptConfig::setMode(const std::string& mode){m_Mode=mode;}
+void InterruptConfig::setEventNumber(const std::uint32_t eventNumber){m_EventNumber=eventNumber;}
+
 /*
 class X742Group
 {
@@ -76,65 +87,11 @@ private:
   CAEN_DGTZ_X742_EVENT_t t;
 };*/
 
-std::vector<std::string> CAENDigitizerBoard::ErrMsg{
-    "No Error",
-    "Configuration File not found",
-    "Can't open the digitizer",
-    "Can't read the Board Info",
-    "Can't run WaveDump for this digitizer",
-    "Can't program the digitizer",
-    "Can't allocate the memory for the readout buffer",
-    "Interrupt Error",
-    "Readout Error",
-    "Event Build Error",
-    "Unhandled board type",
-    "Over Temperature",
-    "UNKNOWN"};
-
-void CAENDigitizerBoard::Exit(const int& error)
+CAENDigitizerBoard::CAENDigitizerBoard(const std::string& name):Board(name, "CAENDigitizerBoard")
 {
-  if(error != 0)
-  {
-    std::cout << ErrMsg[error] << std::endl;
-    std::exit(error);
-  }
+  initilizeParameters();
 }
 
-void CAENDigitizerBoard::initilizeParameters()
-{
-  m_Cal.fill(1);
-  m_Offset.fill(0);
-  m_PulsePolarity.fill("Positive");
-  m_Version_used.fill(0);
-  m_DCoffset.fill(0);
-  m_Threshold.fill(0);
-  m_ChannelTriggerMode.fill("DISABLED");
-  m_GroupTrgEnableMask.fill(0);
-  for(std::size_t i = 0; i < m_DCoffsetGrpCh.size(); i++)
-    m_DCoffsetGrpCh[i].fill(-1);
-  for(std::size_t i = 0; i < m_TablesFilenames.size(); i++)
-    m_TablesFilenames[i] = "Tables_gr" + std::to_string(i);
-  m_FTThreshold.fill(0);
-  m_FTDCoffset.fill(0);
-}
-
-CAENDigitizerBoard::CAENDigitizerBoard(const std::string& name)
-    : Board(name, "CAENDigitizerBoard")
-{
-  std::cout << "Creating CAENDigitizerBoard" << std::endl;
-  // initilizeParameters();
-  std::cout << "Exit Creating CAENDigitizerBoard" << std::endl;
-}
-
-EventInfo CAENDigitizerBoard::GetEventInfo(const std::int32_t& numEvent)
-{
-  CAEN_DGTZ_EventInfo_t toto;
-  char*                 p = m_EventPtr.get();
-  CAENDigitizerException(CAEN_DGTZ_GetEventInfo(m_Handle, m_Buffer.get(),
-                                            m_BufferSize, numEvent, &toto, &p));
-  EventInfo ret(toto);
-  return ret;
-}
 
 void CAENDigitizerBoard::WriteRegister(const std::uint32_t& Address,
                                        const std::uint32_t& Data)
@@ -148,6 +105,77 @@ std::uint32_t CAENDigitizerBoard::ReadRegister(const std::uint32_t& Address)
   CAENDigitizerException(CAEN_DGTZ_ReadRegister(m_Handle, Address, &ret));
   return ret;
 }
+
+
+
+void CAENDigitizerBoard::Reset()
+{
+  CAENDigitizerException(CAEN_DGTZ_Reset(m_Handle));
+}
+
+void CAENDigitizerBoard::ClearData()
+{
+  CAENDigitizerException(CAEN_DGTZ_ClearData(m_Handle));
+}
+
+void CAENDigitizerBoard::SendSWtrigger()
+{
+  CAENDigitizerException(CAEN_DGTZ_SendSWtrigger(m_Handle));
+}
+
+void CAENDigitizerBoard::SWStartAcquisition()
+{
+  CAENDigitizerException(CAEN_DGTZ_SWStartAcquisition(m_Handle));
+}
+
+void CAENDigitizerBoard::SWStopAcquisition()
+{
+  CAENDigitizerException(CAEN_DGTZ_SWStopAcquisition(m_Handle));
+}
+
+void CAENDigitizerBoard::SetInterruptConfig(const InterruptConfig& interruptConfig)
+{
+  CAEN_DGTZ_EnaDis_t state;
+  if(interruptConfig.getState() == "ENABLED") state = CAEN_DGTZ_ENABLE;
+  else if(interruptConfig.getState() == "DISABLED")state = CAEN_DGTZ_DISABLE;
+  else throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAEN_DGTZ_IRQMode_t mode;
+  if(interruptConfig.getMode() == "RORA") mode = CAEN_DGTZ_IRQ_MODE_RORA;
+  else if(interruptConfig.getMode() == "ROAK")mode = CAEN_DGTZ_IRQ_MODE_ROAK;
+  else throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
+  CAENDigitizerException(CAEN_DGTZ_SetInterruptConfig(m_Handle,state,interruptConfig.getLevel(), interruptConfig.getStatusID(),interruptConfig.getEventNumber(), mode));
+}
+
+InterruptConfig CAENDigitizerBoard::GetInterruptConfig()
+{
+  CAEN_DGTZ_IRQMode_t mode;
+  std::uint16_t eventNumber{0};
+  std::uint32_t statusID{0};
+  std::uint8_t level{0};
+  CAEN_DGTZ_EnaDis_t state;
+  CAENDigitizerException(CAEN_DGTZ_GetInterruptConfig(m_Handle,&state,&level,&statusID,&eventNumber,&mode));
+  InterruptConfig ret;
+  if(state==CAEN_DGTZ_ENABLE) ret.setState("ENABLED");
+  else ret.setState("DISABLED");
+  if(mode==CAEN_DGTZ_IRQ_MODE_RORA) ret.setMode("RORA");
+  else ret.setMode("ROAK");
+  ret.setLevel(level);
+  ret.setStatusID(statusID);
+  ret.setEventNumber(eventNumber);
+  return ret;
+}
+
+void CAENDigitizerBoard::IRQWait(const std::uint32_t& timeout)
+{
+  CAENDigitizerException(CAEN_DGTZ_IRQWait(m_Handle, timeout));
+}
+
+
+
+
+
+
+
 
 void CAENDigitizerBoard::GetInfo()
 {
@@ -447,35 +475,6 @@ void CAENDigitizerBoard::setVMEHandle(const std::uint32_t& han)
   m_VMEHandle = han;
 }
 
-void CAENDigitizerBoard::Reset()
-{
-  CAENDigitizerException(CAEN_DGTZ_Reset(m_Handle));
-}
-
-void CAENDigitizerBoard::ClearData()
-{
-  CAENDigitizerException(CAEN_DGTZ_ClearData(m_Handle));
-}
-
-void CAENDigitizerBoard::SendSWtrigger()
-{
-  CAENDigitizerException(CAEN_DGTZ_SendSWtrigger(m_Handle));
-}
-
-void CAENDigitizerBoard::SWStartAcquisition()
-{
-  CAENDigitizerException(CAEN_DGTZ_SWStartAcquisition(m_Handle));
-}
-
-void CAENDigitizerBoard::SWStopAcquisition()
-{
-  CAENDigitizerException(CAEN_DGTZ_SWStopAcquisition(m_Handle));
-}
-
-void CAENDigitizerBoard::IRQWait(const std::uint32_t& timeout)
-{
-  CAENDigitizerException(CAEN_DGTZ_IRQWait(m_Handle, timeout));
-}
 
 void CAENDigitizerBoard::SetDESMode(const std::string& on)
 {
@@ -1435,27 +1434,7 @@ std::uint16_t CAENDigitizerBoard::GetDecimationFactor()
   return factor;
 }
 
-void CAENDigitizerBoard::SetInterruptConfig(const std::string&   state,
-                                            const std::uint8_t&  level,
-                                            const std::uint32_t& status_id,
-                                            const std::uint16_t& event_number,
-                                            const std::string&   mode)
-{
-  CAEN_DGTZ_EnaDis_t st;
-  if(state == "ENABLED") st = CAEN_DGTZ_ENABLE;
-  else if(state == "DISABLED")
-    st = CAEN_DGTZ_DISABLE;
-  else
-    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
-  CAEN_DGTZ_IRQMode_t mod;
-  if(mode == "RORA") mod = CAEN_DGTZ_IRQ_MODE_RORA;
-  else if(mode == "ROAK")
-    mod = CAEN_DGTZ_IRQ_MODE_ROAK;
-  else
-    throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
-  CAENDigitizerException(CAEN_DGTZ_SetInterruptConfig(
-      m_Handle, st, level, status_id, event_number, mod));
-}
+
 
 void  CAENDigitizerBoard::DoInitialize()
 {
@@ -1724,9 +1703,13 @@ void CAENDigitizerBoard::ProgramDigitizer()
       // Interrupt handling
       try
       {
-        SetInterruptConfig("ENABLE", m_VME_INTERRUPT_LEVEL,
-                           m_VME_INTERRUPT_STATUS_ID, m_InterruptNumEvents,
-                           "ROAK");
+        InterruptConfig interruptConfig;
+        interruptConfig.setLevel(m_VME_INTERRUPT_LEVEL);
+        interruptConfig.setStatusID(m_VME_INTERRUPT_STATUS_ID);
+        interruptConfig.setEventNumber(m_InterruptNumEvents);
+        interruptConfig.setMode("ROAK");
+        interruptConfig.setState("ENABLED");
+        SetInterruptConfig(interruptConfig);
       }
       catch(const Exception& error)
       {
@@ -1962,5 +1945,55 @@ void CAENDigitizerBoard::GetMoreBoardInfo()
       m_Nch = 16;
   }
 }
+
+
+
+std::vector<std::string> CAENDigitizerBoard::ErrMsg{
+    "No Error",
+    "Configuration File not found",
+    "Can't open the digitizer",
+    "Can't read the Board Info",
+    "Can't run WaveDump for this digitizer",
+    "Can't program the digitizer",
+    "Can't allocate the memory for the readout buffer",
+    "Interrupt Error",
+    "Readout Error",
+    "Event Build Error",
+    "Unhandled board type",
+    "Over Temperature",
+    "UNKNOWN"};
+
+void CAENDigitizerBoard::Exit(const int& error)
+{
+  if(error != 0)
+  {
+    std::cout << ErrMsg[error] << std::endl;
+    std::exit(error);
+  }
+}
+
+void CAENDigitizerBoard::initilizeParameters()
+{
+  m_Cal.fill(1);
+  m_Offset.fill(0);
+  m_PulsePolarity.fill("Positive");
+  m_Version_used.fill(0);
+  m_DCoffset.fill(0);
+  m_Threshold.fill(0);
+  m_ChannelTriggerMode.fill("DISABLED");
+  m_GroupTrgEnableMask.fill(0);
+  for(std::size_t i = 0; i < m_DCoffsetGrpCh.size(); i++) m_DCoffsetGrpCh[i].fill(-1);
+  for(std::size_t i = 0; i < m_TablesFilenames.size(); i++) m_TablesFilenames[i] = "Tables_gr" + std::to_string(i);
+  m_FTThreshold.fill(0);
+  m_FTDCoffset.fill(0);
+}
+
+
+
+
+
+
+
+
 
 }  // namespace CAEN

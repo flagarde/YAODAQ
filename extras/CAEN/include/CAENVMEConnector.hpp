@@ -11,8 +11,8 @@ class CAENVMEConnector: public Connector
 {
 public:
   CAENVMEConnector(const ConnectorInfos& infos);
-  virtual int  Connect() final;
-  virtual void Disconnect() final;
+  virtual void  DoConnect() final;
+  virtual void DoDisconnect() final;
 
 private:
   virtual void                                verifyParameters() final;

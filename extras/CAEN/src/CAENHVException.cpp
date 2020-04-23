@@ -101,18 +101,18 @@ CAENHVException::CAENHVException(const int&                         code,
                          std::experimental::source_location loc)
     : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENHV_OK) throw;
+  if(code != CAENHV_OK) throw *this;
 };
 #elif have_source_location == 1
 CAENHVException::CAENHVException(const int& code, std::source_location loc)
     : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENHV_OK) throw;
+  if(code != CAENHV_OK) throw *this;
 };
 #else
 CAENHVException::CAENHVException(const int& code): Exception(code, errorStrings(code))
 {
-  if(code != CAENHV_OK) throw;
+  if(code != CAENHV_OK) throw *this;
 };
 #endif
 

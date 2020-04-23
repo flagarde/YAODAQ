@@ -17,11 +17,12 @@ public:
                   const int&         backlog        = ix::SocketServer::kDefaultTcpBacklog,
                   const std::size_t& maxConnections = ix::SocketServer::kDefaultMaxConnections, const int& handshakeTimeoutSecs = 3);
   ~WebsocketServer();
-  void setVerbosity(const std::string&);
-  void start();
-  void stop();
-  void wait();
-  void listen();
+  void        setVerbosity(const std::string&);
+  void        start();
+  void        stop();
+  void        wait();
+  void        listen();
+  std::string getkey(const std::shared_ptr<ix::WebSocket>& websocket);
 
 private:
   ix::WebSocketServer                             m_Server;

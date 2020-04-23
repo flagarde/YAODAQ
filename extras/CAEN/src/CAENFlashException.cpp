@@ -39,18 +39,18 @@ CAENFlashException::CAENFlashException(const int&                         code,
                                std::experimental::source_location loc)
     : Exception(code, errorStrings(code), loc)
 {
-  if(code != 0) throw;
+  if(code != 0) throw *this;
 };
 #elif have_source_location == 1
 CAENFlashException::CAENFlashException(const int& code, std::source_location loc)
     : Exception(code, errorStrings(code), loc)
 {
-  if(code != 0) throw;
+  if(code != 0) throw *this;
 };
 #else
 CAENFlashException::CAENFlashException(const int& code): Exception(code, errorStrings(code))
 {
-  if(code != 0) throw;
+  if(code != 0) throw *this;
 };
 #endif
 

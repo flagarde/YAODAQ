@@ -2,8 +2,6 @@
 
 #include "Exception.hpp"
 
-#include <cstdint>
-
 namespace CAEN
 {
 class CAENFlashException: public Exception

@@ -28,6 +28,16 @@ void WebsocketServer::setVerbosity(const std::string& verbosity)
   spdlog::set_level(m_Verbosity);
 }
 
+std::string WebsocketServer::getkey(const std::shared_ptr<ix::WebSocket>& websocket)
+{
+  std::lock_guard<std::mutex> guard(m_Mutex);
+  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
+  {
+    if(it->second == websocket) return it->first.getKey();
+  }
+  throw Exception(STATUS_CODE_NOT_FOUND, "Client not found !");
+}
+
 WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections,
                                  const int& handshakeTimeoutSecs)
     : m_Server(port, host, backlog, maxConnections, handshakeTimeoutSecs)
@@ -58,9 +68,10 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
       }
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
+        erase(webSocket);
+        //webSocket->close();
         spdlog::info("Closed connection ID : {}", connectionState->getId());
         sendToLogger("Closed connection ID : " + connectionState->getId());
-        //erase(webSocket);
       }
       else if(msg->type == ix::WebSocketMessageType::Message)
       {
@@ -68,6 +79,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         try
         {
           message.parse(msg->str);
+          message.setFrom(getkey(webSocket));
         }
         catch(...)
         {
@@ -133,7 +145,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
 
 void WebsocketServer::sendToLogger(const std::string& message)
 {
-  std::lock_guard<std::mutex> guard(m_Mutex);
+  //std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
     if(it->first.getType() == "Logger" && m_Actual != it->second) it->second->send(message);
@@ -142,16 +154,16 @@ void WebsocketServer::sendToLogger(const std::string& message)
 
 void WebsocketServer::erase(const std::shared_ptr<ix::WebSocket>& socket)
 {
-  std::lock_guard<std::mutex> guard(m_Mutex);
-  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
+  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end();)
   {
-    if(it->second == socket || it->second == nullptr) m_Clients.erase(it->first);
+    if(it->second == socket) { m_Clients.erase(it->first); }
+    else
+      ++it;
   }
 }
 
 void WebsocketServer::try_emplace(const std::string& key, const std::shared_ptr<ix::WebSocket>& socket)
 {
-  std::lock_guard<std::mutex>                               guard(m_Mutex);
   std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator ret = m_Clients.find(Infos(key));
   if(ret != m_Clients.end())
   {
@@ -169,15 +181,16 @@ void WebsocketServer::try_emplace(const std::string& key, const std::shared_ptr<
 
 void WebsocketServer::sendToAll(const std::string& message)
 {
-  std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
+    std::cout << "send to " << it->first.getName() << std::endl;
     if(m_Actual != it->second) it->second->send(message);
   }
 }
 
 WebsocketServer::~WebsocketServer()
 {
+  m_Server.stop();
   ix::uninitNetSystem();
 }
 
@@ -199,9 +212,5 @@ void WebsocketServer::wait()
 void WebsocketServer::listen()
 {
   std::pair<bool, std::string> res = m_Server.listen();
-  if(!res.first)
-  {
-    spdlog::error("{}", res.second);
-    std::exit(1);
-  }
+  if(!res.first) { Exception(STATUS_CODE_FAILURE, res.second); }
 }

@@ -118,7 +118,7 @@ CAENDPPException::CAENDPPException(const int&                         code,
                            std::experimental::source_location loc)
     : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENDPP_RetCode_Ok) throw;
+  if(code != CAENDPP_RetCode_Ok) throw *this;
 };
 #elif have_source_location == 1
 CAENDPPException::CAENDPPException(const int& code, std::source_location loc)

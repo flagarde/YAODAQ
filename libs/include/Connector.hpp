@@ -8,15 +8,20 @@ class Connector
 {
 public:
   Connector(const std::string& type, const ConnectorInfos& infos);
-  virtual std::int32_t Connect()    = 0;
-  virtual void         Disconnect() = 0;
   virtual ~Connector(){};
   void         printParameters();
   toml::value  getParameters();
-  virtual void verifyParameters(){};
+  virtual void verifyParameters();
+  int32_t      Connect();
+  void         Disconnect();
+  std::string  getType();
+  void         setInfos(const ConnectorInfos& infos);
 
 protected:
-  std::string    m_Type{""};
-  std::int32_t   m_Handle{0};
+  std::string  m_Type{""};
+  virtual void DoConnect()    = 0;
+  virtual void DoDisconnect() = 0;
+  Connector(){};
+  int32_t        m_Handle{0};
   ConnectorInfos m_Infos;
 };

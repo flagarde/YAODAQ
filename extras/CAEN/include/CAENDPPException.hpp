@@ -2,8 +2,6 @@
 
 #include "Exception.hpp"
 
-#include <cstdint>
-
 namespace CAEN
 {
 class CAENDPPException: public Exception

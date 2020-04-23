@@ -9,7 +9,7 @@
 class ConnectorFactory
 {
 public:
-  ConnectorFactory(){};
+  ConnectorFactory() = default;
   std::shared_ptr<Connector> createConnector(const ConnectorInfos& infos);
 
 private:

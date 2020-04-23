@@ -48,3 +48,21 @@ void ConnectorInfos::printParameters() const
 {
   std::cout << m_Parameters << std::endl;
 }
+
+void ConnectorInfos::setHandle(const std::int32_t& handle)
+{
+  m_Handle = handle;
+}
+
+void ConnectorInfos::addBoardConnected()
+{
+  ++m_BoardConnected;
+}
+void ConnectorInfos::removeBoardConnected()
+{
+  --m_BoardConnected;
+}
+int ConnectorInfos::getNumberBoardConnected()
+{
+  return m_BoardConnected;
+}

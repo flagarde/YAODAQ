@@ -1,5 +1,4 @@
-#ifndef CAENVMEBOARD_HPP
-#define CAENVMEBOARD_HPP
+#pragma once
 #include "Board.hpp"
 
 namespace CAEN
@@ -48,7 +47,7 @@ private:
 class CAENVMEBoard: public Board
 {
 public:
-  CAENVMEBoard(const std::string& name);
+  CAENVMEBoard(const std::string& name="");
   void   SetPulserAConf(Pulser& pulser);
   void   SetPulserBConf(Pulser& pulser);
   Pulser GetPulserAConf();
@@ -67,4 +66,4 @@ private:
 };
 
 }  // namespace CAEN
-#endif
+

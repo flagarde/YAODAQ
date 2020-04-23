@@ -19,10 +19,10 @@ void WebsocketClient::setExtraHeader(const std::string& key, const std::string& 
   m_Headers[key.c_str()] = (' ' + value).c_str();
 }
 
-void WebsocketClient::setOnMessageCallback(std::function<void(const std::shared_ptr<ix::WebSocketMessage>)> m_func)
+void WebsocketClient::setOnMessageCallback(std::function<void(const ix::WebSocketMessagePtr&)> m_func)
 {
   m_SocketMessagePtr = m_func;
-  m_WebSocket.setOnMessageCallback(m_SocketMessagePtr);
+  m_WebSocket.setOnMessageCallback(m_func);
 }
 
 WebsocketClient::~WebsocketClient()
@@ -32,7 +32,7 @@ WebsocketClient::~WebsocketClient()
 
 void WebsocketClient::setHeartBeatPeriod(const int& HeartBeat)
 {
-  m_WebSocket.setHeartBeatPeriod(HeartBeat);
+  m_WebSocket.setPingInterval(HeartBeat);
 }
 
 ix::ReadyState WebsocketClient::getReadyState()

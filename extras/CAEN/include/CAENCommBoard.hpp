@@ -8,7 +8,7 @@ namespace CAEN
 class CAENCommBoard: public Board
 {
 public:
-  CAENCommBoard(const std::string& name);
+  CAENCommBoard(const std::string& name="");
 
   /*##########################################################################*/
   /*

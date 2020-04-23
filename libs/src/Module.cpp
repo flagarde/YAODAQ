@@ -1,5 +1,6 @@
 #include "Module.hpp"
 
+#include "Message.hpp"
 #include "magic_enum.hpp"
 #include "sinks/ansicolor_sink.h"
 #include "sinks/ostream_sink.h"
@@ -12,6 +13,22 @@ Configuration Module::m_Config = Configuration();
 void Module::setConfigFile(const std::string& file)
 {
   m_Config.setFileName(file);
+}
+
+void Module::setName(const std::string& name)
+{
+  m_Name = name;
+}
+
+void Module::stopListening()
+{
+  spdlog::info("{}", "Herre");
+  m_WebsocketClient.stop();
+}
+
+void Module::startListening()
+{
+  m_WebsocketClient.start();
 }
 
 std::string Module::getName()
@@ -44,7 +61,19 @@ ix::WebSocketSendInfo Module::sendBinary(Message& message)
   return m_WebsocketClient.sendBinary(message.get());
 }
 
+ix::WebSocketSendInfo Module::sendBinary(Message message)
+{
+  message.setFrom(m_Type + "/" + m_Name);
+  return m_WebsocketClient.sendBinary(message.get());
+}
+
 ix::WebSocketSendInfo Module::sendText(Message& message)
+{
+  message.setFrom(m_Type + "/" + m_Name);
+  return m_WebsocketClient.sendText(message.get());
+}
+
+ix::WebSocketSendInfo Module::sendText(Message message)
 {
   message.setFrom(m_Type + "/" + m_Name);
   return m_WebsocketClient.sendText(message.get());
@@ -56,12 +85,8 @@ Module::Module(const std::string& name, const std::string& type): m_Type(type), 
   m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
   m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
-  m_WebsocketClient.start();
+  startListening();
 }
-
-void Module::DoDoConnect() {}
-
-void Module::DoDoDisconnect() {}
 
 void Module::verifyParameters() {}
 
@@ -77,7 +102,10 @@ void Module::printParameters()
   std::cout << m_Conf << std::endl;
 }
 
-Module::~Module() {}
+Module::~Module()
+{
+  stopListening();
+}
 
 void Module::Initialize()
 {
@@ -91,6 +119,8 @@ void Module::Initialize()
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -99,13 +129,15 @@ void Module::Connect()
 {
   try
   {
-    DoDoConnect();
+    CallModuleConnect();
     setState(States::CONNECTED);
     sendState();
   }
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -121,6 +153,8 @@ void Module::Configure()
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -136,6 +170,8 @@ void Module::Start()
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -151,6 +187,8 @@ void Module::Pause()
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -166,6 +204,8 @@ void Module::Stop()
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -181,6 +221,8 @@ void Module::Clear()
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -189,13 +231,15 @@ void Module::Disconnect()
 {
   try
   {
-    DoDoDisconnect();
+    CallModuleDisconnect();
     setState(States::DISCONNECTED);
     sendState();
   }
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -211,6 +255,8 @@ void Module::Release()
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
@@ -226,24 +272,20 @@ void Module::Quit()
   catch(const Exception& error)
   {
     m_Logger->error(error.what());
+    sendText(Error(error.what()));
+    stopListening();
     throw;
   }
 }
 
 void Module::sendState()
 {
-  State state(m_State);
-  sendText(state);
+  sendText(State(m_State));
 }
 
 void Module::DoInitialize()
 {
   std::cout << "Initialize" << std::endl;
-}
-
-void Module::DoConnect()
-{
-  std::cout << "Connect" << std::endl;
 }
 
 void Module::DoConfigure()
@@ -269,11 +311,6 @@ void Module::DoStop()
 void Module::DoClear()
 {
   std::cout << "Clear" << std::endl;
-}
-
-void Module::DoDisconnect()
-{
-  std::cout << "Disconnect" << std::endl;
 }
 
 void Module::DoRelease()
@@ -331,7 +368,11 @@ void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
-  if(message.getType() == "Action") { DoOnAction(message); }
+  if(message.getType() == "Action")
+  {
+    DoOnAction(message);
+    m_Logger->info("{}", msg->str);
+  }
   else
     OnMessage(msg);
 }

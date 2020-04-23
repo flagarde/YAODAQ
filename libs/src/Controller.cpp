@@ -38,7 +38,10 @@ Controller::Controller(const std::string& name, const std::string& type): m_Type
   m_WebsocketClient.start();
 }
 
-Controller::~Controller() {}
+Controller::~Controller()
+{
+  m_WebsocketClient.stop();
+}
 
 void Controller::sendAction(const std::string& action)
 {
@@ -46,7 +49,7 @@ void Controller::sendAction(const std::string& action)
   if(ac.has_value())
   {
     Action a(ac.value());
-    sendText(a);
+    sendBinary(a);
   }
   else
     throw Exception(STATUS_CODE_INVALID_PARAMETER, action + " is not a valid Action");
@@ -56,7 +59,7 @@ void Controller::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
-  if(message.getType() == "State") {}
+  if(message.getType() == "State") { spdlog::warn("{}", msg->str); }
 }
 
 void Controller::stop()

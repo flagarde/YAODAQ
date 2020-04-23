@@ -53,18 +53,18 @@ CAENCommException::CAENCommException(const int&                         code,
                              std::experimental::source_location loc)
     : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENComm_Success) throw;
+  if(code != CAENComm_Success) throw *this;
 };
 #elif have_source_location == 1
 CAENCommException::CAENCommException(const int& code, std::source_location loc)
     : Exception(code, errorStrings(code), loc)
 {
-  if(code != CAENComm_Success) throw;
+  if(code != CAENComm_Success) throw *this;
 };
 #else
 CAENCommException::CAENCommException(const int& code): Exception(code, errorStrings(code))
 {
-  if(code != CAENComm_Success) throw;
+  if(code != CAENComm_Success) throw *this;
 };
 #endif
 

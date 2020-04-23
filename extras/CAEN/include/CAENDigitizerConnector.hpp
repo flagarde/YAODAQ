@@ -11,8 +11,8 @@ class CAENDigitizerConnector: public Connector
 {
 public:
   CAENDigitizerConnector(const ConnectorInfos& infos);
-  virtual void         Disconnect() final;
-  virtual std::int32_t Connect() final;
+  virtual void         DoDisconnect() final;
+  virtual void DoConnect() final;
 
 private:
   virtual void                                verifyParameters() final;

@@ -366,37 +366,40 @@ if(BUILD_DAQ)
   endif()
 
   if(BUILD_OLD_WAVEDUMP)
-    add_library(
-      lib1 STATIC src/flash.cpp src/WDconfig.cpp src/X742CorrectionRoutines.cpp
-                  src/spi.cpp src/Digitizer.cpp)
-    add_dependencies(lib1 Connectors)
-    target_link_libraries(lib1 PUBLIC Connectors)
-    target_include_directories(lib1
-                               PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
-    target_include_directories(
-      lib1
-      PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>
-      PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
-      PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
+   # add_library(
+   #   lib1 STATIC src/flash.cpp src/WDconfig.cpp src/X742CorrectionRoutines.cpp
+   
+   #               src/spi.cpp src/Digitizer.cpp)
+   # add_dependencies(lib1 Connectors)
+   # target_link_libraries(lib1 PUBLIC Connectors)
+   # target_include_directories(lib1
+   #                            PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+   # target_include_directories(
+   #   lib1
+   #   PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>
+   #   PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
+   #   PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 
-    add_library(lib2 STATIC src/FileManager.cpp)
-    add_dependencies(lib2 Connectors)
-    target_link_libraries(lib2 PUBLIC Connectors)
-    target_include_directories(lib2
-                               PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
-    target_include_directories(
-      lib2 PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
+    #add_library(lib2 STATIC src/FileManager.cpp)
+    #add_dependencies(lib2 Connectors)
+    #target_link_libraries(lib2 PUBLIC Connectors)
+    #target_include_directories(lib2
+    #                           PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+    #target_include_directories(
+    #  lib2 PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
 
-    add_library(web STATIC src/WebServer.cpp src/Plotter.cpp)
-    add_dependencies(web WebSocket Connectors)
-    target_link_libraries(
-      web
-      PUBLIC Connectors
-      PUBLIC WebSocket)
-    target_include_directories(web
-                               PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
-    target_include_directories(
-      web PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
+    #add_library(web STATIC src/WebServer.cpp src/Plotter.cpp)
+    #add_dependencies(web WebSocket Connectors)
+    #target_link_libraries(
+    #  web
+    #  PUBLIC Connectors
+    #  PUBLIC WebSocket)
+    #target_include_directories(web
+    
+    #                           PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/")
+    
+    #target_include_directories(
+    #  web PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
   endif()
 
 endif()

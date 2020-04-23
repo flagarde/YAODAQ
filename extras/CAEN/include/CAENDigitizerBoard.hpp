@@ -40,10 +40,33 @@ private:
   std::string SaveParam{""};
 };
 
+
+class InterruptConfig
+{
+public:
+  std::string getState() const;
+  std::uint8_t getLevel() const;
+  std::uint32_t getStatusID() const;
+  std::string getMode() const;
+  std::uint16_t getEventNumber() const;
+  void setState(const std::string& state);
+  void setLevel(const std::uint8_t& level);
+  void setStatusID(const std::uint32_t statusID);
+  void setMode(const std::string& mode);
+  void setEventNumber(const std::uint32_t eventNumber);
+private:
+  std::string m_State{""};
+  std::string m_Mode{""};
+  std::uint8_t m_Level{0};
+  std::uint16_t m_EventNumber{0};
+  std::uint32_t m_StatusID{0};
+};
+
+
 class CAENDigitizerBoard: public Board
 {
 public:
-  CAENDigitizerBoard(const std::string& name);
+  CAENDigitizerBoard(const std::string& name="");
 
   /**************************************************************************/ /**
                                                                                 * \fn          WriteRegister(const std::uint32_t& Address,const  std::uint32_t& Data);
@@ -97,34 +120,37 @@ public:
                                                                                 * \brief     Stops Digitizer acquisition
                                                                                 ******************************************************************************/
   void SWStopAcquisition();
+  
+  /**************************************************************************/ 
+  /**
+  * \fn SetInterruptConfig(CAEN_DGTZ_EnaDis_t state, uint8_t level, uint32_t status_id, uint16_t event_number, CAEN_DGTZ_IRQMode_t mode)
+  * \brief     Enable/disable Interrupts and set the Interrupt level used by the Digitizer
+  * \param     [IN] state        : interrupts enable status
+  * \param     [IN] level        : VME IRQ Level
+  * \param     [IN] status_id    : VME status_id to assign to the Digitizer
+  * \param     [IN] event_number : number of event required to raise interrupt
+  * \param     [IN] mode         : interrupt mode [CAEN_DGTZ_IRQ_MODE_RORA|CAEN_DGTZ_IRQ_MODE_ROAK]
+  ******************************************************************************/
+  void SetInterruptConfig(const InterruptConfig& interruptConfig);
 
-  /**************************************************************************/ /**
-                                                                                * \fn          CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetInterruptConfig(int handle, CAEN_DGTZ_EnaDis_t state, uint8_t level, uint32_t status_id, uint16_t event_number, CAEN_DGTZ_IRQMode_t mode)
-                                                                                * \brief     Enable/disable Interrupts and set the Interrupt level used by the Digitizer
-                                                                                * \param     [IN] state        : interrupts enable status
-                                                                                * \param     [IN] level        : VME IRQ Level
-                                                                                * \param     [IN] status_id    : VME status_id to assign to the Digitizer
-                                                                                * \param     [IN] event_number : number of event required to raise interrupt
-                                                                                * \param     [IN] mode         : interrupt mode [CAEN_DGTZ_IRQ_MODE_RORA|CAEN_DGTZ_IRQ_MODE_ROAK]
-                                                                                ******************************************************************************/
-  void SetInterruptConfig(const std::string& state, const std::uint8_t& level,
-                          const std::uint32_t& status_id,
-                          const std::uint16_t& event_number,
-                          const std::string&   mode);
+  /**************************************************************************/ 
+  /**
+  * \fn GetInterruptConfig(CAEN_DGTZ_EnaDis_t *state, uint8_t *level, uint32_t *status_id, uint16_t *event_number, CAEN_DGTZ_IRQMode_t *mode)
+  * \brief     Gets current Interrupt settings of the Digitizer
+  * \param     [OUT] state       : interrupts state [CAEN_DGTZ_ENABLE|CAEN_DGTZ_DISABLE]
+  * \param     [OUT] level       : current VME IRQ Level of the Digitizer
+  * \param     [OUT] status_id   : current VME status_id of the the Digitizer
+  * \param     [OUT] event_number: number of event required to raise an interrupt
+  * \param     [OUT] mode        : interrupt mode [CAEN_DGTZ_IRQ_MODE_RORA|CAEN_DGTZ_IRQ_MODE_ROAK]
+  ******************************************************************************/
+  InterruptConfig GetInterruptConfig();
 
-  /**************************************************************************/ /**
-                                                                                * \fn          CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetInterruptConfig(int handle, CAEN_DGTZ_EnaDis_t *state, uint8_t *level, uint32_t *status_id, uint16_t *event_number, CAEN_DGTZ_IRQMode_t *mode)
-                                                                                * \brief     Gets current Interrupt settings of the Digitizer
-                                                                                * \param     [OUT] state       : interrupts state [CAEN_DGTZ_ENABLE|CAEN_DGTZ_DISABLE]
-                                                                                * \param     [OUT] level       : current VME IRQ Level of the Digitizer
-                                                                                * \param     [OUT] status_id   : current VME status_id of the the Digitizer
-                                                                                * \param     [OUT] event_number: number of event required to raise an interrupt
-                                                                                * \param     [OUT] mode        : interrupt mode [CAEN_DGTZ_IRQ_MODE_RORA|CAEN_DGTZ_IRQ_MODE_ROAK]
-                                                                                * \return  0 = Success; negative numbers are error codes
-                                                                                ******************************************************************************/
-  // CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetInterruptConfig(int handle,
-  // CAEN_DGTZ_EnaDis_t *state, uint8_t *level, uint32_t *status_id, uint16_t
-  // *event_number, CAEN_DGTZ_IRQMode_t *mode);
+  /**************************************************************************/ 
+  /**
+  * \fn        void IRQWait(const std::uint32_t& timeout)
+  * \brief     Waits for an interrupt by the Digitizer
+  * \param     [IN] timeout : timeout (in milliseconds)
+  ******************************************************************************/
 
   /**************************************************************************/ /**
                                                                                 * \fn        void IRQWait(const std::uint32_t& timeout)

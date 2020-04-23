@@ -14,9 +14,15 @@ public:
   toml::value  getParameters() const;
   void         printParameters();
   void         printParameters() const;
+  void         setHandle(const std::int32_t& handle);
+  void         addBoardConnected();
+  void         removeBoardConnected();
+  int          getNumberBoardConnected();
 
 private:
-  toml::value m_Parameters;
-  bool        m_IsSharedConnector{false};
-  int         m_ID{-1};
+  toml::value  m_Parameters;
+  bool         m_IsSharedConnector{false};
+  int          m_ID{-1};
+  int          m_BoardConnected{0};
+  std::int32_t m_Handle{0};
 };

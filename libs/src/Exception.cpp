@@ -36,12 +36,10 @@ void Exception::createBackTrace()
   size_t stackDepth   = backtrace(stackAddresses, maxDepth);
   char** stackStrings = backtrace_symbols(stackAddresses, stackDepth);
 
-  m_backTrace = "\nBackTrace\n    ";
-
   for(size_t i = 1; i < stackDepth; ++i)
   {
-    m_backTrace += stackStrings[i];
-    m_backTrace += "\n    ";
+    m_BackTrace += "\t-> " + stackStrings[i];
+    m_BackTrace += "\n";
   }
 
   free(stackStrings);  // malloc()ed by backtrace_symbols
@@ -52,7 +50,9 @@ void Exception::createBackTrace()
 Exception::Exception(const int& code, const std::string& message, std::experimental::source_location location)
     : m_Code(code), m_Message(message), m_Location(location)
 {
+  spdlog::error("{} {}", code, message);
   constructMessage();
+  spdlog::warn("{} {}", code, message);
   createBackTrace();
 }
 #elif have_source_location == 1
@@ -80,12 +80,18 @@ const char* Exception::errorStrings(const std::int_least32_t& code)
 
 void Exception::constructMessage()
 {
-  m_Message = "Error " + std::to_string(m_Code) + "\n\t-> " + m_Message;
+  m_Message = "Error " + std::to_string(m_Code) + "\n\t[Error] : " + m_Message;
 #if have_source_location == 1
-  m_Message +=
-      (" in function \"" + std::string(getFunctionName()) + "\" in file \"" + std::string(getFileName()) + "\" line " + std::to_string(getLine()))
-          .c_str();
+  m_Message += "\n\t[File] : " + std::string(getFileName());
+  m_Message += "\n\t[Function] : " + std::string(getFunctionName());
+  m_Message += "\n\t[Line] : " + std::to_string(getLine());
+  m_Message += "\n\t[Column] : " + std::to_string(getColumn());
 #endif
+  if(m_BackTrace != "")
+  {
+    m_Message += "\n  \t [Backtrace] :";
+    m_Message += m_BackTrace;
+  }
 }
 
 std::string Exception::toString() const
@@ -95,7 +101,7 @@ std::string Exception::toString() const
 
 const std::string& Exception::getBackTrace() const
 {
-  return m_backTrace;
+  return m_BackTrace;
 }
 
 Exception::~Exception(){};

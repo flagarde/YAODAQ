@@ -32,27 +32,28 @@ if(BUILD_CONFIGURATOR)
 endif()
 
 if(BUILD_OLD_WAVEDUMP)
-  add_executable(WaveDump WaveDump.cpp)
-  add_dependencies(WaveDump lib1 lib2 web elogpp)
-  target_include_directories(
-    WaveDump
-    PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN"
-    PRIVATE "${INCLUDE_OUTPUT_DIR}/elogpp"
-    PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>
-    PRIVATE "${INCLUDE_OUTPUT_DIR}")
-  target_link_libraries(
-    WaveDump
-    lib1
-    lib2
-    web
-    elogcpp
-    jsoncpp
-    m
-    Channel_static
-    Event_static)
-  install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+  #add_executable(WaveDump WaveDump.cpp)
+  #add_dependencies(WaveDump lib1 lib2 web elogpp)
+  #target_include_directories(
+  #  WaveDump
+  #  PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN"
+  #  PRIVATE "${INCLUDE_OUTPUT_DIR}/elogpp"
+  #  PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>
+  #  PRIVATE "${INCLUDE_OUTPUT_DIR}")
+  #target_link_libraries(
+  #  WaveDump
+  #  lib1
+  #  lib2
+  #  web
+  #  elogcpp
+  #  jsoncpp
+  #  m
+  #  Channel_static
+  #  Event_static)
+  #install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
   add_executable(DumpModule DumpModule.cpp)
+  
   add_dependencies(DumpModule Boards)
   target_include_directories(
     DumpModule

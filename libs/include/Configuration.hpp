@@ -19,6 +19,7 @@ public:
 
 private:
   static int                            m_ConnectorID;
+  int                                   m_CrateConnectorID{0};
   void                                  parseRooms();
   void                                  parseRacks(const toml::value& room);
   void                                  parseCrates(const toml::value& rack);
@@ -35,7 +36,7 @@ private:
   std::map<std::string, BoardInfos>     m_BoardsInfos;
   std::map<std::string, toml::value>    m_ModuleConfig;
   std::map<std::string, ConnectorInfos> m_ConnectorInfos;
-  std::string                           actualRoomName;
-  std::string                           actualRackName;
-  std::string                           actualCrateName;
+  std::string                           actualRoomName{""};
+  std::string                           actualRackName{""};
+  std::string                           actualCrateName{""};
 };

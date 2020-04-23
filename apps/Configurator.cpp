@@ -18,7 +18,7 @@
 int main(int argc, char** argv)
 {
   CLI::App app{"Websocket Server"};
-  int      port{ix::SocketServer::kDefaultPort};
+  int      port{8282};
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
   std::string host{ix::SocketServer::kDefaultHost};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
