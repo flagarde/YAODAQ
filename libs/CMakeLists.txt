@@ -100,16 +100,19 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
   include(spdlog)
   include(magic_enum)
   include(jsoncpp)
+  include(toml11)
   add_library(Util INTERFACE)
-  add_dependencies(Util CLI11 spdlog magic_enum jsoncpp)
+  add_dependencies(Util CLI11 spdlog magic_enum jsoncpp toml11)
   target_link_libraries(Util INTERFACE spdlog INTERFACE jsoncpp)
   target_include_directories(
     Util
     INTERFACE "${INCLUDE_OUTPUT_DIR}"
-    INTERFACE "${INCLUDE_OUTPUT_DIR}/spdlog")
+    INTERFACE "${INCLUDE_OUTPUT_DIR}/spdlog"
+    INTERFACE "${INCLUDE_OUTPUT_DIR}/toml"
+    )
 
   
-  include(toml11)
+  
 
   add_library(Connectors INTERFACE)
   add_library(Boards INTERFACE)
@@ -140,8 +143,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
   target_include_directories(
     Controller_
     PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
-    PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>
-    PUBLIC "${INCLUDE_OUTPUT_DIR}/toml")
+    PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
   set_target_properties(
     Controller_ PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Controller.hpp")
   install(
@@ -152,7 +154,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
     PUBLIC_HEADER DESTINATION include)
 
   add_library(ConnectorInfos "${YAODAQ_SRC}/ConnectorInfos.cpp")
-  add_dependencies(ConnectorInfos toml11)
+  add_dependencies(ConnectorInfos Exception)
   target_include_directories(
     ConnectorInfos
     PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
@@ -161,6 +163,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
   set_target_properties(
     ConnectorInfos PROPERTIES PUBLIC_HEADER
                               "${YAODAQ_INCLUDE}/ConnectorInfos.hpp")
+  target_link_libraries(ConnectorInfos PUBLIC Exception)
   install(
     TARGETS ConnectorInfos
     RUNTIME DESTINATION bin
