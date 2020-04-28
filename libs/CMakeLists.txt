@@ -1,6 +1,7 @@
 find_package(Git REQUIRED)
 
 find_package(Threads)
+find_package(ZLIB)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
