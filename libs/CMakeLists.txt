@@ -1,7 +1,7 @@
 find_package(Git REQUIRED)
 
 find_package(Threads)
-find_package(ZLIB)
+find_package(OpenSSL)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -78,20 +78,17 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
       WebSocket
       INTERFACE ZLIB::ZLIB
       INTERFACE Threads::Threads
-      INTERFACE mbedcrypto
-      INTERFACE ixwebsocket
-      INTERFACE mbedtls
-      INTERFACE mbedx509)
+      INTERFACE OpenSSL::Crypto
+      INTERFACE ixwebsocket)
     target_include_directories(WebSocket
                                INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
   else()
     target_link_libraries(
       WebSocket
       INTERFACE Threads::Threads
-      INTERFACE mbedcrypto
+      INTERFACE OpenSSL::Crypto
       INTERFACE ixwebsocket
-      INTERFACE mbedtls
-      INTERFACE mbedx509)
+    )
     target_include_directories(WebSocket
                                INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
   endif()
@@ -109,6 +106,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
     INTERFACE "${INCLUDE_OUTPUT_DIR}"
     INTERFACE "${INCLUDE_OUTPUT_DIR}/spdlog"
     INTERFACE "${INCLUDE_OUTPUT_DIR}/toml"
+    INTERFACE "${INCLUDE_OUTPUT_DIR}/json"
     )
 
   
@@ -264,7 +262,6 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
   add_dependencies(Message Exception Util)
   target_include_directories(
     Message
-    PUBLIC "${INCLUDE_OUTPUT_DIR}/json"
     PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
     PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
   set_target_properties(Message PROPERTIES PUBLIC_HEADER
