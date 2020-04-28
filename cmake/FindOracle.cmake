@@ -89,7 +89,7 @@ set(ORACLE_LIBRARIES ${ORACLE_LIBRARY})
 # Handle the QUIETLY and REQUIRED arguments and set ORACLE_FOUND to TRUE if all
 # listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(ORACLE DEFAULT_MSG ORACLE_LIBRARY
+find_package_handle_standard_args(Oracle DEFAULT_MSG ORACLE_LIBRARY
                                   ORACLE_INCLUDE_DIR)
 
 mark_as_advanced(ORACLE_INCLUDE_DIR ORACLE_LIBRARY)

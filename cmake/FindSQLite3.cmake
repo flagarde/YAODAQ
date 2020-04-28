@@ -50,7 +50,7 @@ set(SQLITE3_LIBRARIES ${SQLITE3_LIBRARIES} ${SQLITE3_LIBRARY})
 # message(STATUS ${SQLITE3_LIBRARY}) Handle the QUIETLY and REQUIRED arguments
 # and set SQLITE3_FOUND to TRUE if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SQLITE3 DEFAULT_MSG SQLITE3_LIBRARIES
+find_package_handle_standard_args(SQLite3 DEFAULT_MSG SQLITE3_LIBRARIES
                                   SQLITE3_INCLUDE_DIR)
 
 mark_as_advanced(SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR SQLITE3_LIBRARIES)
