@@ -1,5 +1,4 @@
-if(BUILD_DAQ)
-  if(CAEN_HARDWARE)
+if(BUILD_DAQ OR CAEN_HARDWARE)
     add_dependencies(Connectors CAENlibs)
     target_link_libraries(Connectors INTERFACE CAENConnectors)
     target_include_directories(
@@ -14,8 +13,6 @@ if(BUILD_DAQ)
       INTERFACE $<BUILD_INTERFACE:${YAODAQ_SRC}/CAEN/include>
       INTERFACE $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}/CAEN>)
     target_compile_definitions(Boards INTERFACE CAENLIBS)
-  endif()
-endif()
 
 include(CAENlibs)
 
@@ -155,3 +152,4 @@ install(
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR}
   PUBLIC_HEADER DESTINATION "include/CAEN")
+endif()

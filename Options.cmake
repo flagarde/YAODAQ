@@ -1,5 +1,5 @@
 # IXWebSocket
-set(IXWebSocket_repository "https://github.com/machinezone/IXWebSocket.git")
+set(IXWebSocket_repository "https://github.com/RPClab/IXWebSocket.git")
 set(IXWebSocket_version "master")
 # CAENlibs
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
@@ -42,6 +42,8 @@ option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
 option(BUILD_WEBSERVER "Build the civet webserver" ON)
 option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_CONFIGURATOR "Build Configurator" ON)
+option(BUILD_CONTROLLER "Build Controller" ON)
+option(BUILD_LOGGER "Build Logger" ON)
 
 option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
 

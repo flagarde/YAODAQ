@@ -63,7 +63,7 @@ if(BUILD_ANALYSIS OR BUILD_DAQ)
     PUBLIC_HEADER DESTINATION include)
 endif()
 
-if(BUILD_DAQ)
+if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
 
   configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in"
                  "${INCLUDE_OUTPUT_DIR}/ProgramInfos.hpp" @ONLY)
@@ -76,6 +76,7 @@ if(BUILD_DAQ)
     target_link_libraries(
       WebSocket
       INTERFACE ZLIB::ZLIB
+      INTERFACE Threads::Threads
       INTERFACE mbedcrypto
       INTERFACE ixwebsocket
       INTERFACE mbedtls
@@ -85,6 +86,7 @@ if(BUILD_DAQ)
   else()
     target_link_libraries(
       WebSocket
+      INTERFACE Threads::Threads
       INTERFACE mbedcrypto
       INTERFACE ixwebsocket
       INTERFACE mbedtls
