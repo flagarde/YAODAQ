@@ -17,7 +17,7 @@ set(fmt_version "master")
 set(CLI11_repository "https://github.com/RPClab/CLI11.git")
 set(CLI11_version "master")
 # soci
-set(soci_repository "https://github.com/RPClab/soci.git")
+set(soci_repository "https://github.com/SOCI/soci.git")
 set(soci_version "master")
 # toml11
 set(toml11_repository "https://github.com/RPClab/toml11.git")
@@ -34,6 +34,10 @@ set(magic_enum_version "master")
 # jsroot
 set(jsroot_repository "https://github.com/root-project/jsroot.git")
 set(jsroot_version "master")
+# jsoncpp
+set(jsoncpp_repository "https://github.com/open-source-parsers/jsoncpp.git")
+set(jsoncpp_version "master")
+
 
 option(ENABLE_TESTS "Include tests folder" ON)
 option(ENABLE_DOCS "Include docs folder" ON)

@@ -99,16 +99,16 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
   include(CLI11)
   include(spdlog)
   include(magic_enum)
+  include(jsoncpp)
   add_library(Util INTERFACE)
-  add_dependencies(Util CLI11 spdlog magic_enum)
-  target_link_libraries(Util INTERFACE spdlog)
+  add_dependencies(Util CLI11 spdlog magic_enum jsoncpp)
+  target_link_libraries(Util INTERFACE spdlog INTERFACE jsoncpp)
   target_include_directories(
     Util
     INTERFACE "${INCLUDE_OUTPUT_DIR}"
     INTERFACE "${INCLUDE_OUTPUT_DIR}/spdlog")
 
-  include(elogpp)
-  include(soci)
+  
   include(toml11)
 
   add_library(Connectors INTERFACE)
@@ -258,7 +258,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
     PUBLIC_HEADER DESTINATION include)
 
   add_library(Message "${YAODAQ_SRC}/Message.cpp")
-  add_dependencies(Message elogpp Exception Util)
+  add_dependencies(Message Exception Util)
   target_include_directories(
     Message
     PUBLIC "${INCLUDE_OUTPUT_DIR}/json"
@@ -268,7 +268,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
                                            "${YAODAQ_INCLUDE}/Message.hpp")
   target_link_libraries(
     Message
-    PUBLIC jsoncpp
+    PUBLIC Util
     PUBLIC Exception)
   install(
     TARGETS Message
@@ -350,6 +350,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
       PUBLIC Exception)
 
     if(BUILD_CONFIGURATOR)
+      include(soci)
       add_library(Configurator_ "${YAODAQ_SRC}/Configurator.cpp")
       add_dependencies(Configurator_ soci WebsocketServer Board)
       target_include_directories(
