@@ -114,7 +114,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
   add_library(Connectors INTERFACE)
   add_library(Boards INTERFACE)
 
-  add_library(Exception "${YAODAQ_SRC}/Exception.cpp")
+  add_library(Exception "${YAODAQ_SRC}/Exception.cpp" "${YAODAQ_SRC}/Interrupt.cpp")
   add_dependencies(Exception Util)
   target_include_directories(
     Exception

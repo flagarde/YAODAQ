@@ -34,7 +34,8 @@ int main(int argc, char** argv)
   spdlog::info("Logger listening on IP {0} Port {1}", host, port);
 
   Logger logger(loggerName);
-  while(true) { std::this_thread::sleep_for(std::chrono::milliseconds(10)); }
+  Logger logger2(loggerName + "KKK");
 
+  interrupt.wait();
   return 0;
 }

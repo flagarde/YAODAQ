@@ -22,7 +22,6 @@ void Module::setName(const std::string& name)
 
 void Module::stopListening()
 {
-  spdlog::info("{}", "Herre");
   m_WebsocketClient.stop();
 }
 
@@ -388,7 +387,7 @@ void Module::OnClose(const ix::WebSocketMessagePtr& msg)
 {
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
-  if(ix::WebSocketCloseConstants::kInternalErrorCode) { throw Exception(STATUS_CODE_ALREADY_PRESENT, msg->closeInfo.reason); }
+  //if(ix::WebSocketCloseConstants::kInternalErrorCode) { throw Exception(STATUS_CODE_ALREADY_PRESENT, msg->closeInfo.reason); }
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
 }

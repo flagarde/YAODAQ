@@ -1,6 +1,7 @@
 #include "Logger.hpp"
 
 #include "Exception.hpp"
+#include "Interrupt.hpp"
 #include "Message.hpp"
 #include "spdlog.h"
 
@@ -19,7 +20,10 @@ Logger::Logger(const std::string& name, const std::string& type): m_Name(name), 
   m_WebsocketClient.start();
 }
 
-Logger::~Logger() {}
+Logger::~Logger()
+{
+  m_WebsocketClient.stop();
+}
 
 void Logger::OnOpen(const ix::WebSocketMessagePtr& msg)
 {
@@ -42,7 +46,6 @@ void Logger::OnClose(const ix::WebSocketMessagePtr& msg)
 {
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
-  if(ix::WebSocketCloseConstants::kInternalErrorCode) { throw Exception(STATUS_CODE_ALREADY_PRESENT, msg->closeInfo.reason); }
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
 }

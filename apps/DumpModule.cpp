@@ -38,6 +38,6 @@ int main(int argc, char** argv)
   CAEN::CAENDigitizerBoard toto(loggerName);
   //toto.Initialize();
   //toto.Connect();
-  while(1) { std::this_thread::sleep_for(std::chrono::milliseconds(1)); }
+  interrupt.wait();
   return 0;
 }
