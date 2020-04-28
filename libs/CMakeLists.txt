@@ -66,8 +66,7 @@ endif()
 
 if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
 
-  configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in"
-                 "${INCLUDE_OUTPUT_DIR}/ProgramInfos.hpp" @ONLY)
+  configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in" "${INCLUDE_OUTPUT_DIR}/ProgramInfos.hpp" @ONLY)
 
   include(IXWebSocket)
   add_library(WebSocket INTERFACE)
@@ -76,21 +75,21 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
     find_package(ZLIB)
     target_link_libraries(
       WebSocket
+      INTERFACE ixwebsocket
       INTERFACE ZLIB::ZLIB
       INTERFACE Threads::Threads
       INTERFACE OpenSSL::Crypto
-      INTERFACE ixwebsocket)
-    target_include_directories(WebSocket
-                               INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
+      )
+    target_include_directories(WebSocket INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
   else()
     target_link_libraries(
       WebSocket
+      INTERFACE ixwebsocket
       INTERFACE Threads::Threads
       INTERFACE OpenSSL::Crypto
-      INTERFACE ixwebsocket
+      
     )
-    target_include_directories(WebSocket
-                               INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
+    target_include_directories(WebSocket INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
   endif()
 
   include(CLI11)
