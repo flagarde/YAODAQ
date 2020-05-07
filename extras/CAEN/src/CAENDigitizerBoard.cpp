@@ -1438,6 +1438,7 @@ std::uint16_t CAENDigitizerBoard::GetDecimationFactor()
 
 void  CAENDigitizerBoard::DoInitialize()
 {
+  std::cout<<"Initializing"<<std::endl;
 }
   
 

@@ -47,6 +47,7 @@ protected:
   virtual void                    OnPing(const ix::WebSocketMessagePtr& msg);
   virtual void                    OnMessage(const ix::WebSocketMessagePtr& msg);
   virtual void                    OnError(const ix::WebSocketMessagePtr& msg);
+  virtual void                    OnCommand(Command& command);
   void                            LoadConfig();
   virtual void                    verifyParameters();
   toml::value                     m_Conf;
@@ -68,7 +69,8 @@ private:
   virtual void                                        CallModuleDisconnect() { std::cout << "Disconnect" << std::endl; };
   virtual void                                        DoRelease();
   virtual void                                        DoQuit();
-  void                                                DoOnAction(Message& message);
+  void                                                DoOnAction(const Message& message);
+  void                                                DoOnCommand(const Message& message);
   void                                                sendState();
   void                                                setState(const States& state);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);

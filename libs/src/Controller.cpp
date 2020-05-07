@@ -56,6 +56,12 @@ void Controller::sendAction(const std::string& action)
     throw Exception(StatusCode::INVALID_PARAMETER, action + " is not a valid Action");
 }
 
+void Controller::sendCommand(const std::string& command)
+{
+  Command m_command(command);
+  sendBinary(m_command);
+}
+
 void Controller::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;

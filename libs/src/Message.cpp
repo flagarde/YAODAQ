@@ -53,11 +53,6 @@ void Message::setContent(const std::string& content)
   m_Value["Content"] = content;
 }
 
-std::string Message::get() const
-{
-  return get();
-}
-
 void Message::parse(const std::string& msg)
 {
   Json::String errs;
@@ -65,12 +60,13 @@ void Message::parse(const std::string& msg)
   if(!ok) { throw Exception(StatusCode::JSON_PARSING, errs); }
 }
 
-std::string Message::print() const
+std::string Message::get()
 {
-  return print();
+  m_StreamWriterBuilder.settings_["indentation"] = "";
+  return Json::writeString(m_StreamWriterBuilder, m_Value);
 }
 
-std::string Message::get()
+std::string Message::get() const
 {
   m_StreamWriterBuilder.settings_["indentation"] = "";
   return Json::writeString(m_StreamWriterBuilder, m_Value);
@@ -102,33 +98,27 @@ std::string Message::getTo()
 
 std::string Message::getContent()
 {
-  m_StreamWriterBuilder.settings_["indentation"] = "";
-  return Json::writeString(m_StreamWriterBuilder, m_Value["Content"]);
+  if(m_Value["Content"].isString()) return m_Value["Content"].asString();
+  else
+  {
+    m_StreamWriterBuilder.settings_["indentation"] = "";
+    return Json::writeString(m_StreamWriterBuilder, m_Value["Content"]);
+  }
+}
+
+std::string Message::getContent() const
+{
+  if(m_Value["Content"].isString()) return m_Value["Content"].asString();
+  else
+  {
+    m_StreamWriterBuilder.settings_["indentation"] = "";
+    return Json::writeString(m_StreamWriterBuilder, m_Value["Content"]);
+  }
 }
 
 std::string Message::getType()
 {
   return m_Value["Type"].asString();
-}
-
-std::string Message::getFrom() const
-{
-  return getFrom();
-}
-
-std::string Message::getTo() const
-{
-  return getTo();
-}
-
-std::string Message::getContent() const
-{
-  return getContent();
-}
-
-std::string Message::getType() const
-{
-  return getType();
 }
 
 Info::Info(const std::string& content, const std::string& to, const std::string& from): Message(Types::Info, content, to, from) {}
@@ -143,8 +133,19 @@ Trace::Trace(const std::string& content, const std::string& to, const std::strin
 
 Debug::Debug(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}
 
-Warning::Warning(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}
+Warning::Warning(const std::string& content, const std::string& to, const std::string& from): Message(Types::Warning, content, to, from) {}
 
-Critical::Critical(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}
+Critical::Critical(const std::string& content, const std::string& to, const std::string& from): Message(Types::Critical, content, to, from) {}
 
-Command::Command(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}
+Command::Command(const std::string& content, const std::string& to, const std::string& from): Message(Types::Command, "", to, from)
+{
+  m_Value["Content"]["Command"] = content;
+}
+std::string Command::getCommand()
+{
+  return m_Value["Content"]["Command"].asString();
+}
+std::string Command::getCommand() const
+{
+  return getCommand();
+}

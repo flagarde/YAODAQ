@@ -2,7 +2,7 @@
 
 enum class StatusCode : std::int16_t
 {
-  SUCCESS=1,
+  SUCCESS = 1,
   FAILURE,
   NOT_FOUND,
   NOT_INITIALIZED,

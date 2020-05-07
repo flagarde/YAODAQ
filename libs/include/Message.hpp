@@ -42,34 +42,42 @@ public:
   void         setTo(const std::string&);
   void         addKey(const std::string& key, const std::string& value);
   virtual void setContent(const std::string&);
-  std::string  getFrom() const;
-  std::string  getTo() const;
-  std::string  getContent() const;
-  std::string  get() const;
-  std::string  print() const;
   std::string  getFrom();
   std::string  getTo();
   std::string  getContent();
+  std::string  getContent() const;
   std::string  get();
+  std::string  get() const;
   std::string  getType();
-  std::string  getType() const;
   std::string  getStyled(const std::string& indent = "\t");
   void         print(const std::string& indent = "\t");
   void         setType(const Types&);
   bool         isEmpty();
+
+protected:
+  Json::Value m_Value{};
 
 private:
   static Json::StreamWriterBuilder    m_StreamWriterBuilder;
   std::unique_ptr<Json::StreamWriter> m_Writer{nullptr};
   std::unique_ptr<Json::CharReader>   m_Reader{nullptr};
   static Json::CharReaderBuilder      m_CharReaderBuilder;
-  Json::Value                         m_Value{};
 };
 
 class Command: public Message
 {
 public:
   Command(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  std::string               getCommand() const;
+  std::string               getCommand();
+  template<typename T> void addParameter(const std::string& name, const T& value)
+  {
+    if(m_Value["Content"].isMember("Parameters") == false) m_Value["Content"]["Parameters"] = Json::arrayValue;
+    Json::Value parameter;
+    parameter["Name"]  = name;
+    parameter["Value"] = value;
+    m_Value["Content"]["Parameters"].append(parameter);
+  }
 };
 
 class Critical: public Message

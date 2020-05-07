@@ -3,12 +3,7 @@
 #include "Exception.hpp"
 #include "IXNetSystem.h"
 #include "StatusCode.hpp"
-#include "json.h"
-#include "magic_enum.hpp"
 #include "spdlog.h"
-
-#include <algorithm>
-#include <iostream>
 
 int WebsocketServer::m_BrowserNumber = 1;
 
@@ -68,7 +63,6 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
           ++m_BrowserNumber;
         }
         try_emplace(key, webSocket);
-        webSocket->send(State(m_State, "ALL", "WebServer").get());
         infos.addKey("ID", connectionState->getId());
         infos.addKey("Key", key);
         infos.addKey("Host", msg->openInfo.headers["Host"]);
@@ -130,8 +124,6 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         else if(m_Message.getType() == "State")
         {
           spdlog::warn("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
-          auto state = magic_enum::enum_cast<States>(m_Message.getContent());
-          if(state.has_value()) { m_State = state.value(); }
           sendToAll(msg->str);
         }
         else if(m_Message.getType() == "Action")

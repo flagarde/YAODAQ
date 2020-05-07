@@ -22,6 +22,8 @@ int main(int argc, char** argv)
           "Not Empty", "Test is name is empty");
   std::string action = "";
   app.add_option("-a,--action", action, "Action");
+  std::string command = "";
+  app.add_option("-c,--command", command, "Command");
   try
   {
     app.parse(argc, argv);
@@ -36,7 +38,7 @@ int main(int argc, char** argv)
 
   Controller toto(controllerName);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  toto.sendAction(action);
-  std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  if(action != "") toto.sendAction(action);
+  if(command != "") toto.sendCommand(command);
   return 0;
 }

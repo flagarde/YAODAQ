@@ -25,6 +25,7 @@ public:
   ix::WebSocketSendInfo sendBinary(Message& message);
   ix::WebSocketSendInfo sendText(Message& message);
   void                  sendAction(const std::string& action);
+  void                  sendCommand(const std::string& command);
 
 protected:
   std::string                     m_Name{"Unknown"};

@@ -323,44 +323,75 @@ void Module::DoQuit()
   std::cout << "Quit" << std::endl;
 }
 
-void Module::DoOnAction(Message& message)
+void Module::OnCommand(Command& command) {}
+
+void Module::DoOnCommand(const Message& command)
 {
-  if(message.getContent() == "INITIALIZE") { Initialize(); }
-  else if(message.getContent() == "CONNECT")
+  Command m_command;
+  m_command.parse(command.get());
+  if(m_command.getCommand() == "getState") sendState();
+}
+
+void Module::DoOnAction(const Message& message)
+{
+  auto action = magic_enum::enum_cast<Actions>(message.getContent());
+  if(action.has_value())
   {
-    Connect();
-  }
-  else if(message.getContent() == "CONFIGURE")
-  {
-    Configure();
-  }
-  else if(message.getContent() == "START")
-  {
-    Start();
-  }
-  else if(message.getContent() == "PAUSE")
-  {
-    Pause();
-  }
-  else if(message.getContent() == "STOP")
-  {
-    Stop();
-  }
-  else if(message.getContent() == "CLEAR")
-  {
-    Clear();
-  }
-  else if(message.getContent() == "DISCONNECT")
-  {
-    Disconnect();
-  }
-  else if(message.getContent() == "RELEASE")
-  {
-    Release();
-  }
-  else if(message.getContent() == "QUIT")
-  {
-    Quit();
+    switch(action.value())
+    {
+      case Actions::INITIALIZE:
+      {
+        Initialize();
+        break;
+      }
+      case Actions::CONNECT:
+      {
+        Connect();
+        break;
+      }
+      case Actions::CONFIGURE:
+      {
+        Configure();
+        break;
+      }
+      case Actions::START:
+      {
+        Start();
+        break;
+      }
+      case Actions::PAUSE:
+      {
+        Pause();
+        break;
+      }
+      case Actions::STOP:
+      {
+        Stop();
+        break;
+      }
+      case Actions::CLEAR:
+      {
+        Clear();
+        break;
+      }
+      case Actions::DISCONNECT:
+      {
+        Disconnect();
+        break;
+      }
+      case Actions::RELEASE:
+      {
+        Release();
+        break;
+      }
+      case Actions::QUIT:
+      {
+        Quit();
+        break;
+      }
+      default:
+        break;
+    }
   }
 }
 
@@ -368,10 +399,10 @@ void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
-  if(message.getType() == "Action")
+  if(message.getType() == "Action") { DoOnAction(message); }
+  else if(message.getType() == "Command")
   {
-    DoOnAction(message);
-    m_Logger->info("{}", msg->str);
+    DoOnCommand(message);
   }
   else
     OnMessage(msg);

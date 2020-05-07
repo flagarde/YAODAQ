@@ -4,7 +4,6 @@
 #include "IXWebSocketServer.h"
 #include "Infos.hpp"
 #include "Message.hpp"
-#include "States.hpp"
 #include "json.h"
 #include "spdlog.h"
 
@@ -35,5 +34,4 @@ private:
   void                                            sendToAll(const std::string& message);
   static int                                      m_BrowserNumber;
   std::shared_ptr<ix::WebSocket>                  m_Actual;
-  States                                          m_State{States::UNINITIALIZED};
 };
