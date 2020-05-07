@@ -2,7 +2,6 @@
 
 #include "Exception.hpp"
 #include "IXNetSystem.h"
-#include "Message.hpp"
 #include "StatusCode.hpp"
 #include "json.h"
 #include "magic_enum.hpp"
@@ -47,14 +46,20 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
       m_Actual = webSocket;
       if(msg->type == ix::WebSocketMessageType::Open)
       {
-        std::cout << "Have " << m_Server.getClients().size() << std::endl;
         std::string key = "///";
+        Info        infos;
+        infos.setFrom("WebSocketServer");
+        infos.setTo("ALL");
         // Print in webserver console
         spdlog::info("New connection ID : {}", connectionState->getId());
-        //spdlog::info("Uri : {}", msg->openInfo.uri);
-        //spdlog::info("Headers :");
-        //for(auto it: msg->openInfo.headers) { spdlog::info("\t{} : {}", it.first, it.second); }
-        //
+        spdlog::info("Uri : {}", msg->openInfo.uri);
+        spdlog::info("Headers :");
+        for(auto it: msg->openInfo.headers)
+        {
+          spdlog::info("\t{} : {}", it.first, it.second);
+          infos.addKey(it.first, it.second);
+        }
+
         if(msg->openInfo.headers.find("Key") != msg->openInfo.headers.end()) { key = msg->openInfo.headers["Key"]; }
         else
         {
@@ -64,75 +69,84 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         }
         try_emplace(key, webSocket);
         webSocket->send(State(m_State, "ALL", "WebServer").get());
-        sendToLogger("New connection ID : " + connectionState->getId() + " Key : " + key + " Host : " + msg->openInfo.headers["Host"]);
+        infos.addKey("ID", connectionState->getId());
+        infos.addKey("Key", key);
+        infos.addKey("Host", msg->openInfo.headers["Host"]);
+        infos.addKey("Value", "CONNECTED");
+        sendToLogger(infos.get());
       }
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
+        Info infos;
+        infos.setFrom("WebSocketServer");
+        infos.setTo("ALL");
+        infos.addKey("ID", connectionState->getId());
+        infos.addKey("Value", "DISCONNECTED");
         erase(webSocket);
+        sendToLogger(infos.get());
         spdlog::info("Closed connection ID : {}", connectionState->getId());
-        sendToLogger("Closed connection ID : " + connectionState->getId());
       }
       else if(msg->type == ix::WebSocketMessageType::Message)
       {
-        Message message;
         try
         {
-          message.parse(msg->str);
-          message.setFrom(getkey(webSocket));
+          m_Message.parse(msg->str);
+          m_Message.setFrom(getkey(webSocket));
         }
         catch(const Exception& exception)
         {
+          sendToLogger(Error(getkey(webSocket) + " is sending not well formatted messages", "ALL", "WebServer").get());
         }
-        if(message.getType() == "Trace")
+        if(m_Message.getType() == "Trace")
         {
-          spdlog::trace("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::trace("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToLogger(msg->str);
         }
-        else if(message.getType() == "Info")
+        else if(m_Message.getType() == "Info")
         {
-          spdlog::info("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::info("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToLogger(msg->str);
         }
-        else if(message.getType() == "Debug")
+        else if(m_Message.getType() == "Debug")
         {
-          spdlog::debug("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::debug("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToLogger(msg->str);
         }
-        else if(message.getType() == "Warning")
+        else if(m_Message.getType() == "Warning")
         {
-          spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::warn("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToLogger(msg->str);
         }
-        else if(message.getType() == "Critical")
+        else if(m_Message.getType() == "Critical")
         {
-          spdlog::critical("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::critical("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToLogger(msg->str);
         }
-        else if(message.getType() == "Error")
+        else if(m_Message.getType() == "Error")
         {
-          spdlog::error("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::error("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToLogger(msg->str);
         }
-        else if(message.getType() == "State")
+        else if(m_Message.getType() == "State")
         {
-          spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
-          auto state = magic_enum::enum_cast<States>(message.getContent());
+          spdlog::warn("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
+          auto state = magic_enum::enum_cast<States>(m_Message.getContent());
           if(state.has_value()) { m_State = state.value(); }
           sendToAll(msg->str);
         }
-        else if(message.getType() == "Action")
+        else if(m_Message.getType() == "Action")
         {
-          spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::warn("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToAll(msg->str);
         }
-        else if(message.getType() == "Command")
+        else if(m_Message.getType() == "Command")
         {
-          spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::warn("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToAll(msg->str);
         }
         else
         {
-          spdlog::info("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+          spdlog::info("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
           sendToAll(msg->str);
         }
       }
@@ -140,14 +154,8 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
   });
 }
 
-void WebsocketServer::list()
-{
-  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it) { std::cout << it->first.getName() << std::endl; }
-}
-
 void WebsocketServer::sendToLogger(const std::string& message)
 {
-  //std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
     if(it->first.getType() == "Logger" && m_Actual != it->second) it->second->send(message);
@@ -173,8 +181,7 @@ void WebsocketServer::try_emplace(const std::string& key, const std::shared_ptr<
   {
     m_Clients.try_emplace(Infos(key + "ERASE"), socket);
     spdlog::error("The Name \"{}\" is already taken so it cannot be connected !", ret->first.getName());
-    Error error("The Name \"" + ret->first.getName() + "\" is already taken so it cannot be connected !", "", "WebSocketServer");
-    sendToLogger(error.get());
+    sendToLogger(Error("The Name \"" + ret->first.getName() + "\" is already taken so it cannot be connected !", "ALL", "WebSocketServer").get());
     socket->stop(static_cast<uint16_t>(StatusCode::ALREADY_PRESENT), "The Name \"" + ret->first.getName() + "\" is already taken so it cannot be connected !");
   }
   else

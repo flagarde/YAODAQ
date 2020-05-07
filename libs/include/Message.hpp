@@ -40,6 +40,7 @@ public:
   void         parse(const std::string&);
   void         setFrom(const std::string&);
   void         setTo(const std::string&);
+  void         addKey(const std::string& key, const std::string& value);
   virtual void setContent(const std::string&);
   std::string  getFrom() const;
   std::string  getTo() const;

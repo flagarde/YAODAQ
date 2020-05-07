@@ -8,14 +8,8 @@
 
 #include <iostream>
 
-Json::StreamWriterBuilder Logger::m_StreamWriterBuilder = Json::StreamWriterBuilder();
-
-Json::CharReaderBuilder Logger::m_CharReaderBuilder = Json::CharReaderBuilder();
-
 Logger::Logger(const std::string& name, const std::string& type): m_Name(name), m_Type(type)
 {
-  m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
-  m_Reader.reset(m_CharReaderBuilder.newCharReader());
   m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
@@ -69,18 +63,11 @@ void Logger::OnPing(const ix::WebSocketMessagePtr& msg)
 void Logger::OnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
-  try
-  {
-    message.parse(msg->str);
-  }
-  catch(...)
-  {
-    spdlog::info("{}", msg->str);
-  }
+  message.parse(msg->str);
   if(message.getType() == "Trace") { spdlog::trace("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo()); }
   else if(message.getType() == "Info")
   {
-    if(!message.isEmpty()) spdlog::info("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+    spdlog::info("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
   }
   else if(message.getType() == "Debug")
   {

@@ -3,6 +3,7 @@
 #include "IXWebSocketCloseConstants.h"
 #include "IXWebSocketServer.h"
 #include "Infos.hpp"
+#include "Message.hpp"
 #include "States.hpp"
 #include "json.h"
 #include "spdlog.h"
@@ -24,7 +25,7 @@ public:
   std::string getkey(const std::shared_ptr<ix::WebSocket>& websocket);
 
 private:
-  void                                            list();
+  Message                                         m_Message;
   ix::WebSocketServer                             m_Server;
   std::map<Infos, std::shared_ptr<ix::WebSocket>> m_Clients;
   void                                            erase(const std::shared_ptr<ix::WebSocket>& socket);
@@ -32,7 +33,6 @@ private:
   void                                            try_emplace(const std::string& key, const std::shared_ptr<ix::WebSocket>& socket);
   void                                            sendToLogger(const std::string& message);
   void                                            sendToAll(const std::string& message);
-  std::mutex                                      m_Mutex;
   static int                                      m_BrowserNumber;
   std::shared_ptr<ix::WebSocket>                  m_Actual;
   States                                          m_State{States::UNINITIALIZED};

@@ -1,6 +1,5 @@
 #pragma once
 #include "WebsocketClient.hpp"
-#include "json.h"
 
 class Logger
 {
@@ -19,13 +18,6 @@ public:
 protected:
   std::string m_Name{"Unknown"};
   std::string m_Type{"Unknown"};
-  // Json serialiser/deserialiser
-  static Json::StreamWriterBuilder    m_StreamWriterBuilder;
-  std::unique_ptr<Json::StreamWriter> m_Writer{nullptr};
-  std::unique_ptr<Json::CharReader>   m_Reader{nullptr};
-  static Json::CharReaderBuilder      m_CharReaderBuilder;
-  Json::Value                         m_Value{};
-  Json::String                        m_Errs;
 
 private:
   WebsocketClient                                     m_WebsocketClient;

@@ -11,6 +11,11 @@ Json::StreamWriterBuilder Message::m_StreamWriterBuilder = Json::StreamWriterBui
 
 Json::CharReaderBuilder Message::m_CharReaderBuilder = Json::CharReaderBuilder();
 
+void Message::addKey(const std::string& key, const std::string& value)
+{
+  m_Value["Content"][key] = value;
+}
+
 Message::Message(const Types& type, const std::string& content, const std::string& to, const std::string& from)
 {
   m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
@@ -18,7 +23,7 @@ Message::Message(const Types& type, const std::string& content, const std::strin
   setType(type);
   setFrom(from);
   setTo(to);
-  setContent(content);
+  if(content != "") setContent(content);
 }
 
 bool Message::isEmpty()
@@ -85,17 +90,20 @@ void Message::print(const std::string& indent)
 
 std::string Message::getFrom()
 {
-  return m_Value["From"].asString();
+  m_StreamWriterBuilder.settings_["indentation"] = "";
+  return Json::writeString(m_StreamWriterBuilder, m_Value["From"]);
 }
 
 std::string Message::getTo()
 {
-  return m_Value["To"].asString();
+  m_StreamWriterBuilder.settings_["indentation"] = "";
+  return Json::writeString(m_StreamWriterBuilder, m_Value["To"]);
 }
 
 std::string Message::getContent()
 {
-  return m_Value["Content"].asString();
+  m_StreamWriterBuilder.settings_["indentation"] = "";
+  return Json::writeString(m_StreamWriterBuilder, m_Value["Content"]);
 }
 
 std::string Message::getType()
