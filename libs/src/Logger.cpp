@@ -3,6 +3,7 @@
 #include "Exception.hpp"
 #include "Interrupt.hpp"
 #include "Message.hpp"
+#include "StatusCode.hpp"
 #include "spdlog.h"
 
 #include <iostream>
@@ -46,6 +47,11 @@ void Logger::OnClose(const ix::WebSocketMessagePtr& msg)
 {
   // The server can send an explicit code and reason for closing.
   // This data can be accessed through the closeInfo object.
+  if(msg->closeInfo.code == static_cast<int16_t>(StatusCode::ALREADY_PRESENT))
+  {
+    m_WebsocketClient.disableAutomaticReconnection();
+    throw Exception(StatusCode::ALREADY_PRESENT, msg->closeInfo.reason);
+  }
   spdlog::info("{}", msg->closeInfo.code);
   spdlog::info("{}", msg->closeInfo.reason);
 }

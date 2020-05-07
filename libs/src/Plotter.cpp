@@ -46,8 +46,7 @@ void Plotter::Init()
     {
       static int  erasetrigger{0};
       std::string title = "";
-      if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (((ch + 1) % 9) == 0)))
-      { title = "Trigger" + std::to_string((int)((ch) / 8) - 1); }
+      if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (((ch + 1) % 9) == 0))) { title = "Trigger" + std::to_string((int)((ch) / 8) - 1); }
       else
       {
         title = "Channel" + std::to_string(erasetrigger);
@@ -69,8 +68,7 @@ void Plotter::Init()
     {
       static int  erasetrigger{0};
       std::string title = "";
-      if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (((ch + 1) % 9) == 0)))
-      { title = "HistoTrigger" + std::to_string((int)((ch) / 8) - 1); }
+      if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX742_FAMILY_CODE) && ((ch != 0) && (((ch + 1) % 9) == 0))) { title = "HistoTrigger" + std::to_string((int)((ch) / 8) - 1); }
       else
       {
         title = "HistoChannel" + std::to_string(erasetrigger);

@@ -86,8 +86,9 @@ const char* CAENHVException::errorStrings(const int& code)
       return "Link type not supported";
     case CAENHV_USERPASSFAILED:
       return "Login failed for username/password";
+    default :
+      return "Error code unknown";
   }
-  throw Exception(STATUS_CODE_INVALID_PARAMETER);
 }
 
 std::string CAENHVException::toString() const

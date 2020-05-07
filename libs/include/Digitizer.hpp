@@ -140,8 +140,7 @@ public:
         if((ret = CAEN_DGTZ_DisableDRS4Correction(handle)) != CAEN_DGTZ_Success) Quit(ERR_INVALID_BOARD_TYPE);
 
         // Load the Correction Tables from the Digitizer flash
-        if((ret = CAEN_DGTZ_GetCorrectionTables(handle, dat.WDcfg.DRS4Frequency, (void*)X742Tables)) != CAEN_DGTZ_Success)
-          Quit(ERR_INVALID_BOARD_TYPE);
+        if((ret = CAEN_DGTZ_GetCorrectionTables(handle, dat.WDcfg.DRS4Frequency, (void*)X742Tables)) != CAEN_DGTZ_Success) Quit(ERR_INVALID_BOARD_TYPE);
 
         if(dat.WDcfg.UseManualTables != -1)
         {  // The user wants to use some custom tables
@@ -197,8 +196,7 @@ public:
 
   void MaskChannels()
   {
-    if((dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX740_FAMILY_CODE) && (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE))
-    { dat.WDcfg.EnableMask &= (1 << dat.WDcfg.Nch) - 1; }
+    if((dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX740_FAMILY_CODE) && (dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)) { dat.WDcfg.EnableMask &= (1 << dat.WDcfg.Nch) - 1; }
     else
     {
       dat.WDcfg.EnableMask &= (1 << (dat.WDcfg.Nch / 8)) - 1;

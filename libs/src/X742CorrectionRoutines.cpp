@@ -24,15 +24,12 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
         if((dataout->DataChannel[j][2] - dataout->DataChannel[j][1]) > 30) { offset++; }
         else
         {
-          if(((dataout->DataChannel[j][3] - dataout->DataChannel[j][1]) > 30) && ((dataout->DataChannel[j][3] - dataout->DataChannel[j][2]) > 30))
-          { offset++; }
+          if(((dataout->DataChannel[j][3] - dataout->DataChannel[j][1]) > 30) && ((dataout->DataChannel[j][3] - dataout->DataChannel[j][2]) > 30)) { offset++; }
         }
       }
       else
       {
-        if((i == dataout->ChSize[j] - 1) &&
-           ((dataout->DataChannel[j][dataout->ChSize[j] - 2] - dataout->DataChannel[j][dataout->ChSize[j] - 1]) > 30))
-        { offset++; }
+        if((i == dataout->ChSize[j] - 1) && ((dataout->DataChannel[j][dataout->ChSize[j] - 2] - dataout->DataChannel[j][dataout->ChSize[j] - 1]) > 30)) { offset++; }
         else
         {
           if((dataout->DataChannel[j][i - 1] - dataout->DataChannel[j][i]) > 30)
@@ -70,8 +67,7 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
           if(i == dataout->ChSize[j] - 1) { dataout->DataChannel[j][dataout->ChSize[j] - 1] = dataout->DataChannel[j][dataout->ChSize[j] - 2]; }
           else
           {
-            if((dataout->DataChannel[j][i + 1] - dataout->DataChannel[j][i]) > 30)
-              dataout->DataChannel[j][i] = ((dataout->DataChannel[j][i + 1] + dataout->DataChannel[j][i - 1]) / 2);
+            if((dataout->DataChannel[j][i + 1] - dataout->DataChannel[j][i]) > 30) dataout->DataChannel[j][i] = ((dataout->DataChannel[j][i + 1] + dataout->DataChannel[j][i - 1]) / 2);
             else
             {
               if(i == dataout->ChSize[j] - 2)
@@ -99,8 +95,7 @@ static void PeakCorrection(CAEN_DGTZ_X742_GROUP_t* dataout)
  * board \param   CorrectionLevelMask :  Mask of Corrections to be applied
  *   \param   data                :  Data to be corrected
  */
-void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequency_t frequency, int CorrectionLevelMask,
-                         CAEN_DGTZ_X742_GROUP_t* data)
+void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequency_t frequency, int CorrectionLevelMask, CAEN_DGTZ_X742_GROUP_t* data)
 {
   int      size1, trg = 0, k;
   float    Time[1024], t0;

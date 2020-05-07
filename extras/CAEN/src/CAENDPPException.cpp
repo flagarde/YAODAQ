@@ -103,8 +103,9 @@ const char* CAENDPPException::errorStrings(const int& code)
       return "Calibration error";
     case CAENDPP_RetCode_EventRead:
       return "Event Read Error";
+    default :
+      return "Error code unknown";
   }
-  throw Exception(STATUS_CODE_INVALID_PARAMETER);
 }
 
 std::string CAENDPPException::toString() const

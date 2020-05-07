@@ -80,8 +80,9 @@ const char* CAENDigitizerException::errorStrings(const int& code)
       return "The Base Address is not supported, it's a Desktop device?";
     case CAEN_DGTZ_NotYetImplemented:
       return "The function is not yet implemented";
+    default :
+      return "Error code unknown";
   }
-  throw Exception(STATUS_CODE_INVALID_PARAMETER);
 }
 
 std::string CAENDigitizerException::toString() const

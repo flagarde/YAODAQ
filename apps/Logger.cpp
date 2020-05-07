@@ -34,7 +34,6 @@ int main(int argc, char** argv)
   spdlog::info("Logger listening on IP {0} Port {1}", host, port);
 
   Logger logger(loggerName);
-  Logger logger2(loggerName + "KKK");
 
   interrupt.wait();
   return 0;

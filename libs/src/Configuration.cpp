@@ -2,6 +2,8 @@
 
 #include "Exception.hpp"
 #include "Internal.hpp"
+#include "StatusCode.hpp"
+#include "spdlog.h"
 #include "toml.hpp"
 
 #include <algorithm>
@@ -11,22 +13,20 @@ int Configuration::m_ConnectorID = 1;
 
 toml::value Configuration::getConfig(const std::string& module)
 {
-  if(m_ModuleConfig.find(module) == m_ModuleConfig.end())
-  { throw Exception(STATUS_CODE_NOT_FOUND, "Board/Module " + module + " not found in configuration !"); }
+  if(m_ModuleConfig.find(module) == m_ModuleConfig.end()) { throw Exception(StatusCode::NOT_FOUND, "Board/Module " + module + " not found in configuration !"); }
   else
     return m_ModuleConfig[module];
 }
 
 ConnectorInfos Configuration::getConnectorInfos(const std::string& module)
 {
-  if(m_ConnectorInfos.find(module) == m_ConnectorInfos.end())
-  { throw Exception(STATUS_CODE_NOT_FOUND, "Board " + module + " not found in configuration !"); }
+  if(m_ConnectorInfos.find(module) == m_ConnectorInfos.end()) { throw Exception(StatusCode::NOT_FOUND, "Board " + module + " not found in configuration !"); }
   return m_ConnectorInfos[module];
 }
 
 void Configuration::parse()
 {
-  if(m_Filename == "") { throw Exception(STATUS_CODE_NOT_FOUND, "No Configuration file given !"); }
+  if(m_Filename == "") { throw Exception(StatusCode::NOT_FOUND, "No Configuration file given !"); }
   if(m_isParsed == false)
   {
     m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
@@ -38,8 +38,7 @@ void Configuration::parse()
 
 void Configuration::throwIfExists(std::vector<std::string>& type, const std::string& typeName, const std::string& name)
 {
-  if(std::find(type.begin(), type.end(), name) != type.end())
-  { throw Exception(STATUS_CODE_ALREADY_PRESENT, typeName + " name \"" + name + "\" is already taken"); }
+  if(std::find(type.begin(), type.end(), name) != type.end()) { throw Exception(StatusCode::ALREADY_PRESENT, typeName + " name \"" + name + "\" is already taken"); }
   else
     type.push_back(name);
 }
@@ -99,11 +98,11 @@ void Configuration::parseModules(const toml::value& crate, const toml::value& cr
     if(moduleName == "")
     {
       spdlog::error("Board have no Name");
-      throw Exception(STATUS_CODE_NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a \"Name\" key");
+      throw Exception(StatusCode::NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a \"Name\" key");
     }
     throwIfExists(m_Module_Names, "Module", moduleName);
     std::string type = toml::find_or<std::string>(board, "Type", "");
-    if(type == "") { throw Exception(STATUS_CODE_NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a \"Type\" key"); }
+    if(type == "") { throw Exception(StatusCode::NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a \"Type\" key"); }
     try
     {
       boardConnectorParameters = toml::find<toml::table>(board, "Connector");
@@ -113,10 +112,7 @@ void Configuration::parseModules(const toml::value& crate, const toml::value& cr
     catch(const std::out_of_range& e)
     {
       if(haveCrateConnector == false)
-      {
-        throw Exception(STATUS_CODE_NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a Connector and the Crate \"" + actualCrateName +
-                                                   "\" in which is plugged to doesn't have one neither");
-      }
+      { throw Exception(StatusCode::NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a Connector and the Crate \"" + actualCrateName + "\" in which is plugged to doesn't have one neither"); }
       else
       {
         boardConnectorParameters = crateConnectorParameters;

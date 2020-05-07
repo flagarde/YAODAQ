@@ -24,8 +24,9 @@ const char* CAENFlashException::errorStrings(const int& code)
       return "Not implemented";
     case FLASH_API_UNSUPPORTED_FLASH_DEVICE:
       return "Unsupported flash device";
+    default :
+      return "Error code unknown";
   }
-  throw Exception(STATUS_CODE_INVALID_PARAMETER);
 }
 
 std::string CAENFlashException::toString() const

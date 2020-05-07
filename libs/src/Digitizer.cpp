@@ -68,13 +68,11 @@ void Digitizer::ProgramDigitizer()
     ret |= CAEN_DGTZ_SetFastTriggerDigitizing(handle, CAEN_DGTZ_EnaDis_t(dat.WDcfg.FastTriggerEnabled));
     ret |= CAEN_DGTZ_SetFastTriggerMode(handle, dat.WDcfg.FastTriggerMode);
   }
-  if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE) || (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX731_FAMILY_CODE))
-  { ret |= CAEN_DGTZ_SetDESMode(handle, dat.WDcfg.DesMode); }
+  if((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE) || (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX731_FAMILY_CODE)) { ret |= CAEN_DGTZ_SetDESMode(handle, dat.WDcfg.DesMode); }
   ret |= CAEN_DGTZ_SetRecordLength(handle, dat.WDcfg.RecordLength);
   ret |= CAEN_DGTZ_GetRecordLength(handle, &dat.WDcfg.RecordLength);
 
-  if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX724_FAMILY_CODE)
-  { ret |= CAEN_DGTZ_SetDecimationFactor(handle, dat.WDcfg.DecimationFactor); }
+  if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX724_FAMILY_CODE) { ret |= CAEN_DGTZ_SetDecimationFactor(handle, dat.WDcfg.DecimationFactor); }
   ret |= CAEN_DGTZ_SetPostTriggerSize(handle, dat.WDcfg.PostTrigger);
   if(dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX742_FAMILY_CODE)
   {
@@ -86,8 +84,7 @@ void Digitizer::ProgramDigitizer()
   if(dat.WDcfg.InterruptNumEvents > 0)
   {
     // Interrupt handling
-    if(ret |= CAEN_DGTZ_SetInterruptConfig(handle, CAEN_DGTZ_ENABLE, VME_INTERRUPT_LEVEL, VME_INTERRUPT_STATUS_ID,
-                                           (uint16_t)dat.WDcfg.InterruptNumEvents, INTERRUPT_MODE) != CAEN_DGTZ_Success)
+    if(ret |= CAEN_DGTZ_SetInterruptConfig(handle, CAEN_DGTZ_ENABLE, VME_INTERRUPT_LEVEL, VME_INTERRUPT_STATUS_ID, (uint16_t)dat.WDcfg.InterruptNumEvents, INTERRUPT_MODE) != CAEN_DGTZ_Success)
     {
       std::cout << "\nError configuring interrupts. Interrupts disabled\n" << std::endl;
       dat.WDcfg.InterruptNumEvents = 0;
@@ -138,8 +135,7 @@ void Digitizer::ProgramDigitizer()
         if(dat.WDcfg.Version_used[i] == 1) ret |= Set_calibrated_DCO(i);
         else
           ret |= CAEN_DGTZ_SetChannelDCOffset(handle, i, dat.WDcfg.DCoffset[i]);
-        if(dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX730_FAMILY_CODE && dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX725_FAMILY_CODE)
-          ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, dat.WDcfg.ChannelTriggerMode[i], (1 << i));
+        if(dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX730_FAMILY_CODE && dat.BoardInfo.FamilyCode != CAEN_DGTZ_XX725_FAMILY_CODE) ret |= CAEN_DGTZ_SetChannelSelfTrigger(handle, dat.WDcfg.ChannelTriggerMode[i], (1 << i));
         ret |= CAEN_DGTZ_SetChannelTriggerThreshold(handle, i, dat.WDcfg.Threshold[i]);
         ret |= CAEN_DGTZ_SetTriggerPolarity(handle, i,
                                             CAEN_DGTZ_TriggerPolarity_t(dat.WDcfg.PulsePolarity[i]));  //.TriggerEdge
@@ -417,8 +413,7 @@ void Digitizer::Set_relative_Threshold()
       dco_percent       = (float)dco / 65535.;
       expected_baseline = pow(2, (double)dat.BoardInfo.ADC_NBits) * (1.0 - dco_percent);
 
-      custom_thr = (dat.WDcfg.PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityPositive) ? ((uint32_t)expected_baseline + 100)
-                                                                                    : ((uint32_t)expected_baseline - 100);
+      custom_thr = (dat.WDcfg.PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityPositive) ? ((uint32_t)expected_baseline + 100) : ((uint32_t)expected_baseline - 100);
 
       if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE) ret = CAEN_DGTZ_SetGroupTriggerThreshold(handle, ch, custom_thr);
       else
@@ -558,8 +553,8 @@ void Digitizer::Set_relative_Threshold()
  */
 int32_t Digitizer::BoardSupportsCalibration()
 {
-  return dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX761_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE ||
-         dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE;
+  return dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX761_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE ||
+         dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE;
 }
 
 /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
@@ -569,8 +564,7 @@ int32_t Digitizer::BoardSupportsCalibration()
  */
 int32_t Digitizer::BoardSupportsTemperatureRead()
 {
-  return dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE ||
-         dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE;
+  return dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX730_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX725_FAMILY_CODE;
 }
 
 /*! \fn      void Calibrate_DC_Offset(int handle, WaveDumpConfig_t WDcfg,
@@ -721,8 +715,7 @@ void Digitizer::Calibrate_DC_Offset()
   ret |= CAEN_DGTZ_SetAcquisitionMode(handle, mem_mode);
   ret |= CAEN_DGTZ_SetExtTriggerInputMode(handle, dat.WDcfg.ExtTriggerMode);
   ret |= CAEN_DGTZ_SetChannelEnableMask(handle, dat.WDcfg.EnableMask);
-  if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX724_FAMILY_CODE)
-    ret |= CAEN_DGTZ_SetDecimationFactor(handle, dat.WDcfg.DecimationFactor);
+  if(dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX740_FAMILY_CODE || dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX724_FAMILY_CODE) ret |= CAEN_DGTZ_SetDecimationFactor(handle, dat.WDcfg.DecimationFactor);
   if(ret) std::cout << "Error resetting some parameters after DAC calibration" << std::endl;
 
   // reset self trigger mode settings
@@ -816,8 +809,7 @@ void Digitizer::Quit(const int& error)
 
 void Digitizer::Connect()
 {
-  if(CAEN_DGTZ_OpenDigitizer(CAEN_DGTZ_ConnectionType(dat.WDcfg.LinkType), dat.WDcfg.LinkNum, dat.WDcfg.ConetNode, dat.WDcfg.BaseAddress, &handle))
-    Quit(ERR_DGZ_OPEN);
+  if(CAEN_DGTZ_OpenDigitizer(CAEN_DGTZ_ConnectionType(dat.WDcfg.LinkType), dat.WDcfg.LinkNum, dat.WDcfg.ConetNode, dat.WDcfg.BaseAddress, &handle)) Quit(ERR_DGZ_OPEN);
 }
 
 void Digitizer::GetInfos()
@@ -912,8 +904,7 @@ void Digitizer::GetMoreBoardInfo()
     default:
       ret = -1;
   }
-  if(((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE) || (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX731_FAMILY_CODE)) && dat.WDcfg.DesMode)
-    dat.WDcfg.Ts /= 2;
+  if(((dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX751_FAMILY_CODE) || (dat.BoardInfo.FamilyCode == CAEN_DGTZ_XX731_FAMILY_CODE)) && dat.WDcfg.DesMode) dat.WDcfg.Ts /= 2;
 
   switch(dat.BoardInfo.FamilyCode)
   {
@@ -1073,11 +1064,7 @@ bool Digitizer::Interrupt()
   BufferSize = 0;
   NumEvents  = 0;
   // Interrupt handling
-  if(isVMEDevice())
-  {
-    ret = CAEN_DGTZ_VMEIRQWait((CAEN_DGTZ_ConnectionType)dat.WDcfg.LinkType, dat.WDcfg.LinkNum, dat.WDcfg.ConetNode, (uint8_t)InterruptMask,
-                               INTERRUPT_TIMEOUT, &VMEHandle);
-  }
+  if(isVMEDevice()) { ret = CAEN_DGTZ_VMEIRQWait((CAEN_DGTZ_ConnectionType)dat.WDcfg.LinkType, dat.WDcfg.LinkNum, dat.WDcfg.ConetNode, (uint8_t)InterruptMask, INTERRUPT_TIMEOUT, &VMEHandle); }
   else
     ret = CAEN_DGTZ_IRQWait(handle, INTERRUPT_TIMEOUT);
   if(ret == CAEN_DGTZ_Timeout)
@@ -1120,15 +1107,13 @@ int Digitizer::Set_calibrated_DCO(const int& ch)
     return ret;
   if(dat.WDcfg.PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityPositive)
   {
-    dat.WDcfg.DCoffset[ch] =
-        (uint32_t)((float)(std::fabs((((float)dc_file[ch] - dat.WDcfg.DAC_Calib.offset[ch]) / dat.WDcfg.DAC_Calib.cal[ch]) - 100.)) * (655.35));
+    dat.WDcfg.DCoffset[ch] = (uint32_t)((float)(std::fabs((((float)dc_file[ch] - dat.WDcfg.DAC_Calib.offset[ch]) / dat.WDcfg.DAC_Calib.cal[ch]) - 100.)) * (655.35));
     if(dat.WDcfg.DCoffset[ch] > 65535) dat.WDcfg.DCoffset[ch] = 65535;
     if(dat.WDcfg.DCoffset[ch] < 0) dat.WDcfg.DCoffset[ch] = 0;
   }
   else if(dat.WDcfg.PulsePolarity[ch] == CAEN_DGTZ_PulsePolarityNegative)
   {
-    dat.WDcfg.DCoffset[ch] =
-        (uint32_t)((float)(std::fabs(((fabs(dc_file[ch] - 100.) - dat.WDcfg.DAC_Calib.offset[ch]) / dat.WDcfg.DAC_Calib.cal[ch]) - 100.)) * (655.35));
+    dat.WDcfg.DCoffset[ch] = (uint32_t)((float)(std::fabs(((fabs(dc_file[ch] - 100.) - dat.WDcfg.DAC_Calib.offset[ch]) / dat.WDcfg.DAC_Calib.cal[ch]) - 100.)) * (655.35));
     if(dat.WDcfg.DCoffset[ch] < 0) dat.WDcfg.DCoffset[ch] = 0;
     if(dat.WDcfg.DCoffset[ch] > 65535) dat.WDcfg.DCoffset[ch] = 65535;
   }

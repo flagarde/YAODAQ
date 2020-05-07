@@ -1,6 +1,7 @@
 #include "Message.hpp"
 
 #include "Exception.hpp"
+#include "StatusCode.hpp"
 #include "json.h"
 #include "magic_enum.hpp"
 
@@ -56,7 +57,7 @@ void Message::parse(const std::string& msg)
 {
   Json::String errs;
   bool         ok = m_Reader->parse(&msg[0], &msg[msg.size()], &m_Value, &errs);
-  if(!ok) { throw Exception(STATUS_CODE_JSON_PARSING, errs); }
+  if(!ok) { throw Exception(StatusCode::JSON_PARSING, errs); }
 }
 
 std::string Message::print() const
@@ -124,15 +125,9 @@ std::string Message::getType() const
 
 Info::Info(const std::string& content, const std::string& to, const std::string& from): Message(Types::Info, content, to, from) {}
 
-State::State(const States& state, const std::string& to, const std::string& from)
-    : Message(Types::State, std::string(magic_enum::enum_name(state)), to, from)
-{
-}
+State::State(const States& state, const std::string& to, const std::string& from): Message(Types::State, std::string(magic_enum::enum_name(state)), to, from) {}
 
-Action::Action(const Actions& action, const std::string& to, const std::string& from)
-    : Message(Types::Action, std::string(magic_enum::enum_name(action)), to, from)
-{
-}
+Action::Action(const Actions& action, const std::string& to, const std::string& from): Message(Types::Action, std::string(magic_enum::enum_name(action)), to, from) {}
 
 Error::Error(const std::string& content, const std::string& to, const std::string& from): Message(Types::Error, content, to, from) {}
 

@@ -9,8 +9,7 @@
  * board \param   CorrectionLevelMask :  Mask of Corrections to be applied
  *   \param   data                :  Data to be corrected
  */
-void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequency_t frequency, int CorrectionLevelMask,
-                         CAEN_DGTZ_X742_GROUP_t* data);
+void ApplyDataCorrection(CAEN_DGTZ_DRS4Correction_t* CTable, CAEN_DGTZ_DRS4Frequency_t frequency, int CorrectionLevelMask, CAEN_DGTZ_X742_GROUP_t* data);
 
 /*! \brief   Write the correction table of a x742 boards into the output files
  *

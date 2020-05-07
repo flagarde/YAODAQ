@@ -16,33 +16,17 @@
 #include <exception>
 #include <string>
 
-enum StatusCode
-{
-  STATUS_CODE_SUCCESS,
-  STATUS_CODE_FAILURE,
-  STATUS_CODE_NOT_FOUND,
-  STATUS_CODE_NOT_INITIALIZED,
-  STATUS_CODE_ALREADY_INITIALIZED,
-  STATUS_CODE_ALREADY_PRESENT,
-  STATUS_CODE_OUT_OF_RANGE,
-  STATUS_CODE_NOT_ALLOWED,
-  STATUS_CODE_INVALID_PARAMETER,
-  STATUS_CODE_UNCHANGED,
-  STATUS_CODE_INVALID_PTR,
-  STATUS_CODE_JSON_PARSING,
-  STATUS_CODE_WRONG_NUMBER_PARAMETERS
-};
+enum class StatusCode : std::int16_t;
 
 class Exception: public std::exception
 {
 public:
 #if experimental_have_source_location == 1
-  Exception(const StatusCode statusCode, const std::string& message = "",
-            std::experimental::source_location location = std::experimental::source_location::current());
+  Exception(const StatusCode& statusCode, const std::string& message = "", std::experimental::source_location location = std::experimental::source_location::current());
 #elif have_source_location == 1
-  Exception(const StatusCode statusCode, const std::string& message = "", std::source_location location = std::source_location::current());
+  Exception(const StatusCode& statusCode, const std::string& message = "", std::source_location location = std::source_location::current());
 #else
-  Exception(const StatusCode statusCode, const std::string& message = "");
+  Exception(const StatusCode& statusCode, const std::string& message = "");
 #endif
   Exception(const Exception& e) = default;
   /** Get back trace at point of exception construction (gcc only)
@@ -57,14 +41,10 @@ public:
   const char*          getFunctionName() const;
 #endif
   const int getCode() const;
-  /** Get status code as a string
-  */
-  virtual std::string toString() const;
 
 protected:
 #if experimental_have_source_location == 1
-  Exception(const int& code = 0, const std::string& message = "",
-            std::experimental::source_location location = std::experimental::source_location::current());
+  Exception(const int& code = 0, const std::string& message = "", std::experimental::source_location location = std::experimental::source_location::current());
 #elif have_source_location == 1
   Exception(const int& code = 0, const std::string& message = "", std::source_location location = std::source_location::current());
 #else
@@ -73,9 +53,9 @@ protected:
   virtual const char* errorStrings(const int_least32_t& code);
 
 private:
-  void        createBackTrace();
-  std::string m_Message{"Compile with source_location support for better informations !"};
-  const int   m_Code{STATUS_CODE_SUCCESS};
+  void               createBackTrace();
+  std::string        m_Message{"Compile with source_location support for better informations !"};
+  const std::int16_t m_Code{0};
 #if experimental_have_source_location == 1
   std::experimental::source_location m_Location;
 #elif have_source_location == 1

@@ -131,8 +131,7 @@ TH1D CreateAndFillWaveform(const int& eventNbr, const Channel& channel, const st
   return std::move(th1);
 }
 
-std::pair<std::pair<double, double>, std::pair<double, double>>
-MeanSTD(const Channel& channel, const std::pair<double, double>& window = std::pair<double, double>{99999999, -999999})
+std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Channel& channel, const std::pair<double, double>& window = std::pair<double, double>{99999999, -999999})
 {
   double meanwindows{0};
   double sigmawindows{0};
@@ -237,8 +236,8 @@ int main(int argc, char** argv)
         continue;  // Data for channel X is in file but i dont give a *** to
                    // analyse it !
       if(evt == 0) Efficiency[ch] = 0;
-      TH1D waveform = CreateAndFillWaveform(evt, event->Channels[ch], "Waveform", "Waveform");
-      std::pair<std::pair<double, double>, std::pair<double, double>> meanstd = MeanSTD(event->Channels[ch], SignalWindow);
+      TH1D                                                            waveform = CreateAndFillWaveform(evt, event->Channels[ch], "Waveform", "Waveform");
+      std::pair<std::pair<double, double>, std::pair<double, double>> meanstd  = MeanSTD(event->Channels[ch], SignalWindow);
       // std::cout<<"Event "<<evt<<" Channel "<<ch<<"/n";
       // std::cout<<" Mean : "<<meanstd.first<<" STD :
       // "<<meanstd.second<<std::endl;
@@ -248,8 +247,7 @@ int main(int argc, char** argv)
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 0
       // Substract the mean value of amplitudes ( center to 0 )
-      for(std::size_t i = 0; i != event->Channels[ch].Data.size(); ++i)
-      { event->Channels[ch].Data[i] = (event->Channels[ch].Data[i]) - meanstd.first.first; }
+      for(std::size_t i = 0; i != event->Channels[ch].Data.size(); ++i) { event->Channels[ch].Data[i] = (event->Channels[ch].Data[i]) - meanstd.first.first; }
       TH1D after0 = CreateAndFillWaveform(evt, event->Channels[ch], "Step_0", "Step 0");
 
       // Check the mean if 0
@@ -319,15 +317,14 @@ int main(int argc, char** argv)
       if(ImEvent == true)
       {
         waveform.SetLineColor(kGreen);
-        std::cout << "EVENT   " << testmeanstd.first.first << "   " << testmeanstd.first.second << "   " << testmeanstd.second.first << "   "
-                  << testmeanstd.second.second << "  " << testmeanstd.second.second / testmeanstd.first.second << std::endl;
+        std::cout << "EVENT   " << testmeanstd.first.first << "   " << testmeanstd.first.second << "   " << testmeanstd.second.first << "   " << testmeanstd.second.second << "  "
+                  << testmeanstd.second.second / testmeanstd.first.second << std::endl;
         sigmas_event.Fill(testmeanstd.second.second);
       }
       else
       {
         waveform.SetLineColor(kRed);
-        std::cout << testmeanstd.first.first << "   " << testmeanstd.first.second << "   " << testmeanstd.second.first << "   "
-                  << testmeanstd.second.second << std::endl;
+        std::cout << testmeanstd.first.first << "   " << testmeanstd.first.second << "   " << testmeanstd.second.first << "   " << testmeanstd.second.second << std::endl;
         sigmas_noise.Fill(testmeanstd.second.second);
       }
       // Verif.push_back(waveform);
@@ -386,10 +383,7 @@ int main(int argc, char** argv)
 
     std::cout << "*******************************************************************" << std::endl;
     for(std::map<int, int>::iterator it = Efficiency.begin(); it != Efficiency.end(); ++it)
-    {
-      std::cout << "NUMBER EVENT " << it->second << " TOTAL EVENT " << evt << " EFFICIENCY CHANNEL " << it->first << " : "
-                << (it->second * 100.0) / (evt * scalefactor) << " % " << std::endl;
-    }
+    { std::cout << "NUMBER EVENT " << it->second << " TOTAL EVENT " << evt << " EFFICIENCY CHANNEL " << it->first << " : " << (it->second * 100.0) / (evt * scalefactor) << " % " << std::endl; }
     std::cout << "*******************************************************************" << std::endl;
   }
   if(event != nullptr) delete event;

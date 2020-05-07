@@ -3,6 +3,7 @@
 #include "Exception.hpp"
 #include "IXNetSystem.h"
 #include "Message.hpp"
+#include "StatusCode.hpp"
 #include "json.h"
 #include "magic_enum.hpp"
 #include "spdlog.h"
@@ -34,11 +35,10 @@ std::string WebsocketServer::getkey(const std::shared_ptr<ix::WebSocket>& websoc
   {
     if(it->second == websocket) return it->first.getKey();
   }
-  throw Exception(STATUS_CODE_NOT_FOUND, "Client not found !");
+  throw Exception(StatusCode::NOT_FOUND, "Client not found !");
 }
 
-WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections,
-                                 const int& handshakeTimeoutSecs)
+WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections, const int& handshakeTimeoutSecs)
     : m_Server(port, host, backlog, maxConnections, handshakeTimeoutSecs)
 {
   ix::initNetSystem();
@@ -47,12 +47,13 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
       m_Actual = webSocket;
       if(msg->type == ix::WebSocketMessageType::Open)
       {
+        std::cout << "Have " << m_Server.getClients().size() << std::endl;
         std::string key = "///";
         // Print in webserver console
         spdlog::info("New connection ID : {}", connectionState->getId());
-        spdlog::info("Uri : {}", msg->openInfo.uri);
-        spdlog::info("Headers :");
-        for(auto it: msg->openInfo.headers) { spdlog::info("\t{} : {}", it.first, it.second); }
+        //spdlog::info("Uri : {}", msg->openInfo.uri);
+        //spdlog::info("Headers :");
+        //for(auto it: msg->openInfo.headers) { spdlog::info("\t{} : {}", it.first, it.second); }
         //
         if(msg->openInfo.headers.find("Key") != msg->openInfo.headers.end()) { key = msg->openInfo.headers["Key"]; }
         else
@@ -68,7 +69,6 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
         erase(webSocket);
-        //webSocket->close();
         spdlog::info("Closed connection ID : {}", connectionState->getId());
         sendToLogger("Closed connection ID : " + connectionState->getId());
       }
@@ -140,6 +140,11 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
   });
 }
 
+void WebsocketServer::list()
+{
+  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it) { std::cout << it->first.getName() << std::endl; }
+}
+
 void WebsocketServer::sendToLogger(const std::string& message)
 {
   //std::lock_guard<std::mutex> guard(m_Mutex);
@@ -151,11 +156,13 @@ void WebsocketServer::sendToLogger(const std::string& message)
 
 void WebsocketServer::erase(const std::shared_ptr<ix::WebSocket>& socket)
 {
-  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end();)
+  for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
-    if(it->second == socket) { m_Clients.erase(it->first); }
-    else
-      ++it;
+    if(it->second == socket)
+    {
+      m_Clients.erase(it->first);
+      break;
+    }
   }
 }
 
@@ -164,15 +171,14 @@ void WebsocketServer::try_emplace(const std::string& key, const std::shared_ptr<
   std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator ret = m_Clients.find(Infos(key));
   if(ret != m_Clients.end())
   {
+    m_Clients.try_emplace(Infos(key + "ERASE"), socket);
     spdlog::error("The Name \"{}\" is already taken so it cannot be connected !", ret->first.getName());
     Error error("The Name \"" + ret->first.getName() + "\" is already taken so it cannot be connected !", "", "WebSocketServer");
     sendToLogger(error.get());
-    socket->stop(ix::WebSocketCloseConstants::kInternalErrorCode,
-                 "The Name \"" + ret->first.getName() + "\" is already taken so it cannot be connected !");
+    socket->stop(static_cast<uint16_t>(StatusCode::ALREADY_PRESENT), "The Name \"" + ret->first.getName() + "\" is already taken so it cannot be connected !");
   }
   else
   {
-    std::cout << "EMplace " << key << std::endl;
     m_Clients.try_emplace(Infos(key), socket);
   }
 }
@@ -181,7 +187,6 @@ void WebsocketServer::sendToAll(const std::string& message)
 {
   for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
-    std::cout << "send to " << it->first.getName() << std::endl;
     if(m_Actual != it->second) it->second->send(message);
   }
 }
@@ -210,5 +215,5 @@ void WebsocketServer::wait()
 void WebsocketServer::listen()
 {
   std::pair<bool, std::string> res = m_Server.listen();
-  if(!res.first) { Exception(STATUS_CODE_FAILURE, res.second); }
+  if(!res.first) { Exception(StatusCode::FAILURE, res.second); }
 }

@@ -1,6 +1,7 @@
 #include "Infos.hpp"
 
 #include "Exception.hpp"
+#include "StatusCode.hpp"
 
 #include <vector>
 
@@ -54,7 +55,7 @@ void Infos::setKey(const std::string& key)
   }
   else
   {
-    throw Exception(STATUS_CODE_WRONG_NUMBER_PARAMETERS, "Number of argument in key should be 5 "
+    throw Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "Number of argument in key should be 5 "
                                                          "(RoomName/RackName/CrateName/Type/Name) !");
   }
 }

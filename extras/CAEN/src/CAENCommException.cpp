@@ -38,8 +38,9 @@ const char* CAENCommException::errorStrings(const int& code)
       return "There aren't board controlled by that CAEN Bridge";
     case CAENComm_Terminated:
       return "Communication terminated by the Device";
+    default :
+      return "Error code unknown";
   }
-  throw Exception(STATUS_CODE_INVALID_PARAMETER);
 }
 
 std::string CAENCommException::toString() const

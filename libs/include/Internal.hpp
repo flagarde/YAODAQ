@@ -24,5 +24,3 @@ using std::uint8_t;
 #define PLATFORM_IS(P) (PLATFORM == PLATFORM_##P)
 
 #include "SupressWarnings.hpp"
-#include "magic_enum.hpp"
-#include "spdlog.h"
