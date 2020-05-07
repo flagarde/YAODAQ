@@ -349,21 +349,21 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
       PUBLIC Exception)
 
     if(BUILD_CONFIGURATOR)
-      include(soci)
-      add_library(Configurator_ "${YAODAQ_SRC}/Configurator.cpp")
-      add_dependencies(Configurator_ soci WebsocketServer Board)
-      target_include_directories(
-        Configurator_
-        PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
-        PUBLIC ${DATABASES_INCLUDE_DIR})
-      set_target_properties(
-        Configurator_ PROPERTIES PUBLIC_HEADER
-                                 "${YAODAQ_INCLUDE}/Configurator.hpp")
-      target_link_libraries(
-        Configurator_
-        PUBLIC Board
-        PUBLIC WebsocketServer
-        PUBLIC Soci)
+      #include(soci)
+      #add_library(Configurator_ "${YAODAQ_SRC}/Configurator.cpp")
+      #add_dependencies(Configurator_ soci WebsocketServer Board)
+      #target_include_directories(
+      #  Configurator_
+      #  PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
+      #  PUBLIC ${DATABASES_INCLUDE_DIR})
+      #set_target_properties(
+      #  Configurator_ PROPERTIES PUBLIC_HEADER
+      #                           "${YAODAQ_INCLUDE}/Configurator.hpp")
+      #target_link_libraries(
+      #  Configurator_
+      #  PUBLIC Board
+      #  PUBLIC WebsocketServer
+      #  PUBLIC Soci)
     endif()
 
   endif()
