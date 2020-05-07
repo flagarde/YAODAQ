@@ -1,6 +1,7 @@
 #include "Connector.hpp"
 
 #include <iostream>
+
 Connector::Connector(const std::string& type, const ConnectorInfos& infos): m_Type(type), m_Infos(infos) {}
 
 toml::value Connector::getParameters()
@@ -15,9 +16,12 @@ void Connector::printParameters()
 
 std::int32_t Connector::Connect()
 {
-  verifyParameters();
-  DoConnect();
-  m_Infos.setHandle(m_Handle);
+  if(!isConnected())
+  {
+    verifyParameters();
+    DoConnect();
+    m_Infos.setHandle(m_Handle);
+  }
   m_Infos.addBoardConnected();
   return m_Handle;
 }
@@ -35,7 +39,14 @@ std::string Connector::getType()
 void Connector::Disconnect()
 {
   m_Infos.removeBoardConnected();
-  if(m_Infos.getNumberBoardConnected() == 0) DoDisconnect();
+  if(isConnected()) DoDisconnect();
 }
 
 void Connector::verifyParameters() {}
+
+bool Connector::isConnected()
+{
+  if(m_Infos.getNumberBoardConnected() == 0) return false;
+  else
+    return true;
+}

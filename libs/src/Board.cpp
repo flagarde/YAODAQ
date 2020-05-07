@@ -8,14 +8,23 @@ Board::Board(const std::string& name, const std::string& type): Module(name, typ
 
 void Board::CallModuleConnect()
 {
-  m_Connector = m_ConnectorFactory.createConnector(m_Config.getConnectorInfos(m_Name));
-  m_Handle    = m_Connector->Connect();
+  if(m_IsConnected == false)
+  {
+    m_Connector = m_ConnectorFactory.createConnector(m_Config.getConnectorInfos(m_Name));
+    m_Handle    = m_Connector->Connect();
+    DoConnect();
+    m_IsConnected = true;
+  }
 }
 
 void Board::CallModuleDisconnect()
 {
-  DoDisconnect();
-  m_Connector->Disconnect();
+  if(m_IsConnected == true)
+  {
+    DoDisconnect();
+    m_Connector->Disconnect();
+    m_IsConnected = false;
+  }
 }
 
 void Board::printConnectorParameters()

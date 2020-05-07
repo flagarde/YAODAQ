@@ -16,6 +16,7 @@ public:
   void         Disconnect();
   std::string  getType();
   void         setInfos(const ConnectorInfos& infos);
+  bool         isConnected();
 
 protected:
   std::string  m_Type{""};

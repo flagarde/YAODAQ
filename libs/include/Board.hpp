@@ -22,6 +22,7 @@ private:
   virtual void               DoConnect();
   virtual void               DoDisconnect();
   Board() = delete;
+  bool m_IsConnected{false};
 
 protected:
   std::int32_t m_Handle{-1};
