@@ -10,9 +10,10 @@ namespace CAEN
 class CAENVMEConnector: public Connector
 {
 public:
-  CAENVMEConnector(const ConnectorInfos& infos);
+  CAENVMEConnector();
   virtual void  DoConnect() final;
   virtual void DoDisconnect() final;
+  virtual ~CAENVMEConnector()=default;
 
 private:
   virtual void                                verifyParameters() final;

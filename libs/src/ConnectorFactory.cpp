@@ -1,7 +1,7 @@
 #include "ConnectorFactory.hpp"
 
-#include "CAENDigitizerConnector.hpp"
-#include "CAENVMEConnector.hpp"
+//#include "CAENDigitizerConnector.hpp"
+//#include "CAENVMEConnector.hpp"
 #include "toml.hpp"
 
 #include <iostream>
@@ -20,7 +20,7 @@ std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfo
     std::cout << "Type key not set in Connector !" << std::endl;
     std::exit(2);
   }
-  if(m_Type == "CAENVME")
+  /*if(m_Type == "CAENVME")
   {
     if(infos.isSharedConnector() && m_SharedConnectors.find(infos.getID()) == m_SharedConnectors.end())
     {
@@ -44,6 +44,6 @@ std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfo
   {
     std::cout << "Connector Type not known or not loaded !" << std::endl;
     std::exit(2);
-  }
+  }*/
   return std::shared_ptr<Connector>{nullptr};
 }

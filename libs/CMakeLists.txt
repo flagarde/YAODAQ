@@ -78,7 +78,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
       INTERFACE ixwebsocket
       INTERFACE ZLIB::ZLIB
       INTERFACE Threads::Threads
-      INTERFACE OpenSSL::Crypto
+      INTERFACE OpenSSL::SSL
       )
     target_include_directories(WebSocket INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
   else()
@@ -86,7 +86,7 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
       WebSocket
       INTERFACE ixwebsocket
       INTERFACE Threads::Threads
-      INTERFACE OpenSSL::Crypto
+      INTERFACE OpenSSL::SSL
       
     )
     target_include_directories(WebSocket INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
@@ -298,13 +298,15 @@ if(BUILD_DAQ OR BUILD_WEBSOCKETSERVER)
     PUBLIC_HEADER DESTINATION include)
 
   add_library(Board "${YAODAQ_SRC}/Module.cpp" "${YAODAQ_SRC}/Board.cpp")
-  add_dependencies(Board Message Configuration ConnectorFactory WebSocketClient)
+  add_dependencies(Board Message Configuration ConnectorFactory WebSocketClient Connector)
   target_link_libraries(
     Board
     PUBLIC Message
     PUBLIC WebSocketClient
     PUBLIC Configuration
-    PUBLIC ConnectorFactory)
+    PUBLIC ConnectorFactory
+    PRIVATE Connector
+    )
   set_target_properties(
     Board PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Module.hpp"
                      PUBLIC_HEADER "${YAODAQ_INCLUDE}/Board.hpp")

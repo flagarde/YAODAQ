@@ -18,7 +18,7 @@ enum class VMEBridgeModel
   A3818
 };
 
-CAENVMEConnector::CAENVMEConnector(const ConnectorInfos& infos) : Connector("CAENVME", infos)
+CAENVMEConnector::CAENVMEConnector() : Connector("CAENVME")
 {
 }
 

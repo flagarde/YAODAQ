@@ -21,6 +21,8 @@
 
 #include "Internal.hpp"
 
+#include <tuple>
+
 namespace FlakedTuna
 {
 PluginLoader::~PluginLoader()

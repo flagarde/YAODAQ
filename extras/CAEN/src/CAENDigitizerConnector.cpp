@@ -13,8 +13,7 @@ std::unordered_map<std::string, int>
     CAENDigitizerConnector::m_ConnectionTypeList{
         {"USB", CAEN_DGTZ_USB}, {"OPTICAL", CAEN_DGTZ_OpticalLink}};
 
-CAENDigitizerConnector::CAENDigitizerConnector(const ConnectorInfos& infos)
-    : Connector("CAENDigitizer", infos)
+CAENDigitizerConnector::CAENDigitizerConnector(): Connector("CAENDigitizer")
 {
 }
 

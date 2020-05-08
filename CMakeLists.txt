@@ -19,8 +19,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake"
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/macro"
                       "${CMAKE_SOURCE_DIR}/external")
+                      
+include(Colors)
 
 include(Architectures)
 

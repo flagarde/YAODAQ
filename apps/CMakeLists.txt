@@ -35,6 +35,12 @@ if(BUILD_CONFIGURATOR)
   #install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
+add_executable(PluginTest PluginTest.cpp)
+add_dependencies(PluginTest Board)
+target_link_libraries(PluginTest Board)
+install(TARGETS PluginTest RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+
 if(BUILD_OLD_WAVEDUMP)
   #add_executable(WaveDump WaveDump.cpp)
   #add_dependencies(WaveDump lib1 lib2 web elogpp)
@@ -58,11 +64,11 @@ if(BUILD_OLD_WAVEDUMP)
 
   add_executable(DumpModule DumpModule.cpp)
   
-  add_dependencies(DumpModule Boards)
+  add_dependencies(DumpModule CAENBoards Board)
   target_include_directories(
     DumpModule
-    PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>
-    PRIVATE "${INCLUDE_OUTPUT_DIR}")
-  target_link_libraries(DumpModule PRIVATE Boards)
+    PRIVATE ${CMAKE_BINARY_DIR}
+    PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN")
+  target_link_libraries(DumpModule PRIVATE CAENBoards PRIVATE Board)
   install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
