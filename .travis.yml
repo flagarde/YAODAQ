@@ -25,10 +25,7 @@ matrix:
   include:
     - os: osx
       compiler: clang
-      osx_image: xcode10.13 
-    - os: osx
-      compiler: clang
-      osx_image: xcode10.14 
+      osx_image: xcode11.4
 
 addons:
   apt:
