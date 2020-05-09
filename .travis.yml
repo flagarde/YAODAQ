@@ -18,16 +18,18 @@ jobs:
       compiler: clang
       osx_image: xcode11.4
     - os: linux
-      compiler: gcc clang
+      compiler: clang
       dist: bionic  
-
+    - os: linux
+      compiler: gcc
+      dist: bionic 
 addons:
   apt:
     sources: ubuntu-toolchain-r-test    
     packages: doxygen cmake lcov
     update: true
   homebrew: 
-    packages: doxygen cmake lcov openssl@1.1 
+    packages: doxygen cmake lcov openssl@1.1
     update: true
   
 before_install:
@@ -67,3 +69,4 @@ notifications:
   email:
     on_success: never
     on_failure: never
+
