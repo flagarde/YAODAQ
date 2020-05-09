@@ -24,8 +24,7 @@ include(CXXStandards)
 cxx_17()
 
 if(APPLE)
- set(OPENSSL_INCLUDE_DIR "/usr/local/opt/openssl/include")
- set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
+ set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl/" CACHE STRING "Set openssl root dir") 
 endif()
 
 include(Formatting)
