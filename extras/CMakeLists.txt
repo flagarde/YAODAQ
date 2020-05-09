@@ -38,6 +38,3 @@ foreach(subdir ${SUBDIRS})
     add_subdirectory(${subdir})
   endif()
 endforeach()
-
-
-

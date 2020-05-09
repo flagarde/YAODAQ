@@ -70,13 +70,10 @@ function(clang_format TARGET_NAME)
     # Make the target
     if(FORMAT_FILES)
       if(TARGET ${TARGET_NAME})
-        message(
-          ERROR
-          "Cannot create clang-format target '${TARGET_NAME}', already exists.")
+        message(ERROR "Cannot create clang-format target '${TARGET_NAME}', already exists.")
       else()
-         add_custom_target(${TARGET_NAME} ALL )
-         add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND COMMAND ${CLANG_FORMAT_EXE} -i
-                                                 -style=file ${FORMAT_FILES} COMMENT "Running clang-format")
+         add_custom_target(${TARGET_NAME})
+         add_custom_command(TARGET ${TARGET_NAME} COMMAND ${CLANG_FORMAT_EXE} -i -style=file ${FORMAT_FILES} COMMENT "Running clang-format")
 
         if(NOT TARGET format)
           add_custom_target(format)
@@ -126,13 +123,10 @@ function(cmake_format TARGET_NAME)
     # Generate target
     if(FORMAT_FILES)
       if(TARGET ${TARGET_NAME})
-        message(
-          ERROR
-          "Cannot create cmake-format target '${TARGET_NAME}', already exists.")
+        message(ERROR "Cannot create cmake-format target '${TARGET_NAME}', already exists.")
       else()
-        add_custom_target(${TARGET_NAME} ALL )
-        add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD COMMAND ${CMAKE_FORMAT_EXE} -i
-                                                 ${FORMAT_FILES} COMMENT "Running cmake-format")
+        add_custom_target(${TARGET_NAME})
+        add_custom_command(TARGET ${TARGET_NAME} COMMAND ${CMAKE_FORMAT_EXE} -i ${FORMAT_FILES} COMMENT "Running cmake-format")
 
         if(NOT TARGET cmake-format)
           add_custom_target(cmake-format)

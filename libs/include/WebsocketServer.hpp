@@ -1,14 +1,10 @@
 #pragma once
 
-#include "IXWebSocketCloseConstants.h"
 #include "IXWebSocketServer.h"
 #include "Infos.hpp"
-#include "Message.hpp"
-#include "json.h"
-#include "spdlog.h"
 
+#include <map>
 #include <string>
-#include <unordered_map>
 
 class WebsocketServer
 {
@@ -24,11 +20,9 @@ public:
   std::string getkey(const std::shared_ptr<ix::WebSocket>& websocket);
 
 private:
-  Message                                         m_Message;
   ix::WebSocketServer                             m_Server;
   std::map<Infos, std::shared_ptr<ix::WebSocket>> m_Clients;
   void                                            erase(const std::shared_ptr<ix::WebSocket>& socket);
-  spdlog::level::level_enum                       m_Verbosity{spdlog::level::trace};
   void                                            try_emplace(const std::string& key, const std::shared_ptr<ix::WebSocket>& socket);
   void                                            sendToLogger(const std::string& message);
   void                                            sendToAll(const std::string& message);

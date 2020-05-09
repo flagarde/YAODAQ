@@ -86,6 +86,7 @@ void Exception::constructMessage()
     m_Message += "\n  \t [Backtrace] :";
     m_Message += m_BackTrace;
   }
+  m_Message += "\n";
 }
 
 const std::string& Exception::getBackTrace() const

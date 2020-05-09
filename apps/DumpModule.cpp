@@ -34,10 +34,11 @@ int main(int argc, char** argv)
   Board::setConfigFile("../confs/Configs.toml");
 
   spdlog::info("Listening on IP {0} Port {1}", host, port);
-
   CAEN::CAENDigitizerBoard toto(loggerName);
+  interrupt.wait();
+
   //toto.Initialize();
   //toto.Connect();
-  interrupt.wait();
+
   return 0;
 }
