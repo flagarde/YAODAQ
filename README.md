@@ -1,7 +1,9 @@
 # YAODAQ 
-Yet An Other DAQ  [![CodeFactor](https://www.codefactor.io/repository/github/rpclab/yaodaq/badge)](https://www.codefactor.io/repository/github/rpclab/yaodaq)
+Yet An Other DAQ  
 
-<a href="https://scan.coverity.com/projects/rpclab-yaodaq">
+[![CodeFactor](https://www.codefactor.io/repository/github/rpclab/yaodaq/badge)](https://www.codefactor.io/repository/github/rpclab/yaodaq)
+
+<a href="https://scan.coverity.com/projects/rpcla-">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/19567/badge.svg"/>
 </a>
