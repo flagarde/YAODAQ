@@ -1,55 +1,37 @@
 language: cpp
+os: linux
 dist: bionic
 
 arch:
   - amd64
 
-compiler:
- - gcc
- - clang
- 
 env:
   global:
-  matrix:
-    - ROOT_VERSION=6.18.04
- 
-os: 
- - linux
- #- windows
+    - ROOT_VERSION=6.20.04
 
-matrix:
+jobs:
   fast_finish: true
   allow_failures:
-  - os: 
-    - osx
+     - os: osx
   include:
     - os: osx
       compiler: clang
       osx_image: xcode11.4
+    - os: linux
+      compiler: gcc clang
+      dist: bionic  
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
-    packages:
-      - libmysqlclient-dev
-      - doxygen
-      - cmake
-      - lcov
-      - cmake
+    sources: ubuntu-toolchain-r-test    
+    packages: doxygen cmake
+    update: true
+  homebrew: 
+    packages: lcov doxygen 
+    update: true
   
 before_install:
   - ./.travis-ci.d/install_dependencies.sh
-  - if [ "$TRAVIS_OS_NAME" == "osx"  ];
-    then brew update ;
-    brew upgrade cmake;
-    brew upgrade openssl@1.1
-    brew install lcov doxygen;
-    fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ];
-    then sudo apt-get update;
-    sudo apt-get install cmake lcov doxygen; 
-    fi
   
 script:
     - source dependencies/root/bin/thisroot.sh
@@ -63,7 +45,7 @@ script:
    # - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake --build . ; fi
    # - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake --build . --target coverage ; fi
    # - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake --build . ; fi
-   # - cmake --install .
+    - cmake --install .
     # - make test
     # - make docs 
   
@@ -85,4 +67,3 @@ notifications:
   email:
     on_success: never
     on_failure: never
-
