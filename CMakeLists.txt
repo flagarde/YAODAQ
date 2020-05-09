@@ -23,6 +23,11 @@ include(Architectures)
 include(CXXStandards)
 cxx_17()
 
+if(APPLE)
+ set(OPENSSL_INCLUDE_DIR "/usr/local/opt/openssl/include")
+ set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
+endif()
+
 include(Formatting)
 file(
   GLOB_RECURSE
