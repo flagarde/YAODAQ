@@ -7,7 +7,7 @@
 class Connector
 {
 public:
-  Connector(const std::string& type, const ConnectorInfos& infos);
+  Connector(const std::string& type);
   virtual ~Connector(){};
   void         printParameters();
   toml::value  getParameters();
@@ -22,7 +22,7 @@ protected:
   std::string  m_Type{""};
   virtual void DoConnect()    = 0;
   virtual void DoDisconnect() = 0;
-  Connector(){};
+  Connector()                 = default;
   int32_t        m_Handle{0};
   ConnectorInfos m_Infos;
 };

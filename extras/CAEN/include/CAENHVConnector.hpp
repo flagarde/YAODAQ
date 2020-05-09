@@ -7,7 +7,8 @@ namespace CAEN
 class CAENHVConnector: public Connector
 {
 public:
-  CAENHVConnector(const ConnectorInfos& infos={});
+  CAENHVConnector();
+  virtual ~CAENHVConnector()=default;
   virtual void DoConnect() final;
   virtual void DoDisconnect() final;
 };

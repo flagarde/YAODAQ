@@ -47,7 +47,7 @@ void WebServer::SendInfos(const std::string& name, const std::string& info)
 WebServer::WebServer(int port, const std::string& host, int backlog, size_t maxConnections): m_server(port, host, backlog, maxConnections)
 {
   m_server.setOnConnectionCallback([this](std::shared_ptr<ix::WebSocket> webSocket, std::shared_ptr<ix::ConnectionState> connectionState) {
-    webSocket->setOnMessageCallback([this, webSocket, connectionState](const ix::WebSocketMessagePtr msg) {
+    webSocket->setOnMessageCallback([this, webSocket, connectionState](const ix::WebSocketMessagePtr& msg) {
       if(msg->type == ix::WebSocketMessageType::Open)
       {
         std::cerr << "New connection" << std::endl;

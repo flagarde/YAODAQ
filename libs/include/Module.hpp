@@ -1,14 +1,11 @@
 #pragma once
 
 #include "Configuration.hpp"
-#include "Exception.hpp"
 #include "Message.hpp"
 #include "States.hpp"
 #include "WebsocketClient.hpp"
 #include "spdlog.h"
 
-#include <iostream>
-#include <sstream>
 #include <string>
 
 class Module

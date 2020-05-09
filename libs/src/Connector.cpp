@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-Connector::Connector(const std::string& type, const ConnectorInfos& infos): m_Type(type), m_Infos(infos) {}
+Connector::Connector(const std::string& type): m_Type(type) {}
 
 toml::value Connector::getParameters()
 {

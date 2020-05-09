@@ -1,5 +1,6 @@
 #include "Module.hpp"
 
+#include "Exception.hpp"
 #include "Message.hpp"
 #include "StatusCode.hpp"
 #include "magic_enum.hpp"
@@ -424,8 +425,8 @@ void Module::OnClose(const ix::WebSocketMessagePtr& msg)
     m_WebsocketClient.disableAutomaticReconnection();
     throw Exception(StatusCode::ALREADY_PRESENT, msg->closeInfo.reason);
   }
-  spdlog::info("{}", msg->closeInfo.code);
-  spdlog::info("{}", msg->closeInfo.reason);
+  m_Logger->info("{}", msg->closeInfo.code);
+  m_Logger->info("{}", msg->closeInfo.reason);
 }
 
 void Module::OnPong(const ix::WebSocketMessagePtr& msg)

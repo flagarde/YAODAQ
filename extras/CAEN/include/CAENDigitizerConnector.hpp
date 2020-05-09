@@ -10,7 +10,8 @@ namespace CAEN
 class CAENDigitizerConnector: public Connector
 {
 public:
-  CAENDigitizerConnector(const ConnectorInfos& infos);
+  CAENDigitizerConnector();
+  virtual ~CAENDigitizerConnector()=default;
   virtual void         DoDisconnect() final;
   virtual void DoConnect() final;
 

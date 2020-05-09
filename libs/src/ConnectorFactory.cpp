@@ -1,15 +1,32 @@
 #include "ConnectorFactory.hpp"
 
-#include "CAENDigitizerConnector.hpp"
-#include "CAENVMEConnector.hpp"
+#include "Exception.hpp"
+#include "Internal.hpp"
+#include "StatusCode.hpp"
+#include "spdlog.h"
 #include "toml.hpp"
 
-#include <iostream>
+ConnectorFactory::ConnectorFactory()
+{
+  checkEnvironmentVariable();
+  m_Loader.FindPluginsAtDirectory(m_Path);
+  for(auto connector: m_Loader.BuildAndResolvePlugin<Connector>())
+  {
+    m_Plugins.emplace(connector->getType(), connector);
+    m_StringConnectorNames += (connector->getType() + " ");
+  }
+}
+
+void ConnectorFactory::checkEnvironmentVariable()
+{
+  if(std::getenv("YAODAQ_CONNECTOR_DIR") != nullptr) m_Path = std::string(std::getenv("YAODAQ_CONNECTOR_DIR"));
+  if(m_Path != "") { spdlog::info("Loading libraries in folder {}", m_Path); }
+  else
+    throw Exception(StatusCode::NOT_FOUND, "YAODAQ_CONNECTOR_DIR environmental variable not found! Can't load libraries for connectors!");
+}
 
 std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfos& infos)
 {
-  infos.printParameters();
-  // First I need to see if a type is given to create it
   std::string m_Type{""};
   try
   {
@@ -17,33 +34,15 @@ std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfo
   }
   catch(const std::out_of_range& e)
   {
-    std::cout << "Type key not set in Connector !" << std::endl;
-    std::exit(2);
+    throw Exception(StatusCode::NOT_FOUND, "Type key not set in Connector !");
   }
-  if(m_Type == "CAENVME")
+  if(m_Plugins.find(m_Type) != m_Plugins.end())
   {
-    if(infos.isSharedConnector() && m_SharedConnectors.find(infos.getID()) == m_SharedConnectors.end())
-    {
-      m_SharedConnectors.emplace(infos.getID(), std::make_shared<CAEN::CAENVMEConnector>(infos));
-      return m_SharedConnectors[infos.getID()];
-    }
-    else
-      return std::make_shared<CAEN::CAENVMEConnector>(infos);
+    spdlog::info("Creating Connector {}", m_Type);
+    m_Connectors.emplace(infos.getID(), m_Plugins[m_Type]);
+    m_Connectors[infos.getID()]->setInfos(infos);
+    return m_Connectors[infos.getID()];
   }
-  if(m_Type == "CAENDigitizer")
-  {
-    if(infos.isSharedConnector() && m_SharedConnectors.find(infos.getID()) == m_SharedConnectors.end())
-    {
-      m_SharedConnectors.emplace(infos.getID(), std::make_shared<CAEN::CAENDigitizerConnector>(infos));
-      return m_SharedConnectors[infos.getID()];
-    }
-    else
-      return std::make_shared<CAEN::CAENDigitizerConnector>(infos);
-  }
-  else
-  {
-    std::cout << "Connector Type not known or not loaded !" << std::endl;
-    std::exit(2);
-  }
+  throw Exception(StatusCode::NOT_FOUND, "Connector " + m_Type + " not loaded ! Connector loaded are : " + m_StringConnectorNames);
   return std::shared_ptr<Connector>{nullptr};
 }

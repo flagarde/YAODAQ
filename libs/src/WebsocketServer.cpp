@@ -2,6 +2,7 @@
 
 #include "Exception.hpp"
 #include "IXNetSystem.h"
+#include "Message.hpp"
 #include "StatusCode.hpp"
 #include "spdlog.h"
 
@@ -9,18 +10,17 @@ int WebsocketServer::m_BrowserNumber = 1;
 
 void WebsocketServer::setVerbosity(const std::string& verbosity)
 {
-  if(verbosity == "off") m_Verbosity = spdlog::level::off;
+  if(verbosity == "off") spdlog::set_level(spdlog::level::off);
   else if(verbosity == "trace")
-    m_Verbosity = spdlog::level::trace;
+    spdlog::set_level(spdlog::level::trace);
   else if(verbosity == "info")
-    m_Verbosity = spdlog::level::info;
+    spdlog::set_level(spdlog::level::info);
   else if(verbosity == "debug")
-    m_Verbosity = spdlog::level::debug;
+    spdlog::set_level(spdlog::level::debug);
   else if(verbosity == "warning")
-    m_Verbosity = spdlog::level::warn;
+    spdlog::set_level(spdlog::level::warn);
   else if(verbosity == "critical")
-    m_Verbosity = spdlog::level::critical;
-  spdlog::set_level(m_Verbosity);
+    spdlog::set_level(spdlog::level::critical);
 }
 
 std::string WebsocketServer::getkey(const std::shared_ptr<ix::WebSocket>& websocket)
@@ -82,6 +82,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
       }
       else if(msg->type == ix::WebSocketMessageType::Message)
       {
+        static Message m_Message;
         try
         {
           m_Message.parse(msg->str);

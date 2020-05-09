@@ -2,7 +2,7 @@
 
 namespace CAEN
 {
-  CAENHVConnector::CAENHVConnector(const ConnectorInfos& infos){}
+  CAENHVConnector::CAENHVConnector():Connector("CAENHV"){}
   void CAENHVConnector::DoConnect(){};
   void CAENHVConnector::DoDisconnect(){};
 }

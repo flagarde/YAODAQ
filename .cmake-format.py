@@ -4,14 +4,68 @@
 with section("parse"):
 
   # Specify structure for custom cmake functions
-  additional_commands = { 'foo': { 'flags': ['BAR', 'BAZ'],
-             'kwargs': {'DEPENDS': '*', 'HEADERS': '*', 'SOURCES': '*'}}}
-
-  # Specify variable tags.
-  vartags = []
-
-  # Specify property tags.
-  proptags = []
+  additional_commands = { 'cc_binary': { 'kwargs': { 'DEPS': '*',
+                               'PKGDEPS': '*',
+                               'PROPERTIES': { 'kwargs': { 'EXPORT_NAME': 1,
+                                                           'OUTPUT_NAME': 1}},
+                               'SRCS': '*'},
+                   'pargs': '1+'},
+    'cc_library': { 'flags': ['STATIC', 'SHARED'],
+                    'kwargs': { 'DEPS': '*',
+                                'PKGDEPS': '*',
+                                'PROPERTIES': { 'kwargs': { 'EXPORT_NAME': 1,
+                                                            'INTERFACE_INCLUDE_DIRECTORIES': 1,
+                                                            'LIBRARY_OUTPUT_NAME': 1,
+                                                            'SOVERSION': 1,
+                                                            'VERSION': 1}},
+                                'SRCS': '*'},
+                    'pargs': '1+'},
+    'cc_test': { 'kwargs': { 'ARGV': '*',
+                             'DEPS': '*',
+                             'LABELS': '*',
+                             'PKGDEPS': '*',
+                             'SRCS': '*',
+                             'TEST_DEPS': '*',
+                             'WORKING_DIRECTORY': '*'},
+                 'pargs': 1},
+    'check_call': { 'flags': [ 'OUTPUT_QUIET',
+                               'ERROR_QUIET',
+                               'OUTPUT_STRIP_TRAILING_WHITESPACE',
+                               'ERROR_STRIP_TRAILING_WHITESPACE'],
+                    'kwargs': { 'COMMAND': '*',
+                                'ENCODING': '1',
+                                'ERROR_FILE': '1',
+                                'ERROR_VARIABLE': '1',
+                                'INPUT_FILE': '1',
+                                'OUTPUT_FILE': '1',
+                                'OUTPUT_VARIABLE': '1',
+                                'RESULTS_VARIABLE': '1',
+                                'RESULT_VARIABLE': '1',
+                                'TIMEOUT': '1',
+                                'WORKING_DIRECTORY': '1'}},
+    'create_debian_binary_packages': { 'kwargs': {'DEPS': '*', 'OUTPUTS': '*'},
+                                       'pargs': [3, '+']},
+    'create_debian_packages': { 'kwargs': {'DEPS': '*', 'OUTPUTS': '*'},
+                                'pargs': [ { 'flags': ['FORCE_PBUILDER'],
+                                             'nargs': '+'}]},
+    'debhelp': {'pargs': ['1+'], 'spelling': 'DEBHELP'},
+    'exportvars': { 'kwargs': {'VARS': '+'},
+                    'pargs': '1+',
+                    'spelling': 'EXPORTVARS'},
+    'format_and_lint': { 'kwargs': { 'CC': '*',
+                                     'CMAKE': '*',
+                                     'JS': '*',
+                                     'PY': '*',
+                                     'SHELL': '*'}},
+    'get_debs': {'pargs': [3, '*']},
+    'importvars': { 'kwargs': {'VARS': '+'},
+                    'pargs': '1+',
+                    'spelling': 'IMPORTVARS'},
+    'pkg_find': {'kwargs': {'PKG': '*'}},
+    'stage_files': { 'kwargs': { 'FILES': '*',
+                                 'LIST': 1,
+                                 'SOURCEDIR': 1,
+                                 'STAGE': 1}}}
 
 # -----------------------------
 # Options affecting formatting.
@@ -19,18 +73,18 @@ with section("parse"):
 with section("format"):
 
   # How wide to allow formatted cmake files
-  line_width = 80
+  line_width = 250
 
   # How many spaces to tab for indent
   tab_size = 2
 
   # If an argument group contains more than this many sub-groups (parg or kwarg
   # groups) then force it to a vertical layout.
-  max_subgroups_hwrap = 2
+  max_subgroups_hwrap = 6
 
   # If a positional argument group contains more than this many arguments, then
   # force it to a vertical layout.
-  max_pargs_hwrap = 6
+  max_pargs_hwrap = 8
 
   # If a cmdline positional group consumes more than this many lines without
   # nesting, then invalidate the layout (and nest)
@@ -44,13 +98,13 @@ with section("format"):
 
   # If a statement is wrapped to more than one line, than dangle the closing
   # parenthesis on its own line.
-  dangle_parens = False
+  dangle_parens = True
 
   # If the trailing parenthesis must be 'dangled' on its on line, then align it
   # to this reference: `prefix`: the start of the statement,  `prefix-indent`:
   # the start of the statement, plus one indentation  level, `child`: align to
   # the column of the arguments
-  dangle_align = 'prefix'
+  dangle_align = 'child'
 
   # If the statement spelling length (including space and parenthesis) is
   # smaller than this amount, then force reject nested layouts.
@@ -69,10 +123,10 @@ with section("format"):
   line_ending = 'unix'
 
   # Format command names consistently as 'lower' or 'upper' case
-  command_case = 'canonical'
+  command_case = 'lower'
 
   # Format keywords consistently as 'lower' or 'upper' case
-  keyword_case = 'unchanged'
+  keyword_case = 'upper'
 
   # A list of command names which should always be wrapped
   always_wrap = []
@@ -83,7 +137,7 @@ with section("format"):
 
   # If true, the parsers may infer whether or not an argument list is sortable
   # (without annotation).
-  autosort = False
+  autosort = True
 
   # By default, if cmake-format cannot successfully fit everything into the
   # desired linewidth it will apply the last, most agressive attempt that it
