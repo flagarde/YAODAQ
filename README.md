@@ -1,4 +1,5 @@
-# YAODAQ  
+# YAODAQ  [![CodeFactor](https://www.codefactor.io/repository/github/rpclab/yaodaq/badge)](https://www.codefactor.io/repository/github/rpclab/yaodaq) [![codecov](https://codecov.io/gh/RPClab/YAODAQ/branch/master/graph/badge.svg)](https://codecov.io/gh/RPClab/YAODAQ)  <a href="https://scan.coverity.com/projects/rpcla-"><img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/19567/badge.svg"/></a>
+
 Yet An Other DAQ 
 
 <p align="center"> 
@@ -15,18 +16,4 @@ Yet An Other DAQ
 [5]: https://travis-ci.org/RPClab/YAODAQ
 </p>
  
-
-
-
-
-
-[![CodeFactor](https://www.codefactor.io/repository/github/rpclab/yaodaq/badge)](https://www.codefactor.io/repository/github/rpclab/yaodaq)
-
-<a href="https://scan.coverity.com/projects/rpcla-">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/19567/badge.svg"/>
-</a>
-
-[![codecov](https://codecov.io/gh/RPClab/YAODAQ/branch/master/graph/badge.svg)](https://codecov.io/gh/RPClab/YAODAQ)
-
 To run webserver : civetweb ../confs/civet.conf -cgi_interpreter /usr/bin/php-cgi
