@@ -41,14 +41,10 @@ script:
     - source dependencies/root/bin/thisroot.sh
     - mkdir build
     - cd build
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cmake .. ;  fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "clang" ]; then cmake .. ;fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "gcc" ]; then cmake .. ;fi
-    - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake .. ; fi
-   # - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cmake --build . ; fi
-   # - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "clang" ]; then cmake --build . ; fi
-   # - if [ "$TRAVIS_OS_NAME" = "linux" ] && [ "$TRAVIS_COMPILER" = "gcc" ]; then cmake --build . --target coverage ; fi
-   # - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cmake --build . ; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cmake .. ; cmake --build . ; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "clang" ]; then cmake .. ; cmake --build . ; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "gcc" ]; then cmake .. ;cmake --build . --target coverage ; fi
+    - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake .. ; cmake --build . ; fi
     - cmake --install .
     # - make test
     # - make docs 
