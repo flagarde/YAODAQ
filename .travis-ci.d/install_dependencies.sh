@@ -11,7 +11,11 @@ elif [[ "${TRAVIS_OS_NAME}" == "windows" ]]; then export ROOT_BUILD="win32.vc16.
 fi
 export ROOT_BIN="root_v${ROOT_VERSION}.${ROOT_BUILD}"
 wget https://root.cern.ch/download/${ROOT_BIN}
-tar -xf ${ROOT_BIN}
+
+if [[ "${TRAVIS_OS_NAME}" == "linux" OR "${TRAVIS_OS_NAME}" == "osx" ]]; then tar -xf ${ROOT_BIN} ;
+elif unzip ${ROOT_BIN} ;
+fi
+
 source root/bin/thisroot.sh
 root-config --version
 
