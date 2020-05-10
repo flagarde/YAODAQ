@@ -13,7 +13,7 @@ export ROOT_BIN="root_v${ROOT_VERSION}.${ROOT_BUILD}"
 wget https://root.cern.ch/download/${ROOT_BIN}
 
 if [[ "${TRAVIS_OS_NAME}" != "windows" ]]; then tar -xf ${ROOT_BIN} ;
-else unzip ${ROOT_BIN} ;
+else unzip ${ROOT_BIN} ; choco feature enable -n=allowGlobalConfirmation ; choco install openssl ;
 fi
 
 source root/bin/thisroot.sh
