@@ -1,8 +1,12 @@
-# YAODAQ  | Linux clang       | Linux gcc         | macOS clang       | Windows           |
+# YAODAQ  
+Yet An Other DAQ 
+
+<p align="center"> 
+| Linux clang       | Linux gcc         | macOS clang       | Windows           |
 |-------------------|-------------------|-------------------|-------------------|
 | [![Build1][1]][5] | [![Build2][2]][5] | [![Build3][3]][5] | [![Build4][4]][5] |
-
-Yet An Other DAQ  
+</p>
+ 
 
 
 
