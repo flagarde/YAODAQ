@@ -19,7 +19,15 @@ Build Status
 |clang| X | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/3)](https://travis-ci.org/RPClab/YAODAQ) |[![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/2)](https://travis-ci.org/RPClab/YAODAQ)|
 |MSVC|[![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/5)](https://travis-ci.org/RPClab/YAODAQ)|X|X|
 
-[![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master?use_travis_com=true)](https://travis-ci.org/RPClab/YAODAQ)
+| Build1            | Build2            | Build3            | Build4            |
+|-------------------|-------------------|-------------------|-------------------|
+| [![Build1][1]][5] | [![Build2][2]][5] | [![Build3][3]][5] | [![Build4][4]][5] |
+
+[1]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/1?use_travis_com=true
+[2]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/2?use_travis_com=true
+[3]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/3?use_travis_com=true
+[4]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/4?use_travis_com=true
+[5]: https://travis-ci.org/RPClab/YAODAQ
 
 
 
