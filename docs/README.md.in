@@ -1,8 +1,8 @@
-# YAODAQ v0.0.1.0 #  [![CodeFactor](https://www.codefactor.io/repository/github/rpclab/yaodaq/badge)](https://www.codefactor.io/repository/github/rpclab/yaodaq) [![codecov](https://codecov.io/gh/RPClab/YAODAQ/branch/master/graph/badge.svg)](https://codecov.io/gh/RPClab/YAODAQ)  <a href="https://scan.coverity.com/projects/rpcla-"><img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/19567/badge.svg"/></a>
+# @PROJECT_NAME@ v@PROJECT_VERSION@ #  [![CodeFactor](https://www.codefactor.io/repository/github/rpclab/yaodaq/badge)](https://www.codefactor.io/repository/github/rpclab/yaodaq) [![codecov](https://codecov.io/gh/RPClab/YAODAQ/branch/master/graph/badge.svg)](https://codecov.io/gh/RPClab/YAODAQ)  <a href="https://scan.coverity.com/projects/rpcla-"><img alt="Coverity Scan Build Status" src="https://scan.coverity.com/projects/19567/badge.svg"/></a>
 
-## YAODAQ for RPClab ##
+## @PROJECT_DESCRIPTION@ ##
 
-[Homepage](https://github.com/RPClab/YAODAQ)
+[Homepage](@PROJECT_HOMEPAGE_URL@)
 
 ![Linux](https://github.com/RPClab/YAODAQ/workflows/Linux/badge.svg?branch=master)   ![macOS](https://github.com/RPClab/YAODAQ/workflows/macOS/badge.svg?branch=master)   ![Windows](https://github.com/RPClab/YAODAQ/workflows/Windows/badge.svg?branch=master)
 

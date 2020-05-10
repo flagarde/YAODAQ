@@ -6,14 +6,19 @@ cmake_minimum_required(VERSION 3.9...3.16.4 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/scripts" "${CMAKE_SOURCE_DIR}/external")
+
 include(Options.cmake)
+
+include(GenerateReadMe)
+generate_readme()
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/macro" "${CMAKE_SOURCE_DIR}/external")
+
 
 include(Colors)
 
