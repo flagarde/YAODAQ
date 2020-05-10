@@ -6,7 +6,7 @@
 
 int main(int argc, char** argv)
 {
-  //Interrupt interrupt;
+  Interrupt interrupt;
   CLI::App app{"Websocket Server"};
   int      port{8282};
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
   server.listen();
   server.start();
   spdlog::info("Websocket server started on IP {0} Port {1}", host, port);
-  server.wait();
-
-  return 0;
+  
+  //server.stop();
+  return interrupt.wait();
 }
