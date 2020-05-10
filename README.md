@@ -1,9 +1,10 @@
-# YAODAQ 
-Yet An Other DAQ  
-
-| Linux clang       | Linux gcc         | macOS clang       | Windows           |
+# YAODAQ  | Linux clang       | Linux gcc         | macOS clang       | Windows           |
 |-------------------|-------------------|-------------------|-------------------|
 | [![Build1][1]][5] | [![Build2][2]][5] | [![Build3][3]][5] | [![Build4][4]][5] |
+
+Yet An Other DAQ  
+
+
 
 [1]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/1?use_travis_com=true
 [2]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/2?use_travis_com=true
