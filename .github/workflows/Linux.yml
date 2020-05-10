@@ -15,6 +15,8 @@ env:
   vcpkgCommitId: 'c7ab9d3110813979a873b2dbac630a9ab79850dc'
   vcpkgPackages: 'zlib'
   configuration: '.*Linux.*'
+  BUILD_TYPE: Release
+  ROOT_VERSION: 6-18-04
 
 jobs:
   job:
@@ -42,6 +44,45 @@ jobs:
           vcpkgGitCommitId: '${{ env.vcpkgCommitId }}'
       - name: Prints output of run-vcpkg's task
         run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}' "
+        
+      - name : Download ROOT
+        if: steps.cache-root.outputs.cache-hit != 'true'
+        id: ROOT
+        shell: cmake -P {0}
+        run: |
+          set(root_url "https://github.com/root-project/root/archive/v$ENV{ROOT_VERSION}.tar.gz")
+          file(DOWNLOAD "${root_url}" ./root.tar.gz SHOW_PROGRESS)
+          execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.tar.gz)
+    
+      - name: Configure ROOT
+        if: steps.cache-root.outputs.cache-hit != 'true'
+        shell: cmake -P {0}
+        run: | 
+          execute_process(
+             COMMAND cmake
+            -S root-$ENV{ROOT_VERSION}
+            -B build-root
+            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF
+          RESULT_VARIABLE result)
+          if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+          endif()
+    
+      - name: Build ROOT
+        if: steps.cache-root.outputs.cache-hit != 'true'
+        shell: cmake -P {0}
+        run: |
+          execute_process(
+            COMMAND cmake --build build-root
+            RESULT_VARIABLE result
+          )
+          if (NOT result EQUAL 0)
+            message(FATAL_ERROR "Bad exit status")
+          endif()
+        
+      - name: Install ROOT
+        run: sudo cmake --install build-root
+     
       - name: Run CMake+Ninja
         uses: lukka/run-cmake@master
         id: runcmake
