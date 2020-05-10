@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IXWebSocketServer.h"
-#include "Internal.hpp"
 
 #include "json/json.h"
 #include <iostream>
