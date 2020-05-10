@@ -13,6 +13,7 @@ jobs:
   fast_finish: true
   allow_failures:
      - os: osx
+     - os: windows
   include:
     - os: osx
       compiler: clang
@@ -23,6 +24,7 @@ jobs:
     - os: linux
       compiler: gcc
       dist: bionic 
+    - os: windows
 addons:
   apt:
     sources: ubuntu-toolchain-r-test    
