@@ -105,8 +105,14 @@ else()
   set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
-# Optional IPO. Do not use IPO if it's not supported by compiler. include(CheckIPOSupported) check_ipo_supported(RESULT result OUTPUT output) if(result) set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) else() message(WARNING "IPO is not supported:
-# ${output}") endif()
+# Optional IPO. Do not use IPO if it's not supported by compiler. 
+include(CheckIPOSupported) 
+check_ipo_supported(RESULT result OUTPUT output) 
+if(result) 
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) 
+else() 
+  message(WARNING "IPO is not supported:# ${output}") 
+endif()
 
 include(Sanitizers)
 
@@ -130,11 +136,14 @@ endif()
 
 add_subdirectory(libs)
 
-add_subdirectory(extras)
+if(ENABLE_EXTRAS)
+  add_subdirectory(extras)
+endif()
 
 add_subdirectory(apps)
 
 if(ENABLE_TESTS)
+  include(CTest)
   add_subdirectory(tests)
 endif()
 

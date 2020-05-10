@@ -12,5 +12,6 @@ ExternalProject_Add(
                     PREFIX ${CMAKE_BINARY_DIR}/spdlog-prefix 
                     SOURCE_DIR ${CMAKE_BINARY_DIR}/spdlog
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+                    LOG_DOWNLOAD ON
                     )
 endif()

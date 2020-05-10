@@ -13,5 +13,6 @@ ExternalProject_Add(
                     PREFIX ${CMAKE_BINARY_DIR}/IXWebSocket-prefix
                     SOURCE_DIR ${CMAKE_BINARY_DIR}/IXWebSocket
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+                    LOG_DOWNLOAD ON
                     )
 endif()

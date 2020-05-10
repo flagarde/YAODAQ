@@ -13,6 +13,7 @@ ExternalProject_Add(
                     PREFIX ${CMAKE_BINARY_DIR}/soci-prefix
                     SOURCE_DIR ${CMAKE_BINARY_DIR}/soci
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
+                    LOG_DOWNLOAD ON
                     )
 add_library(Soci INTERFACE)
 target_link_libraries(Soci INTERFACE soci_core INTERFACE soci_empty )

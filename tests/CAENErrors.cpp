@@ -1,9 +1,9 @@
-#include "CAENCommError.hpp"
-#include "CAENDPPError.hpp"
-#include "CAENDigitizerError.hpp"
-#include "CAENFlashError.hpp"
-#include "CAENHVError.hpp"
-#include "CAENVMEError.hpp"
+#include "CAENCommException.hpp"
+#include "CAENDPPException.hpp"
+#include "CAENDigitizerException.hpp"
+#include "CAENFlashException.hpp"
+#include "CAENHVException.hpp"
+#include "CAENVMEException.hpp"
 #include "doctest.h"
 
 #include <iostream>
@@ -17,7 +17,7 @@ TEST_CASE("Test CAEN Errors")
   {
     try
     {
-      CAENVMEError(-i);
+      CAENVMEException(-i);
     }
     catch(std::exception& evet)
     {
@@ -29,7 +29,7 @@ TEST_CASE("Test CAEN Errors")
   {
     try
     {
-      CAENCommError(-i);
+      CAENCommException(-i);
     }
     catch(std::exception& evet)
     {
@@ -41,11 +41,11 @@ TEST_CASE("Test CAEN Errors")
   {
     try
     {
-      if(i <= 30) CAENHVError(+i);
+      if(i <= 30) CAENHVException(+i);
       else
       {
         int toto = (0x1000 + i);
-        CAENHVError(+toto);
+        CAENHVException(+toto);
       }
     }
     catch(std::exception& evet)
@@ -58,7 +58,7 @@ TEST_CASE("Test CAEN Errors")
   {
     try
     {
-      CAENDigitizerError(-i);
+      CAENDigitizerException(-i);
     }
     catch(std::exception& evet)
     {
@@ -70,7 +70,7 @@ TEST_CASE("Test CAEN Errors")
   {
     try
     {
-      CAENDPPError(-i);
+      CAENDPPException(-i);
     }
     catch(std::exception& evet)
     {
@@ -82,7 +82,7 @@ TEST_CASE("Test CAEN Errors")
   {
     try
     {
-      CAENFlashError(-i);
+      CAENFlashException(-i);
     }
     catch(std::exception& evet)
     {

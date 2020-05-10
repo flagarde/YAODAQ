@@ -1,34 +1,37 @@
-include(Doctest)
-if(NOT ${ANALYSER})
-  # List all files containing tests. (Change as needed)
-  set(TESTFILES # All .cpp files in tests/
-      Main.cpp CAENErrors.cpp
-      )
-else()
-  set(TESTFILES Main.cpp)
+include(doctest)
+include(CodeCoverage)
+
+if(ENABLE_DOCTESTS)
+  add_definitions(-DENABLE_DOCTEST_IN_LIBRARY)
 endif()
 
-set(TEST_MAIN Tests) # Default name for test executable (change if you wish).
+# Expose required variable (DOCTEST_INCLUDE_DIR) to parent scope
+ExternalProject_Get_Property(doctest source_dir)
+
+set(DOCTEST_INCLUDE_DIR ${source_dir}/doctest CACHE INTERNAL "Path to include folder for doctest")
+include_directories(doctest INTERFACE ${DOCTEST_INCLUDE_DIR})
+
+# List all files containing tests. (Change as needed)
+set(TESTFILES Main.cpp CAENErrors.cpp)
+
 set(TEST_RUNNER_PARAMS "") # Any arguemnts to feed the test runner (change as needed).
 
 # ------------------------------------------------------------------------------
 # -- Make Tests (no change needed).
 # ------------------------------------------------------------------------------
 # --
-add_executable(${TEST_MAIN} ${TESTFILES})
-add_dependencies(${TEST_MAIN} doctest)
+add_executable(Tests ${TESTFILES})
+add_dependencies(Tests doctest)
 
-set_target_properties(${TEST_MAIN} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+set_target_properties(Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 # target_set_warnings(${TEST_MAIN} ENABLE ALL AS_ERROR ALL DISABLE Annoying) # Set warnings (if needed).
-target_include_directories(${TEST_MAIN} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/" PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include/CAEN")
+target_include_directories(Tests PUBLIC "${INCLUDE_OUTPUT_DIR}")
 
-if(NOT ${ANALYSER})
-  target_link_libraries(${TEST_MAIN} CAENErrors)
-  add_dependencies(${TEST_MAIN} CAENErrors)
-endif()
+target_link_libraries(Tests PUBLIC CAENExceptions)
+add_dependencies(Tests CAENExceptions)
 
-add_test(# Use some per-module/project prefix so that it is easier to run only tests for this module
-         NAME ${TEST_MAIN} COMMAND ${TEST_MAIN} ${TEST_RUNNER_PARAMS}
-         )
+ #doctest_discover_tests(Tests)
+#add_test(NAME Tests COMMAND Tests ${TEST_RUNNER_PARAMS}
+ #        )
 
-include(CodeCoverage)
+

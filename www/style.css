@@ -243,6 +243,17 @@ div[what=plot]
   /*transform: scale(5);*/
 }
 
+
+#log-container { overflow: auto; height: 500px; width:100%;background:white; }
+
+.log-warning { color: orange }
+.log-error { color: red }
+.log-info { color: skyblue }
+.log-log { color: silver }
+
+.log-warn, .log-error { font-weight: bold; }
+
+
 div
 {
   text-align:center;

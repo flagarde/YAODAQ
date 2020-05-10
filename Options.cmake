@@ -47,6 +47,7 @@ option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_CONFIGURATOR "Build Configurator" ON)
 option(BUILD_CONTROLLER "Build Controller" ON)
 option(BUILD_LOGGER "Build Logger" ON)
+option(ENABLE_EXTRAS "Build extras" ON)
 
 option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
 
