@@ -1,6 +1,16 @@
 # YAODAQ 
 Yet An Other DAQ  
 
+| Linux clang       | Linux gcc         | macOS clang       | Windows           |
+|-------------------|-------------------|-------------------|-------------------|
+| [![Build1][1]][5] | [![Build2][2]][5] | [![Build3][3]][5] | [![Build4][4]][5] |
+[1]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/1?use_travis_com=true
+[2]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/2?use_travis_com=true
+[3]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/3?use_travis_com=true
+[4]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/4?use_travis_com=true
+[5]: https://travis-ci.org/RPClab/YAODAQ
+
+
 [![CodeFactor](https://www.codefactor.io/repository/github/rpclab/yaodaq/badge)](https://www.codefactor.io/repository/github/rpclab/yaodaq)
 
 <a href="https://scan.coverity.com/projects/rpcla-">
@@ -9,26 +19,5 @@ Yet An Other DAQ
 </a>
 
 [![codecov](https://codecov.io/gh/RPClab/YAODAQ/branch/master/graph/badge.svg)](https://codecov.io/gh/RPClab/YAODAQ)
-
-Build Status
-------------
-
-| Build| Windows|macOS|Linux|
-|---|---|---|---|
-|GCC| - | X | [![Build Status](https://travis-ci.com/RPClab/YAODAQ.svg?branch=master)](https://travis-ci.com/RPClab/YAODAQ) |
-|clang| X | [![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/3)](https://travis-ci.org/RPClab/YAODAQ) |[![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/2)](https://travis-ci.org/RPClab/YAODAQ)|
-|MSVC|[![Build Status](https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/5)](https://travis-ci.org/RPClab/YAODAQ)|X|X|
-
-| Build1            | Build2            | Build3            | Build4            |
-|-------------------|-------------------|-------------------|-------------------|
-| [![Build1][1]][5] | [![Build2][2]][5] | [![Build3][3]][5] | [![Build4][4]][5] |
-
-[1]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/1?use_travis_com=true
-[2]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/2?use_travis_com=true
-[3]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/3?use_travis_com=true
-[4]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/4?use_travis_com=true
-[5]: https://travis-ci.org/RPClab/YAODAQ
-
-
 
 To run webserver : civetweb ../confs/civet.conf -cgi_interpreter /usr/bin/php-cgi
