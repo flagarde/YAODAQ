@@ -2,14 +2,13 @@
 
 #include "Internal.hpp"
 
-#include <iostream>
 #include <string>
 
 class Infos
 {
 public:
   Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type);
-  Infos();
+  Infos()=default;
   Infos(const std::string& key);
   void        setRoomIndex(const int&);
   void        setRackIndex(const int&);
@@ -25,7 +24,6 @@ public:
   int         getRackIndex() const;
   int         getCrateIndex() const;
   int         getIndex() const;
-  void        print(std::ostream& os = std::cout, const std::string shift = "");
   std::string getKey() const;
   bool        operator<(const Infos& infos) const;
 

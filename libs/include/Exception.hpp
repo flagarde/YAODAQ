@@ -55,7 +55,7 @@ protected:
 private:
   void               createBackTrace();
   std::string        m_Message{"Compile with source_location support for better informations !"};
-  const std::int16_t m_Code{0};
+  const int16_t m_Code{0};
 #if experimental_have_source_location == 1
   std::experimental::source_location m_Location;
 #elif have_source_location == 1

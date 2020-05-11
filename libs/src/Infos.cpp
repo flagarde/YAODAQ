@@ -14,8 +14,6 @@ Infos::Infos(const std::string& roomName, const std::string& rackName, const std
   m_Type      = type;
 }
 
-Infos::Infos() {}
-
 Infos::Infos(const std::string& key)
 {
   setKey(key);
@@ -55,8 +53,7 @@ void Infos::setKey(const std::string& key)
   }
   else
   {
-    throw Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "Number of argument in key should be 5 "
-                                                         "(RoomName/RackName/CrateName/Type/Name) !");
+    throw Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "Number of argument in key should be 5 (RoomName/RackName/CrateName/Type/Name) !");
   }
 }
 
@@ -128,12 +125,4 @@ int Infos::getCrateIndex() const
 int Infos::getIndex() const
 {
   return m_Index;
-}
-
-void Infos::print(std::ostream& os, const std::string shift)
-{
-  os << shift << "Board " << m_Index << " : " << m_Name << std::endl;
-  os << shift << "Room " << m_RoomIndex << " : " << m_RoomName << std::endl;
-  os << shift << "Rack " << m_RackIndex << " : " << m_RackName << std::endl;
-  os << shift << "Crate " << m_CrateIndex << " : " << m_CrateName << std::endl;
 }

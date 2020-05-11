@@ -3,13 +3,11 @@
 #include "CAENDigitizer.h"
 #include "CAENDigitizerException.hpp"
 #include "toml.hpp"
-
-#include <iostream>
+#include "Exception.hpp"
+#include "StatusCode.hpp"
 
 namespace CAEN
 {
-
-std::unordered_map<std::string, int> CAENDigitizerConnector::m_ConnectionTypeList{{"USB", CAEN_DGTZ_USB}, {"OPTICAL", CAEN_DGTZ_OpticalLink}};
 
 CAENDigitizerConnector::CAENDigitizerConnector(): Connector("CAENDigitizer")
 {
@@ -17,7 +15,8 @@ CAENDigitizerConnector::CAENDigitizerConnector(): Connector("CAENDigitizer")
 
 void CAENDigitizerConnector::DoConnect()
 {
-  CAENDigitizerException(CAEN_DGTZ_OpenDigitizer(static_cast<CAEN_DGTZ_ConnectionType>(m_ConnectionTypeList[m_ConnectionType]),m_LinkNum, m_ConetNode, m_VMEBaseAddress, &m_Handle));
+  if(m_ConnectionType=="USB")CAENDigitizerException(CAEN_DGTZ_OpenDigitizer(CAEN_DGTZ_USB,m_LinkNum, m_ConetNode, m_VMEBaseAddress, &m_Handle));
+  else CAENDigitizerException(CAEN_DGTZ_OpenDigitizer(CAEN_DGTZ_OpticalLink,m_LinkNum, m_ConetNode, m_VMEBaseAddress, &m_Handle));
 }
 
 void CAENDigitizerConnector::DoDisconnect()
@@ -33,14 +32,11 @@ void CAENDigitizerConnector::verifyParameters()
   }
   catch(const std::out_of_range& e)
   {
-    std::cout << "\"Connection Type\" key not set !" << std::endl;
-    std::exit(2);
+    Exception(StatusCode::NOT_FOUND,"\"Connection Type\" key not set !");
   }
-  if(m_ConnectionTypeList.find(m_ConnectionType) == m_ConnectionTypeList.end())
+  if(m_ConnectionType!="USB" && m_ConnectionType!="OPTICAL")
   {
-    std::cout << "Connection Type " << m_ConnectionType << " Unknown !"
-              << std::endl;
-    std::exit(2);
+    Exception(StatusCode::NOT_FOUND,"Connection Type "+m_ConnectionType+" Unknown ! Should be USB or OPTICAL !");
   }
   try
   {
@@ -48,8 +44,7 @@ void CAENDigitizerConnector::verifyParameters()
   }
   catch(const std::out_of_range& e)
   {
-    std::cout << "\"Link Number\" key not set !" << std::endl;
-    std::exit(2);
+    Exception(StatusCode::NOT_FOUND,"\"Link Number\" key not set !");
   }
   if(m_ConnectionType == "OPTICAL")
   {
@@ -59,8 +54,7 @@ void CAENDigitizerConnector::verifyParameters()
     }
     catch(const std::out_of_range& e)
     {
-      std::cout << "\"Conet Node\" key not set !" << std::endl;
-      std::exit(2);
+      Exception(StatusCode::NOT_FOUND,"\"Conet Node\" key not set !");
     }
   }
   try
@@ -69,13 +63,11 @@ void CAENDigitizerConnector::verifyParameters()
   }
   catch(const std::out_of_range& e)
   {
-    std::cout << "\"VME Base Address\" key not set !" << std::endl;
-    std::exit(2);
+    Exception(StatusCode::NOT_FOUND,"\"VME Base Address\" key not set !");
   }
-  if(m_VMEBaseAddress < 0 || m_VMEBaseAddress > 0xFFFF)
+  if(m_VMEBaseAddress < 0 || m_VMEBaseAddress > 0xFFFFFFFF)
   {
-    std::cout << "\"VME Base Address\" should be >0 and <0xFFFF !" << std::endl;
-    std::exit(2);
+    Exception(StatusCode::OUT_OF_RANGE,"\"VME Base Address\" should be >0 and <0xFFFFFFFF !");
   }
 }
 

@@ -1,6 +1,8 @@
 #pragma once
 
-enum class StatusCode : std::int16_t
+#include "Internal.hpp"
+
+enum class StatusCode : int16_t
 {
   SUCCESS = 0,
   FAILURE,

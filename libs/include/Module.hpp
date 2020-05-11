@@ -57,13 +57,13 @@ protected:
 private:
   Module() = delete;
   virtual void                                        DoInitialize();
-  virtual void                                        CallModuleConnect() { std::cout << "Connect" << std::endl; };
+  virtual void                                        CallModuleConnect() {};
   virtual void                                        DoConfigure();
   virtual void                                        DoStart();
   virtual void                                        DoPause();
   virtual void                                        DoStop();
   virtual void                                        DoClear();
-  virtual void                                        CallModuleDisconnect() { std::cout << "Disconnect" << std::endl; };
+  virtual void                                        CallModuleDisconnect() {};
   virtual void                                        DoRelease();
   virtual void                                        DoQuit();
   void                                                DoOnAction(const Message& message);

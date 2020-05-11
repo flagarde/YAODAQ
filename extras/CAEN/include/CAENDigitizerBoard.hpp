@@ -6,6 +6,7 @@
 #include <memory>
 #include <variant>
 
+
 namespace CAEN
 {
   
@@ -1010,7 +1011,6 @@ public:
 
   virtual ~CAENDigitizerBoard()
   {
-    std::cout << "Destroying CAENDigitizerBoard" << std::endl;
   }
   
   

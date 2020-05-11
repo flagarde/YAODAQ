@@ -100,7 +100,7 @@ void Module::LoadConfig()
 
 void Module::printParameters()
 {
-  std::cout << m_Conf << std::endl;
+  m_Logger->info(m_Conf.as_string());
 }
 
 Module::~Module()
@@ -284,45 +284,21 @@ void Module::sendState()
   sendText(State(m_State));
 }
 
-void Module::DoInitialize()
-{
-  std::cout << "Initialize" << std::endl;
-}
+void Module::DoInitialize(){}
 
-void Module::DoConfigure()
-{
-  std::cout << "Configure" << std::endl;
-}
+void Module::DoConfigure(){}
 
-void Module::DoStart()
-{
-  std::cout << "Start" << std::endl;
-}
+void Module::DoStart(){}
 
-void Module::DoPause()
-{
-  std::cout << "Pause" << std::endl;
-}
+void Module::DoPause(){}
 
-void Module::DoStop()
-{
-  std::cout << "Stop" << std::endl;
-}
+void Module::DoStop(){}
 
-void Module::DoClear()
-{
-  std::cout << "Clear" << std::endl;
-}
+void Module::DoClear(){}
 
-void Module::DoRelease()
-{
-  std::cout << "Release" << std::endl;
-}
+void Module::DoRelease(){}
 
-void Module::DoQuit()
-{
-  std::cout << "Quit" << std::endl;
-}
+void Module::DoQuit(){}
 
 void Module::OnCommand(Command& command) {}
 

@@ -2,7 +2,7 @@
 
 #include "CAENDigitizer.h"
 #include "CAENDigitizerException.hpp"
-
+#include <iostream>
 namespace CAEN
 {
   

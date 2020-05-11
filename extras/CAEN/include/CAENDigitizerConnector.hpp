@@ -3,10 +3,10 @@
 #include "Connector.hpp"
 
 #include <string>
-#include <unordered_map>
 
 namespace CAEN
 {
+  
 class CAENDigitizerConnector: public Connector
 {
 public:
@@ -21,9 +21,7 @@ private:
   std::string                                 m_Model{""};
   int                                         m_LinkNum{0};
   int                                         m_ConetNode{0};
-  std::uint32_t                               m_VMEBaseAddress{0};
-  static std::unordered_map<std::string, int> m_ModelList;
-  static std::unordered_map<std::string, int> m_ConnectionTypeList;
+  uint32_t                                    m_VMEBaseAddress{0};
 };
 
 }  // namespace CAEN
