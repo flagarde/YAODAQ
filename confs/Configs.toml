@@ -77,7 +77,9 @@ SKIP_STARTUP_CALIBRATION=false
 MAX_NUM_EVENTS_BLT=1023
 [Room.Rack.Crate.Board.Connector]
 Name = "Connector1"
-Type = "CAENVME"
+"Connection Type" = "USB"
+"VME Base Address"=1234
+Type = "CAENDigitizer"
 Model = "V1718"
 "Link Number" = 0
 
