@@ -1,11 +1,12 @@
-#ifndef SPI_HPP
-#define SPI_HPP
+#pragma once
+
 #include <array>
 #include <cstdint>
 #include <vector>
 
 namespace CAEN
 {
+  
 class SPI
 {
 public:
@@ -29,4 +30,3 @@ private:
 };
 
 }  // namespace CAEN
-#endif

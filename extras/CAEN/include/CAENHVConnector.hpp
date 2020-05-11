@@ -4,6 +4,7 @@
 
 namespace CAEN
 {
+  
 class CAENHVConnector: public Connector
 {
 public:

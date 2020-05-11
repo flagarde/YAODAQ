@@ -22,10 +22,10 @@ public:
 
 protected:
   volatile static std::sig_atomic_t m_Continue;
-  virtual void sigint(const int& signum);
-  virtual void sigterm(const int& signum);
-  virtual void sigsegv(const int& signum);
-  virtual void sigill(const int& signum);
-  virtual void sigabrt(const int& signum);
-  virtual void sigfpe(const int& signum);
+  virtual void                      sigint(const int& signum);
+  virtual void                      sigterm(const int& signum);
+  virtual void                      sigsegv(const int& signum);
+  virtual void                      sigill(const int& signum);
+  virtual void                      sigabrt(const int& signum);
+  virtual void                      sigfpe(const int& signum);
 };

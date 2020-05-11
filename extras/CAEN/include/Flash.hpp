@@ -1,5 +1,4 @@
-#ifndef FLASH_HPP
-#define FLASH_HPP
+#pragma once
 
 #include "SPI.hpp"
 
@@ -67,10 +66,8 @@ private:
   static constexpr int m_PLL_VIRTUAL_PAGE{1};
   static constexpr int m_LICENSE_VIRTUAL_PAGE{2};
   static constexpr int m_VCXO_VIRTUAL_PAGE{3};
-  static constexpr int m_ADC_CALIBRATION_0_VIRTUAL_PAGE{
-      4}; /* Currently used in x730 boards */
-  static constexpr int m_ADC_CALIBRATION_1_VIRTUAL_PAGE{
-      5}; /* Currently used in x761 boards */
+  static constexpr int m_ADC_CALIBRATION_0_VIRTUAL_PAGE{4}; /* Currently used in x730 boards */
+  static constexpr int m_ADC_CALIBRATION_1_VIRTUAL_PAGE{5}; /* Currently used in x761 boards */
   static constexpr int m_OFFSET_CALIBRATION_VIRTUAL_PAGE{6};
   static constexpr int m_PEAK_SENSING_OFFSETS_VIRTUAL_PAGE{7935 * 2};
   static constexpr int m_PEAK_SENSING_CALIB_START_VIRTUAL_PAGE{7936 * 2};
@@ -89,14 +86,10 @@ private:
   /* Program and Erase Command */
   static constexpr int m_BUFFER_1_WRITE{0x84};
   static constexpr int m_BUFFER_2_WRITE{0x87};
-  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG_BE{
-      0x83}; /* w/ Build-in erase */
-  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG_BE{
-      0x86}; /* w/ Build-in erase */
-  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG{
-      0x88}; /* w/o Build-in erase */
-  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG{
-      0x89}; /* w/o Build-in erase */
+  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG_BE{0x83}; /* w/ Build-in erase */
+  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG_BE{0x86}; /* w/ Build-in erase */
+  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG{0x88}; /* w/o Build-in erase */
+  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG{0x89}; /* w/o Build-in erase */
   static constexpr int m_PAGE_ERASE{0x81};
   static constexpr int m_BLOCK_ERASE{0x50};
   static constexpr int m_SECTOR_ERASE{0x7C};
@@ -170,5 +163,3 @@ private:
 };
 
 }  // namespace CAEN
-
-#endif

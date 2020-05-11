@@ -9,9 +9,7 @@
 namespace CAEN
 {
 
-std::unordered_map<std::string, int>
-    CAENDigitizerConnector::m_ConnectionTypeList{
-        {"USB", CAEN_DGTZ_USB}, {"OPTICAL", CAEN_DGTZ_OpticalLink}};
+std::unordered_map<std::string, int> CAENDigitizerConnector::m_ConnectionTypeList{{"USB", CAEN_DGTZ_USB}, {"OPTICAL", CAEN_DGTZ_OpticalLink}};
 
 CAENDigitizerConnector::CAENDigitizerConnector(): Connector("CAENDigitizer")
 {
@@ -19,10 +17,7 @@ CAENDigitizerConnector::CAENDigitizerConnector(): Connector("CAENDigitizer")
 
 void CAENDigitizerConnector::DoConnect()
 {
-  CAENDigitizerException(CAEN_DGTZ_OpenDigitizer(
-      static_cast<CAEN_DGTZ_ConnectionType>(
-          m_ConnectionTypeList[m_ConnectionType]),
-      m_LinkNum, m_ConetNode, m_VMEBaseAddress, &m_Handle));
+  CAENDigitizerException(CAEN_DGTZ_OpenDigitizer(static_cast<CAEN_DGTZ_ConnectionType>(m_ConnectionTypeList[m_ConnectionType]),m_LinkNum, m_ConetNode, m_VMEBaseAddress, &m_Handle));
 }
 
 void CAENDigitizerConnector::DoDisconnect()
@@ -34,8 +29,7 @@ void CAENDigitizerConnector::verifyParameters()
 {
   try
   {
-    m_ConnectionType =
-        toml::find<std::string>(getParameters(), "Connection Type");
+    m_ConnectionType = toml::find<std::string>(getParameters(), "Connection Type");
   }
   catch(const std::out_of_range& e)
   {

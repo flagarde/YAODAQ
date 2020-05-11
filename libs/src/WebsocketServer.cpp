@@ -152,7 +152,7 @@ void WebsocketServer::sendToLogger(const std::string& message)
 {
   for(std::map<Infos, std::shared_ptr<ix::WebSocket>>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
   {
-    if((it->first.getType() == "Logger"||it->first.getType() == "Browser") && m_Actual != it->second) it->second->send(message);
+    if((it->first.getType() == "Logger" || it->first.getType() == "Browser") && m_Actual != it->second) it->second->send(message);
   }
 }
 

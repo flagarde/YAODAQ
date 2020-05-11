@@ -7,8 +7,8 @@
 int main(int argc, char** argv)
 {
   Interrupt interrupt;
-  CLI::App app{"Websocket Server"};
-  int      port{8282};
+  CLI::App  app{"Websocket Server"};
+  int       port{8282};
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
   std::string host{ix::SocketServer::kDefaultHost};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
   server.listen();
   server.start();
   spdlog::info("Websocket server started on IP {0} Port {1}", host, port);
-  
+
   //server.stop();
   return interrupt.wait();
 }

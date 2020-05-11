@@ -1,5 +1,4 @@
-#ifndef CAENVMECONNECTOR_HPP
-#define CAENVMECONNECTOR_HPP
+#pragma once
 #include "Connector.hpp"
 
 #include <string>
@@ -7,6 +6,7 @@
 
 namespace CAEN
 {
+  
 class CAENVMEConnector: public Connector
 {
 public:
@@ -24,4 +24,3 @@ private:
 };
 
 }  // namespace CAEN
-#endif
