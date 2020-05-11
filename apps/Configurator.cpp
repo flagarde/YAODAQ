@@ -17,6 +17,7 @@
 
 int main(int argc, char** argv)
 {
+  Interrupt interrupt;
   CLI::App app{"Websocket Server"};
   int      port{8282};
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
@@ -50,5 +51,5 @@ int main(int argc, char** argv)
   } while(stop == false);
   configurator.stop();
   fmt::print("Bye !\n");
-  return 0;
+  return interrupt.wait();
 }

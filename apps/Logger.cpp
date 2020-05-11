@@ -35,6 +35,5 @@ int main(int argc, char** argv)
 
   Logger logger(loggerName);
 
-  interrupt.wait();
-  return 0;
+  return interrupt.wait();
 }

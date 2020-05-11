@@ -40,5 +40,5 @@ int main(int argc, char** argv)
   //toto.Initialize();
   //toto.Connect();
 
-  return 0;
+  return interrupt.wait();
 }
