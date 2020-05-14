@@ -8,7 +8,6 @@
 #include "sinks/ostream_sink.h"
 #include "sinks/stdout_color_sinks.h"
 #include "spdlog.h"
-#include "toml.hpp"
 
 Configuration Module::m_Config = Configuration();
 
@@ -56,30 +55,6 @@ States Module::getState()
   return m_State;
 }
 
-ix::WebSocketSendInfo Module::sendBinary(Message& message)
-{
-  message.setFrom(m_Type + "/" + m_Name);
-  return m_WebsocketClient.sendBinary(message.get());
-}
-
-ix::WebSocketSendInfo Module::sendBinary(Message message)
-{
-  message.setFrom(m_Type + "/" + m_Name);
-  return m_WebsocketClient.sendBinary(message.get());
-}
-
-ix::WebSocketSendInfo Module::sendText(Message& message)
-{
-  message.setFrom(m_Type + "/" + m_Name);
-  return m_WebsocketClient.sendText(message.get());
-}
-
-ix::WebSocketSendInfo Module::sendText(Message message)
-{
-  message.setFrom(m_Type + "/" + m_Name);
-  return m_WebsocketClient.sendText(message.get());
-}
-
 Module::Module(const std::string& name, const std::string& type): m_Type(type), m_Name(name)
 {
   spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
@@ -108,6 +83,13 @@ Module::~Module()
   stopListening();
 }
 
+void Module::sendState()
+{
+  State state(m_State);
+  m_WebsocketClient.sendBinary(state.get());
+  m_Logger->warn(state.get());
+}
+
 void Module::Initialize()
 {
   try
@@ -119,8 +101,7 @@ void Module::Initialize()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -136,8 +117,7 @@ void Module::Connect()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -153,8 +133,7 @@ void Module::Configure()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -170,8 +149,7 @@ void Module::Start()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -187,8 +165,7 @@ void Module::Pause()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -204,8 +181,7 @@ void Module::Stop()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -221,8 +197,7 @@ void Module::Clear()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -238,8 +213,7 @@ void Module::Disconnect()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -255,8 +229,7 @@ void Module::Release()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
@@ -272,33 +245,27 @@ void Module::Quit()
   }
   catch(const Exception& error)
   {
-    m_Logger->error(error.what());
-    sendText(Error(error.what()));
+    sendError(error.what());
     stopListening();
     throw;
   }
 }
 
-void Module::sendState()
-{
-  sendText(State(m_State));
-}
+void Module::DoInitialize() {}
 
-void Module::DoInitialize(){}
+void Module::DoConfigure() {}
 
-void Module::DoConfigure(){}
+void Module::DoStart() {}
 
-void Module::DoStart(){}
+void Module::DoPause() {}
 
-void Module::DoPause(){}
+void Module::DoStop() {}
 
-void Module::DoStop(){}
+void Module::DoClear() {}
 
-void Module::DoClear(){}
+void Module::DoRelease() {}
 
-void Module::DoRelease(){}
-
-void Module::DoQuit(){}
+void Module::DoQuit() {}
 
 void Module::OnCommand(Command& command) {}
 

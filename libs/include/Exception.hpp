@@ -53,8 +53,8 @@ protected:
   virtual const char* errorStrings(const int_least32_t& code);
 
 private:
-  void               createBackTrace();
-  std::string        m_Message{"Compile with source_location support for better informations !"};
+  void          createBackTrace();
+  std::string   m_Message{"Compile with source_location support for better informations !"};
   const int16_t m_Code{0};
 #if experimental_have_source_location == 1
   std::experimental::source_location m_Location;

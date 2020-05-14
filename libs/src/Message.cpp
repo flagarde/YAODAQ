@@ -5,8 +5,6 @@
 #include "json.h"
 #include "magic_enum.hpp"
 
-#include <iostream>
-
 Json::StreamWriterBuilder Message::m_StreamWriterBuilder = Json::StreamWriterBuilder();
 
 Json::CharReaderBuilder Message::m_CharReaderBuilder = Json::CharReaderBuilder();
@@ -76,12 +74,6 @@ std::string Message::getStyled(const std::string& indent)
 {
   m_StreamWriterBuilder.settings_["indentation"] = indent;
   return Json::writeString(m_StreamWriterBuilder, m_Value);
-}
-
-void Message::print(const std::string& indent)
-{
-  m_StreamWriterBuilder.settings_["indentation"] = indent;
-  std::cout << Json::writeString(m_StreamWriterBuilder, m_Value) << std::endl;
 }
 
 std::string Message::getFrom()

@@ -50,7 +50,6 @@ public:
   std::string  get() const;
   std::string  getType();
   std::string  getStyled(const std::string& indent = "\t");
-  void         print(const std::string& indent = "\t");
   void         setType(const Types&);
   bool         isEmpty();
 

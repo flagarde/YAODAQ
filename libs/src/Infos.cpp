@@ -3,8 +3,8 @@
 #include "Exception.hpp"
 #include "StatusCode.hpp"
 
+#include <iostream>
 #include <vector>
-
 Infos::Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type)
 {
   m_RoomName  = roomName;

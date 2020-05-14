@@ -2,17 +2,21 @@
 
 @INCLUDES@
 
-FlakedTuna::PluginRegistry* pr = nullptr;                            
-extern "C" FT_EXPORT FlakedTuna::PluginRegistry* GetPluginRegistry() 
+FlakedTuna::PluginRegistry* pr{nullptr};
+
+extern "C" @FT_EXPORT@ FlakedTuna::PluginRegistry* GetPluginRegistry() 
 {                                                                    
   pr = new FlakedTuna::PluginRegistry();
   @REGISTERS@
   return pr;                                      
 } 
 
-extern "C" FT_EXPORT void ClosePluginRegistry() 
+extern "C" @FT_EXPORT@ void ClosePluginRegistry() 
 {                                               
   if(pr != nullptr) { delete pr; }              
 }
 
-FLAKED_TUNA_PLUGIN_VERSION(@VERSION@)
+extern "C" @FT_EXPORT@ int GetPluginVersion() 
+{ 
+  return @VERSION@; 
+}

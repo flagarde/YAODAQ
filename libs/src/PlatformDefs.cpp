@@ -20,6 +20,7 @@
 #include "PlatformDefs.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 namespace FlakedTuna
 {
@@ -51,20 +52,20 @@ std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>
     plugPath.append(findData->cFileName);
 
     PLUG_HANDLE handle = LoadLibraryA(plugPath.c_str());
-    if(handle != NULL)
+    if(handle != nullptr)
     {
       // Look for plugin registry in file
       RegFuncPtr PluginRegistryAddr = (RegFuncPtr)GetProcAddress(handle, "GetPluginRegistry");
 
       // Check if valid plugin
-      if(PluginRegistryAddr != NULL)
+      if(PluginRegistryAddr != nullptr)
       {
         // Now get the plugin
         PluginRegistry* pluginRegistry = PluginRegistryAddr();
 
         int            pluginVersion     = 0;
         VersionFuncPtr PluginFileVersion = (VersionFuncPtr)GetProcAddress(handle, "GetPluginVersion");
-        if(PluginFileVersion != NULL) { pluginVersion = PluginFileVersion(); }
+        if(PluginFileVersion != nullptr) { pluginVersion = PluginFileVersion(); }
 
         // Save library/registry
         plugHandles.push_back(handle);
@@ -89,7 +90,7 @@ void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
   for(auto iter: handles)
   {
     CloseFuncPtr closeRegistry = (CloseFuncPtr)GetProcAddress(iter, "ClosePluginRegistry");
-    if(closeRegistry != NULL) { closeRegistry(); }
+    if(closeRegistry != nullptr) { closeRegistry(); }
     FreeLibrary(iter);
   }
 }
@@ -104,8 +105,8 @@ std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>
   std::vector<PLUG_HANDLE> plugHandles;
   registryVector           regPointers;
 
-  DIR*           dirHandle;
-  struct dirent* fileInfo;
+  DIR*           dirHandle{nullptr};
+  struct dirent* fileInfo{nullptr};
 
   if(extension.find_last_of(".") == std::string::npos)
   {
@@ -123,7 +124,7 @@ std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>
 
   dirHandle = opendir(directory.c_str());
 
-  while((dirHandle != NULL) && (fileInfo = readdir(dirHandle)) != NULL)
+  while((dirHandle != nullptr) && (fileInfo = readdir(dirHandle)) != nullptr)
   {
     std::string plugPath(directory);
     plugPath.append(fileInfo->d_name);
@@ -142,7 +143,7 @@ std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>
     }
 
     PLUG_HANDLE handle = dlopen(plugPath.c_str(), RTLD_LAZY);
-    if(handle != NULL)
+    if(handle != nullptr)
     {
       // Clear the error flag
       dlerror();
@@ -152,7 +153,7 @@ std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>
 
       // Check if valid plugin; NULL means no error
       char* error = dlerror();
-      if(error == NULL)
+      if(error == nullptr)
       {
         // Now get the plugin
         PluginRegistry* pluginRegistry = PluginRegistryAddr();
@@ -178,7 +179,7 @@ std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>
     }
   }
 
-  if(dirHandle != NULL) { closedir(dirHandle); }
+  if(dirHandle != nullptr) { closedir(dirHandle); }
 
   return std::make_pair(plugHandles, regPointers);
 }
@@ -193,7 +194,7 @@ void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
     CloseFuncPtr closeRegistry = (CloseFuncPtr)dlsym(iter, "ClosePluginRegistry");
 
     char* error = dlerror();
-    if(error == NULL) { closeRegistry(); }
+    if(error == nullptr) { std::cout<<"toto"<<std::endl; closeRegistry(); }
     dlclose(iter);
   }
 }

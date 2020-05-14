@@ -1178,6 +1178,17 @@ void  CAENDigitizerBoard::DoInitialize()
   std::cout<<"Initializing"<<std::endl;
 }
 
+void  CAENDigitizerBoard::DoConfigure()
+{
+  GetInfo();
+  sendInfo("Connected to CAEN Digitizer Model {}",m_ModelName);
+  sendInfo("ROC FPGA Release is  {}",m_ROC_FirmwareRel);
+  sendInfo("AMC FPGA Release is {}",m_AMC_FirmwareRel);
+}
+
+
+
+
 void CAENDigitizerBoard::setModelName(const std::string& name)
 {
   m_ModelName = name;

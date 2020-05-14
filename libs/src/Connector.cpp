@@ -1,7 +1,5 @@
 #include "Connector.hpp"
 
-#include <iostream>
-
 Connector::Connector(const std::string& type): m_Type(type) {}
 
 toml::value Connector::getParameters()
@@ -47,6 +45,5 @@ void Connector::verifyParameters() {}
 bool Connector::isConnected()
 {
   if(m_Infos.getNumberBoardConnected() == 0) return false;
-  else
-    return true;
+  else return true;
 }

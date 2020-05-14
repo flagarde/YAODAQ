@@ -6,6 +6,7 @@
 
 namespace CAEN
 {
+  
 const char* CAENCommException::errorStrings(const int& code)
 {
   switch(code)

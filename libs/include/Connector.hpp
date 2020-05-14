@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Internal.hpp"
 #include "ConnectorInfos.hpp"
+#include "Internal.hpp"
 
 #include <string>
 

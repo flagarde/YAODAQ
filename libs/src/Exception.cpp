@@ -4,9 +4,13 @@
   #include "execinfo.h"
 #endif
 
+#include "magic_enum.hpp"
+#include "StatusCode.hpp"
+
 #if experimental_have_source_location == 1
 Exception::Exception(const StatusCode& statusCode, const std::string& message, std::experimental::source_location location): m_Code(static_cast<std::int32_t>(statusCode)), m_Message(message), m_Location(location)
 {
+  if(message=="") m_Message=errorStrings(static_cast<std::int_least32_t>(statusCode));
   constructMessage();
   createBackTrace();
 }
@@ -35,7 +39,7 @@ void Exception::createBackTrace()
 
   for(size_t i = 1; i < stackDepth; ++i)
   {
-    m_BackTrace += "\t-> " + stackStrings[i];
+    m_BackTrace += "\t-> " + std::string(stackStrings[i]);
     m_BackTrace += "\n";
   }
 
@@ -69,7 +73,8 @@ const char* Exception::what() const noexcept
 
 const char* Exception::errorStrings(const std::int_least32_t& code)
 {
-  return "";
+  auto name = magic_enum::enum_cast<StatusCode>(code);
+  return std::string(magic_enum::enum_name(name.value())).c_str();
 }
 
 void Exception::constructMessage()

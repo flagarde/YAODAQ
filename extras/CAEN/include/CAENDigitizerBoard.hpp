@@ -914,7 +914,8 @@ public:
   
   //////// Board functions
   void  DoInitialize() final;
-  
+  void  DoConnect() final {};
+  void  DoConfigure();
   
 private:
   void        setModelName(const std::string& name);
