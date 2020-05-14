@@ -6,7 +6,7 @@ if(ENABLE_DOCTESTS)
 endif()
 
 # Expose required variable (DOCTEST_INCLUDE_DIR) to parent scope
-ExternalProject_Get_Property(doctest source_dir)
+externalproject_get_property(doctest source_dir)
 
 set(DOCTEST_INCLUDE_DIR ${source_dir}/doctest CACHE INTERNAL "Path to include folder for doctest")
 include_directories(doctest INTERFACE ${DOCTEST_INCLUDE_DIR})
@@ -30,8 +30,6 @@ target_include_directories(Tests PUBLIC "${INCLUDE_OUTPUT_DIR}")
 target_link_libraries(Tests PUBLIC CAENExceptions)
 add_dependencies(Tests CAENExceptions)
 
- #doctest_discover_tests(Tests)
-#add_test(NAME Tests COMMAND Tests ${TEST_RUNNER_PARAMS}
- #        )
-
-
+# doctest_discover_tests(Tests)
+# add_test(NAME Tests COMMAND Tests ${TEST_RUNNER_PARAMS}
+# )

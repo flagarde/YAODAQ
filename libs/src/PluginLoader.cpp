@@ -25,7 +25,6 @@
 
 namespace FlakedTuna
 {
-  
 PluginLoader::~PluginLoader()
 {
   ClosePluginLibraries();

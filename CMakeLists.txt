@@ -18,8 +18,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
-
-
 include(Colors)
 
 include(Architectures)
@@ -29,7 +27,7 @@ include(CXXStandards)
 cxx_17()
 
 if(APPLE)
- set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl/" CACHE STRING "Set openssl root dir") 
+  set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl/" CACHE STRING "Set openssl root dir")
 endif()
 
 include(Formatting)
@@ -110,13 +108,13 @@ else()
   set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 endif()
 
-# Optional IPO. Do not use IPO if it's not supported by compiler. 
-include(CheckIPOSupported) 
-check_ipo_supported(RESULT result OUTPUT output) 
-if(result) 
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE) 
-else() 
-  message(WARNING "IPO is not supported:# ${output}") 
+# Optional IPO. Do not use IPO if it's not supported by compiler.
+include(CheckIPOSupported)
+check_ipo_supported(RESULT RESULT OUTPUT OUTPUT)
+if(result)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+  message(WARNING "IPO is not supported:# ${output}")
 endif()
 
 include(Sanitizers)

@@ -1,4 +1,3 @@
-
 if(BUILD_ANALYSIS OR BUILD_DAQ)
   root_generate_dictionary(G__Channel "supress/Channel.hpp" LINKDEF "supress/ChannelLinkDef.hpp")
   add_library(Channel OBJECT "supress/Channel.cpp" G__Channel.cxx)
@@ -21,7 +20,6 @@ if(BUILD_ANALYSIS OR BUILD_DAQ)
   set_target_properties(Event PROPERTIES PUBLIC_HEADER "supress/Event.hpp")
   install(TARGETS Event RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 endif()
-
 
 if(BUILD_ANALYSIS)
   add_executable(Analysis Analysis.cpp)
@@ -60,7 +58,6 @@ add_dependencies(PluginTest Board)
 target_link_libraries(PluginTest Board)
 install(TARGETS PluginTest RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
-
 if(BUILD_OLD_WAVEDUMP)
   include(elogpp)
   add_executable(WaveDump WaveDump.cpp)
@@ -76,11 +73,11 @@ if(BUILD_OLD_WAVEDUMP)
   target_include_directories(lib2 PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
 
   add_library(web STATIC supress/Plotter.cpp supress/WebServer.cpp)
-  add_dependencies(web WebSocket )
+  add_dependencies(web WebSocket)
   target_link_libraries(web PUBLIC WebSocket)
   target_include_directories(web PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/supress")
   target_include_directories(web PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
-  
+
   add_dependencies(WaveDump lib1 lib2 web elogpp)
   target_include_directories(WaveDump PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIR}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIR}")
   target_link_libraries(

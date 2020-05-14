@@ -25,7 +25,11 @@ function(plugin)
   set(VERSION ${plugin_VERSION})
   set(REGISTERS "")
   foreach(name ${plugin_CHILDS})
-    list(APPEND REGISTERS "static_assert(std::is_base_of<${plugin_BASE},${name}>::value, \"ERROR: FLAKED_TUNA_PLUGIN: Registered ${name} must be of base type ${plugin_BASE}.\");\nstatic_assert((std::is_default_constructible<${name}>::value), \"ERROR: FLAKED_TUNA_PLUGIN: ${name} type is not default constructable.\");\npr->RegisterPlugin<${name},${plugin_BASE}>()")
+    list(
+      APPEND
+      REGISTERS
+      "static_assert(std::is_base_of<${plugin_BASE},${name}>::value, \"ERROR: FLAKED_TUNA_PLUGIN: Registered ${name} must be of base type ${plugin_BASE}.\");\nstatic_assert((std::is_default_constructible<${name}>::value), \"ERROR: FLAKED_TUNA_PLUGIN: ${name} type is not default constructable.\");\npr->RegisterPlugin<${name},${plugin_BASE}>()"
+      )
   endforeach()
   string(REPLACE ";" ";\n" REGISTERS "${REGISTERS}")
   list(APPEND REGISTERS "")

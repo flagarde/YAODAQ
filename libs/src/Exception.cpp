@@ -4,13 +4,13 @@
   #include "execinfo.h"
 #endif
 
-#include "magic_enum.hpp"
 #include "StatusCode.hpp"
+#include "magic_enum.hpp"
 
 #if experimental_have_source_location == 1
 Exception::Exception(const StatusCode& statusCode, const std::string& message, std::experimental::source_location location): m_Code(static_cast<std::int32_t>(statusCode)), m_Message(message), m_Location(location)
 {
-  if(message=="") m_Message=errorStrings(static_cast<std::int_least32_t>(statusCode));
+  if(message == "") m_Message = errorStrings(static_cast<std::int_least32_t>(statusCode));
   constructMessage();
   createBackTrace();
 }

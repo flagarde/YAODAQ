@@ -194,7 +194,11 @@ void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
     CloseFuncPtr closeRegistry = (CloseFuncPtr)dlsym(iter, "ClosePluginRegistry");
 
     char* error = dlerror();
-    if(error == nullptr) { std::cout<<"toto"<<std::endl; closeRegistry(); }
+    if(error == nullptr)
+    {
+      std::cout << "toto" << std::endl;
+      closeRegistry();
+    }
     dlclose(iter);
   }
 }

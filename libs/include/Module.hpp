@@ -3,9 +3,10 @@
 #include "Configuration.hpp"
 #include "Message.hpp"
 #include "States.hpp"
+#include "StatusCode.hpp"
 #include "WebsocketClient.hpp"
 #include "spdlog.h"
-#include "StatusCode.hpp"
+
 #include <iostream>
 #include <string>
 //#ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
