@@ -26,8 +26,7 @@ jobs:
       dist: bionic 
     - os: windows
 addons:
-  apt:
-    sources: ubuntu-toolchain-r-test    
+  apt: 
     packages:
         - g++-9
         - llvm-10-dev
