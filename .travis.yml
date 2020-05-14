@@ -28,8 +28,21 @@ jobs:
 addons:
   apt:
     sources: ubuntu-toolchain-r-test    
-    packages: doxygen cmake lcov clang-10
-    update: true
+    packages:
+        - g++-9
+        - llvm-10-dev
+        - libclang-10-dev
+        - clang-format-10
+        - clang-tidy-10
+        - cmake
+        - lcov
+        - doxygen
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-bionic-10
+      - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-10 main'
+      key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
+      
   homebrew: 
     packages: doxygen cmake lcov openssl@1.1
     update: true
