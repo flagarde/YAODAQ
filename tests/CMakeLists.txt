@@ -30,6 +30,4 @@ target_include_directories(Tests PUBLIC "${INCLUDE_OUTPUT_DIR}")
 target_link_libraries(Tests PUBLIC CAENExceptions)
 add_dependencies(Tests CAENExceptions)
 
-# doctest_discover_tests(Tests)
-# add_test(NAME Tests COMMAND Tests ${TEST_RUNNER_PARAMS}
-# )
+# doctest_discover_tests(Tests) add_test(NAME Tests COMMAND Tests ${TEST_RUNNER_PARAMS} )

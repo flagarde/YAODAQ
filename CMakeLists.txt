@@ -110,11 +110,11 @@ endif()
 
 # Optional IPO. Do not use IPO if it's not supported by compiler.
 include(CheckIPOSupported)
-check_ipo_supported(RESULT RESULT OUTPUT OUTPUT)
-if(result)
+check_ipo_supported(RESULT aResult OUTPUT aOutput)
+if(aResult)
   set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 else()
-  message(WARNING "IPO is not supported:# ${output}")
+  message(WARNING "IPO is not supported:# ${aOutput}")
 endif()
 
 include(Sanitizers)
