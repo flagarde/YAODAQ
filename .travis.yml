@@ -28,7 +28,7 @@ jobs:
 addons:
   apt:
     sources: ubuntu-toolchain-r-test    
-    packages: doxygen cmake lcov
+    packages: doxygen cmake lcov clang-10
     update: true
   homebrew: 
     packages: doxygen cmake lcov openssl@1.1
