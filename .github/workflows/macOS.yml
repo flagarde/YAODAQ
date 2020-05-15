@@ -50,7 +50,7 @@ jobs:
           useVcpkgToolchainFile: true
           buildWithCMakeArgs: '-- -v'
           buildDirectory: '${{ runner.workspace }}/b/ninja/'
-          cmakeAppendedArgs: '-G Ninja '
+          cmakeAppendedArgs: '-G Ninja -DBUILD_ANALYSIS=OFF -DBUIL_OLD_WAVEDUMP=OFF'
       - name: dir
         run: find $RUNNER_WORKSPACE
         shell: bash
