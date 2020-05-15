@@ -1,0 +1,17 @@
+ 
+[requires]
+openssl/1.1.1g
+zlib/1.2.11
+
+[options]
+zlib:shared=False
+openssl:shared=False
+
+#[imports]
+#bin, *.dll -> ./bin # Copies all dll files from packages bin folder to my "bin" folder
+#lib, *.dylib* -> ./bin # Copies all dylib files from packages lib folder to my "bin" folder
+#lib, *.so -> ./bin/lib # Copies all dylib files from packages lib folder to my "bin" folder
+#lib, *.a -> ./bin/lib # Copies all dylib files from packages lib folder to my "bin" folder
+
+[generators]
+cmake

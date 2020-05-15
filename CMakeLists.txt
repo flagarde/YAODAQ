@@ -6,6 +6,16 @@ cmake_minimum_required(VERSION 3.9...3.16.4 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
+  message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
+endif()
+
+file(DOWNLOAD "https://raw.githubusercontent.com/flagarde/pmm/gh-pages/pmm.cmake" "${CMAKE_BINARY_DIR}/pmm.cmake")
+include("${CMAKE_BINARY_DIR}/pmm.cmake")
+
+pmm(DEBUG CONAN SETTINGS "compiler.libcxx=libstdc++11")
+
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/scripts" "${CMAKE_SOURCE_DIR}/external")
 
 include(Options.cmake)
@@ -25,10 +35,6 @@ include(Architectures)
 # set the C++ standard to C++ 17
 include(CXXStandards)
 cxx_17()
-
-if(APPLE)
-  set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl/" CACHE STRING "Set openssl root dir")
-endif()
 
 include(Formatting)
 file(
@@ -55,10 +61,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
 endif()
 
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
-  message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
-endif()
+
 
 set(LIBRARY_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 set(RUNTIME_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}")
