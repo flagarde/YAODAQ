@@ -79,7 +79,7 @@ script:
     - cd build
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cmake -DOPENSSL_ROOT_DIR=/usr/local/ssl -DOPENSSL_LIBRARIES=/usr/local/ssl/lib -DOPENSSL_INCLUDE_DIR=/usr/local/ssl/include .. ; cmake --build . ; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "clang" ]; then cmake -DBUILD_ANALYSIS=OFF -DBUILD_OLD_WAVEDUMP=OFF .. ; cmake --build . ; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "gcc" ]; then cmake .. ;cmake --build . --target coverage ; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "gcc" ]; then cmake .. ; cmake --build . --target coverage ; fi
     - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake .. ; cmake --build . ; fi
     - cmake --install .
     # - make test
