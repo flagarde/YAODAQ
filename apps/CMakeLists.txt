@@ -94,6 +94,7 @@ if(BUILD_OLD_WAVEDUMP)
     CAENComm
     )
   install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+endif()
 
   add_executable(DumpModule DumpModule.cpp)
 
@@ -101,4 +102,3 @@ if(BUILD_OLD_WAVEDUMP)
   target_include_directories(DumpModule PRIVATE ${CMAKE_BINARY_DIR} PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN")
   target_link_libraries(DumpModule PRIVATE CAENBoards PRIVATE Board)
   install(TARGETS DumpModule RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
-endif()
