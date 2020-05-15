@@ -13,7 +13,7 @@ configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in" "${INCLUDE_OUTPUT_DIR}/Progra
 include(IXWebSocket)
 add_library(WebSocket INTERFACE)
 add_dependencies(WebSocket IXWebSocket)
-target_link_libraries(WebSocket INTERFACE ixwebsocket INTERFACE Threads::Threads INTERFACE OpenSSL::SSL INTERFACE ${CMAKE_DL_LIBS} INTERFACE ZLIB::ZLIB)
+target_link_libraries(WebSocket INTERFACE ixwebsocket INTERFACE Threads::Threads INTERFACE CONAN_PKG::openssl INTERFACE ${CMAKE_DL_LIBS} INTERFACE CONAN_PKG::zlib)
 target_include_directories(WebSocket INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
 
 include(CLI11)
