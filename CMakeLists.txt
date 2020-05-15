@@ -2,7 +2,7 @@
 #   CMakeLists.txt to build DAQ   #
 #   Author LAGARDE Francois       #
 ###################################
-cmake_minimum_required(VERSION 3.9...3.16.4 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.9...3.17.2 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
@@ -11,7 +11,11 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-file(DOWNLOAD "https://raw.githubusercontent.com/flagarde/pmm/gh-pages/pmm.cmake" "${CMAKE_BINARY_DIR}/pmm.cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/scripts" "${CMAKE_SOURCE_DIR}/external" "${CMAKE_SOURCE_DIR}")
+
+include(Settings)
+
+file(DOWNLOAD "${PMM_PATH}" "${CMAKE_BINARY_DIR}/pmm.cmake" SHOW_PROGRESS EXPECTED_HASH SHA256=${PMM_SHA256})
 include("${CMAKE_BINARY_DIR}/pmm.cmake")
 
 if(WIN32)
@@ -26,10 +30,7 @@ elseif(APPLE)
 else()
   pmm(DEBUG CONAN SETTINGS "compiler.libcxx=libstdc++11")
 endif()
-
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/scripts" "${CMAKE_SOURCE_DIR}/external")
-
-include(Options.cmake)
+include(${PROJECT_BINARY_DIR}/conanbuildinfo.cmake)
 
 include(GenerateReadMe)
 generate_readme()
