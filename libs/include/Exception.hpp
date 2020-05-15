@@ -7,7 +7,6 @@
   #define have_source_location 1
 #elif __has_include(<experimental/source_location>)
   #include <experimental/source_location>
-  #define have_source_location              1
   #define experimental_have_source_location 1
 #else
   #define have_source_location 0
@@ -34,7 +33,7 @@ public:
   const std::string& getBackTrace() const;
   virtual ~Exception() override;
   virtual const char* what() const noexcept override;
-#if have_source_location == 1
+#if have_source_location == 1 || experimental_have_source_location ==1 
   const uint_least32_t getLine() const;
   const uint_least32_t getColumn() const;
   const char*          getFileName() const;

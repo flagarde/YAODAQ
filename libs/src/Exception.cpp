@@ -74,7 +74,7 @@ const char* Exception::what() const noexcept
 const char* Exception::errorStrings(const std::int_least32_t& code)
 {
   auto name = magic_enum::enum_cast<StatusCode>(code);
-  return std::string(magic_enum::enum_name(name.value())).c_str();
+  return std::move(std::string(magic_enum::enum_name(name.value())).c_str());
 }
 
 void Exception::constructMessage()
