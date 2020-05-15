@@ -21,7 +21,7 @@ Exception::Exception(const StatusCode& statusCode, std::source_location location
   createBackTrace();
 }
 #else
-Exception::Exception(const StatusCode& statusCode): m_Code(static_cast<std::int32_t>(statusCode))
+Exception::Exception(const StatusCode& statusCode, const std::string& message): m_Code(static_cast<std::int32_t>(statusCode)), m_Message(message)
 {
   constructMessage();
   createBackTrace();
@@ -60,7 +60,7 @@ Exception::Exception(const int& code,const std::string& message,  std::source_lo
   createBackTrace();
 }
 #else
-Exception::Exception(const int& code,const std::string& message, ): m_Code(code),m_Message(message),
+Exception::Exception(const int& code,const std::string& message ): m_Code(code),m_Message(message)
 {
   constructMessage();
   createBackTrace();
@@ -101,6 +101,7 @@ const std::string& Exception::getBackTrace() const
 
 Exception::~Exception(){};
 
+#if have_source_location == 1 || experimental_have_source_location == 1
 const uint_least32_t Exception::getLine() const
 {
   return m_Location.line();
@@ -120,6 +121,7 @@ const char* Exception::getFunctionName() const
 {
   return m_Location.function_name();
 }
+#endif
 
 const int Exception::getCode() const
 {
