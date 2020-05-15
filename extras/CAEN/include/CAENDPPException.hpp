@@ -13,7 +13,7 @@ public:
 #elif have_source_location == 1
   CAENDPPException(const int& code = 0, std::source_location loc  = std::source_location::current());
 #else
-  CAENDPPException(const int& code = 0)
+  CAENDPPException(const int& code = 0);
 #endif
   virtual std::string toString() const final;
 private:

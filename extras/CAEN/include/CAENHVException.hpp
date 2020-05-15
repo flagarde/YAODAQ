@@ -13,7 +13,7 @@ public:
 #elif have_source_location == 1
   CAENHVException(const int& code = 0, std::source_location loc  = std::source_location::current());
 #else
-  CAENHVException(const int& code = 0)
+  CAENHVException(const int& code = 0);
 #endif
   virtual std::string toString() const final;
 private:

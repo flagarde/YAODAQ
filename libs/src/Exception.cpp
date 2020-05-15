@@ -54,13 +54,13 @@ Exception::Exception(const int& code, const std::string& message, std::experimen
   createBackTrace();
 }
 #elif have_source_location == 1
-Exception::Exception(const int& code, std::source_location location): m_Code(code), m_Location(location)
+Exception::Exception(const int& code,const std::string& message,  std::source_location location): m_Code(code),m_Message(message), m_Location(location)
 {
   constructMessage();
   createBackTrace();
 }
 #else
-Exception::Exception(const int& code): m_Code(code)
+Exception::Exception(const int& code,const std::string& message, ): m_Code(code),m_Message(message),
 {
   constructMessage();
   createBackTrace();
