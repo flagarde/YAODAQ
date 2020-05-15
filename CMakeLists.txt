@@ -14,7 +14,11 @@ endif()
 file(DOWNLOAD "https://raw.githubusercontent.com/flagarde/pmm/gh-pages/pmm.cmake" "${CMAKE_BINARY_DIR}/pmm.cmake")
 include("${CMAKE_BINARY_DIR}/pmm.cmake")
 
-pmm(DEBUG CONAN SETTINGS "compiler.libcxx=libstdc++11")
+if(WIN32)
+  pmm(DEBUG CONAN)
+else()
+  pmm(DEBUG CONAN SETTINGS "compiler.libcxx=libstdc++11")
+endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/scripts" "${CMAKE_SOURCE_DIR}/external")
 
