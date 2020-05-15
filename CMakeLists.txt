@@ -15,6 +15,11 @@ file(DOWNLOAD "https://raw.githubusercontent.com/flagarde/pmm/gh-pages/pmm.cmake
 include("${CMAKE_BINARY_DIR}/pmm.cmake")
 
 if(WIN32)
+  ##FIXME
+  set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "" CACHE STRING "Linker")
+  set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "" CACHE STRING "Linker")
+  set(CMAKE_EXE_LINKER_FLAGS_PROFILE "" CACHE STRING "Linker")
+  set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "" CACHE STRING "Linker")
   pmm(DEBUG CONAN)
 else()
   pmm(DEBUG CONAN SETTINGS "compiler.libcxx=libstdc++11")
