@@ -80,7 +80,7 @@ const char* Exception::errorStrings(const std::int_least32_t& code)
 void Exception::constructMessage()
 {
   m_Message = "Error " + std::to_string(m_Code) + "\n\t[Error] : " + m_Message;
-#if have_source_location == 1 or experimental_have_source_location == 1
+#if have_source_location == 1 || experimental_have_source_location == 1
   m_Message += "\n\t[File] : " + std::string(getFileName());
   m_Message += "\n\t[Function] : " + std::string(getFunctionName());
   m_Message += "\n\t[Line] : " + std::to_string(getLine());
