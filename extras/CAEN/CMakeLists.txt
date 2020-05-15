@@ -68,7 +68,8 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
   plugin(
     TARGET
     CAENConnectors
-    VERSION ${YAODAQ_VERSION_MAJOR}
+    VERSION
+    ${YAODAQ_VERSION_MAJOR}
     BASE
     Connector
     CHILDS

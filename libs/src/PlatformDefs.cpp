@@ -29,7 +29,6 @@
 
 namespace FlakedTuna
 {
-  
 #if defined(_WIN32) || defined(WIN32)
 /*******************************************************
 * Win32 platform specific
@@ -200,10 +199,7 @@ void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
     CloseFuncPtr closeRegistry = (CloseFuncPtr)dlsym(iter, "ClosePluginRegistry");
 
     char* error = dlerror();
-    if(error == nullptr)
-    {
-      closeRegistry();
-    }
+    if(error == nullptr) { closeRegistry(); }
     dlclose(iter);
   }
 }

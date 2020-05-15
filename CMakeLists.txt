@@ -132,7 +132,7 @@ if(BUILD_WEBSERVER)
   include(civet)
 endif()
 
-if(BUILD_ANALYSIS)
+if(BUILD_ANALYSIS OR BUILD_OLD_WAVEDUMP)
   find_package(ROOT 6.14 REQUIRED)
   include(${ROOT_USE_FILE})
 endif()
