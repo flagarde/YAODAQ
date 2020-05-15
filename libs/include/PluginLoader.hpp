@@ -45,7 +45,7 @@ public:
 
   bool FindPluginsAtDirectory(std::string additionalDir, std::string extension = "");
 
-  template<class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin(int version = 0)
+  template<class BaseT> std::vector<std::shared_ptr<BaseT>> BuildAndResolvePlugin(const int& version = 0)
   {
     std::vector<std::shared_ptr<BaseT>> concretePlugins;
 

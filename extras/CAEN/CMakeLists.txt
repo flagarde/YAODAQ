@@ -68,8 +68,7 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
   plugin(
     TARGET
     CAENConnectors
-    VERSION
-    0.1
+    VERSION ${YAODAQ_VERSION_MAJOR}
     BASE
     Connector
     CHILDS
@@ -77,6 +76,6 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
     CAEN::CAENDigitizerConnector
     CAEN::CAENHVConnector
     )
-  # plugin( TARGET CAENBoards VERSION 0.1 BASE Board CHILDS CAEN::CAENVMEBoard CAEN::CAENDigitizerBoard CAEN::CAENCommBoard )
+  # plugin( TARGET CAENBoards VERSION ${YAODAQ_VERSION_MAJOR} BASE Board CHILDS CAEN::CAENVMEBoard CAEN::CAENDigitizerBoard CAEN::CAENCommBoard )
 
 endif()

@@ -16,7 +16,7 @@ extern "C" @FT_EXPORT@ void ClosePluginRegistry()
   if(pr != nullptr) { delete pr; }              
 }
 
-extern "C" @FT_EXPORT@ int GetPluginVersion() 
+extern "C" @FT_EXPORT@ const int GetPluginVersion() 
 { 
   return @VERSION@; 
 }

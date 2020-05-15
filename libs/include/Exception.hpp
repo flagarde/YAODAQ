@@ -33,7 +33,7 @@ public:
        */
   const std::string& getBackTrace() const;
   virtual ~Exception() override;
-  virtual const char* what() const noexcept;
+  virtual const char* what() const noexcept override;
 #if have_source_location == 1
   const uint_least32_t getLine() const;
   const uint_least32_t getColumn() const;

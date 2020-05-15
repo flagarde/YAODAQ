@@ -28,24 +28,21 @@
 namespace FlakedTuna
 {
 /*******************************************************
- * Win32 platform specific
- *******************************************************/
+* Win32 platform specific
+*******************************************************/
 #if defined(_WIN32) || defined(WIN32)
-
-  #include <Windows.h>
-
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+  
 typedef HMODULE PLUG_HANDLE;
-
+  
 /*******************************************************
 * *NIX platform specific
 *******************************************************/
 #else
-
-  #include <dirent.h>
-  #include <dlfcn.h>
-
+  
 typedef void* PLUG_HANDLE;
-
+  
 #endif
 
 /*******************************************************

@@ -20,10 +20,16 @@
 #include "PlatformDefs.hpp"
 
 #include <algorithm>
-#include <iostream>
+
+#if defined(_WIN32) || defined(WIN32)
+#else
+  #include <dirent.h>
+  #include <dlfcn.h>
+#endif
 
 namespace FlakedTuna
 {
+  
 #if defined(_WIN32) || defined(WIN32)
 /*******************************************************
 * Win32 platform specific
@@ -63,7 +69,7 @@ std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>
         // Now get the plugin
         PluginRegistry* pluginRegistry = PluginRegistryAddr();
 
-        int            pluginVersion     = 0;
+        int            pluginVersion{0};
         VersionFuncPtr PluginFileVersion = (VersionFuncPtr)GetProcAddress(handle, "GetPluginVersion");
         if(PluginFileVersion != nullptr) { pluginVersion = PluginFileVersion(); }
 
@@ -161,7 +167,7 @@ std::pair<std::vector<PLUG_HANDLE>, std::vector<std::pair<int, PluginRegistry*>>
         // Clear the error flag again
         dlerror();
 
-        int            pluginVersion     = 0;
+        int            pluginVersion{0};
         VersionFuncPtr PluginFileVersion = (VersionFuncPtr)dlsym(handle, "GetPluginVersion");
 
         // Check if a version is specified
@@ -196,7 +202,6 @@ void ClosePluginHandles(std::vector<PLUG_HANDLE> handles)
     char* error = dlerror();
     if(error == nullptr)
     {
-      std::cout << "toto" << std::endl;
       closeRegistry();
     }
     dlclose(iter);
