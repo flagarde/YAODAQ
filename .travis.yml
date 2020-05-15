@@ -77,7 +77,7 @@ script:
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then cmake .. ; cmake --build . ; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "clang" ]; then cmake -DBUILD_ANALYSIS=OFF -DBUILD_OLD_WAVEDUMP=OFF .. ; cmake --build . ; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TRAVIS_COMPILER" == "gcc" ]; then cmake .. ; cmake --build . --target coverage ; fi
-    - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake -G "Visual Studio 15 2017" -A x64 .. ; cmake --build . ; fi
+    - if [ "$TRAVIS_OS_NAME" == "windows" ]; then cmake -G "Visual Studio 15 2017" -A x64 -DBUILD_ANALYSIS=OFF -DBUILD_OLD_WAVEDUMP=OFF .. ; cmake --build . ; fi
     - cmake --install .
     # - make test
     # - make docs 
