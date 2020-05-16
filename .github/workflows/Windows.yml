@@ -49,9 +49,9 @@ jobs:
         with:
           cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
           useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '-- -v'
+          buildWithCMakeArgs: ' -DBUILD_ANALYSIS=OFF -DBUIL_OLD_WAVEDUMP=OFF -- -v'
           buildDirectory: '${{ runner.workspace }}/b/ninja/'
-          cmakeAppendedArgs: '-G Ninja -DBUILD_ANALYSIS=OFF -DBUIL_OLD_WAVEDUMP=OFF'
+          cmakeAppendedArgs: '-G Ninja'
       #- name: Run CMake+VS
       #  uses: lukka/run-cmake@master
       #  with:
