@@ -14,9 +14,6 @@ env:
 jobs:
   job:
     name: "Linux Clang"
-    with:
-      compiler: clang
-      version: "9"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
