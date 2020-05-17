@@ -64,7 +64,7 @@ jobs:
         run: |
         mkdir "${{ runner.workspace }}/build"
         cd "${{ runner.workspace }}/build"
-        cmake $GITHUB_WORKSPACE -GNinja
+        cmake $GITHUB_WORKSPACE 
       - name: Build
         run: cmake --build .
         working-directory: ${{ runner.workspace }}/build      
