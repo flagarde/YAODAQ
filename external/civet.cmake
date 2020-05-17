@@ -1,7 +1,5 @@
 if(NOT TARGET civet)
 include(ExternalProject)
-find_package( Threads )
-target_link_libraries(openssl INTERFACE ${CMAKE_THREAD_LIBS_INIT} )
 # ----- civet package -----
 ExternalProject_Add(
                     civet DEPENDS jsroot
