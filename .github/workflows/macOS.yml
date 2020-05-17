@@ -61,10 +61,12 @@ jobs:
         run: sudo cmake --install
      
       - name: Setup CMake
+        uses: actions/checkout@v2
         run: |
         mkdir "${{ runner.workspace }}/build"
         cd "${{ runner.workspace }}/build"
         cmake "${{GITHUB_WORKSPACE}}"
+        shell: bash
       - name: Build
         run: cmake --build .
         working-directory: ${{ runner.workspace }}/build      
