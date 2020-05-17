@@ -26,7 +26,7 @@ set(soci_version "master")
 set(toml11_repository "https://github.com/RPClab/toml11.git")
 set(toml11_version "master")
 # spdlog
-set(spdlog_repository "https://github.com/RPClab/spdlog.git")
+set(spdlog_repository "https://github.com/gabime/spdlog.git")
 set(spdlog_version "v1.x")
 # civet
 set(civet_repository "https://github.com/civetweb/civetweb.git")

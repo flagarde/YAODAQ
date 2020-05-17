@@ -1,9 +1,5 @@
-# Copyright (c) 2019-2020 Luca Cappa
-# Released under the term specified in file LICENSE.txt
-# SPDX short identifier: MIT
 name: Linux
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+
 on:
   push:
     branches: [ master ]
@@ -11,12 +7,8 @@ on:
     branches: [ master ]
 
 env:
-  triplet: x64-linux
-  vcpkgCommitId: 'c7ab9d3110813979a873b2dbac630a9ab79850dc'
-  vcpkgPackages: 'zlib'
-  configuration: '.*Linux.*'
   BUILD_TYPE: Release
-  ROOT_VERSION: 6-18-04
+  ROOT_VERSION: 6-20-04
 
 jobs:
   job:
@@ -26,24 +18,9 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           submodules: true
-
-      - uses: lukka/get-cmake@master
-      - name: dir
-        run: find $RUNNER_WORKSPACE
-        shell: bash
-      - name: Restore artifacts, or Run vcpkg, build and cache artifacts
-        uses: lukka/run-vcpkg@master
-        id: runvcpkg
-        with:
-          vcpkgArguments: '${{ env.vcpkgPackages }}'
-          vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
-          vcpkgTriplet: '${{ env.triplet }}'
-          vcpkgGitCommitId: '${{ env.vcpkgCommitId }}'
-      - name: Prints output of run-vcpkg's task
-        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}' "
         
       - name : Download ROOT
         if: steps.cache-root.outputs.cache-hit != 'true'
@@ -81,17 +58,17 @@ jobs:
           endif()
         
       - name: Install ROOT
-        run: sudo cmake --install build-root
+        run: sudo cmake --install
      
-      - name: Run CMake+Ninja
-        uses: lukka/run-cmake@master
-        id: runcmake
-        with:
-          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-          useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '-- -v'
-          buildDirectory: '${{ runner.workspace }}/b/ninja/'
-          cmakeAppendedArgs: '-G Ninja '
-      - name: dir
-        run: find $RUNNER_WORKSPACE
+      - name: Setup CMake
+        run: |
+        mkdir "${{ runner.workspace }}/build"
+        cd "${{ runner.workspace }}/build"
+        cmake $GITHUB_WORKSPACE -GNinja
         shell: bash
+      - name: Build
+        run: cmake --build .
+        working-directory: ${{ runner.workspace }}/build      
+      - name: Test
+        run: ctest -V
+        working-directory: ${{ runner.workspace }}/build

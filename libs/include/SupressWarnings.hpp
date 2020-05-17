@@ -18,5 +18,5 @@
     #define DISABLE_WARNING_PUSH
     #define DISABLE_WARNING_POP
 #endif
-// clang-format on
 #include "Warnings.hpp"
+// clang-format on

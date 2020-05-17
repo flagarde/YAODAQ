@@ -1,10 +1,5 @@
-
-# Copyright (c) 2019-2020 Luca Cappa
-# Released under the term specified in file LICENSE.txt
-# SPDX short identifier: MIT
 name: Windows
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+
 on:
   push:
     branches: [ master ]
@@ -12,10 +7,8 @@ on:
     branches: [ master ]
 
 env:
-  triplet: x64-windows
-  vcpkgCommitId: 'c7ab9d3110813979a873b2dbac630a9ab79850dc'
-  vcpkgPackages: 'zlib'
-  configuration: 'x64.*'
+  BUILD_TYPE: Release
+  ROOT_VERSION: 6-20-04
 
 jobs:
   job:
@@ -25,41 +18,57 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
         with:
           submodules: true
-
-      - uses: lukka/get-cmake@master
-      - name: dir
-        run: find $RUNNER_WORKSPACE
+        
+      - name : Download ROOT
+        if: steps.cache-root.outputs.cache-hit != 'true'
+        id: ROOT
+        shell: cmake -P {0}
+        run: |
+          set(root_url "https://github.com/root-project/root/archive/v$ENV{ROOT_VERSION}.tar.gz")
+          file(DOWNLOAD "${root_url}" ./root.tar.gz SHOW_PROGRESS)
+          execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.tar.gz)
+    
+      - name: Configure ROOT
+        if: steps.cache-root.outputs.cache-hit != 'true'
+        shell: cmake -P {0}
+        run: | 
+          execute_process(
+             COMMAND cmake
+            -S root-$ENV{ROOT_VERSION}
+            -B build-root
+            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF
+          RESULT_VARIABLE result)
+          if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+          endif()
+    
+      - name: Build ROOT
+        if: steps.cache-root.outputs.cache-hit != 'true'
+        shell: cmake -P {0}
+        run: |
+          execute_process(
+            COMMAND cmake --build build-root
+            RESULT_VARIABLE result
+          )
+          if (NOT result EQUAL 0)
+            message(FATAL_ERROR "Bad exit status")
+          endif()
+        
+      - name: Install ROOT
+        run: sudo cmake --install
+        
+      - name: Setup CMake
+        run: |
+        mkdir "${{ runner.workspace }}/build"
+        cd "${{ runner.workspace }}/build"
+        cmake $GITHUB_WORKSPACE -GNinja
         shell: bash
-      - name: Restore artifacts, or Run vcpkg, build and cache artifacts
-        uses: lukka/run-vcpkg@master
-        id: runvcpkg
-        with:
-          vcpkgArguments: '${{ env.vcpkgPackages }}'
-          vcpkgDirectory: '${{ runner.workspace }}/b/vcpkg'
-          vcpkgTriplet: '${{ env.triplet }}'
-          vcpkgGitCommitId: '${{ env.vcpkgCommitId }}'
-      - name: Prints output of run-vcpkg's task
-        run: echo "root='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_ROOT_OUT }}', triplet='${{ steps.runvcpkg.outputs.RUNVCPKG_VCPKG_TRIPLET_OUT }}' "
-      - name: Run CMake+Ninja
-        uses: lukka/run-cmake@master
-        id: runcmake
-        with:
-          cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-          useVcpkgToolchainFile: true
-          buildWithCMakeArgs: '-- -v'
-          buildDirectory: '${{ runner.workspace }}/b/ninja/'
-          cmakeAppendedArgs: '-G Ninja -DBUILD_ANALYSIS=OFF -DBUIL_OLD_WAVEDUMP=OFF'
-      #- name: Run CMake+VS
-      #  uses: lukka/run-cmake@master
-      #  with:
-      #    cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
-      #    cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-      #    useVcpkgToolchainFile: true
-      #    buildDirectory: '${{ runner.workspace }}/b/vs16'
-      #    cmakeAppendedArgs: '-G"Visual Studio 16 2019" -Ax64'
-      - name: dir
-        run: find $RUNNER_WORKSPACE
-        shell: bash
+      - name: Build
+        run: cmake --build .
+        working-directory: ${{ runner.workspace }}/build      
+      - name: Test
+        run: ctest -V
+        working-directory: ${{ runner.workspace }}/build

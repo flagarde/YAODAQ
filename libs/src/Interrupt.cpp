@@ -1,17 +1,12 @@
 #include "Interrupt.hpp"
-
-#include "SupressWarnings.hpp"
 #include "spdlog.h"
 
 #include <csignal>
-#include <iostream>
 
 volatile bool Interrupt::m_Continue = true;
 
 Interrupt::Interrupt()
 {
-  DISABLE_WARNING_PUSH
-  DISABLE_WARNING_PMFCONVERSIONS
   std::signal(SIGTERM, [](int a) -> void {
     std::cout << "\n";
     spdlog::warn("Termination request, sent to the program ");
@@ -42,7 +37,6 @@ Interrupt::Interrupt()
     spdlog::critical("Erroneous arithmetic operation.");
     m_Continue = false;
   });
-  DISABLE_WARNING_POP
 }
 
 int Interrupt::wait()
