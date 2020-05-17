@@ -22,47 +22,47 @@ jobs:
         with:
           submodules: true
         
-      - name : Download ROOT
-        if: steps.cache-root.outputs.cache-hit != 'true'
-        id: ROOT
-        shell: cmake -P {0}
-        run: |
-          set(root_url "https://github.com/root-project/root/archive/v$ENV{ROOT_VERSION}.tar.gz")
-          file(DOWNLOAD "${root_url}" ./root.tar.gz SHOW_PROGRESS)
-          execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.tar.gz)
+      #- name : Download ROOT
+      #  if: steps.cache-root.outputs.cache-hit != 'true'
+      #  id: ROOT
+      #  shell: cmake -P {0}
+      #  run: |
+      #    set(root_url "https://github.com/root-project/root/archive/#v$ENV{ROOT_VERSION}.tar.gz")
+      #    file(DOWNLOAD "${root_url}" ./root.tar.gz SHOW_PROGRESS)
+      #    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.tar.gz)
     
-      - name: Configure ROOT
-        if: steps.cache-root.outputs.cache-hit != 'true'
-        shell: cmake -P {0}
-        run: | 
-          execute_process(
-             COMMAND cmake
-            -S root-$ENV{ROOT_VERSION}
-            -B build-root
-            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -Dcxx17=ON -Dtmva=OFF -Dpython=OFF -Dminimal=OFF
-          RESULT_VARIABLE result)
-          if (NOT result EQUAL 0)
-          message(FATAL_ERROR "Bad exit status")
-          endif()
+      #- name: Configure ROOT
+      #  if: steps.cache-root.outputs.cache-hit != 'true'
+      #  shell: cmake -P {0}
+      #  run: | 
+      #    execute_process(
+      #       COMMAND cmake
+      #      -S root-$ENV{ROOT_VERSION}
+      #      -B build-root
+      #      -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -#Dcxx17=ON -Dtmva=OFF -Dpython=OFF -Dminimal=OFF -Dtmva=OFF -Dopengl=OFF
+      #    RESULT_VARIABLE result)
+      #    if (NOT result EQUAL 0)
+      #    message(FATAL_ERROR "Bad exit status")
+      #    endif()
     
-      - name: Build ROOT
-        if: steps.cache-root.outputs.cache-hit != 'true'
-        shell: cmake -P {0}
-        run: |
-          execute_process(
-            COMMAND cmake --build build-root -j5
-            RESULT_VARIABLE result
-          )
-          if (NOT result EQUAL 0)
-            message(FATAL_ERROR "Bad exit status")
-          endif()
+      #- name: Build ROOT
+      #  if: steps.cache-root.outputs.cache-hit != 'true'
+      #  shell: cmake -P {0}
+      #  run: |
+      #    execute_process(
+      #      COMMAND cmake --build build-root -j5
+      #      RESULT_VARIABLE result
+      #    )
+      #    if (NOT result EQUAL 0)
+      #      message(FATAL_ERROR "Bad exit status")
+      #    endif()
         
-      - name: Install ROOT
-        run: sudo cmake --install
+      #- name: Install ROOT
+      #  run: sudo cmake --install .
      
       - name: Configure
-        run: mkdir build && cd build && cmake ..
+        run: mkdir build && cd build && cmake -DBUILD_ANALYSIS=OFF -DBUILD_OLD_WAVEDUMP=OFF ..
       - name: Build
         run: cmake --build build
       - name: Install
-        run: cmake --install
+        run: cmake --install .
