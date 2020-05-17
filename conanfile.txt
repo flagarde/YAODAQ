@@ -6,6 +6,8 @@ zlib/1.2.11
 [options]
 zlib:shared=False
 openssl:shared=False
+openssl:no_threads=False
+openssl:fPIC=True
 
 #[imports]
 #bin, *.dll -> ./bin # Copies all dll files from packages bin folder to my "bin" folder
