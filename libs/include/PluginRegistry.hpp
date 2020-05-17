@@ -39,7 +39,8 @@ public:
   template<typename T, typename BaseT, typename... Ts> void RegisterPlugin(Ts... rest)
   {
     // If key already exists, throw a duplicate plugin exception
-    _plugins[std::type_index(typeid(BaseT))].push_back([this, rest...]() { return std::make_shared<T>(rest...); });
+    std::shared_ptr<T> toto{std::make_shared<T>(rest...)};
+    _plugins[std::type_index(typeid(BaseT))].push_back([toto]() { return toto; });
   }
 
   template<class T> std::vector<std::shared_ptr<T>> ResolvePlugin()
