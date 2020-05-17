@@ -60,16 +60,10 @@ jobs:
       - name: Install ROOT
         run: sudo cmake --install
         
-      - name: Setup CMake
-        uses: actions/checkout@v2
-        run: |
-        mkdir "${{ runner.workspace }}/build"
-        cd "${{ runner.workspace }}/build"
-        cmake ..
-        shell: bash
-      - name: Build
-        run: cmake --build .
-        working-directory: ${{ runner.workspace }}/build      
-      - name: Test
-        run: ctest -V
-        working-directory: ${{ runner.workspace }}/build
+      - name: configure
+        run: mkdir build && cd build && cmake ..
+      - name: build
+        run: cmake --build build
+      - name: Install
+        run: cmake --install
+
