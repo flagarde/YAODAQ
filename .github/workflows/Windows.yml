@@ -50,7 +50,7 @@ jobs:
         shell: cmake -P {0}
         run: |
           execute_process(
-            COMMAND cmake --build build-root
+            COMMAND cmake --build build-root -j5
             RESULT_VARIABLE result
           )
           if (NOT result EQUAL 0)
