@@ -39,7 +39,7 @@ jobs:
              COMMAND cmake
             -S root-$ENV{ROOT_VERSION}
             -B build-root
-            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -Dbuiltin_glew=ON
+            -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -Dx11=OFF -Dbuiltin_gsl=OFF -Dbuiltin_glew=ON -Dcxx17=ON -Dtmva=OFF -Dpython=OFF
           RESULT_VARIABLE result)
           if (NOT result EQUAL 0)
           message(FATAL_ERROR "Bad exit status")
