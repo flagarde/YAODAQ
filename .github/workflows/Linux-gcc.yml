@@ -1,4 +1,4 @@
-name: Linux
+name: "Linux GCC"
 
 on:
   push:
@@ -14,7 +14,7 @@ env:
   
 jobs:
   job:
-    name: Linux
+    name: "Linux GCC"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
