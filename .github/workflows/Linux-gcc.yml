@@ -9,13 +9,12 @@ on:
 env:
   BUILD_TYPE: Release
   ROOT_VERSION: 6-20-04
-  COMPILER: gcc-9.3
-  LINKER: gcc-9.3
   
 jobs:
   job:
     name: Linux
     runs-on: ubuntu-latest
+    compiler: gcc-9.3
     strategy:
       fail-fast: false
 
