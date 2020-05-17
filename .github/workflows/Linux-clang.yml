@@ -1,4 +1,4 @@
-name: Linux
+name: "Linux clang"
 
 on:
   push:
@@ -12,9 +12,10 @@ env:
 
 jobs:
   job:
-    name: Linux
-    compiler: clang
-    version: "9"
+    name: "Linux clang"
+    with:
+      compiler: clang
+      version: "9"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
