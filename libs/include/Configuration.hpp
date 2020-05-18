@@ -12,13 +12,14 @@ class Configuration
 {
 public:
   void           parse();
+  void           reparseModule();
   std::string    getFileName();
   void           setFileName(const std::string&);
   toml::value    getConfig(const std::string&);
   ConnectorInfos getConnectorInfos(const std::string&);
 
 private:
-  static int                            m_ConnectorID;
+  static int                            m_ConnectorID;                             
   int                                   m_CrateConnectorID{0};
   void                                  parseRooms();
   void                                  parseRacks(const toml::value& room);
@@ -28,7 +29,6 @@ private:
   void                                  fillIndexes();
   std::string                           m_Filename{""};
   toml::value                           m_Conf;
-  bool                                  m_isParsed{false};
   std::vector<std::string>              m_Room_Names;
   std::vector<std::string>              m_Rack_Names;
   std::vector<std::string>              m_Crate_Names;

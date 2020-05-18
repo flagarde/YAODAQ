@@ -5,6 +5,18 @@
 namespace CAEN
 {
   
+enum FLASH_API_ERROR_CODES : int
+{
+  SUCCESS                  = 0,
+  ACCESS_FAILED            = -1,
+  PARAMETER_NOT_ALLOWED    = -2,
+  FILE_OPEN_ERROR          = -3,
+  MALLOC_ERROR             = -4,
+  UNINITIALIZED            = -5,
+  NOT_IMPLEMENTED          = -6,
+  UNSUPPORTED_FLASH_DEVICE = -7
+};
+  
 class CAENFlashException: public Exception
 {
 public:
@@ -19,18 +31,6 @@ public:
 private:
   CAENFlashException() = delete;
   virtual const char* errorStrings(const int& code) final;
-  
-  enum FLASH_API_ERROR_CODES
-  {
-    FLASH_API_SUCCESS                  = 0,
-    FLASH_API_ACCESS_FAILED            = -1,
-    FLASH_API_PARAMETER_NOT_ALLOWED    = -2,
-    FLASH_API_FILE_OPEN_ERROR          = -3,
-    FLASH_API_MALLOC_ERROR             = -4,
-    FLASH_API_UNINITIALIZED            = -5,
-    FLASH_API_NOT_IMPLEMENTED          = -6,
-    FLASH_API_UNSUPPORTED_FLASH_DEVICE = -7
-  };
 };
 
 }  // namespace CAEN

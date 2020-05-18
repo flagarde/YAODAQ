@@ -25,56 +25,56 @@ Type = "N141X"
 # WRITE_REGISTER [[1080,0000,0100]]
 # Example: Set register 1080 to the value of 0x45:
 # WRITE_REGISTER [[1080,45,FFFFFFFF]]
-WRITE_REGISTER=[[0,1,2],[3,4,5],[6,7,8]]
+#WRITE_REGISTER=[[0,1,2],[3,4,5],[6,7,8]]
 # RECORD_LENGTH = number of samples in the acquisition window
 # For 742 family the options available are only 1024, 520, 256 and 136
-RECORD_LENGTH=128
+#RECORD_LENGTH=128
 # DECIMATION_FACTOR: ONLY FOR 740 and 724 MODELS. change the decimation factor for the acquisition.
 # Options: 1 2 4 8 16 32 64 128  
-DECIMATION_FACTOR =1
+#DECIMATION_FACTOR =1
 # POST_TRIGGER: post trigger size in percent of the whole acquisition window
 # options: 0 to 100 
 # For x742 there is a delay of about 42 nsec on Fast Trigger TR, and about 115 nsec on TRG-IN; 
 # the post trigger is added to this delay  
-POST_TRIGGER=50
+#POST_TRIGGER=50
 # EXTERNAL_TRIGGER: external trigger input settings. When enabled, the ext. trg. can be either 
 # propagated (ACQUISITION_AND_TRGOUT) or not (ACQ_ONLY) through the TRGOUT
 # options: DISABLED, ACQ_ONLY, ACQUISITION_AND_TRGOUT
-EXTERNAL_TRIGGER ="DISABLED"
+#EXTERNAL_TRIGGER ="DISABLED"
 # FPIO_LEVEL: type of the front panel I/O LEMO connectors 
 # options: NIM, TTL
-FPIO_LEVEL="NIM"
+#FPIO_LEVEL="NIM"
 # TEST_PATTERN: if enabled, data from ADC are replaced by test pattern (triangular wave)
 # options: true, false
-TEST_PATTERN=false
+TEST_PATTERN=true
 # FAST_TRIGGER: fast trigger input settings. ONLY FOR 742 MODELS. When enabled, the fast trigger is used
 # for the data acquisition 
 # options: DISABLED, ACQ_ONLY
-FAST_TRIGGER="DISABLED"
+#FAST_TRIGGER="DISABLED"
 # OUTPUT_FILE_HEADER: if enabled, the header is included in the output file data
 # options: true, false
-OUTPUT_FILE_HEADER=true
+#OUTPUT_FILE_HEADER=true
 # OUTPUT_FILE_FORMAT: output file can be either ASCII (column of decimal numbers) or binary 
 # (2 bytes per sample, except for Mod 721 and Mod 731 that is 1 byte per sample)
 # options: BINARY, ASCII, ROOT
-OUTPUT_FILE_FORMAT="ROOT"
+#OUTPUT_FILE_FORMAT="ROOT"
 # Set the DRS4 Chip Frequency (for X742 boards only)
 # Values: 5GHz, 2.5 GHz ,1GHz ,750MHz
-DRS4_FREQUENCY="5GHz"
+#DRS4_FREQUENCY="5GHz"
 #PULSE_POLARITY: input signal polarity.
 #options: POSITIVE, NEGATIVE
-PULSE_POLARITY="NEGATIVE"
+#PULSE_POLARITY="NEGATIVE"
 # FAST_TRIGGER_DIGITIZING: ONLY FOR 742 MODELS. If enabled the fast trigger signal is digitized and it is
 # present in data readout as channel n.8 for each group.
 # options: true, false
-ENABLED_FAST_TRIGGER_DIGITIZING=true
+#ENABLED_FAST_TRIGGER_DIGITIZING=true
 #Interrupt settings (request interrupt when there are at least N events to
 #read; 0=disable interrupts (polling mode))
-USE_INTERRUPT=0
+#USE_INTERRUPT=0
 #Skip startup calibration
-SKIP_STARTUP_CALIBRATION=false
+#SKIP_STARTUP_CALIBRATION=false
 #Max. number of events for a block transfer (0 to 1023)
-MAX_NUM_EVENTS_BLT=1023
+#MAX_NUM_EVENTS_BLT=1023
 [Room.Rack.Crate.Board.Connector]
 Name = "Connector1"
 "Connection Type" = "USB"
@@ -94,7 +94,7 @@ Model = "V1718"
 
 # ENABLE_INPUT: enable/disable one group of channels X740/X742 channel for others
 # options: true,false
-ENABLE_INPUT=false
+#ENABLE_INPUT=false
 
 
 [Room.Rack.Crate.Board.2]
@@ -108,7 +108,7 @@ ENABLE_INPUT=false
 
 # ENABLE_INPUT: enable/disable one group of channels X740/X742 channel for others
 # options: true,false
-ENABLE_INPUT=false
+#ENABLE_INPUT=false
 
 [Room.Rack.Crate.Board.Common]
 # ----------------------------------------------------------------
@@ -121,7 +121,7 @@ ENABLE_INPUT=false
 
 # ENABLE_INPUT: enable/disable one group of channels X740/X742 channel for others
 # options: true,false
-ENABLE_INPUT=false
+#ENABLE_INPUT=false
 #BASELINE_LEVEL: baseline position in percent of the Full Scale. 
 # The baseline shift is the same for all channels in the group X140 or channel
 # POSITIVE PULSE POLARITY (Full Scale = from 0 to + Vpp)
@@ -134,19 +134,19 @@ ENABLE_INPUT=false
 # 100: analog input dynamic range = null (usually not used)*
 #
 # options: 0 to 100
-BASELINE_LEVEL=50
+#BASELINE_LEVEL=50
 # GRP_CH_DC_OFFSET=[dc_0, dc_1, dc_2, dc_3, dc_4, dc_5, dc_6, dc_7]
 # Available only for model 742, allows to set different DC offset adjust for each channel (DAC channel setting) in percent of the Full Scale. 
 # -50: analog input dynamic range = -3Vpp/2 to -Vpp/2 (max negative dynamic)GRP_CH_DC_OFFSET=[dc_0, dc_1, dc_2, dc_3, dc_4, dc_5, dc_6, dc_7]
 # +50: analog input dynamic range = +Vpp/2 to +3Vpp/2 (max positive dynamic)
 # 0: analog input dynamic range = -Vpp/2 to +Vpp/2 (bipolar signals)
 # options: -50.0 to 50.0  (floating point)
-GRP_CH_DC_OFFSET=[0,0,0,0,0,0,0,0]
+#GRP_CH_DC_OFFSET=[0,0,0,0,0,0,0,0]
 #XX140 ONLY
 # GROUP_TRG_ENABLE_MASK: channels are grouped 8 by 8; one group of 8 channels has a common trigger that is generated as
 # the OR of the self trigger of the channels in the group that are enabled by this mask.
 # options: 0 to FF
-GROUP_TRG_ENABLE_MASK=0
+#GROUP_TRG_ENABLE_MASK=0
 ## XX142 ONLY
 # DC_OFFSET: DC offset adjust (DAC channel setting) in percent of the Full Scale. 
 # For model 742* the DC offset adjust is the same for all channels in the group 
@@ -154,7 +154,7 @@ GROUP_TRG_ENABLE_MASK=0
 # +50: analog input dynamic range = 0 to +Vpp (positive signals)*
 # 0:   analog input dynamic range = -Vpp/2 to +Vpp/2 (bipolar signals)*
 #options: -50 to 50
-DC_OFFSET=0
+#DC_OFFSET=0
 # TRIGGER_THRESHOLD: threshold for the channel auto trigger (ADC counts)
 # options 0 to 2^N-1 (N=Number of bit of the ADC)
 # *if DC_OFFSET is used the threshold is absolute* 
@@ -162,7 +162,7 @@ DC_OFFSET=0
 # POSITIVE PULSE POLARITY: threshold = baseline + TRIGGER_THRESHOLD
 # NEGATIVE PULSE POLARITY: threshold = baseline - TRIGGER_THRESHOLD
 #
-TRIGGER_THRESHOLD=100
+#TRIGGER_THRESHOLD=100
 # ----------------------------------------------------------------
 # Custom Setting for Model 742 
 # ----------------------------------------------------------------
@@ -195,7 +195,7 @@ TRIGGER_THRESHOLD=100
 # CHANNEL_TRIGGER: channel auto trigger settings. When enabled, the ch. auto trg. can be either 
 # propagated (ACQUISITION_AND_TRGOUT) or not (ACQUISITION_ONLY) through the TRGOUT
 # options: DISABLED, ACQ_ONLY, ACQ_AND_TRGOUT, TRGOUT_ONLY
-CHANNEL_TRIGGER="ACQ_ONLY"
+#CHANNEL_TRIGGER="ACQ_ONLY"
 #FIXME
 # Correction Level to use with x742 Digitizers Family
 # Syntax: CORRECTION_LEVEL <CORR_MASK> <CUST_TABLE_MASK> <FILENAME1> <FILENAME2> ...
@@ -218,7 +218,7 @@ CHANNEL_TRIGGER="ACQ_ONLY"
 # CORRECTION_LEVEL 7 AUTO
 # Manual Corrections with Digitizer's Flash tables for group 1 and with custom tables for the other groups:
 # CORRECTION_LEVEL 7 13 Table_gr0 Table_gr2 Table_gr3
-CORRECTION_LEVEL="AUTO"
+#CORRECTION_LEVEL="AUTO"
    #if(strstr(str, "ENABLE_DES_MODE") != NULL)
    # {
    #   read = fscanf(f_ini, "%s", str1);
@@ -228,29 +228,4 @@ CORRECTION_LEVEL="AUTO"
    #   if(PrevDesMode != WDcfg.DesMode) ret |= (0x1 << CFGRELOAD_DESMODE_BIT);
    #   continue;
    # }
-
-
-
-[[Room.Rack.Crate.Board]]
-Name = "Board2"
-Type = "N141X"
-WRITE_REGISTER=[[0,1,2],[3,4,5],[6,7,8]]
-[Room.Rack.Crate.Board.Connector]
-Name = "Connector2"
-Type = "CAENVME"
-Model = "V1718"
-"Link Number" = 0
-        
-      
-[[Room.Rack.Crate]]
-Name = "Crate2"
-
-[[Room.Rack.Crate.Board]]
-Name = "Board3"
-Type = "N141X"
-[Room.Rack.Crate.Board.Connector]
-Name = "Connector3"
-Type = "CAENVME"
-Model = "V1718"
-"Link Number" = 0
         

@@ -9,6 +9,9 @@
 
 namespace CAEN
 {
+
+class DRS4Correction;
+
   
 class CAEN_DGTZ_UINT16_EVENT_t;
 class CAEN_DGTZ_UINT8_EVENT_t;
@@ -831,13 +834,12 @@ public:
   std::string   GetFastTriggerDigitizing();
   void          SetFastTriggerMode(const std::string& mode);
   std::string   GetFastTriggerMode();
-  /*
-  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_LoadDRS4CorrectionData(int handle,
-  CAEN_DGTZ_DRS4Frequency_t frequency); CAEN_DGTZ_ErrorCode CAENDGTZ_API
-  CAEN_DGTZ_GetCorrectionTables(int handle, int frequency, void *CTable);
-  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_EnableDRS4Correction(int handle);
-  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DisableDRS4Correction(int handle);
-  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DecodeZLEWaveforms(int handle, void
+  
+  void LoadDRS4CorrectionData();
+  void GetCorrectionTables();
+  void EnableDRS4Correction();
+  void DisableDRS4Correction();
+  /*CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DecodeZLEWaveforms(int handle, void
   *event, void *waveforms); CAEN_DGTZ_ErrorCode CAENDGTZ_API
   CAEN_DGTZ_FreeZLEWaveforms(int handle, void *waveforms); CAEN_DGTZ_ErrorCode
   CAENDGTZ_API CAEN_DGTZ_MallocZLEWaveforms(int handle, void **waveforms,
@@ -911,6 +913,16 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////
+  /*! \fn      void Load_DAC_Calibration_From_Flash(int handle, WaveDumpConfig_t
+   * *WDcfg, CAEN_DGTZ_BoardInfo_t BoardInfo) \brief   look for DAC calibration
+   *in flash and load it*/
+  void LoadDACCalibration();
+  
+  void PerformCalibration();
+  
+  void MaskChannels();
+  
+  
   
   //////// Board functions
   void  DoInitialize() final;
@@ -948,6 +960,8 @@ private:
   std::uint32_t m_CommHandle{0};
   void          setVMEHandle(const std::uint32_t& model);
   std::uint32_t m_VMEHandle{0};
+  void          setHasDPPFirware();
+  bool          m_DPPFirmware{false};
   //////// Board functions
   void initilizeParameters();
   virtual void verifyParameters() final;
@@ -1014,10 +1028,14 @@ public:
   {
   }
   
+  bool hasDPPFirmware()
+  {
+    return m_DPPFirmware;
+  }
   
   
 private:
- 
+
 
   
   
@@ -1063,6 +1081,7 @@ private:
   static constexpr int m_MAX_GROUPS{8};/* max. number of groups */
   bool                m_Test{false};
   std::string         m_FastTriggerEnabled{"DISABLED"};
+  std::string         m_FastTriggerMode{"DISABLED"};
   std::string         m_DesMode{"DISABLED"};
   std::uint32_t       m_RecordLength{1024};
   int                 m_NumberEvent{1023};

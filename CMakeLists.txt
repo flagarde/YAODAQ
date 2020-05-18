@@ -28,7 +28,7 @@ if(WIN32)
 elseif(APPLE)
   pmm(DEBUG CONAN)
 else()
-  pmm(DEBUG CONAN SETTINGS "compiler.libcxx=libstdc++11")
+  pmm(DEBUG CONAN SETTINGS "compiler.libcxx=libstdc++11;compiler.version=9.2")
 endif()
 include(${PROJECT_BINARY_DIR}/conanbuildinfo.cmake)
 

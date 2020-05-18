@@ -9,6 +9,9 @@
 #include "sinks/stdout_color_sinks.h"
 #include "spdlog.h"
 
+bool Module::m_HaveToReloadConfigModules=true;
+bool Module::m_HaveToReloadConfig=true;
+
 Configuration Module::m_Config = Configuration();
 
 void Module::setConfigFile(const std::string& file)
@@ -65,6 +68,21 @@ Module::Module(const std::string& name, const std::string& type): m_Type(type), 
 }
 
 void Module::verifyParameters() {}
+
+void Module::staticReparseModules()
+{
+  if(m_HaveToReloadConfigModules==true)
+  {
+    m_Config.reparseModule();
+    m_HaveToReloadConfigModules=false;
+  }
+}
+
+void Module::reparseModules()
+{
+  staticReparseModules();
+  m_Conf = m_Config.getConfig(m_Name);
+}
 
 void Module::LoadConfig()
 {
@@ -127,6 +145,7 @@ void Module::Configure()
 {
   try
   {
+    reparseModules();
     DoConfigure();
     setState(States::CONFIGURED);
     sendState();
@@ -295,6 +314,7 @@ void Module::DoOnAction(const Message& message)
       }
       case Actions::CONFIGURE:
       {
+        m_HaveToReloadConfigModules=true;
         Configure();
         break;
       }

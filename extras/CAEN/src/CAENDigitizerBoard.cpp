@@ -2,10 +2,28 @@
 
 #include "CAENDigitizer.h"
 #include "CAENDigitizerException.hpp"
+#include "Flash.hpp"
+
 #include <iostream>
 namespace CAEN
 {
   
+class DRS4Correction
+{
+public:
+  DRS4Correction(){}
+  DRS4Correction(const std::array<std::array<std::array<int16_t,1024>,MAX_X742_CHANNEL_SIZE>,MAX_X742_GROUP_SIZE>& cell,const std::array<std::array<std::array<int16_t,1024>,MAX_X742_CHANNEL_SIZE>,MAX_X742_GROUP_SIZE>& nsample,const std::array<std::array<float,1024>,MAX_X742_GROUP_SIZE>& time)
+    {
+      m_Cell=cell;
+      m_NSample=nsample;
+      m_Time=time;
+    }
+  private:
+    std::array<std::array<std::array<int16_t,1024>,MAX_X742_CHANNEL_SIZE>,MAX_X742_GROUP_SIZE> m_Cell;
+    std::array<std::array<std::array<int16_t,1024>,MAX_X742_CHANNEL_SIZE>,MAX_X742_GROUP_SIZE> m_NSample;
+    std::array<std::array<float,1024>,MAX_X742_GROUP_SIZE> m_Time;
+};
+
   /*******************DPPAcquisitionMode**************************/
 DPPAcquisitionMode::DPPAcquisitionMode(const std::string& mode,const std::string& param)
 {
@@ -164,6 +182,7 @@ void CAENDigitizerBoard::GetInfo()
   setLicense(boardinfo.License);
   setCommHandle(boardinfo.CommHandle);
   setVMEHandle(boardinfo.VMEHandle);
+  setHasDPPFirware();
 }
 
 void CAENDigitizerBoard::Reset()
@@ -285,8 +304,8 @@ std::string CAENDigitizerBoard::GetDESMode()
 
 void CAENDigitizerBoard::SetRecordLength(const std::uint32_t& size, const int& ch)
 {
-  if(ch == -1) CAENDigitizerException(CAEN_DGTZ_SetRecordLength(m_Handle, size));
-  else CAENDigitizerException(CAEN_DGTZ_SetRecordLength(m_Handle, size, ch));
+  CAENDigitizerException(CAEN_DGTZ_SetRecordLength(m_Handle,(std::uint32_t)(136)));
+  //CAENDigitizerException(CAEN_DGTZ_SetRecordLength(m_Handle, size, ch));
 }
 
 std::uint32_t CAENDigitizerBoard::GetRecordLength(const int& ch)
@@ -968,8 +987,8 @@ std::string CAENDigitizerBoard::CAENDigitizerBoard::GetIOLevel()
 
 void CAENDigitizerBoard::SetTriggerPolarity(const std::uint32_t& channel, const std::string&   Polarity)
 {
-  if(Polarity == "TriggerOnRisingEdge") CAENDigitizerException(CAEN_DGTZ_SetTriggerPolarity(m_Handle, channel, CAEN_DGTZ_TriggerOnRisingEdge));
-  else if(Polarity == "TriggerOnFallingEdge") CAENDigitizerException(CAEN_DGTZ_SetTriggerPolarity(m_Handle, channel, CAEN_DGTZ_TriggerOnFallingEdge));
+  if(Polarity == "POSITIVE") CAENDigitizerException(CAEN_DGTZ_SetTriggerPolarity(m_Handle, channel, CAEN_DGTZ_TriggerOnRisingEdge));
+  else if(Polarity == "NEGATIVE") CAENDigitizerException(CAEN_DGTZ_SetTriggerPolarity(m_Handle, channel, CAEN_DGTZ_TriggerOnFallingEdge));
   else throw CAENDigitizerException(CAEN_DGTZ_InvalidParam);
 }
 
@@ -977,8 +996,8 @@ std::string CAENDigitizerBoard::GetTriggerPolarity(const std::uint32_t& channel)
 {
   CAEN_DGTZ_TriggerPolarity_t polarity;
   CAENDigitizerException(CAEN_DGTZ_GetTriggerPolarity(m_Handle, channel, &polarity));
-  if(channel == CAEN_DGTZ_TriggerOnRisingEdge) return "TriggerOnRisingEdge";
-  else return "TriggerOnFallingEdge";
+  if(channel == CAEN_DGTZ_TriggerOnRisingEdge) return "POSITIVE";
+  else return "NEGATIVE";
 }
 
 void CAENDigitizerBoard::RearmInterrupt()
@@ -1069,55 +1088,78 @@ std::string CAENDigitizerBoard::GetFastTriggerMode()
   else return "ACQ_ONLY";
 }
 
-/*
- C A*EN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_LoadDRS4CorrectionData(int handle,
- CAEN_DGTZ_DRS4Frequency_t frequency); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_GetCorrectionTables(int handle, int frequency, void *CTable);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_EnableDRS4Correction(int handle);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DisableDRS4Correction(int handle);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DecodeZLEWaveforms(int handle, void
- *event, void *waveforms); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_FreeZLEWaveforms(int handle, void *waveforms); CAEN_DGTZ_ErrorCode
- CAENDGTZ_API CAEN_DGTZ_MallocZLEWaveforms(int handle, void **waveforms,
- uint32_t *allocatedSize); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_FreeZLEEvents(int handle, void **events); CAEN_DGTZ_ErrorCode
- CAENDGTZ_API CAEN_DGTZ_MallocZLEEvents(int handle, void **events, uint32_t
- *allocatedSize); CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetZLEEvents(int
- handle, char *buffer, uint32_t buffsize, void **events, uint32_t*
- numEventsArray); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_SetZLEParameters(int handle, uint32_t channelMask, void* params);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMCorrectionLevel(int handle,
- CAEN_DGTZ_SAM_CORRECTION_LEVEL_t *level); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_SetSAMCorrectionLevel(int handle, CAEN_DGTZ_SAM_CORRECTION_LEVEL_t
- level); CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_EnableSAMPulseGen(int
- handle, int channel, unsigned short  pulsePattern,
- CAEN_DGTZ_SAMPulseSourceType_t pulseSource); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_DisableSAMPulseGen(int handle, int channel); CAEN_DGTZ_ErrorCode
- CAENDGTZ_API CAEN_DGTZ_SetSAMPostTriggerSize(int handle, int SamIndex, uint8_t
- value); CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMPostTriggerSize(int
- handle, int SamIndex, uint32_t *value); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_SetSAMSamplingFrequency(int handle, CAEN_DGTZ_SAMFrequency_t
- frequency); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_GetSAMSamplingFrequency(int handle, CAEN_DGTZ_SAMFrequency_t
- *frequency); CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_Read_EEPROM(int
- handle, int EEPROMIndex, unsigned short add, int nbOfBytes, unsigned char*
- buf); CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_Write_EEPROM(int handle, int
- EEPROMIndex, unsigned short add, int nbOfBytes, void* buf);
+void CAENDigitizerBoard::LoadDRS4CorrectionData()
+{
+  CAEN_DGTZ_DRS4Frequency_t frequency;
+  if(m_DRS4Frequency == "5GHz") frequency = CAEN_DGTZ_DRS4_5GHz;
+  else if(m_DRS4Frequency == "2.5GHz") frequency = CAEN_DGTZ_DRS4_2_5GHz;
+  else if(m_DRS4Frequency == "1GHz") frequency = CAEN_DGTZ_DRS4_1GHz;
+  else if(m_DRS4Frequency == "750MHz") frequency = CAEN_DGTZ_DRS4_750MHz;
+  CAENDigitizerException(CAEN_DGTZ_LoadDRS4CorrectionData(m_Handle,frequency));
+}
+
+void CAENDigitizerBoard::GetCorrectionTables()
+{
+  CAEN_DGTZ_DRS4Correction_t X742Tables[MAX_X742_GROUP_SIZE];
+  CAEN_DGTZ_DRS4Frequency_t frequency;
+  if(m_DRS4Frequency == "5GHz") frequency = CAEN_DGTZ_DRS4_5GHz;
+  else if(m_DRS4Frequency == "2.5GHz") frequency = CAEN_DGTZ_DRS4_2_5GHz;
+  else if(m_DRS4Frequency == "1GHz") frequency = CAEN_DGTZ_DRS4_1GHz;
+  else if(m_DRS4Frequency == "750MHz") frequency = CAEN_DGTZ_DRS4_750MHz;
+  CAENDigitizerException(CAEN_DGTZ_GetCorrectionTables(m_Handle,CAEN_DGTZ_DRS4_5GHz,(void*)X742Tables));
+  std::array<std::array<std::array<int16_t,1024>,MAX_X742_CHANNEL_SIZE>,MAX_X742_GROUP_SIZE> cell;
+  std::array<std::array<std::array<int16_t,1024>,MAX_X742_CHANNEL_SIZE>,MAX_X742_GROUP_SIZE> nsample;
+  std::array<std::array<float,1024>,MAX_X742_GROUP_SIZE> time;
+  for(std::size_t k=0;k!=MAX_X742_GROUP_SIZE;++k)
+  {
+    for(std::size_t j=0;j!=1024;++j)
+    {
+      for(std::size_t i=0;i!=MAX_X742_CHANNEL_SIZE;++i)
+      {
+        cell[k][i][j]=X742Tables[k].cell[i][j];
+        nsample[k][i][j]=X742Tables[k].nsample[i][j];
+        std::cout<<cell[k][i][j]<<"  "<<nsample[k][i][j]<<std::endl;
+      }
+      time[k][j]=X742Tables[k].time[j];
+    }
+  }
+}
+
+void CAENDigitizerBoard::EnableDRS4Correction()
+{
+  CAENDigitizerException(CAEN_DGTZ_EnableDRS4Correction(m_Handle));
+}
+
+void CAENDigitizerBoard::DisableDRS4Correction()
+{
+  CAENDigitizerException(CAEN_DGTZ_DisableDRS4Correction(m_Handle));
+}
+ /*CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DecodeZLEWaveforms(int handle, void *event, void *waveforms); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_FreeZLEWaveforms(int handle, void *waveforms);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_MallocZLEWaveforms(int handle, void **waveforms,uint32_t *allocatedSize); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_FreeZLEEvents(int handle, void **events); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_MallocZLEEvents(int handle, void **events, uint32_t*allocatedSize); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetZLEEvents(int handle, char *buffer, uint32_t buffsize, void **events, uint32_t* numEventsArray); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetZLEParameters(int handle, uint32_t channelMask, void* params);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMCorrectionLevel(int handle,CAEN_DGTZ_SAM_CORRECTION_LEVEL_t *level); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMCorrectionLevel(int handle, CAEN_DGTZ_SAM_CORRECTION_LEVEL_t level); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_EnableSAMPulseGen(int handle, int channel, unsigned short  pulsePattern, CAEN_DGTZ_SAMPulseSourceType_t pulseSource); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DisableSAMPulseGen(int handle, int channel); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMPostTriggerSize(int handle, int SamIndex, uint8_t value); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMPostTriggerSize(int handle, int SamIndex, uint32_t *value); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMSamplingFrequency(int handle, CAEN_DGTZ_SAMFrequency_t frequency); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMSamplingFrequency(int handle, CAEN_DGTZ_SAMFrequency_t *frequency); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_Read_EEPROM(int handle, int EEPROMIndex, unsigned short add, int nbOfBytes, unsigned char* buf); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_Write_EEPROM(int handle, int EEPROMIndex, unsigned short add, int nbOfBytes, void* buf);
  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_LoadSAMCorrectionData(int handle);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_TriggerThreshold(int handle,
- CAEN_DGTZ_EnaDis_t endis); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_SendSAMPulse(int handle); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_SetSAMAcquisitionMode(int handle, CAEN_DGTZ_AcquisitionMode_t mode);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMAcquisitionMode(int handle,
- CAEN_DGTZ_AcquisitionMode_t *mode); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_SetTriggerLogic(int handle, CAEN_DGTZ_TrigerLogic_t logic,  uint32_t
- majorityLevel); CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetTriggerLogic(int
- handle, CAEN_DGTZ_TrigerLogic_t *logic, uint32_t *majorityLevel);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelPairTriggerLogic(int
- handle,  uint32_t channelA, uint32_t channelB, CAEN_DGTZ_TrigerLogic_t *logic,
- uint16_t *coincidenceWindow); CAEN_DGTZ_ErrorCode CAENDGTZ_API
- CAEN_DGTZ_SetChannelPairTriggerLogic(int handle,  uint32_t channelA, uint32_t
- channelB, CAEN_DGTZ_TrigerLogic_t logic, uint16_t coincidenceWindow);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_TriggerThreshold(int handle, CAEN_DGTZ_EnaDis_t endis); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SendSAMPulse(int handle); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMAcquisitionMode(int handle, CAEN_DGTZ_AcquisitionMode_t mode);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMAcquisitionMode(int handle, CAEN_DGTZ_AcquisitionMode_t *mode); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetTriggerLogic(int handle, CAEN_DGTZ_TrigerLogic_t logic,  uint32_t majorityLevel); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetTriggerLogic(int handle, CAEN_DGTZ_TrigerLogic_t *logic, uint32_t *majorityLevel);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelPairTriggerLogic(int handle,  uint32_t channelA, uint32_t channelB, CAEN_DGTZ_TrigerLogic_t *logic, uint16_t *coincidenceWindow); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetChannelPairTriggerLogic(int handle,  uint32_t channelA, uint32_t channelB, CAEN_DGTZ_TrigerLogic_t logic, uint16_t coincidenceWindow);
  */
 
 void CAENDigitizerBoard::SetDecimationFactor(const std::uint16_t& factor)
@@ -1133,12 +1175,9 @@ std::uint16_t CAENDigitizerBoard::GetDecimationFactor()
 }
 
 /*
- C AEN_DGTZ_ErrorC*ode CAENDGTZ_API CAEN_DGTZ_SetSAMTriggerCountVetoParam(int
- handle, int channel, CAEN_DGTZ_EnaDis_t enable, uint32_t vetoWindow);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMTriggerCountVetoParam(int
- handle, int channel, CAEN_DGTZ_EnaDis_t *enable, uint32_t *vetoWindow);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMCorrectionData(int handle,
- void *STable);*/
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMTriggerCountVetoParam(int handle, int channel, CAEN_DGTZ_EnaDis_t enable, uint32_t vetoWindow);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMTriggerCountVetoParam(int handle, int channel, CAEN_DGTZ_EnaDis_t *enable, uint32_t *vetoWindow);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMCorrectionData(int handle,void *STable);*/
 
 void CAENDigitizerBoard::Calibrate()
 {
@@ -1169,13 +1208,68 @@ std::string CAENDigitizerBoard::GetDPPFirmwareType()
   }
 }
 
+void CAENDigitizerBoard::LoadDACCalibration()
+{
+  if(m_FamilyCode=="XX742") return;
+  Flash flash;
+  flash.setHandle(m_Handle);
+  flash.init();
+  std::vector<uint8_t> buf=flash.read_virtual_page();
+  if(buf[0] != 0xD)
+  {
+    sendWarning("No DAC Calibration data found in board flash. Use option 'D' to calibrate DAC.");
+  }
+  else
+  {
+    for(std::size_t ch = 0; ch < m_Nch; ++ch)
+    {
+      m_Cal[ch]    = static_cast<float>(buf[2 * ch]);
+      m_Offset[ch] = static_cast<float>(buf[1 + 2 * ch]);
+    }
+  }
+  sendInfo("DAC calibration correctly loaded from board flash.");
+}
+
+void CAENDigitizerBoard::PerformCalibration()
+{
+  if(!m_StartupCalibration)return;
+  if(BoardSupportsCalibration())
+  {
+    if(m_State!=States::STARTED)
+    {
+      try
+      {
+        Calibrate();
+      }
+      catch(const CAENDigitizerException& error)
+      {
+        sendError("ADC Calibration failed. CAENDigitizer ERR ");
+        sendError(error.what());
+      }
+      sendInfo("ADC Calibration successfully executed.");
+    }
+    else sendWarning("Can't run ADC calibration while acquisition is running.");
+  }
+  else sendInfo("ADC Calibration not needed for this board family.");
+}
+
+void CAENDigitizerBoard::MaskChannels()
+{
+  if((m_FamilyCode != "XX740") && (m_FamilyCode != "XX742")) { m_EnableMask &= (1 << m_Nch) - 1; }
+  else
+  {
+    m_EnableMask &= (1 << (m_Nch / 8)) - 1;
+  }
+  if((m_FamilyCode == "XX751") && m_DesMode=="ENABLED") { m_EnableMask &= 0xAA; }
+  if((m_FamilyCode == "XX731") && m_DesMode=="ENABLED") { m_EnableMask &= 0x55; }
+}
+
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 //////// Board functions
 void  CAENDigitizerBoard::DoInitialize()
 {
-  std::cout<<"Initializing"<<std::endl;
 }
 
 void  CAENDigitizerBoard::DoConfigure()
@@ -1184,6 +1278,51 @@ void  CAENDigitizerBoard::DoConfigure()
   sendInfo("Connected to CAEN Digitizer Model {}",m_ModelName);
   sendInfo("ROC FPGA Release is  {}",m_ROC_FirmwareRel);
   sendInfo("AMC FPGA Release is {}",m_AMC_FirmwareRel);
+  // Check firmware rivision (DPP firmwares cannot be used with WaveDump */
+  if(m_DPPFirmware) throw Exception(StatusCode::FAILURE,"This digitizer has a DPP firmware");
+  GetMoreBoardInfo();
+  LoadDACCalibration();
+  PerformCalibration();
+  MaskChannels();
+  ProgramDigitizer();
+  // Read again the board infos, just in case some of them were changed by
+  // the programming (like, for example, the TSample and the number of
+  // channels if DES mode is changed)
+  GetInfo();
+  GetMoreBoardInfo();
+  // Reload Correction Tables if changed
+  if(m_FamilyCode == "XX742")
+  {
+    if(m_UseCorrections==true)
+    {  
+      // Use Manual Corrections
+      // Disable Automatic Corrections
+      DisableDRS4Correction();
+      // Load the Correction Tables from the Digitizer flash
+      GetCorrectionTables();
+      
+      /*if(dat.WDcfg.UseManualTables != -1)
+      {  // The user wants to use some custom tables
+        uint32_t gr;
+        uint32_t GroupMask = dat.WDcfg.UseManualTables;
+        
+        for(gr = 0; gr < dat.WDcfg.MaxGroupNumber; gr++)
+        {
+          if(((GroupMask >> gr) & 0x1) == 0) continue;
+          LoadCorrectionTable(dat.WDcfg.TablesFilenames[gr], &(X742Tables[gr]));
+        }
+      }
+      // Save to file the Tables read from flash
+      GroupMask = (~GroupMask) & ((0x1 << dat.WDcfg.MaxGroupNumber) - 1);
+      SaveCorrectionTables("X742Table", GroupMask, X742Tables);*/
+    }
+    else
+    {  
+      // Use Automatic Corrections
+      LoadDRS4CorrectionData();
+      EnableDRS4Correction();
+    }
+  }
 }
 
 
@@ -1339,11 +1478,17 @@ void CAENDigitizerBoard::setVMEHandle(const std::uint32_t& han)
   m_VMEHandle = han;
 }
 
+void CAENDigitizerBoard::setHasDPPFirware()
+{
+  std::size_t found = m_AMC_FirmwareRel.find(".");
+  if(std::stoi(m_AMC_FirmwareRel.substr(0,found))>128) m_DPPFirmware=true;
+}
+
 void CAENDigitizerBoard::initilizeParameters()
 {
   m_Cal.fill(1);
   m_Offset.fill(0);
-  m_PulsePolarity.fill("Positive");
+  m_PulsePolarity.fill("POSITIVE");
   m_Version_used.fill(0);
   m_DCoffset.fill(0);
   m_Threshold.fill(0);
@@ -1373,20 +1518,26 @@ void CAENDigitizerBoard::verifyParameters()
     }
     catch(...)
     {
-      spdlog::warn("WRITE_REGISTER should be of the form [[address,data,mask],...]");
+      throw Exception(StatusCode::INVALID_PARAMETER,"WRITE_REGISTER should be of the form [[address,data,mask],...]");
     }
   }
   catch(...){}
   m_RecordLength = toml::find_or(m_Conf,"RECORD_LENGTH",1024);
   if(m_RecordLength>1024)
   {
-    spdlog::warn("RECORD_LENGTH should not be > 1024");
-    m_RecordLength=1024;
+    throw Exception(StatusCode::INVALID_PARAMETER,"RECORD_LENGTH should not be > 1024");
+  }
+  else if(m_FamilyCode=="XX742")
+  {
+    if(m_RecordLength!=1024&&m_RecordLength!=520&&m_RecordLength!=256&&m_RecordLength!=136)
+    {
+      throw Exception(StatusCode::INVALID_PARAMETER,"RECORD_LENGTH can be only 1024, 520, 256 or 136 for XX742 familly");
+    }
   }
   m_DecimationFactor = toml::find_or<std::uint16_t>(m_Conf, "DECIMATION_FACTOR", 1);
   if(m_DecimationFactor != 1 && m_DecimationFactor != 2 && m_DecimationFactor != 4 && m_DecimationFactor != 8 && m_DecimationFactor != 16 && m_DecimationFactor != 32 && m_DecimationFactor != 64 && m_DecimationFactor != 128)
   {
-    spdlog::warn("DECIMATION_FACTOR can be 1 2 4 8 16 32 64 128 only");
+    throw Exception(StatusCode::INVALID_PARAMETER,"DECIMATION_FACTOR can be 1 2 4 8 16 32 64 128 only");
   }
   m_PostTrigger=toml::find_or<int>(m_Conf, "POST_TRIGGER",50);
   if(m_PostTrigger<0||m_PostTrigger>100)
@@ -1396,51 +1547,44 @@ void CAENDigitizerBoard::verifyParameters()
   m_ExtTriggerMode = toml::find_or<std::string>(m_Conf, "EXTERNAL_TRIGGER", "ACQ_ONLY");
   if(m_ExtTriggerMode != "DISABLED" && m_ExtTriggerMode != "ACQ_ONLY" && m_ExtTriggerMode != "ACQ_AND_EXTOUT")
   {
-    spdlog::warn("EXTERNAL_TRIGGER can be DISABLED ACQ_ONLY ACQ_AND_EXTOUT");
+    throw Exception(StatusCode::INVALID_PARAMETER,"EXTERNAL_TRIGGER can be DISABLED ACQ_ONLY ACQ_AND_EXTOUT");
   }
   m_FPIOtype    = toml::find_or<std::string>(m_Conf, "FPIO_LEVEL", "NIM");
   if(m_FPIOtype!="NIM"&&m_FPIOtype!="TTL")
   {
-    spdlog::warn("FPIO_LEVEL can be NIM or TTL");
+    throw Exception(StatusCode::INVALID_PARAMETER,"FPIO_LEVEL can be NIM or TTL");
   }
   m_Test = toml::find_or(m_Conf, "TEST_PATTERN", false);
-  m_FastTriggerEnabled =toml::find_or<std::string>(m_Conf, "FAST_TRIGGER","DISABLED");
-  if(m_FastTriggerEnabled != "DISABLED" && m_FastTriggerEnabled != "ACQ_ONLY")
+  m_FastTriggerMode =toml::find_or<std::string>(m_Conf, "FAST_TRIGGER","DISABLED");
+  if(m_FastTriggerMode != "DISABLED" && m_FastTriggerMode != "ACQ_ONLY")
   {
-    spdlog::warn("FAST_TRIGGER can be DISABLED or ACQ_ONLY");
+    throw Exception(StatusCode::INVALID_PARAMETER,"FAST_TRIGGER can be DISABLED or ACQ_ONLY");
   }
   m_Header = toml::find_or(m_Conf, "OUTPUT_FILE_HEADER", true);
   m_FileFormat=toml::find_or<std::string>(m_Conf, "OUTPUT_FILE_FORMAT", "ROOT");
   if(m_FileFormat != "ASCII" && m_FileFormat != "ROOT" && m_FileFormat != "BINARY")
   {
-    spdlog::warn("OUTPUT_FILE_FORMAT can be ROOT, ASCII or BINARY");
+    throw Exception(StatusCode::INVALID_PARAMETER,"OUTPUT_FILE_FORMAT can be ROOT, ASCII or BINARY");
   }
-  m_FileFormat=toml::find_or<std::string>(m_Conf, "OUTPUT_FILE_FORMAT", "ROOT");
-  if(m_FileFormat != "ASCII" && m_FileFormat != "ROOT" && m_FileFormat != "BINARY")
-  {
-    spdlog::warn("OUTPUT_FILE_FORMAT can be ROOT, ASCII or BINARY");
-  }
-  m_DRS4Frequency =
-      toml::find_or<std::string>(m_Conf, "DRS4_FREQUENCY","5GHz");
+  m_DRS4Frequency =toml::find_or<std::string>(m_Conf, "DRS4_FREQUENCY","5GHz");
   if(m_DRS4Frequency != "5GHz" && m_DRS4Frequency != "2.5GHz" && m_DRS4Frequency != "1GHz" &&m_DRS4Frequency != "750MHz")
   {
-    spdlog::warn("DRS4_FREQUENCY can be 5GHz 2.5GHz 1GHz or 750MHz");
+    throw Exception(StatusCode::INVALID_PARAMETER,"DRS4_FREQUENCY can be 5GHz 2.5GHz 1GHz or 750MHz");
   }
   if(PrevDRS4Freq != m_DRS4Frequency) change=true;
   std::string pulsePolarity =toml::find_or<std::string>(m_Conf, "PULSE_POLARITY","NEGATIVE");
   if(pulsePolarity!= "NEGATIVE" && pulsePolarity != "POSITIVE")
   {
-    spdlog::warn("PULSE_POLARITY can be POSITIVE or NEGATIVE");
+    throw Exception(StatusCode::INVALID_PARAMETER,"PULSE_POLARITY can be POSITIVE or NEGATIVE");
   }
   for(size_t i=0;i!=m_MAX_SET;++i) m_PulsePolarity[i]=pulsePolarity;
-  m_FastTriggerEnabled=toml::find_or<bool>(m_Conf, "ENABLED_FAST_TRIGGER_DIGITIZING",true);
+  m_FastTriggerEnabled=toml::find_or<std::string>(m_Conf, "ENABLED_FAST_TRIGGER_DIGITIZING","DISABLED");
   m_InterruptNumEvents=toml::find_or<int>(m_Conf, "USE_INTERRUPT",0);
   m_StartupCalibration=toml::find_or<bool>(m_Conf, "SKIP_STARTUP_CALIBRATION",false);
   m_NumberEvent= toml::find_or(m_Conf,"MAX_NUM_EVENTS_BLT",1023);
-  if(m_RecordLength>1023)
+  if(m_NumberEvent>1023)
   {
-    spdlog::warn("MAX_NUM_EVENTS_BLT should not be > 1023");
-    m_RecordLength=1023;
+    throw Exception(StatusCode::INVALID_PARAMETER,"MAX_NUM_EVENTS_BLT should not be > 1023");
   }
 }
 
@@ -1454,13 +1598,13 @@ void CAENDigitizerBoard::Set_calibrated_DCO(const int& ch)
 {
   /*old DC_OFFSET config, skip calibration*/
   if(m_Version_used[ch] == 0) return;
-  if(m_PulsePolarity[ch] == "PulsePolarityPositive")
+  if(m_PulsePolarity[ch] == "POSITIVE")
   {
     m_DCoffset[ch] = (uint32_t)std::fabs(
                          ((m_DCfile[ch] - m_Offset[ch]) / m_Cal[ch]) - 100.) *
                      (655.35);
   }
-  else if(m_PulsePolarity[ch] == "PulsePolarityNegative")
+  else if(m_PulsePolarity[ch] == "NEGATIVE")
   {
     m_DCoffset[ch] =
         (uint32_t)(std::fabs(
@@ -1470,33 +1614,24 @@ void CAENDigitizerBoard::Set_calibrated_DCO(const int& ch)
   }
   if(m_DCoffset[ch] > 65535) m_DCoffset[ch] = 65535;
   if(m_DCoffset[ch] < 0) m_DCoffset[ch] = 0;
-  if(m_FamilyCode == "XX740")
+  try
   {
-    try
+    if(m_FamilyCode == "XX740")
     {
       SetGroupDCOffset((uint32_t)ch, m_DCoffset[ch]);
     }
-    catch(const Exception& error)
-    {
-      std::cout << "Error setting group " << ch << " offset" << std::endl;
-    }
-  }
-  else
-  {
-    try
+    else
     {
       SetChannelDCOffset((uint32_t)ch, m_DCoffset[ch]);
     }
-    catch(const Exception& error)
-    {
-      std::cout << "Error setting channel " << ch << " offset" << std::endl;
-    }
+  }
+  catch(const Exception& error)
+  {
+    throw Exception(StatusCode::INVALID_PARAMETER,"Error setting group "+std::to_string(ch)+" offset");
   }
 }
 
-void CAENDigitizerBoard::WriteRegisterBitmask(const std::uint32_t& address,
-                                              const std::uint32_t& data,
-                                              const std::uint32_t& mask)
+void CAENDigitizerBoard::WriteRegisterBitmask(const std::uint32_t& address,const std::uint32_t& data,const std::uint32_t& mask)
 {
   std::uint32_t d32 = ReadRegister(address);
   std::uint32_t dat = data;
@@ -1515,36 +1650,26 @@ void CAENDigitizerBoard::ProgramDigitizer()
   }
   catch(const Exception& error)
   {
-    std::cout << "Error: Unable to reset digitizer." << std::endl;
-    std::cout << "Please reset digitizer manually then restart the program"
-              << std::endl;
-    Exit(ERR_DGZ_PROGRAM);
+    sendError("Unable to reset digitizer !\nPlease reset digitizer manually then restart the program !");
+    throw;
   }
   try
   {
     // Set the waveform test bit for debugging
     if(m_Test == true)
+    {
       WriteRegister(CAEN_DGTZ_BROAD_CH_CONFIGBIT_SET_ADD, 1 << 3);
+    }
     // custom setting for X742 boards
     if(m_FamilyCode == "XX742")
     {
-      if(m_FastTriggerEnabled == "ACQ_ONLY")
-      {
-        SetFastTriggerDigitizing("ENABLE");
-        SetFastTriggerMode(m_FastTriggerEnabled);
-      }
-      else
-      {
-        SetFastTriggerDigitizing(m_FastTriggerEnabled);
-        SetFastTriggerMode(m_FastTriggerEnabled);
-      }
+      SetFastTriggerDigitizing(m_FastTriggerEnabled);
+      SetFastTriggerMode(m_FastTriggerMode);
     }
-    if(m_FamilyCode == "XX751" || m_FamilyCode == "XX731")
-    { SetDESMode(m_DesMode); }
+    if(m_FamilyCode == "XX751" || m_FamilyCode == "XX731"){ SetDESMode(m_DesMode); }
     SetRecordLength(m_RecordLength);
-    GetRecordLength(m_RecordLength);
-    if(m_FamilyCode == "XX740" || m_FamilyCode == "XX724")
-    { SetDecimationFactor(m_DecimationFactor); }
+    m_RecordLength = GetRecordLength();
+    if(m_FamilyCode == "XX740" || m_FamilyCode == "XX724"){ SetDecimationFactor(m_DecimationFactor); }
     SetPostTriggerSize(m_PostTrigger);
     if(m_FamilyCode != "XX742") { m_PostTrigger = GetPostTriggerSize(); }
     SetIOLevel(m_FPIOtype);
@@ -1563,8 +1688,7 @@ void CAENDigitizerBoard::ProgramDigitizer()
       }
       catch(const Exception& error)
       {
-        std::cout << "Error configuring interrupts. Interrupts disabled"
-                  << std::endl;
+        sendError("Error configuring interrupts. Interrupts disabled");
         m_InterruptNumEvents = 0;
       }
     }
@@ -1659,17 +1783,12 @@ void CAENDigitizerBoard::ProgramDigitizer()
         SetGroupFastTriggerThreshold(i, m_FTThreshold[i]);
       }
     }
-    /* execute generic write commands */
-    for(std::size_t i = 0; i < m_WriteRgisters.size(); i++)
-      WriteRegisterBitmask(m_WriteRgisters[i][0],m_WriteRgisters[i][1],m_WriteRgisters[i][2]);
+    for(std::size_t i = 0; i < m_WriteRgisters.size(); i++) WriteRegisterBitmask(m_WriteRgisters[i][0],m_WriteRgisters[i][1],m_WriteRgisters[i][2]);
   }
   catch(const Exception& error)
   {
-    std::cout
-        << "Warning: errors found during the programming of the digitizer."
-        << std::endl;
-    std::cout << "Some settings may not be executed" << std::endl;
-    Exit(ERR_DGZ_PROGRAM);
+    sendError("Errors found during the programming of the digitizer !\n Some settings may not be executed");
+    throw;
   }
 }
 
@@ -1682,26 +1801,19 @@ std::uint32_t CAENDigitizerBoard::get_time()
 
 bool CAENDigitizerBoard::BoardSupportsCalibration()
 {
-  if(m_FamilyCode == "XX761" || m_FamilyCode == "XX751" ||
-     m_FamilyCode == "XX730" || m_FamilyCode == "XX725")
-    return true;
-  else
-    return false;
+  if(m_FamilyCode == "XX761" || m_FamilyCode == "XX751" || m_FamilyCode == "XX730" || m_FamilyCode == "XX725") return true;
+  else return false;
 }
 
 bool CAENDigitizerBoard::BoardSupportsTemperatureRead()
 {
-  if(m_FamilyCode == "XX751" || m_FamilyCode == "XX730" ||
-     m_FamilyCode == "XX725")
-    return true;
-  else
-    return false;
+  if(m_FamilyCode == "XX751" || m_FamilyCode == "XX730" || m_FamilyCode == "XX725") return true;
+  else return false;
 }
 
 void CAENDigitizerBoard::GetMoreBoardInfo()
 {
-  if(m_FamilyCode == "XX724" || m_FamilyCode == "XX781" ||
-     m_FamilyCode == "XX780")
+  if(m_FamilyCode == "XX724" || m_FamilyCode == "XX781" || m_FamilyCode == "XX780")
   {
     m_Nbit = 14;
     m_Ts   = 1.0;
@@ -1751,19 +1863,13 @@ void CAENDigitizerBoard::GetMoreBoardInfo()
     m_Nbit                = 12;
     std::string frequency = GetDRS4SamplingFrequency();
     if(frequency == "1GHz") m_Ts = 1.0;
-    else if(frequency == "2.5GHz")
-      m_Ts = 0.4;
-    else if(frequency == "5GHz")
-      m_Ts = 0.2;
-    else if(frequency == "750MHz")
-      m_Ts = (1.0 / 750.0) * 1000.0;
-    if(m_FormFactor == "VME64" || m_FormFactor == "VME64X")
-      m_MaxGroupNumber = 4;
-    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP")
-      m_MaxGroupNumber = 2;
+    else if(frequency == "2.5GHz") m_Ts = 0.4;
+    else if(frequency == "5GHz") m_Ts = 0.2;
+    else if(frequency == "750MHz") m_Ts = (1.0 / 750.0) * 1000.0;
+    if(m_FormFactor == "VME64" || m_FormFactor == "VME64X") m_MaxGroupNumber = 4;
+    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP") m_MaxGroupNumber = 2;
   }
-  else if((m_FamilyCode == "XX751" || m_FamilyCode == "XX731") &&
-          m_DesMode == "ENABLE")
+  else if((m_FamilyCode == "XX751" || m_FamilyCode == "XX731") && m_DesMode == "ENABLE")
   {
     m_Ts /= 2;
   }
@@ -1773,26 +1879,22 @@ void CAENDigitizerBoard::GetMoreBoardInfo()
      m_FamilyCode == "XX761" || m_FamilyCode == "XX731")
   {
     if(m_FormFactor == "VME64" || m_FormFactor == "VME64X") m_Nch = 8;
-    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP")
-      m_Nch = 4;
+    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP") m_Nch = 4;
   }
   else if(m_FamilyCode == "XX725" || m_FamilyCode == "XX730")
   {
     if(m_FormFactor == "VME64" || m_FormFactor == "VME64X") m_Nch = 16;
-    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP")
-      m_Nch = 8;
+    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP") m_Nch = 8;
   }
   else if(m_FamilyCode == "XX740")
   {
     if(m_FormFactor == "VME64" || m_FormFactor == "VME64X") m_Nch = 64;
-    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP")
-      m_Nch = 32;
+    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP") m_Nch = 32;
   }
   else if(m_FamilyCode == "XX742")
   {
     if(m_FormFactor == "VME64" || m_FormFactor == "VME64X") m_Nch = 36;
-    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP")
-      m_Nch = 16;
+    else if(m_FormFactor == "NIM" || m_FormFactor == "DESKTOP") m_Nch = 16;
   }
 }
 
@@ -1800,7 +1902,6 @@ void CAENDigitizerBoard::GetMoreBoardInfo()
 
 std::vector<std::string> CAENDigitizerBoard::ErrMsg{
     "No Error",
-    "Configuration File not found",
     "Can't open the digitizer",
     "Can't read the Board Info",
     "Can't run WaveDump for this digitizer",

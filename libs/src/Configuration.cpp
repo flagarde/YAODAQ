@@ -6,16 +6,32 @@
 #include "spdlog.h"
 #include "toml.hpp"
 
-#include <algorithm>
-#include <iostream>
 
 int Configuration::m_ConnectorID = 1;
+
+void Configuration::reparseModule()
+{
+  m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
+  for(const auto& room: toml::find<toml::array>(m_Conf, "Room"))
+  {
+    for(const auto& rack: toml::find<toml::array>(room, "Rack"))
+    {
+      for(const auto& crate: toml::find<toml::array>(rack, "Crate"))
+      {
+        for(const auto& board: toml::find<toml::array>(crate, "Board"))
+        {
+          m_ModuleConfig[toml::find<std::string>(board, "Name")]=board;
+          
+        }
+      }
+    }
+  }
+}
 
 toml::value Configuration::getConfig(const std::string& module)
 {
   if(m_ModuleConfig.find(module) == m_ModuleConfig.end()) { throw Exception(StatusCode::NOT_FOUND, "Board/Module " + module + " not found in configuration !"); }
-  else
-    return m_ModuleConfig[module];
+  else return m_ModuleConfig[module];
 }
 
 ConnectorInfos Configuration::getConnectorInfos(const std::string& module)
@@ -27,20 +43,15 @@ ConnectorInfos Configuration::getConnectorInfos(const std::string& module)
 void Configuration::parse()
 {
   if(m_Filename == "") { throw Exception(StatusCode::NOT_FOUND, "No Configuration file given !"); }
-  if(m_isParsed == false)
-  {
-    m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
-    parseRooms();
-    fillIndexes();
-    m_isParsed = true;
-  }
+  m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
+  parseRooms();
+  fillIndexes();
 }
 
 void Configuration::throwIfExists(std::vector<std::string>& type, const std::string& typeName, const std::string& name)
 {
   if(std::find(type.begin(), type.end(), name) != type.end()) { throw Exception(StatusCode::ALREADY_PRESENT, typeName + " name \"" + name + "\" is already taken"); }
-  else
-    type.push_back(name);
+  else type.push_back(name);
 }
 
 void Configuration::parseRooms()
@@ -60,7 +71,7 @@ void Configuration::parseRacks(const toml::value& room)
   {
     actualRackName = toml::find_or<std::string>(rack, "Name", "");
     if(actualRackName == "") spdlog::warn("No Rack table");
-    throwIfExists(m_Rack_Names, "Rsck", actualRackName);
+    throwIfExists(m_Rack_Names, "Rack", actualRackName);
     parseCrates(rack);
   }
 }
@@ -97,7 +108,6 @@ void Configuration::parseModules(const toml::value& crate, const toml::value& cr
     std::string moduleName = toml::find_or<std::string>(board, "Name", "");
     if(moduleName == "")
     {
-      spdlog::error("Board have no Name");
       throw Exception(StatusCode::NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a \"Name\" key");
     }
     throwIfExists(m_Module_Names, "Module", moduleName);

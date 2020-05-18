@@ -113,6 +113,10 @@ protected:
   States                          m_State{States::UNINITIALIZED};
 
 private:
+  void                                                reparseModules();
+  static void                                         staticReparseModules();
+  static bool                                         m_HaveToReloadConfigModules;
+  static bool                                         m_HaveToReloadConfig;
   Module() = delete;
   virtual void                                        DoInitialize();
   virtual void                                        CallModuleConnect(){};

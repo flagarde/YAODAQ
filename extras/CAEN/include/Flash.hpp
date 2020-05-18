@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SPI.hpp"
+#include <vector>
 
 namespace CAEN
 {
@@ -8,11 +9,14 @@ class Flash
 {
 public:
   void setHandle(const std::uint32_t& han);
+  
+  uint32_t get_spi_address(const uint16_t& page_addr,const uint16_t& byte_addr);
   /* Main functions to access flash with virtual page size (VIRTUAL_PAGE_SIZE)
    */
   /* handle is a CAENComm library handle */
   void init();
-  /* read_virtual_page(uint16_t page, uint8_t *buf);
+  std::vector<uint8_t> read_virtual_page(const uint16_t& page=m_OFFSET_CALIBRATION_VIRTUAL_PAGE);
+  /*
    read_virtual_page_ex(uint16_t page,uint16_t offset, uint32_t size,uint8_t
    *buf); write_virtual_page(uint16_t page, uint8_t *buf);
    write_virtual_page_ex(uint16_t page,uint16_t offset, uint32_t size,uint8_t
@@ -26,9 +30,9 @@ public:
   /* read_unique_id(uint8_t *UniqueId);*/
 
   /* content access */
-  /* read_byte(uint32_t addr, uint8_t *data);
-   read_bytes(uint32_t addr, uint8_t *buf,uint16_t len);
-   write_byte(uint32_t addr, uint8_t data);
+  /* read_byte(uint32_t addr, uint8_t *data);*/
+  std::vector<uint8_t> read_bytes(const uint32_t& addr,const uint16_t& len);
+  /* write_byte(uint32_t addr, uint8_t data);
    write_bytes(uint32_t addr, uint8_t *buf,uint16_t len);*/
 
   /* Buffer oriented operations */
