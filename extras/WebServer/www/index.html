@@ -126,9 +126,8 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
             if(obj.Type=="State")
             {
               STATE=obj["Content"];
-              alert(obj["Content"]);
               ParseState(obj);
-               console['Warning'](obj["Type"],obj["Content"]);
+              console['Warning'](obj["Type"],obj["Content"]);
             }
             else if(obj.Type=="Data") 
             {
@@ -318,7 +317,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     			document.getElementById('Stop').disabled =false;
     			document.getElementById('Clear').disabled  =true;
     			document.getElementById('Disconnect').disabled =true;
-    			document.getElementById('Release').disabled =true;				
+    			document.getElementById('Release').disabled =true;
 			}
 			else  if(obj["Content"]=="STOPED")
 			{
@@ -346,6 +345,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
   			}
 			else if(obj["Content"]=="DISCONNECTED")
 			{
+			    
   				document.getElementById('Initialize').disabled=true;
   				document.getElementById('Connect').disabled =false;
   				document.getElementById('Configure').disabled =true;
@@ -355,8 +355,6 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     			document.getElementById('Clear').disabled  =true;
     			document.getElementById('Disconnect').disabled =true;
     			document.getElementById('Release').disabled =false;
-    			document.getElementById('On').disabled =true;
-				document.getElementById('Off').disabled=true;
 			}
 			else if(obj["Content"]=="RELEASED")
 			{
