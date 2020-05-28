@@ -68,7 +68,6 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         infos.addKey("Host", msg->openInfo.headers["Host"]);
         infos.addKey("Value", "CONNECTED");
         sendToLogger(infos.get());
-        webSocket->send(Command("getStatus").get());
       }
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
@@ -136,6 +135,11 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         else if(m_Message.getType() == "Command")
         {
           spdlog::warn("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
+          sendToAll(msg->str);
+        }
+        else if(m_Message.getType() == "Data")
+        {
+          spdlog::warn("Sending data ({0} Mo); From : {1}; To : {2}", m_Message.getContentSize()/1048576.0, m_Message.getFrom(), m_Message.getTo());
           sendToAll(msg->str);
         }
         else

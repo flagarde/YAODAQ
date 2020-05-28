@@ -14,7 +14,7 @@ public:
   virtual ~CAENDigitizerConnector()=default;
   virtual void         DoDisconnect() final;
   virtual void DoConnect() final;
-
+  virtual Response sendCommand(const Command&) final;
 private:
   virtual void                                verifyParameters() final;
   std::string                                 m_ConnectionType{""};

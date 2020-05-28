@@ -7,7 +7,7 @@ Board::Board(const std::string& name, const std::string& type): Module(name, typ
   m_ConnectorFactory.loadConnectors();
 }
 
-void Board::CallModuleConnect()
+void Board::CallBoardConnect()
 {
   if(m_IsConnected == false)
   {
@@ -18,14 +18,16 @@ void Board::CallModuleConnect()
   }
 }
 
-void Board::CallModuleDisconnect()
+void Board::CallBoardDisconnect()
 {
+  std::cout<<"Board Disconnect"<<std::endl;
   if(m_IsConnected == true)
   {
     DoDisconnect();
     m_Connector->Disconnect();
     m_IsConnected = false;
   }
+  std::cout<<"Board Disconnect"<<std::endl;
 }
 
 void Board::printConnectorParameters()

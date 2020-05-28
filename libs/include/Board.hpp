@@ -17,8 +17,8 @@ public:
 private:
   static ConnectorFactory    m_ConnectorFactory;
   std::shared_ptr<Connector> m_Connector{nullptr};
-  virtual void               CallModuleDisconnect() final;
-  virtual void               CallModuleConnect() final;
+  virtual void               CallBoardDisconnect() final;
+  virtual void               CallBoardConnect() final;
   virtual void               DoConnect();
   virtual void               DoDisconnect();
   Board() = delete;

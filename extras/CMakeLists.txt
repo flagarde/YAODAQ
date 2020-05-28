@@ -1,8 +1,5 @@
 find_package(Git REQUIRED)
 
-find_package(Threads)
-set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-
 include(CMakeParseArguments)
 
 function(plugin)
@@ -42,8 +39,19 @@ include(IterateFolder)
 sub_dir_list(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(subdir ${SUBDIRS})
-  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt")
-    message(INFO "Entering in extras folder \"${subdir}\"")
-    add_subdirectory(${subdir})
+  set(CMAKE_MODULE_PATH "")
+  ##ADD AN OPTION AND SET IT TO ON ONLY IF IT DOESNT EXIST !"
+  if(("${BUILD_${subdir}}" STREQUAL ""))
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt")
+      message(AUTHOR_WARNING "BUILD_${subdir} not in Setting.cmake ! By default I will compile !")
+      add_subdirectory(${subdir})
+    endif()
+  elseif(("${BUILD_${subdir}}" STREQUAL "ON"))
+     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt")
+      message(AUTHOR_WARNING "BUILD_${subdir} set to ${Green}ON${LastColor} in Setting.cmake")
+      add_subdirectory(${subdir})
+    endif()
+  else()
+    message(AUTHOR_WARNING "BUILD_${subdir} set to ${Red}OFF${LastColor} in Setting.cmake")
   endif()
 endforeach()

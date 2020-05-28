@@ -9,6 +9,9 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
+#include <mutex>
+
 //#ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
 //using yaodaq_string_view = spdlog::wstring_view_t;
 //#else
@@ -30,6 +33,8 @@ public:
   void                                   Disconnect();
   void                                   Release();
   void                                   Quit();
+  void                                   LoopOnStart();
+  void                                   LoopOnPause();
   std::string                            getStateString();
   States                                 getState();
   std::string                            getName();
@@ -94,8 +99,16 @@ public:
     m_WebsocketClient.sendText(critical.get());
     m_Logger->critical(buf.data());
   }
-
+  void sendData(const std::string& dat)
+  {
+    m_WebsocketClient.sendBinary(Data(dat).get());
+  }
+  void sendData(const Json::Value& dat)
+  {
+    m_WebsocketClient.sendBinary(Data(dat).get());
+  }
 protected:
+  static Configuration            m_Config;
   virtual void                    OnOpen(const ix::WebSocketMessagePtr& msg);
   virtual void                    OnClose(const ix::WebSocketMessagePtr& msg);
   virtual void                    OnPong(const ix::WebSocketMessagePtr& msg);
@@ -105,56 +118,44 @@ protected:
   virtual void                    OnCommand(Command& command);
   void                            LoadConfig();
   virtual void                    verifyParameters();
-  toml::value                     m_Conf;
-  static Configuration            m_Config;
+  toml::value                     m_Conf{""};
   std::string                     m_Name{"Unknown"};
   std::string                     m_Type{"Unknown"};
   std::shared_ptr<spdlog::logger> m_Logger{nullptr};
-  States                          m_State{States::UNINITIALIZED};
+   
 
 private:
+  void                                                DoDoLoopOnStart();
+  void                                                DoDoLoopOnPause();
+  volatile States                                     m_State{States::UNINITIALIZED};
+  std::thread                                         m_LoopOnStart;
+  std::thread                                         m_LoopOnPause;
+  std::mutex                                          m_Mutex;
+  bool                                                m_LoopOnStartUsed{false};
+  bool                                                m_LoopOnPauseUsed{false};
   void                                                reparseModules();
-  static void                                         staticReparseModules();
   static bool                                         m_HaveToReloadConfigModules;
   static bool                                         m_HaveToReloadConfig;
   Module() = delete;
   virtual void                                        DoInitialize();
-  virtual void                                        CallModuleConnect(){};
+  virtual void                                        CallBoardConnect(){};
   virtual void                                        DoConfigure();
   virtual void                                        DoStart();
   virtual void                                        DoPause();
   virtual void                                        DoStop();
   virtual void                                        DoClear();
-  virtual void                                        CallModuleDisconnect(){};
+  virtual void                                        CallBoardDisconnect(){};
   virtual void                                        DoRelease();
   virtual void                                        DoQuit();
+  virtual void                                        DoLoopOnStart();
+  virtual void                                        DoLoopOnPause();
+  virtual void                                        DoAtFirstStart();
+  bool                                                m_IsFirstStart{true};
   void                                                DoOnAction(const Message& message);
   void                                                DoOnCommand(const Message& message);
   void                                                sendState();
   void                                                setState(const States& state);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
   WebsocketClient                                     m_WebsocketClient;
-  std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack{[this](const ix::WebSocketMessagePtr& msg) {
-    if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
-    else if(msg->type == ix::WebSocketMessageType::Open)
-    {
-      this->OnOpen(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Close)
-    {
-      this->OnClose(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Error)
-    {
-      this->OnError(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Ping)
-    {
-      this->OnPing(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Pong)
-    {
-      this->OnPong(msg);
-    }
-  }};
+  std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack;
 };

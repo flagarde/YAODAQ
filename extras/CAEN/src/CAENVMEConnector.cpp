@@ -18,6 +18,11 @@ enum class VMEBridgeModel
   A3818
 };
 
+Response CAENVMEConnector::sendCommand(const Command&)
+{
+  return Response();
+}
+
 CAENVMEConnector::CAENVMEConnector() : Connector("CAENVME")
 {
 }

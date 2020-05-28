@@ -13,6 +13,11 @@ CAENDigitizerConnector::CAENDigitizerConnector(): Connector("CAENDigitizer")
 {
 }
 
+Response CAENDigitizerConnector::sendCommand(const Command&)
+{
+  return Response();
+}
+
 void CAENDigitizerConnector::DoConnect()
 {
   if(m_ConnectionType=="USB")CAENDigitizerException(CAEN_DGTZ_OpenDigitizer(CAEN_DGTZ_USB,m_LinkNum, m_ConetNode, m_VMEBaseAddress, &m_Handle));

@@ -9,6 +9,7 @@ class CAENHVConnector: public Connector
 {
 public:
   CAENHVConnector();
+  virtual Response sendCommand(const Command&) final;
   virtual ~CAENHVConnector()=default;
   virtual void DoConnect() final;
   virtual void DoDisconnect() final;

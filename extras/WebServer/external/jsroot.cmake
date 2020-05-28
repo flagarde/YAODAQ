@@ -14,7 +14,7 @@ ExternalProject_Add(
                     BUILD_COMMAND ""
                     INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
                 ${CMAKE_BINARY_DIR}/jsroot
-                ${CMAKE_SOURCE_DIR}/www/jsroot
+                ${CMAKE_INSTALL_PREFIX}/www/jsroot
                     PREFIX ${CMAKE_BINARY_DIR}/jsroot-prefix
                     SOURCE_DIR ${CMAKE_BINARY_DIR}/jsroot
                     INSTALL_DIR ${CMAKE_INSTALL_PREFIX}

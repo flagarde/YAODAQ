@@ -14,6 +14,11 @@ void Message::addKey(const std::string& key, const std::string& value)
   m_Value["Content"][key] = value;
 }
 
+std::size_t  Message::getContentSize()
+{
+  return getContent().size();
+}
+
 Message::Message(const Types& type, const std::string& content, const std::string& to, const std::string& from)
 {
   m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
@@ -23,6 +28,18 @@ Message::Message(const Types& type, const std::string& content, const std::strin
   setTo(to);
   if(content != "") setContent(content);
 }
+
+Message::Message(const Types& type, const Json::Value& content, const std::string& to, const std::string& from)
+{
+  m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
+  m_Reader.reset(m_CharReaderBuilder.newCharReader());
+  setType(type);
+  setFrom(from);
+  setTo(to);
+  m_StreamWriterBuilder.settings_["indentation"] = "";
+  setContent(Json::writeString(m_StreamWriterBuilder, content));
+}
+
 
 bool Message::isEmpty()
 {
@@ -115,7 +132,7 @@ std::string Message::getType()
 
 Info::Info(const std::string& content, const std::string& to, const std::string& from): Message(Types::Info, content, to, from) {}
 
-State::State(const States& state, const std::string& to, const std::string& from): Message(Types::State, std::string(magic_enum::enum_name(state)), to, from) {}
+State::State(States state, const std::string& to, const std::string& from): Message(Types::State, std::string(magic_enum::enum_name(state)), to, from) {}
 
 Action::Action(const Actions& action, const std::string& to, const std::string& from): Message(Types::Action, std::string(magic_enum::enum_name(action)), to, from) {}
 
@@ -129,7 +146,7 @@ Warning::Warning(const std::string& content, const std::string& to, const std::s
 
 Critical::Critical(const std::string& content, const std::string& to, const std::string& from): Message(Types::Critical, content, to, from) {}
 
-Command::Command(const std::string& content, const std::string& to, const std::string& from): Message(Types::Command, "", to, from)
+Command::Command(const std::string& content, const std::string& to, const std::string& from): Message(Types::Command, std::string(""), to, from)
 {
   m_Value["Content"]["Command"] = content;
 }
@@ -141,3 +158,7 @@ std::string Command::getCommand() const
 {
   return getCommand();
 }
+
+Data::Data(const std::string& content, const std::string& to, const std::string& from): Message(Types::Data, content, to, from) {}
+Data::Data(const Json::Value& content, const std::string& to, const std::string& from): Message(Types::Data, content, to, from) {}
+Response::Response(const std::string& content, const std::string& to, const std::string& from): Message(Types::Response, content, to, from) {}

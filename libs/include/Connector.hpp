@@ -2,8 +2,10 @@
 
 #include "ConnectorInfos.hpp"
 #include "Internal.hpp"
+#include "Message.hpp"
 
 #include <string>
+
 
 class Connector
 {
@@ -18,7 +20,7 @@ public:
   std::string  getType();
   void         setInfos(const ConnectorInfos& infos);
   bool         isConnected();
-
+  virtual Response     sendCommand(const Command&)=0;  
 protected:
   std::string  m_Type{""};
   virtual void DoConnect()    = 0;

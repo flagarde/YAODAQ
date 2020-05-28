@@ -28,29 +28,29 @@ Type = "N141X"
 #WRITE_REGISTER=[[0,1,2],[3,4,5],[6,7,8]]
 # RECORD_LENGTH = number of samples in the acquisition window
 # For 742 family the options available are only 1024, 520, 256 and 136
-#RECORD_LENGTH=128
+RECORD_LENGTH=1024
 # DECIMATION_FACTOR: ONLY FOR 740 and 724 MODELS. change the decimation factor for the acquisition.
 # Options: 1 2 4 8 16 32 64 128  
-#DECIMATION_FACTOR =1
+DECIMATION_FACTOR =1
 # POST_TRIGGER: post trigger size in percent of the whole acquisition window
 # options: 0 to 100 
 # For x742 there is a delay of about 42 nsec on Fast Trigger TR, and about 115 nsec on TRG-IN; 
 # the post trigger is added to this delay  
-#POST_TRIGGER=50
+POST_TRIGGER=1
 # EXTERNAL_TRIGGER: external trigger input settings. When enabled, the ext. trg. can be either 
 # propagated (ACQUISITION_AND_TRGOUT) or not (ACQ_ONLY) through the TRGOUT
 # options: DISABLED, ACQ_ONLY, ACQUISITION_AND_TRGOUT
-#EXTERNAL_TRIGGER ="DISABLED"
+EXTERNAL_TRIGGER ="DISABLED"
 # FPIO_LEVEL: type of the front panel I/O LEMO connectors 
 # options: NIM, TTL
-#FPIO_LEVEL="NIM"
+FPIO_LEVEL="NIM"
 # TEST_PATTERN: if enabled, data from ADC are replaced by test pattern (triangular wave)
 # options: true, false
-TEST_PATTERN=true
+TEST_PATTERN=false
 # FAST_TRIGGER: fast trigger input settings. ONLY FOR 742 MODELS. When enabled, the fast trigger is used
 # for the data acquisition 
 # options: DISABLED, ACQ_ONLY
-#FAST_TRIGGER="DISABLED"
+FAST_TRIGGER="ACQ_ONLY"
 # OUTPUT_FILE_HEADER: if enabled, the header is included in the output file data
 # options: true, false
 #OUTPUT_FILE_HEADER=true
@@ -60,21 +60,56 @@ TEST_PATTERN=true
 #OUTPUT_FILE_FORMAT="ROOT"
 # Set the DRS4 Chip Frequency (for X742 boards only)
 # Values: 5GHz, 2.5 GHz ,1GHz ,750MHz
-#DRS4_FREQUENCY="5GHz"
+DRS4_FREQUENCY="5GHz"
 #PULSE_POLARITY: input signal polarity.
 #options: POSITIVE, NEGATIVE
-#PULSE_POLARITY="NEGATIVE"
+PULSE_POLARITY="NEGATIVE"
 # FAST_TRIGGER_DIGITIZING: ONLY FOR 742 MODELS. If enabled the fast trigger signal is digitized and it is
 # present in data readout as channel n.8 for each group.
 # options: true, false
-#ENABLED_FAST_TRIGGER_DIGITIZING=true
+ENABLED_FAST_TRIGGER_DIGITIZING=true
 #Interrupt settings (request interrupt when there are at least N events to
 #read; 0=disable interrupts (polling mode))
-#USE_INTERRUPT=0
+USE_INTERRUPT=0
 #Skip startup calibration
-#SKIP_STARTUP_CALIBRATION=false
+SKIP_STARTUP_CALIBRATION=false
 #Max. number of events for a block transfer (0 to 1023)
-#MAX_NUM_EVENTS_BLT=1023
+MAX_NUM_EVENTS_BLT=2
+
+# ----------------------------------------------------------------
+# Custom Setting for Model 742 
+# ----------------------------------------------------------------
+# FAST TRIGGER CONDITION SETTINGS.
+# Remember that signal TR0 is the Fast Trigger for Groups 0 and 1, while signal TR1 is the Fast Trigger for Groups 2 and 3.
+# DC_OFFSET_TR*: DC offset adjust is DAC setting: 0 to 65535
+# TRIGGER_THRESHOLD_TR*: Trigger Threshold is the DAC setting for the comparation level: 0 to 65535 
+
+# EXAMPLES pcb rev0 (see also User's Manual):
+# NIM signal on TR
+# 	DC_OFFSET_TR* 4096 
+#  	TRIGGER_THRESHOLD_TR* 29053 
+# AC signal on TR
+# 	DC_OFFSET_TR* 4096 
+#  	TRIGGER_THRESHOLD_TR* 27776 
+# TTL signal on TR
+# 	DC_OFFSET_TR* 16384 
+# 	TRIGGER_THRESHOLD_TR* 29016
+
+# EXAMPLES pcb rev1 (see also User's Manual):
+# NIM signal on TR
+# 	DC_OFFSET_TR* 32768 
+#  	TRIGGER_THRESHOLD_TR* 20934 
+# AC signal on TR
+# 	DC_OFFSET_TR* 32768 
+#  	TRIGGER_THRESHOLD_TR* 26214 
+# +2V signal on TR
+# 	DC_OFFSET_TR* 43520 
+# 	TRIGGER_THRESHOLD_TR* 26214
+DC_OFFSET_TR0=32768 
+TRIGGER_THRESHOLD_TR0=20934 
+DC_OFFSET_TR1=32768 
+TRIGGER_THRESHOLD_TR1=20934 
+
 [Room.Rack.Crate.Board.Connector]
 Name = "Connector1"
 "Connection Type" = "USB"
@@ -82,150 +117,3 @@ Name = "Connector1"
 Type = "CAENDigitizer"
 Model = "V1718"
 "Link Number" = 0
-
-[Room.Rack.Crate.Board.Trigger1]
-# ----------------------------------------------------------------
-# Individual Settings 
-# ----------------------------------------------------------------
-# The following setting are usually applied on channel by channel
-# basis; however, you can put them also in the [COMMON] section in
-# order to apply them to all the channels.
-# ----------------------------------------------------------------
-
-# ENABLE_INPUT: enable/disable one group of channels X740/X742 channel for others
-# options: true,false
-#ENABLE_INPUT=false
-
-
-[Room.Rack.Crate.Board.2]
-# ----------------------------------------------------------------
-# Individual Settings 
-# ----------------------------------------------------------------
-# The following setting are usually applied on channel by channel
-# basis; however, you can put them also in the [COMMON] section in
-# order to apply them to all the channels.
-# ----------------------------------------------------------------
-
-# ENABLE_INPUT: enable/disable one group of channels X740/X742 channel for others
-# options: true,false
-#ENABLE_INPUT=false
-
-[Room.Rack.Crate.Board.Common]
-# ----------------------------------------------------------------
-# Individual Settings 
-# ----------------------------------------------------------------
-# The following setting are usually applied on channel by channel
-# basis; however, you can put them also in the [COMMON] section in
-# order to apply them to all the channels.
-# ----------------------------------------------------------------
-
-# ENABLE_INPUT: enable/disable one group of channels X740/X742 channel for others
-# options: true,false
-#ENABLE_INPUT=false
-#BASELINE_LEVEL: baseline position in percent of the Full Scale. 
-# The baseline shift is the same for all channels in the group X140 or channel
-# POSITIVE PULSE POLARITY (Full Scale = from 0 to + Vpp)
-# 0: analog input dynamic range = from 0 to +Vpp 
-# 50: analog input dynamic range = from +Vpp/2 to +Vpp 
-# 100: analog input dynamic range = null (usually not used)*
-# NEGATIVE PULSE POLARITY (Full Scale = from -Vpp to 0) 
-# 0: analog input dynamic range = from -Vpp to 0 
-# 50: analog input dynamic range = from -Vpp/2 to 0 
-# 100: analog input dynamic range = null (usually not used)*
-#
-# options: 0 to 100
-#BASELINE_LEVEL=50
-# GRP_CH_DC_OFFSET=[dc_0, dc_1, dc_2, dc_3, dc_4, dc_5, dc_6, dc_7]
-# Available only for model 742, allows to set different DC offset adjust for each channel (DAC channel setting) in percent of the Full Scale. 
-# -50: analog input dynamic range = -3Vpp/2 to -Vpp/2 (max negative dynamic)GRP_CH_DC_OFFSET=[dc_0, dc_1, dc_2, dc_3, dc_4, dc_5, dc_6, dc_7]
-# +50: analog input dynamic range = +Vpp/2 to +3Vpp/2 (max positive dynamic)
-# 0: analog input dynamic range = -Vpp/2 to +Vpp/2 (bipolar signals)
-# options: -50.0 to 50.0  (floating point)
-#GRP_CH_DC_OFFSET=[0,0,0,0,0,0,0,0]
-#XX140 ONLY
-# GROUP_TRG_ENABLE_MASK: channels are grouped 8 by 8; one group of 8 channels has a common trigger that is generated as
-# the OR of the self trigger of the channels in the group that are enabled by this mask.
-# options: 0 to FF
-#GROUP_TRG_ENABLE_MASK=0
-## XX142 ONLY
-# DC_OFFSET: DC offset adjust (DAC channel setting) in percent of the Full Scale. 
-# For model 742* the DC offset adjust is the same for all channels in the group 
-# -50: analog input dynamic range = -Vpp to 0 (negative signals)*
-# +50: analog input dynamic range = 0 to +Vpp (positive signals)*
-# 0:   analog input dynamic range = -Vpp/2 to +Vpp/2 (bipolar signals)*
-#options: -50 to 50
-#DC_OFFSET=0
-# TRIGGER_THRESHOLD: threshold for the channel auto trigger (ADC counts)
-# options 0 to 2^N-1 (N=Number of bit of the ADC)
-# *if DC_OFFSET is used the threshold is absolute* 
-# *if BASELINE_SHIFT is used the threshold is relative to the baseline of the first channel in the group*:
-# POSITIVE PULSE POLARITY: threshold = baseline + TRIGGER_THRESHOLD
-# NEGATIVE PULSE POLARITY: threshold = baseline - TRIGGER_THRESHOLD
-#
-#TRIGGER_THRESHOLD=100
-# ----------------------------------------------------------------
-# Custom Setting for Model 742 
-# ----------------------------------------------------------------
-# FAST TRIGGER CONDITION SETTINGS.
-# Remember that signal TR0 is the Fast Trigger for Groups 0 and 1, while signal TR1 is the Fast Trigger for Groups 2 and 3.
-# DC_OFFSET: DC offset adjust is DAC setting: 0 to 65535
-# TRIGGER_THRESHOLD: Trigger Threshold is the DAC setting for the comparation level: 0 to 65535 
-
-# EXAMPLES pcb rev0 (see also User's Manual):
-# NIM signal on TR
-# 	DC_OFFSET 4096 
-#  	TRIGGER_THRESHOLD 29053 
-# AC signal on TR
-# 	DC_OFFSET 4096 
-#  	TRIGGER_THRESHOLD 27776 
-# TTL signal on TR
-# 	DC_OFFSET 16384 
-# 	TRIGGER_THRESHOLD 29016
-
-# EXAMPLES pcb rev1 (see also User's Manual):
-# NIM signal on TR
-# 	DC_OFFSET 32768 
-#  	TRIGGER_THRESHOLD 20934 
-# AC signal on TR
-# 	DC_OFFSET 32768 
-#  	TRIGGER_THRESHOLD 26214 
-# +2V signal on TR
-# 	DC_OFFSET 43520 
-# 	TRIGGER_THRESHOLD 26214
-# CHANNEL_TRIGGER: channel auto trigger settings. When enabled, the ch. auto trg. can be either 
-# propagated (ACQUISITION_AND_TRGOUT) or not (ACQUISITION_ONLY) through the TRGOUT
-# options: DISABLED, ACQ_ONLY, ACQ_AND_TRGOUT, TRGOUT_ONLY
-#CHANNEL_TRIGGER="ACQ_ONLY"
-#FIXME
-# Correction Level to use with x742 Digitizers Family
-# Syntax: CORRECTION_LEVEL <CORR_MASK> <CUST_TABLE_MASK> <FILENAME1> <FILENAME2> ...
-# Values:
-# CORR_MASK:
-#   AUTO: Uses Automatic Corrections
-#   0 -> 7: Corrections Mask
-# CUST_TABLE_MASK (Only if CORR_MASK != AUTO):
-#   AUTO: Reads the correction tables from digitizer flash
-#   0 -> 16: Specifies the GroupMask which should use the tables specified in the following files
-# FILENAME<i>: Base Filename of the file which contains the custom correction tables for group <i>.
-#              The files which will be loaded will have the following names:
-#                   a) baseInputFileName + "_cell.txt"
-#                   b) baseInputFileName + "_nsample.txt"
-#                   c) baseInputFileName + "_time.txt"
-# Examples:
-# Automatic Corrections:
-# CORRECTION_LEVEL AUTO
-# Manual Corrections with Digitizer's Flash tables:
-# CORRECTION_LEVEL 7 AUTO
-# Manual Corrections with Digitizer's Flash tables for group 1 and with custom tables for the other groups:
-# CORRECTION_LEVEL 7 13 Table_gr0 Table_gr2 Table_gr3
-#CORRECTION_LEVEL="AUTO"
-   #if(strstr(str, "ENABLE_DES_MODE") != NULL)
-   # {
-   #   read = fscanf(f_ini, "%s", str1);
-   #   if(strcmp(str1, "YES") == 0) WDcfg.DesMode = CAEN_DGTZ_EnaDis_t(1);
-   #   else if(strcmp(str1, "NO") != 0)
-   #     printf("%s: invalid option\n", str);
-   #   if(PrevDesMode != WDcfg.DesMode) ret |= (0x1 << CFGRELOAD_DESMODE_BIT);
-   #   continue;
-   # }
-        

@@ -16,7 +16,9 @@ enum class Types
   Error,
   State,
   Action,
-  Command
+  Command,
+  Response,
+  Data,
 };
 
 enum class Actions
@@ -36,7 +38,8 @@ enum class Actions
 class Message
 {
 public:
-  Message(const Types& type = Types::Info, const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  explicit Message(const Types& type = Types::Info, const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  explicit Message(const Types& type , const Json::Value& content, const std::string& to = "ALL", const std::string& from="");
   void         parse(const std::string&);
   void         setFrom(const std::string&);
   void         setTo(const std::string&);
@@ -52,6 +55,7 @@ public:
   std::string  getStyled(const std::string& indent = "\t");
   void         setType(const Types&);
   bool         isEmpty();
+  std::size_t  getContentSize();
 
 protected:
   Json::Value m_Value{};
@@ -71,11 +75,12 @@ public:
   std::string               getCommand();
   template<typename T> void addParameter(const std::string& name, const T& value)
   {
-    if(m_Value["Content"].isMember("Parameters") == false) m_Value["Content"]["Parameters"] = Json::arrayValue;
-    Json::Value parameter;
-    parameter["Name"]  = name;
-    parameter["Value"] = value;
-    m_Value["Content"]["Parameters"].append(parameter);
+    m_Value["Content"]["Parameters"][name] = value;
+  }
+  Json::Value getParameter(const std::string& parameter)
+  {
+    if(m_Value["Content"]["Parameters"].isMember(parameter)) return m_Value["Content"]["Parameters"][parameter];
+    else return Json::Value{"ERROR"};
   }
 };
 
@@ -118,11 +123,24 @@ public:
 class State: public Message
 {
 public:
-  State(const States& state, const std::string& to = "ALL", const std::string& from = "");
+  State(States state, const std::string& to = "ALL", const std::string& from = "");
 };
 
 class Action: public Message
 {
 public:
   Action(const Actions& action, const std::string& to = "ALL", const std::string& from = "");
+};
+
+class Data: public Message
+{
+public:
+  Data(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Data(const Json::Value& content = {}, const std::string& to = "ALL", const std::string& from = "");
+};
+
+class Response: public Message
+{
+public:
+  Response(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
 };

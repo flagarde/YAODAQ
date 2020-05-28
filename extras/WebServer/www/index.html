@@ -1,11 +1,16 @@
 <html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <script> var DEBUG=false ; var ws; var state;var data_rate=0; var trigger_rate=0; var RunNumber;</script>
+  <head>.
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script type="text/javascript" src="./jsroot/scripts/JSRootCore.js?gui"></script>
     <script src="./gauge.min.js"></script>
     <title>DAQ Control</title>
+    
+    <script> var DEBUG=false ;var STATE="TOTO"; var ws; var state;var data_rate=0; var trigger_rate=0; var RunNumber;</script>
+    
+    
+    
+    
 
     <script type = "text/javascript">
 
@@ -66,7 +71,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
         if ("WebSocket" in window) 
         {
           // Let us open a web socket
-          ws = new WebSocket("ws://127.0.0.1:8080");
+          ws = new WebSocket("ws://127.0.0.1:8282");
           
           
 
@@ -120,15 +125,46 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
             if(DEBUG==true) alert(evt.data);
             if(obj.Type=="State")
             {
+              STATE=obj["Content"];
+              //alert(obj["Content"]);
               ParseState(obj);
-              console['Warning'](obj["Type"],obj["Content"]);
+               console['Warning'](obj["Type"],obj["Content"]);
             }
-            if(obj.Type=="Trace")  console['Trace'](obj["Trace"],obj["Content"]);
-            if(obj.Type=="Info")  console['Info'](obj["Type"],obj["Content"]);
-            if(obj.Type=="Debug")  console['Debug'](obj["Type"],obj["Content"]);
-            if(obj.Type=="Warning")  console['Warning'](obj["Type"],obj["Content"]);
-            if(obj.Type=="Critical")  console['Critical'](obj["Type"],obj["Content"]);
-            if(obj.Type=="Error")  console['Error'](obj["Type"],obj["Content"]);
+            else if(obj.Type=="Data") 
+            {
+              var obj2 = JSON.parse(obj["Content"]);
+              var element = document.getElementById('EventNumber');
+              element.innerHTML = "<h1>Event Number : "+obj2["EventInfos"]["EventCounter"]+"</h1>";
+              for(i=0;i!=obj2["Event"]["Groups"].length;++i) 
+              {
+                for(j=0;j!=obj2["Event"]["Groups"][i]["Channels"].length;++j)
+                {
+                  var histo = JSROOT.CreateHistogram("TH1D",obj2["Event"]["Groups"][i]["Channels"][j]["Data"].length);
+                  for(k=0;k!=obj2["Event"]["Groups"][i]["Channels"][j]["Data"].length;++k)
+                  {
+                    histo.setBinContent(k,obj2["Event"]["Groups"][i]["Channels"][j]["Data"][k]);
+                  }
+                  //alert((obj2["Event"]["Groups"][i]["Channels"][j]["Channel"]+8*obj2["Event"]["Groups"][i]["Groupe"]));
+
+                  if(obj2["Event"]["Groups"][i]["Channels"][j]["Channel"]==8)
+                  {
+                    histo.fTitle="Trigger"+obj2["Event"]["Groups"][i]["Groupe"];
+                    JSROOT.redraw("Trigger"+obj2["Event"]["Groups"][i]["Groupe"], histo, "colz");
+                  }
+                  else
+                  {
+                    histo.fTitle="Group "+obj2["Event"]["Groups"][i]["Groupe"]+" Channel "+obj2["Event"]["Groups"][i]["Channels"][j]["Channel"];
+                    JSROOT.redraw("Channel"+(obj2["Event"]["Groups"][i]["Channels"][j]["Channel"]+9*obj2["Event"]["Groups"][i]["Groupe"]), histo, "colz");
+                  }
+                }
+              }
+            }
+            else if(obj.Type=="Trace")  console['Trace'](obj["Trace"],obj["Content"]);
+            else if(obj.Type=="Info")  console['Info'](obj["Type"],obj["Content"]);
+            else if(obj.Type=="Debug")  console['Debug'](obj["Type"],obj["Content"]);
+            else if(obj.Type=="Warning")  console['Warning'](obj["Type"],obj["Content"]);
+            else if(obj.Type=="Critical")  console['Critical'](obj["Type"],obj["Content"]);
+            else if(obj.Type=="Error")  console['Error'](obj["Type"],obj["Content"]);
             
           };
           
@@ -158,12 +194,6 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 	</script>
 	<!-- Function for the websocket -->
 	<script>
-		function Action(...args)
-		{
-			var obj = new Object();
-			obj.Content = arguments[0].toString();
-			send(JSON.stringify(obj));
-		}
 
 		function Info(...args)
 		{
@@ -193,7 +223,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 				++arg;
 			}
 			send(JSON.stringify(obj));
-			alert(JSON.stringify(obj));
+			//alert(JSON.stringify(obj));
 		}
 		
 		
@@ -343,29 +373,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 		}
 		function ParseInfo(obj)
 		{
-		  //alert(JSON.stringify(obj));
-			if(obj["Name"]=="EventNbr")
-			{
-				var element = document.getElementById('EventNumber');
-				element.innerHTML = obj["EventNbr"];
-				element.innerHTML = "<h1>Event Number : "+obj["EventNbr"]+"</h1>";
-			}
-			else if(obj["Name"]=="Plot")
-			{
-				if(DEBUG==true)alert(obj["Plot"]);
-				var obj2 = JSROOT.parse(obj["Plot"]);
-  				var ObjectName=obj2.fName;
-  				if(document.getElementById(obj2.fName).style.display=="block"||obj2.fName=="Trigger0"||obj2.fName=="Trigger1")
-  				{
-  					obj2.fYaxis.fTitle="ADC Counts";
-  					//obj2.fYaxis.fXmax=1.0;
-  					//obj2.fYaxis.fXmin=0.0;
-  					//obj2.fMaximum=0.7;
-  					//obj2.fMinimum=0.6;
-    				JSROOT.redraw(ObjectName, obj2,"histo");
-  				}
-			}
-			else if(obj["Name"]=="RunNumber")
+			if(obj["Name"]=="RunNumber")
 			{
 				RunNumber = obj["RunNumber"];
 			}
@@ -462,9 +470,6 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 
 
 <body>
-<div id="log-container">
-  <pre id="log"></pre>
-</div>
   <div id="NotConnected">
     <center>
       <h1>WebSocket Not Connected !!!</h1>
@@ -499,13 +504,13 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
  
   <!-- Run info form -->
   <div class="form-popup" id="myForm">
-    <form action="#" class="form-container"  method="post">
+    <form action="#" class="form-container">
       <center id="RunInfos">Run Infos</center>
       <label for="Comment"><b>Comment</b></label>
       <input type="text" placeholder="Enter Comment" id="Comment" name="Comment">
-      <button type="submit" class="btn" onclick="startAquisition(this.form)">Start</button>
+      <button type="button" class="btn" onclick="startAquisition(this.form)">Start</button>
       <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-    </form>
+   </form>
   </div>
  
  
@@ -517,7 +522,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     function openForm() 
     {
       document.getElementById('RunInfos').innerHTML = "<h1>Run "+RunNumber+" Infos</h1>";
-      if(state=="PAUSED")Action("START");
+      if(STATE=="PAUSED")Action("START");
       else document.getElementById("myForm").style.display = "block";
     }
 
@@ -525,6 +530,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     {
       Info("RunInfos ="+oForm.elements["Comment"].value);
       Action("START");
+      closeForm();
     }
     function closeForm() 
     {
@@ -536,23 +542,37 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     <script>
       function myFunction()
       {
+        
         var myDiv = document.getElementById("Plots")
-        for(var i = 0; i < 36; i++)
+        for(var i=0;i<4;i++)
+        {
+        var tt = document.createElement("div");
+            tt.setAttribute("id", "Trigger"+i);
+            tt.setAttribute("what", "plot");
+            tt.style.display='true';
+            myDiv.appendChild(tt);
+        }
+        for(var i = 0; i < 32; i++)
         {
           var t = document.createElement("div");
           t.setAttribute("id", "Channel"+i);
           t.setAttribute("what", "plot");
           t.style.display='none';
           myDiv.appendChild(t);
+          
         }
        }
      </script>
  
     <div id="Plots">
-      <input type="checkbox" class="test" id="btnControltr1"/>
-      <label class="btn" for="btnControltr1"><div id="Trigger0" what="plot" ></div></label>
-      <label class="btn" for="btnControltr1"><div id="Trigger1" what="plot" ></div></label>
+
     </div>
    </center>
+   
+   <div id="log-container">
+  <pre id="log"></pre>
+</div>
+   
+   
   </body>
 </html>

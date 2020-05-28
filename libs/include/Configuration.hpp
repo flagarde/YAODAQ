@@ -17,7 +17,7 @@ public:
   void           setFileName(const std::string&);
   toml::value    getConfig(const std::string&);
   ConnectorInfos getConnectorInfos(const std::string&);
-
+  void           clear();
 private:
   static int                            m_ConnectorID;                             
   int                                   m_CrateConnectorID{0};

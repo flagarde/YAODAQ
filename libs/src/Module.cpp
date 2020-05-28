@@ -45,6 +45,7 @@ std::string Module::getType()
 
 void Module::setState(const States& state)
 {
+  std::lock_guard<std::mutex> guard(m_Mutex);
   m_State = state;
 }
 
@@ -63,37 +64,52 @@ Module::Module(const std::string& name, const std::string& type): m_Type(type), 
   spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
   m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
   m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
+  m_CallBack={[this](const ix::WebSocketMessagePtr& msg) {
+    if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
+    else if(msg->type == ix::WebSocketMessageType::Open)
+    {
+      this->OnOpen(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Close)
+    {
+      this->OnClose(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Error)
+    {
+      this->OnError(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Ping)
+    {
+      this->OnPing(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Pong)
+    {
+      this->OnPong(msg);
+    }
+  }};
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   startListening();
 }
 
 void Module::verifyParameters() {}
 
-void Module::staticReparseModules()
-{
-  if(m_HaveToReloadConfigModules==true)
-  {
-    m_Config.reparseModule();
-    m_HaveToReloadConfigModules=false;
-  }
-}
-
 void Module::reparseModules()
 {
-  staticReparseModules();
-  m_Conf = m_Config.getConfig(m_Name);
+  m_Config.reparseModule();
+  m_Conf = m_Config.getConfig(getName());
 }
 
 void Module::LoadConfig()
 {
   m_Config.parse();
   m_Conf = m_Config.getConfig(m_Name);
+  std::cout<<m_Conf<<std::endl;
   verifyParameters();
 }
 
 void Module::printParameters()
 {
-  m_Logger->info(m_Conf.as_string());
+  m_Logger->info("Parameters :\n{}",toml::format(m_Conf));
 }
 
 Module::~Module()
@@ -129,7 +145,7 @@ void Module::Connect()
 {
   try
   {
-    CallModuleConnect();
+    CallBoardConnect();
     setState(States::CONNECTED);
     sendState();
   }
@@ -162,8 +178,18 @@ void Module::Start()
 {
   try
   {
-    DoStart();
     setState(States::STARTED);
+    if(m_LoopOnPauseUsed==true)
+    {
+      m_LoopOnPause.join();
+      m_LoopOnPauseUsed=false;
+    }
+    if(m_IsFirstStart==true)
+    {
+      DoAtFirstStart();
+      m_IsFirstStart=false;
+    }
+    DoStart();
     sendState();
   }
   catch(const Exception& error)
@@ -178,8 +204,13 @@ void Module::Pause()
 {
   try
   {
-    DoPause();
     setState(States::PAUSED);
+    if(m_LoopOnStartUsed==true)
+    {
+      m_LoopOnStart.join();
+      m_LoopOnStartUsed=false;
+    }
+    DoPause();
     sendState();
   }
   catch(const Exception& error)
@@ -194,8 +225,19 @@ void Module::Stop()
 {
   try
   {
-    DoStop();
     setState(States::STOPED);
+    m_IsFirstStart=true;
+    if(m_LoopOnStartUsed==true)
+    {
+      m_LoopOnStart.join();
+      m_LoopOnStartUsed=false;
+    }
+    if(m_LoopOnPauseUsed==true)
+    {
+      m_LoopOnPause.join();
+      m_LoopOnPauseUsed=false;
+    }
+    DoStop();
     sendState();
   }
   catch(const Exception& error)
@@ -226,9 +268,11 @@ void Module::Disconnect()
 {
   try
   {
-    CallModuleDisconnect();
+    std::cout<<"Module Disconnect"<<std::endl;
+    CallBoardDisconnect();
     setState(States::DISCONNECTED);
     sendState();
+    std::cout<<"Module Disconnect"<<std::endl;
   }
   catch(const Exception& error)
   {
@@ -243,6 +287,7 @@ void Module::Release()
   try
   {
     DoRelease();
+    m_Config.clear();
     setState(States::RELEASED);
     sendState();
   }
@@ -270,6 +315,25 @@ void Module::Quit()
   }
 }
 
+void Module::LoopOnStart()
+{
+  if(m_LoopOnStartUsed==false)
+  {
+    m_LoopOnStart=std::thread(&Module::DoDoLoopOnStart,this);
+    m_LoopOnStartUsed=true;
+  }
+}
+
+void Module::LoopOnPause()
+{
+  if(m_LoopOnPauseUsed==false)
+  {
+    m_LoopOnPause=std::thread(&Module::DoDoLoopOnPause,this);
+    m_LoopOnPauseUsed=true;
+  }
+}
+
+
 void Module::DoInitialize() {}
 
 void Module::DoConfigure() {}
@@ -285,6 +349,27 @@ void Module::DoClear() {}
 void Module::DoRelease() {}
 
 void Module::DoQuit() {}
+
+void Module::DoLoopOnStart(){};
+void Module::DoLoopOnPause(){};
+void Module::DoAtFirstStart(){};
+
+void Module::DoDoLoopOnStart() 
+{
+  while(getState()==States::STARTED)
+  {
+    DoLoopOnStart();
+  }
+}
+
+void Module::DoDoLoopOnPause() 
+{
+  while(getState()==States::PAUSED)
+  {
+    DoLoopOnPause();
+  }
+}
+
 
 void Module::OnCommand(Command& command) {}
 

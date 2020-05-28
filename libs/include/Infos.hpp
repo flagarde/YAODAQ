@@ -1,15 +1,12 @@
 #pragma once
 
-#include "Internal.hpp"
-
 #include <string>
 
 class Infos
 {
 public:
-  Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type);
-  Infos() = default;
-  Infos(const std::string& key);
+  explicit Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type);
+  explicit Infos(const std::string& key);
   void        setRoomIndex(const int&);
   void        setRackIndex(const int&);
   void        setCrateIndex(const int&);

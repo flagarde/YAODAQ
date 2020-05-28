@@ -3,8 +3,8 @@
 #include "Exception.hpp"
 #include "StatusCode.hpp"
 
-#include <iostream>
 #include <vector>
+
 Infos::Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type)
 {
   m_RoomName  = roomName;
@@ -37,8 +37,7 @@ void Infos::setKey(const std::string& key)
       std::string word = tmp.substr(0, second_pos - 0);
       result.push_back(word);
     }
-    else
-      result.push_back("");
+    else result.push_back("");
     tmp        = tmp.substr(second_pos + separator.length());
     second_pos = tmp.find(separator);
     if(second_pos == std::string::npos) result.push_back(tmp);

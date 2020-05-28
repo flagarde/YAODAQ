@@ -1,6 +1,5 @@
-include(ExternalProject)
-
 if (NOT TARGET CLI11)
+include(ExternalProject)
 # ----- CLI11 package -----
 ExternalProject_Add(
                     CLI11

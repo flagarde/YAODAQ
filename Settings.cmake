@@ -1,8 +1,33 @@
+# Options for the external package
 # PMM
 set(PMM_PATH "https://flagarde.github.io/pmm/pmm.cmake")
 set(PMM_SHA256 "d7e4345d139bdb449a39c1fcf04b79f225569fbea6be6e3d0c342f9edeb3115e")
+# fmt
+set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git")
+set(FMT_VERSION "master")
+# spdlog
+set(SPDLOG_REPOSITORY "https://github.com/gabime/spdlog.git")
+set(SPDLOG_VERSION "v1.x")
+# doctest
+set(DOCTEST_REPOSITORY "https://github.com/onqtam/doctest.git")
+set(DOCTEST_VERSION "master")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # IXWebSocket
-set(IXWebSocket_repository "https://github.com/machinezone/IXWebSocket.git")
+set(IXWebSocket_repository "https://github.com/flagarde/IXWebSocket.git")
 set(IXWebSocket_version "master")
 # CAENlibs
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
@@ -10,12 +35,8 @@ set(CAENlibs_version "master")
 # elogpp
 set(elogpp_repository "https://github.com/RPClab/elogpp.git")
 set(elogpp_version "master")
-# doctest
-set(doctest_repository "https://github.com/onqtam/doctest.git")
-set(doctest_version "master")
-# fmt
-set(fmt_repository "https://github.com/RPClab/fmt.git")
-set(fmt_version "master")
+
+
 # CLI11
 set(CLI11_repository "https://github.com/RPClab/CLI11.git")
 set(CLI11_version "master")
@@ -25,9 +46,7 @@ set(soci_version "master")
 # toml11
 set(toml11_repository "https://github.com/RPClab/toml11.git")
 set(toml11_version "master")
-# spdlog
-set(spdlog_repository "https://github.com/gabime/spdlog.git")
-set(spdlog_version "v1.x")
+
 # civet
 set(civet_repository "https://github.com/civetweb/civetweb.git")
 set(civet_version "master")
@@ -40,8 +59,24 @@ set(jsroot_version "master")
 # jsoncpp
 set(jsoncpp_repository "https://github.com/open-source-parsers/jsoncpp.git")
 set(jsoncpp_version "master")
+# cereal 
+set(cereal_repository "https://github.com/USCiLab/cereal.git")
+set(cereal_version "master")
 
-option(ENABLE_TESTS "Include tests folder" ON)
+set(SNMP_repository "https://github.com/RPClab/net-snmp.git" )
+set(SNMP_version "master" )
+
+## Compiling ROOT can be very long so :
+option(USE_ROOT "Try to find a ROOT installation and use it" ON)
+option(BUILD_ROOT "Build ROOT Folder" ON)
+set(LOOK_FOR_ROOT_VERSION "6.20.04")
+## If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
+set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
+#######################################
+
+
+
+option(ENABLE_TESTS "Include tests folder" OFF)
 option(ENABLE_DOCS "Include docs folder" ON)
 option(BUILD_ANALYSIS "Build the Analysis code" ON)
 option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
@@ -50,6 +85,8 @@ option(BUILD_CONFIGURATOR "Build Configurator" ON)
 option(BUILD_CONTROLLER "Build Controller" ON)
 option(BUILD_LOGGER "Build Logger" ON)
 option(ENABLE_EXTRAS "Build extras" ON)
+
+option(BUILD_SNMP "Build SNMP" OFF)
 
 option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
 

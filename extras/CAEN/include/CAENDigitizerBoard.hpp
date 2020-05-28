@@ -2,30 +2,44 @@
 
 #include "Board.hpp"
 #include "Flash.hpp"
-
 #include <memory>
-#include <variant>
-
+#include <any>
+#include "magic_enum.hpp"
+#include <fstream>
 
 namespace CAEN
 {
-
-class DRS4Correction;
-
   
-class CAEN_DGTZ_UINT16_EVENT_t;
-class CAEN_DGTZ_UINT8_EVENT_t;
-class CAEN_DGTZ_X742_EVENT_t;
-class CAEN_DGTZ_X743_EVENT_t;
+class TimeOutInfos
+{
+public:
+  TimeOutInfos(double data, double trigger): DataRate(data), TriggerRate(trigger) {}
+  TimeOutInfos() {}
+  void set(double data, double trigger)
+  {
+    DataRate    = data;
+    TriggerRate = trigger;
+    Changed     = true;
+  }
+  double getDataRate()
+  {
+    Changed = false;
+    return DataRate;
+  }
+  double getTriggerRate()
+  {
+    Changed = false;
+    return TriggerRate;
+  }
+  bool hasChanged() { return Changed; }
+    
+private:
+  bool   Changed{false};
+  double DataRate{0.};
+  double TriggerRate{0.};
+};
 
-class CAEN_DGTZ_DPP_PHA_Event_t;
-class CAEN_DGTZ_DPP_PSD_Event_t;
-class CAEN_DGTZ_DPP_CI_Event_t;
-class CAEN_DGTZ_DPP_QDC_Event_t;
-class CAEN_DGTZ_751_ZLE_Event_t;
-class CAEN_DGTZ_730_ZLE_Event_t;
-class CAEN_DGTZ_DPP_X743_Event_t;
-class CAEN_DGTZ_730_DAW_Event_t;
+
 
 class EventInfo;
 
@@ -159,21 +173,12 @@ public:
   /**************************************************************************/ /**
   * \brief     Waits for an interrupt from a CAEN VME Bridge
   *
-  * \param   [IN]  LinkType  : The link used to connect to the CAEN VME Bridge
-  * \param   [IN]  LinkNum   :
-  *                            - when using CONET, it is the optical link number to be used
-  *                            - when using USB, it is the USB device number to be used
-  * \param   [IN]  ConetNode :
-  *                            - for CONET identify  witch device in the daisy-chain is addressed
-  *                            - for USB must be 0.
+  * \param   [IN]  Name of a Module connected to the VMEBridge
   * \param   [IN]  IRQMask   : A bit-mask indicating the IRQ lines
   * \param   [IN]     timeout   : timeout (in milliseconds)
-  * \param   [OUT] VMEHandle : device handler of the CAEN VME Bridge that received interrupt request
-  * \return  0 = Success; negative numbers are error codes
+  * \return  uint32_t the VMEHandle
   ******************************************************************************/
-  // CAEN_DGTZ_ErrorCode CAENDGTZ_API
-  // CAEN_DGTZ_VMEIRQWait(CAEN_DGTZ_ConnectionType LinkType, int LinkNum, int
-  // ConetNode, uint8_t IRQMask, uint32_t timeout, int *VMEHandle);
+  uint32_t VMEIRQWait(const std::string name,const uint8_t& IRQMask,const uint32_t& timeout);
 
   /**************************************************************************/ /**
   * \brief     Checks VME interrupt level
@@ -187,14 +192,11 @@ public:
 
   /**************************************************************************/ /**
   * \brief     Performs a VME Interrupt Acknowledge cycle to know the board_id of the board that raised an interrupt
-  *
   * \param   [IN] handle     : handle of the CAEN VME Bridge that raised the interrupt (retrieved from CAEN_DGTZ_VMEIRQWait function)
   * \param   [IN] level      : VME interrupt level to acknowledge
-  * \param   [OUT] board_id  : VME Digitizer board id of the interrupter
-  * \return  0 = Success; negative numbers are error codes
+  * \return board_id  : VME Digitizer board id of the interrupter
   ******************************************************************************/
-  // CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_VMEIACKCycle(int VMEHandle,
-  // uint8_t level, int32_t *board_id);
+  int32_t VMEIACKCycle(const int& VMEHandle,const uint8_t& level);
 
   /**************************************************************************/ /**
   * \brief     Sets Dual Edge Sampling (DES) mode. Valid only for digitizers that supports this acquisiton mode
@@ -614,7 +616,7 @@ public:
   * \brief     Decodes a specified event stored in the acquisition buffer
   * \deprecated On DPP-PHA, DPP-PSD and DPP-CI use the <b>new readout API</b>
   ******************************************************************************/
-  void DecodeEvent(const std::unique_ptr<char>& event);
+  void DecodeEvent(char* event);
 
   /**************************************************************************/ /**
   * \brief     Releases the event returned by the CAEN_DGTZ_DecodeEvent
@@ -830,7 +832,7 @@ public:
   std::uint32_t GetGroupFastTriggerThreshold(const std::uint32_t& group);
   void          SetGroupFastTriggerDCOffset(const std::uint32_t& group, const std::uint32_t& DCvalue);
   std::uint32_t GetGroupFastTriggerDCOffset(const std::uint32_t& group);
-  void          SetFastTriggerDigitizing(const std::string& on);
+  void          SetFastTriggerDigitizing(const bool& on);
   std::string   GetFastTriggerDigitizing();
   void          SetFastTriggerMode(const std::string& mode);
   std::string   GetFastTriggerMode();
@@ -922,14 +924,23 @@ public:
   
   void MaskChannels();
   
-  
+  void Read();
   
   //////// Board functions
   void  DoInitialize() final;
-  void  DoConnect() final {};
-  void  DoConfigure();
+  void  DoConfigure() final;
+  void  DoStart() final;
+  void  DoStop() final;
+  void  DoPause() final;
+  void  DoAtFirstStart() final;
+  void  DoLoopOnStart() final;
+  void  DoLoopOnPause() final;
+  void  DoEvent();
+  //FIXME try to find a serializer 
+  void  Parse();
   
 private:
+  std::ofstream  file{"key.json"};
   void        setModelName(const std::string& name);
   std::string m_ModelName{""};
   void        setModel(const std::uint32_t& model);
@@ -937,7 +948,7 @@ private:
   void          setNbrChannels(const std::uint32_t& model);
   std::uint32_t m_NbrChannels{0};
   void        setFormFactor(const std::uint32_t& form);
-  std::string m_FormFactor{""};
+  std::string m_FormFactor{"VME64"};
   void        setFamilyCode(const std::uint32_t& fam);
   std::string m_FamilyCode{""};
   void        setROCFirmwareRel(const std::string& firm);
@@ -1002,9 +1013,7 @@ public:
    * Register to write \param   data   :   Data to Write on the Register \param
    * mask   :   Bitmask to use for data masking
    */
-  void WriteRegisterBitmask(const std::uint32_t& address,
-                            const std::uint32_t& data,
-                            const std::uint32_t& mask);
+  void WriteRegisterBitmask(const std::uint32_t& address,const std::uint32_t& data,const std::uint32_t& mask);
 
   /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
    *            calibration or not.
@@ -1024,74 +1033,43 @@ public:
 
   std::uint32_t get_time();
 
-  virtual ~CAENDigitizerBoard()
-  {
-  }
+  virtual ~CAENDigitizerBoard();
+
   
   bool hasDPPFirmware()
   {
     return m_DPPFirmware;
   }
   
+  bool Interrupt();
+  
   
 private:
-
-
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-
-
-
-
-  std::unique_ptr<char> m_Buffer{nullptr};
+  std::any              m_DRS4Correction;
+  char*                 m_Buffer{nullptr};
   std::uint32_t         m_AllocatedSize{0};
   std::uint32_t         m_AllocatedSizeDPP{0};
   std::uint32_t         m_BufferSize{0};
-
-  CAEN_DGTZ_UINT16_EVENT_t* m_Uint16Event{nullptr};
-  CAEN_DGTZ_UINT8_EVENT_t*  m_Uint8Event{nullptr};
-  CAEN_DGTZ_X742_EVENT_t*   m_X742Event{nullptr};
-  CAEN_DGTZ_X743_EVENT_t*   m_X743Event{nullptr};
-
-  CAEN_DGTZ_DPP_PHA_Event_t*  m_DPPPHAEvent[16];
-  CAEN_DGTZ_DPP_PSD_Event_t*  m_DPPPSDEvent[16];
-  CAEN_DGTZ_DPP_CI_Event_t*   m_DPPCIEvent[16];
-  CAEN_DGTZ_DPP_QDC_Event_t*  m_DPPQDCEvent[16];
-  CAEN_DGTZ_751_ZLE_Event_t*  m_751ZLEEvent[8];
-  CAEN_DGTZ_730_ZLE_Event_t*  m_730ZLEEvent[16];
-  CAEN_DGTZ_DPP_X743_Event_t* m_DPPX743Event[2 * 8];
-  CAEN_DGTZ_730_DAW_Event_t*  m_730DAWEvent[16];
+  std::uint32_t         m_EventNumber{0};
+  void*   m_Event{nullptr};
 
   void Exit(const int& error);
   static constexpr int m_MAX_CH{64};/* max. number of channels */
   static constexpr int m_MAX_SET{16};/* max. number of independent settings */
   static constexpr int m_MAX_GROUPS{8};/* max. number of groups */
   bool                m_Test{false};
-  std::string         m_FastTriggerEnabled{"DISABLED"};
+  bool                m_FastTriggerEnabled{false};
   std::string         m_FastTriggerMode{"DISABLED"};
   std::string         m_DesMode{"DISABLED"};
   std::uint32_t       m_RecordLength{1024};
-  int                 m_NumberEvent{1023};
+  int                 m_NumberEventBLT{1023};
   std::uint16_t       m_DecimationFactor{1};
   int                 m_PostTrigger{50};
   std::string         m_FPIOtype{"NIM"};
   int                 m_InterruptNumEvents{0};
   const std::uint8_t  m_VME_INTERRUPT_LEVEL{1};
-  const std::uint32_t m_VME_INTERRUPT_STATUS_ID{0xAAAA};
-  int                 m_NumEvents{1023};
+  const std::uint16_t m_VME_INTERRUPT_STATUS_ID{0xAAAA};
+  const std::uint8_t  m_INTERRUPT_TIMEOUT{200}; //ms
   std::string         m_ExtTriggerMode{"ACQ_ONLY"};
   std::uint16_t       m_EnableMask{0xFFFF};
   int                 m_Nch{0};
@@ -1101,6 +1079,7 @@ private:
   std::uint32_t       m_MaxGroupNumber{0};
   std::string         m_FileFormat{"ROOT"};
   bool                m_StartupCalibration{false};
+  bool                m_ContinuousTrigger{false};
   //#define MAX_SET 16   /* max. number of independent settings */
   std::array<std::array<int32_t,m_MAX_SET>,m_MAX_SET> m_DCoffsetGrpCh;
   std::array<std::uint32_t,m_MAX_SET>           m_DCoffset;
@@ -1110,35 +1089,19 @@ private:
   std::array<std::uint8_t,m_MAX_SET>            m_GroupTrgEnableMask;
   std::array<std::string,m_MAX_SET>             m_PulsePolarity;
   std::array<int, 64>                     m_DCfile;
+  std::array<int, 64>                     m_Thrfile;
+  std::array<float,8>                     m_DC8file;
   std::array<float,m_MAX_SET>                   m_Cal;
   std::array<float,m_MAX_SET>                   m_Offset;
   std::string                             m_DRS4Frequency{"5GHz"};
   std::array<std::uint32_t,m_MAX_SET>           m_FTDCoffset;
   std::array<std::uint32_t,m_MAX_SET>           m_FTThreshold;
   std::vector<std::array<uint32_t,3>> m_WriteRgisters;
-  static std::vector<std::string>         ErrMsg;
   std::array<std::string, 4>              m_TablesFilenames;
   bool                                    m_UseCorrections{false};
   bool                                    m_UseManualTables{false};
   Flash                                   m_Flash;
-  /* Error messages */
-  typedef enum
-  {
-    ERR_NONE = 0,
-    ERR_CONF_FILE_NOT_FOUND,
-    ERR_DGZ_OPEN,
-    ERR_BOARD_INFO_READ,
-    ERR_INVALID_BOARD_TYPE,
-    ERR_DGZ_PROGRAM,
-    ERR_MALLOC,
-    ERR_INTERRUPT,
-    ERR_READOUT,
-    ERR_EVENT_BUILD,
-    ERR_UNHANDLED_BOARD,
-    ERR_OVERTEMP,
-
-    ERR_DUMMY_LAST,
-  } ERROR_CODES;
+  TimeOutInfos                            m_TimeOutInfos;
 };
 
 }  // namespace CAEN

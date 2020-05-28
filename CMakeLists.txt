@@ -11,9 +11,36 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_SOURCE_DIR}/cmake" "${CMAKE_SOURCE_DIR}/cmake/scripts" "${CMAKE_SOURCE_DIR}/external" "${CMAKE_SOURCE_DIR}")
+set(LIBRARY_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+set(RUNTIME_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}")
+set(ARCHIVE_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+set(INCLUDE_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/include")
+set(CMAKE_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/lib/cmake")
+
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}" )
+set(CMAKE_PREFIX_PATH "${CMAKE_OUTPUT_DIRECTORY}")
+
+include(Colors)
 
 include(Settings)
+
+## Install doctest to allow testing exectuables and test inside executables
+include(CTest)
+include(doctest)
+include(${CMAKE_OUTPUT_DIRECTORY}/doctest/doctest.cmake)
+
+## If we want to have test in the executables 
+if(ENABLE_DOCTESTS)
+  add_dependencies(doctest)
+  add_library(doctest)
+  add_definitions(-DENABLE_DOCTEST_IN_LIBRARY)
+endif()
+
+include(ProcessorCount)
+ProcessorCount(N)
+if(NOT N EQUAL 0)
+  set(CTEST_BUILD_FLAGS -j${N})
+endif()
 
 file(DOWNLOAD "${PMM_PATH}" "${CMAKE_BINARY_DIR}/pmm.cmake" SHOW_PROGRESS EXPECTED_HASH SHA256=${PMM_SHA256})
 include("${CMAKE_BINARY_DIR}/pmm.cmake")
@@ -40,7 +67,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 set(CMAKE_LINK_DEPENDS_NO_SHARED TRUE)
 
-include(Colors)
+
 
 include(Architectures)
 
@@ -72,14 +99,6 @@ cmake_format(cmake-format ${CMAKE_FILES})
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
   message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
 endif()
-
-
-
-set(LIBRARY_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-set(RUNTIME_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}")
-set(ARCHIVE_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-set(INCLUDE_OUTPUT_DIR "${CMAKE_INSTALL_PREFIX}/include")
-set(CMAKE_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/cmake")
 
 set(CMAKE_MACOSX_RPATH TRUE)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
@@ -142,15 +161,10 @@ clang_tidy(-format-style=file -checks=* -header-filter='${CMAKE_SOURCE_DIR}/*')
 cppcheck(--enable=warning,performance,portability,missingInclude --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)" --suppress=missingIncludeSystem --quiet --verbose --force)
 include_what_you_use(-Xiwyu)
 
-if(BUILD_WEBSERVER)
-  include(jsroot)
-  include(civet)
-endif()
-
-if(BUILD_ANALYSIS OR BUILD_OLD_WAVEDUMP)
-  find_package(ROOT 6.14 REQUIRED)
-  include(${ROOT_USE_FILE})
-endif()
+#if(BUILD_ANALYSIS OR BUILD_OLD_WAVEDUMP)
+#  find_package(ROOT 6.14 REQUIRED)
+#  include(${ROOT_USE_FILE})
+#endif()
 
 add_subdirectory(libs)
 
@@ -161,7 +175,6 @@ endif()
 add_subdirectory(apps)
 
 if(ENABLE_TESTS)
-  include(CTest)
   add_subdirectory(tests)
 endif()
 
