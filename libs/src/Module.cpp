@@ -268,11 +268,9 @@ void Module::Disconnect()
 {
   try
   {
-    std::cout<<"Module Disconnect"<<std::endl;
     CallBoardDisconnect();
     setState(States::DISCONNECTED);
     sendState();
-    std::cout<<"Module Disconnect"<<std::endl;
   }
   catch(const Exception& error)
   {
