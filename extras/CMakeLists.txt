@@ -3,7 +3,7 @@ find_package(Git REQUIRED)
 include(CMakeParseArguments)
 
 function(plugin)
-  set(options OPTIONAL FAST)
+  set(options OPTIONAL LINK)
   set(oneValueArgs TARGET VERSION BASE)
   set(multiValueArgs CHILDS)
   cmake_parse_arguments(plugin "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
@@ -21,6 +21,7 @@ function(plugin)
   endforeach()
   set(VERSION ${plugin_VERSION})
   set(REGISTERS "")
+  set(LINK ${plugin_LINK})
   foreach(name ${plugin_CHILDS})
     list(
       APPEND
