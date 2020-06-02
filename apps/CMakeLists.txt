@@ -1,5 +1,5 @@
 if(BUILD_ANALYSIS OR BUILD_OLD_WAVEDUMP)
-  
+  find_package(Threads)
   root_generate_dictionary(G__Channel "supress/Channel.hpp" LINKDEF "supress/ChannelLinkDef.hpp")
   add_library(Channel OBJECT "supress/Channel.cpp" G__Channel.cxx)
   add_dependencies(Channel ROOT)
@@ -55,11 +55,6 @@ endif()
 if(BUILD_CONFIGURATOR)
   # add_executable(Configurator Configurator.cpp) add_dependencies(Configurator Configurator_) target_link_libraries(Configurator PUBLIC Configurator_) install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
-find_package(Threads)
-add_executable(PluginTest PluginTest.cpp)
-add_dependencies(PluginTest Board)
-target_link_libraries(PluginTest Board)
-install(TARGETS PluginTest RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 if(BUILD_OLD_WAVEDUMP)
   include(elogpp)
