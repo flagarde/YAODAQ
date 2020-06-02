@@ -38,18 +38,18 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
   target_link_libraries(CAENBoards PUBLIC CAENExceptions PRIVATE Board)
   install(TARGETS CAENBoards RUNTIME DESTINATION "${RUNTIME_OUTPUT_DIR}" LIBRARY DESTINATION "${LIBRARY_OUTPUT_DIR}" ARCHIVE DESTINATION "${ARCHIVE_OUTPUT_DIR}" PUBLIC_HEADER DESTINATION "${INCLUDE_OUTPUT_DIR}/CAEN")
 
- # plugin(
- #   TARGET
- #   CAENConnectors
- #   VERSION
- #   ${YAODAQ_VERSION_MAJOR}
- #   BASE
- #   Connector
- #   CHILDS
- #   CAEN::CAENVMEConnector
- #   CAEN::CAENDigitizerConnector
- #   CAEN::CAENHVConnector
- #   )
+  plugin(
+    TARGET
+    CAENConnectors
+    VERSION
+    ${YAODAQ_VERSION_MAJOR}
+    BASE
+    Connector
+    CHILDS
+    CAEN::CAENVMEConnector
+    CAEN::CAENDigitizerConnector
+    CAEN::CAENHVConnector
+    )
   # plugin( TARGET CAENBoards VERSION ${YAODAQ_VERSION_MAJOR} BASE Board CHILDS CAEN::CAENVMEBoard CAEN::CAENDigitizerBoard CAEN::CAENCommBoard )
   add_subdirectory(tests)
 endif()
