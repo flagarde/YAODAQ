@@ -86,6 +86,8 @@ option(BUILD_CONTROLLER "Build Controller" ON)
 option(BUILD_LOGGER "Build Logger" ON)
 option(ENABLE_EXTRAS "Build extras" ON)
 
+
+option(BUILD_DUMP "Build DUMP" ON)
 option(BUILD_SNMP "Build SNMP" OFF)
 
 option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)

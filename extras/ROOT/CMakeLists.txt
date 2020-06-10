@@ -1,0 +1,18 @@
+
+
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/external")
+include(ROOT)
+
+set(ROOT_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(ROOT_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+add_library(RootFile STATIC "${ROOT_SRC}/RootFile.cpp")
+add_dependencies(RootFile File ROOT)
+set_target_properties(RootFile PROPERTIES PUBLIC_HEADER "${ROOT_INCLUDE}/RootFile.hpp")
+target_link_libraries(RootFile PUBLIC File PUBLIC ROOT)
+target_include_directories(RootFile PUBLIC $<BUILD_INTERFACE:${ROOT_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}/ROOT>)
+install(TARGETS RootFile RUNTIME DESTINATION "${RUNTIME_OUTPUT_DIR}" LIBRARY DESTINATION "${LIBRARY_OUTPUT_DIR}" ARCHIVE DESTINATION "${ARCHIVE_OUTPUT_DIR}" PUBLIC_HEADER DESTINATION "${INCLUDE_OUTPUT_DIR}/ROOT")
+
+if(ENABLE_TESTS)
+ # add_subdirectory(tests)
+endif()

@@ -2,7 +2,7 @@
 
 #include "Internal.hpp"
 
-enum class StatusCode : int16_t
+enum class StatusCode : int_least32_t
 {
   SUCCESS = 0,
   FAILURE,
