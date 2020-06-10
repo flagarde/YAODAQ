@@ -37,7 +37,8 @@ void Infos::setKey(const std::string& key)
       std::string word = tmp.substr(0, second_pos - 0);
       result.push_back(word);
     }
-    else result.push_back("");
+    else
+      result.push_back("");
     tmp        = tmp.substr(second_pos + separator.length());
     second_pos = tmp.find(separator);
     if(second_pos == std::string::npos) result.push_back(tmp);

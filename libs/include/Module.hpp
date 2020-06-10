@@ -8,9 +8,9 @@
 #include "spdlog.h"
 
 #include <iostream>
+#include <mutex>
 #include <string>
 #include <thread>
-#include <mutex>
 
 //#ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
 //using yaodaq_string_view = spdlog::wstring_view_t;
@@ -99,14 +99,9 @@ public:
     m_WebsocketClient.sendText(critical.get());
     m_Logger->critical(buf.data());
   }
-  void sendData(const std::string& dat)
-  {
-    m_WebsocketClient.sendBinary(Data(dat).get());
-  }
-  void sendData(const Json::Value& dat)
-  {
-    m_WebsocketClient.sendBinary(Data(dat).get());
-  }
+  void sendData(const std::string& dat) { m_WebsocketClient.sendBinary(Data(dat).get()); }
+  void sendData(const Json::Value& dat) { m_WebsocketClient.sendBinary(Data(dat).get()); }
+
 protected:
   static Configuration            m_Config;
   virtual void                    OnOpen(const ix::WebSocketMessagePtr& msg);
@@ -122,20 +117,19 @@ protected:
   std::string                     m_Name{"Unknown"};
   std::string                     m_Type{"Unknown"};
   std::shared_ptr<spdlog::logger> m_Logger{nullptr};
-   
 
 private:
-  void                                                DoDoLoopOnStart();
-  void                                                DoDoLoopOnPause();
-  volatile States                                     m_State{States::UNINITIALIZED};
-  std::thread                                         m_LoopOnStart;
-  std::thread                                         m_LoopOnPause;
-  std::mutex                                          m_Mutex;
-  bool                                                m_LoopOnStartUsed{false};
-  bool                                                m_LoopOnPauseUsed{false};
-  void                                                reparseModules();
-  static bool                                         m_HaveToReloadConfigModules;
-  static bool                                         m_HaveToReloadConfig;
+  void            DoDoLoopOnStart();
+  void            DoDoLoopOnPause();
+  volatile States m_State{States::UNINITIALIZED};
+  std::thread     m_LoopOnStart;
+  std::thread     m_LoopOnPause;
+  std::mutex      m_Mutex;
+  bool            m_LoopOnStartUsed{false};
+  bool            m_LoopOnPauseUsed{false};
+  void            reparseModules();
+  static bool     m_HaveToReloadConfigModules;
+  static bool     m_HaveToReloadConfig;
   Module() = delete;
   virtual void                                        DoInitialize();
   virtual void                                        CallBoardConnect(){};

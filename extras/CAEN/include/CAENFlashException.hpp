@@ -4,8 +4,8 @@
 
 namespace CAEN
 {
-  
-enum FLASH_API_ERROR_CODES : int
+
+enum FLASH_API_ERROR_CODES : int_least32_t
 {
   SUCCESS                  = 0,
   ACCESS_FAILED            = -1,
@@ -16,21 +16,23 @@ enum FLASH_API_ERROR_CODES : int
   NOT_IMPLEMENTED          = -6,
   UNSUPPORTED_FLASH_DEVICE = -7
 };
-  
+
 class CAENFlashException: public Exception
 {
+  
 public:
 #if experimental_have_source_location == 1
-  CAENFlashException(const int& code = 0, std::experimental::source_location loc = std::experimental::source_location::current());
+  CAENFlashException(const int_least32_t& code, const std::experimental::source_location& loc = std::experimental::source_location::current());
 #elif have_source_location == 1
-  CAENFlashException(const int& code = 0, std::source_location loc  = std::source_location::current());
+  CAENFlashException(const int_least32_t& code, const std::source_location& loc  = std::source_location::current());
 #else
-  CAENFlashException(const int& code = 0);
+  CAENFlashException(const int_least32_t& code);
 #endif
-  virtual std::string toString() const final;
+  
 private:
   CAENFlashException() = delete;
-  virtual const char* errorStrings(const int& code) final;
+  const char* errorStrings(const int_least32_t& code);
+  
 };
 
 }  // namespace CAEN

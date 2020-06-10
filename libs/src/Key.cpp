@@ -1,8 +1,8 @@
-#include "Key.hpp" 
+#include "Key.hpp"
 
 void Key::setRoom(const std::string& room)
 {
-  m_Args[ROOM]=room;
+  m_Args[ROOM] = room;
 }
 
 Key& Key::Room(const std::string& room)
@@ -13,12 +13,12 @@ Key& Key::Room(const std::string& room)
 
 std::string Key::getRoom()
 {
-  return  m_Args[ROOM];
+  return m_Args[ROOM];
 }
 
 void Key::setRack(const std::string& rack)
 {
-  m_Args[RACK]=rack;
+  m_Args[RACK] = rack;
 }
 
 Key& Key::Rack(const std::string& rack)
@@ -29,12 +29,12 @@ Key& Key::Rack(const std::string& rack)
 
 std::string Key::getRack()
 {
-  return  m_Args[RACK];
+  return m_Args[RACK];
 }
 
 void Key::setCrate(const std::string& crate)
 {
-  m_Args[CRATE]=crate;
+  m_Args[CRATE] = crate;
 }
 
 Key& Key::Crate(const std::string& crate)
@@ -45,12 +45,12 @@ Key& Key::Crate(const std::string& crate)
 
 std::string Key::getCrate()
 {
-  return  m_Args[CRATE];
+  return m_Args[CRATE];
 }
 
 void Key::setSlot(const std::string& slot)
 {
-  m_Args[SLOT]=slot;
+  m_Args[SLOT] = slot;
 }
 
 Key& Key::Slot(const std::string& slot)
@@ -61,12 +61,12 @@ Key& Key::Slot(const std::string& slot)
 
 std::string Key::getSlot()
 {
-  return  m_Args[SLOT];
+  return m_Args[SLOT];
 }
 
 void Key::setClass(const std::string& Class)
 {
-  m_Args[CLASS]=Class;
+  m_Args[CLASS] = Class;
 }
 
 Key& Key::Class(const std::string& Class)
@@ -77,12 +77,12 @@ Key& Key::Class(const std::string& Class)
 
 std::string Key::getClass()
 {
-  return  m_Args[CLASS];
+  return m_Args[CLASS];
 }
 
 void Key::setType(const std::string& type)
 {
-  m_Args[TYPE]=type;
+  m_Args[TYPE] = type;
 }
 
 Key& Key::Type(const std::string& type)
@@ -93,12 +93,12 @@ Key& Key::Type(const std::string& type)
 
 std::string Key::getType()
 {
-  return  m_Args[TYPE];
+  return m_Args[TYPE];
 }
 
 void Key::setName(const std::string& name)
 {
-  m_Args[NAME]=name;
+  m_Args[NAME] = name;
 }
 
 Key& Key::Name(const std::string& name)
@@ -109,7 +109,7 @@ Key& Key::Name(const std::string& name)
 
 std::string Key::getName()
 {
-  return  m_Args[NAME];
+  return m_Args[NAME];
 }
 
 std::string Key::getKey()
@@ -120,5 +120,5 @@ std::string Key::getKey()
 
 void Key::createkey()
 {
-  fmt::format_to(m_Key,"{ROOM}/{RACK}/{CRATE}/{SLOT}/{CLASS}/{TYPE}/{NAME}",m_Args[ROOM],m_Args[RACK],m_Args[CRATE],m_Args[SLOT],m_Args[CLASS],m_Args[TYPE],m_Args[NAME]);
+  fmt::format_to(m_Key, "{ROOM}/{RACK}/{CRATE}/{SLOT}/{CLASS}/{TYPE}/{NAME}", m_Args[ROOM], m_Args[RACK], m_Args[CRATE], m_Args[SLOT], m_Args[CLASS], m_Args[TYPE], m_Args[NAME]);
 };

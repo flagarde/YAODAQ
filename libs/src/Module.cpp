@@ -9,8 +9,8 @@
 #include "sinks/stdout_color_sinks.h"
 #include "spdlog.h"
 
-bool Module::m_HaveToReloadConfigModules=true;
-bool Module::m_HaveToReloadConfig=true;
+bool Module::m_HaveToReloadConfigModules = true;
+bool Module::m_HaveToReloadConfig        = true;
 
 Configuration Module::m_Config = Configuration();
 
@@ -64,7 +64,7 @@ Module::Module(const std::string& name, const std::string& type): m_Type(type), 
   spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
   m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
   m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
-  m_CallBack={[this](const ix::WebSocketMessagePtr& msg) {
+  m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
     if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
     else if(msg->type == ix::WebSocketMessageType::Open)
     {
@@ -103,13 +103,13 @@ void Module::LoadConfig()
 {
   m_Config.parse();
   m_Conf = m_Config.getConfig(m_Name);
-  std::cout<<m_Conf<<std::endl;
+  std::cout << m_Conf << std::endl;
   verifyParameters();
 }
 
 void Module::printParameters()
 {
-  m_Logger->info("Parameters :\n{}",toml::format(m_Conf));
+  m_Logger->info("Parameters :\n{}", toml::format(m_Conf));
 }
 
 Module::~Module()
@@ -179,15 +179,15 @@ void Module::Start()
   try
   {
     setState(States::STARTED);
-    if(m_LoopOnPauseUsed==true)
+    if(m_LoopOnPauseUsed == true)
     {
       m_LoopOnPause.join();
-      m_LoopOnPauseUsed=false;
+      m_LoopOnPauseUsed = false;
     }
-    if(m_IsFirstStart==true)
+    if(m_IsFirstStart == true)
     {
       DoAtFirstStart();
-      m_IsFirstStart=false;
+      m_IsFirstStart = false;
     }
     DoStart();
     sendState();
@@ -205,10 +205,10 @@ void Module::Pause()
   try
   {
     setState(States::PAUSED);
-    if(m_LoopOnStartUsed==true)
+    if(m_LoopOnStartUsed == true)
     {
       m_LoopOnStart.join();
-      m_LoopOnStartUsed=false;
+      m_LoopOnStartUsed = false;
     }
     DoPause();
     sendState();
@@ -226,16 +226,16 @@ void Module::Stop()
   try
   {
     setState(States::STOPED);
-    m_IsFirstStart=true;
-    if(m_LoopOnStartUsed==true)
+    m_IsFirstStart = true;
+    if(m_LoopOnStartUsed == true)
     {
       m_LoopOnStart.join();
-      m_LoopOnStartUsed=false;
+      m_LoopOnStartUsed = false;
     }
-    if(m_LoopOnPauseUsed==true)
+    if(m_LoopOnPauseUsed == true)
     {
       m_LoopOnPause.join();
-      m_LoopOnPauseUsed=false;
+      m_LoopOnPauseUsed = false;
     }
     DoStop();
     sendState();
@@ -315,22 +315,21 @@ void Module::Quit()
 
 void Module::LoopOnStart()
 {
-  if(m_LoopOnStartUsed==false)
+  if(m_LoopOnStartUsed == false)
   {
-    m_LoopOnStart=std::thread(&Module::DoDoLoopOnStart,this);
-    m_LoopOnStartUsed=true;
+    m_LoopOnStart     = std::thread(&Module::DoDoLoopOnStart, this);
+    m_LoopOnStartUsed = true;
   }
 }
 
 void Module::LoopOnPause()
 {
-  if(m_LoopOnPauseUsed==false)
+  if(m_LoopOnPauseUsed == false)
   {
-    m_LoopOnPause=std::thread(&Module::DoDoLoopOnPause,this);
-    m_LoopOnPauseUsed=true;
+    m_LoopOnPause     = std::thread(&Module::DoDoLoopOnPause, this);
+    m_LoopOnPauseUsed = true;
   }
 }
-
 
 void Module::DoInitialize() {}
 
@@ -352,22 +351,15 @@ void Module::DoLoopOnStart(){};
 void Module::DoLoopOnPause(){};
 void Module::DoAtFirstStart(){};
 
-void Module::DoDoLoopOnStart() 
+void Module::DoDoLoopOnStart()
 {
-  while(getState()==States::STARTED)
-  {
-    DoLoopOnStart();
-  }
+  while(getState() == States::STARTED) { DoLoopOnStart(); }
 }
 
-void Module::DoDoLoopOnPause() 
+void Module::DoDoLoopOnPause()
 {
-  while(getState()==States::PAUSED)
-  {
-    DoLoopOnPause();
-  }
+  while(getState() == States::PAUSED) { DoLoopOnPause(); }
 }
-
 
 void Module::OnCommand(Command& command) {}
 
@@ -397,7 +389,7 @@ void Module::DoOnAction(const Message& message)
       }
       case Actions::CONFIGURE:
       {
-        m_HaveToReloadConfigModules=true;
+        m_HaveToReloadConfigModules = true;
         Configure();
         break;
       }

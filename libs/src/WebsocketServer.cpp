@@ -139,7 +139,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         }
         else if(m_Message.getType() == "Data")
         {
-          spdlog::warn("Sending data ({0} Mo); From : {1}; To : {2}", m_Message.getContentSize()/1048576.0, m_Message.getFrom(), m_Message.getTo());
+          spdlog::warn("Sending data ({0} Mo); From : {1}; To : {2}", m_Message.getContentSize() / 1048576.0, m_Message.getFrom(), m_Message.getTo());
           sendToAll(msg->str);
         }
         else

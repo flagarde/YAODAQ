@@ -1,13 +1,12 @@
 #include "File.hpp"
+
 #include <filesystem>
 
-File::File(const std::string& name):m_Path(name)
-{
-}
+File::File(const std::string& name): m_Path(name) {}
 
 std::string File::getPath()
 {
-  return  m_Path.remove_filename();
+  return m_Path.remove_filename();
 }
 
 std::string File::getName()

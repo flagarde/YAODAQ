@@ -3,35 +3,29 @@
 #include "CAENVMElib.h"
 #include "CAENVMEtypes.h"
 
-#include "magic_enum.hpp"
-
 namespace CAEN
 {
-const char* CAENVMEException::errorStrings(const int& code)
+  
+const char* CAENVMEException::errorStrings(const int_least32_t& code)
 {
   return CAENVME_DecodeError(static_cast<CVErrorCodes>(code));
 }
 
 #if experimental_have_source_location == 1
-CAENVMEException::CAENVMEException(const int& code, std::experimental::source_location loc) : Exception(code, errorStrings(code), loc)
+CAENVMEException::CAENVMEException(const int_least32_t& code, const std::experimental::source_location& loc) : Exception(code, errorStrings(code), loc)
 {
-  if(code != 0) throw *this;
+  if(code != cvSuccess) throw *this;
 };
 #elif have_source_location == 1
-CAENVMEException::CAENVMEException(const int& code, std::source_location loc) : Exception(code, errorStrings(code), loc)
+CAENVMEException::CAENVMEException(const int_least32_t& code, const std::source_location& loc) : Exception(code, errorStrings(code), loc)
 {
-  if(code != 0) throw *this;
+  if(code != cvSuccess) throw *this;
 };
 #else
-CAENVMEException::CAENVMEException(const int& code): Exception(code, errorStrings(code))
+CAENVMEException::CAENVMEException(const int_least32_t& code): Exception(code, errorStrings(code))
 {
-  if(code != 0) throw *this;
+  if(code != cvSuccess) throw *this;
 };
 #endif
-
-std::string CAENVMEException::toString() const
-{
-  return std::string(magic_enum::enum_name(magic_enum::enum_cast<CVErrorCodes>(getCode()).value()));
-}
 
 }  // namespace CAEN

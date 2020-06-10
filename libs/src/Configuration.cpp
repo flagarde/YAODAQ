@@ -4,6 +4,7 @@
 #include "Internal.hpp"
 #include "StatusCode.hpp"
 #include "toml.hpp"
+
 #include <iostream>
 
 int Configuration::m_ConnectorID = 1;
@@ -17,10 +18,7 @@ void Configuration::reparseModule()
     {
       for(const auto& crate: toml::find<toml::array>(rack, "Crate"))
       {
-        for(const auto& board: toml::find<toml::array>(crate, "Board"))
-        {
-          m_ModuleConfig[toml::find<std::string>(board, "Name")]=board;
-        }
+        for(const auto& board: toml::find<toml::array>(crate, "Board")) { m_ModuleConfig[toml::find<std::string>(board, "Name")] = board; }
       }
     }
   }
@@ -34,15 +32,16 @@ void Configuration::clear()
   m_Module_Names.clear();
   m_BoardsInfos.clear();
   m_ModuleConfig.clear();
-  m_ConnectorInfos.clear();  
-  m_ConnectorID=1;
-  m_CrateConnectorID=0;
+  m_ConnectorInfos.clear();
+  m_ConnectorID      = 1;
+  m_CrateConnectorID = 0;
 }
 
 toml::value Configuration::getConfig(const std::string& module)
 {
   if(m_ModuleConfig.find(module) == m_ModuleConfig.end()) { throw Exception(StatusCode::NOT_FOUND, "Board/Module " + module + " not found in configuration !"); }
-  else return m_ModuleConfig[module];
+  else
+    return m_ModuleConfig[module];
 }
 
 ConnectorInfos Configuration::getConnectorInfos(const std::string& module)
@@ -62,7 +61,8 @@ void Configuration::parse()
 void Configuration::throwIfExists(std::vector<std::string>& type, const std::string& typeName, const std::string& name)
 {
   if(std::find(type.begin(), type.end(), name) != type.end()) { throw Exception(StatusCode::ALREADY_PRESENT, typeName + " name \"" + name + "\" is already taken"); }
-  else type.push_back(name);
+  else
+    type.push_back(name);
 }
 
 void Configuration::parseRooms()
@@ -75,7 +75,7 @@ void Configuration::parseRooms()
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Room should have a name !\n"+std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Room should have a name !\n" + std::string(e.what()));
     }
     throwIfExists(m_Room_Names, "Room", actualRoomName);
     parseRacks(room);
@@ -92,7 +92,7 @@ void Configuration::parseRacks(const toml::value& room)
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Rack should have a name !\n"+std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Rack should have a name !\n" + std::string(e.what()));
     }
     throwIfExists(m_Rack_Names, "Rack", actualRackName);
     parseCrates(rack);
@@ -110,7 +110,7 @@ void Configuration::parseCrates(const toml::value& rack)
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Crate should have a name !\n"+std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Crate should have a name !\n" + std::string(e.what()));
     }
     throwIfExists(m_Crate_Names, "Crate", actualCrateName);
     toml::value crate_connector{};
@@ -141,7 +141,7 @@ void Configuration::parseModules(const toml::value& crate, const toml::value& cr
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Board should have a name !\n"+std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Board should have a name !\n" + std::string(e.what()));
     }
     throwIfExists(m_Module_Names, "Module", moduleName);
     std::string type = toml::find_or<std::string>(board, "Type", "");

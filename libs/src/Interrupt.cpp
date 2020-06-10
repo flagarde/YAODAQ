@@ -1,4 +1,5 @@
 #include "Interrupt.hpp"
+
 #include "spdlog.h"
 
 #include <csignal>

@@ -39,7 +39,7 @@ class Message
 {
 public:
   explicit Message(const Types& type = Types::Info, const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
-  explicit Message(const Types& type , const Json::Value& content, const std::string& to = "ALL", const std::string& from="");
+  explicit Message(const Types& type, const Json::Value& content, const std::string& to = "ALL", const std::string& from = "");
   void         parse(const std::string&);
   void         setFrom(const std::string&);
   void         setTo(const std::string&);
@@ -73,14 +73,12 @@ public:
   Command(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
   std::string               getCommand() const;
   std::string               getCommand();
-  template<typename T> void addParameter(const std::string& name, const T& value)
-  {
-    m_Value["Content"]["Parameters"][name] = value;
-  }
-  Json::Value getParameter(const std::string& parameter)
+  template<typename T> void addParameter(const std::string& name, const T& value) { m_Value["Content"]["Parameters"][name] = value; }
+  Json::Value               getParameter(const std::string& parameter)
   {
     if(m_Value["Content"]["Parameters"].isMember(parameter)) return m_Value["Content"]["Parameters"][parameter];
-    else return Json::Value{"ERROR"};
+    else
+      return Json::Value{"ERROR"};
   }
 };
 

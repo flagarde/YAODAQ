@@ -1,11 +1,9 @@
 #include "CAENFlashException.hpp"
 
-#include "magic_enum.hpp"
-
 namespace CAEN
 {
   
-const char* CAENFlashException::errorStrings(const int& code)
+  const char* CAENFlashException::errorStrings(const int_least32_t& code)
 {
   switch(code)
   {
@@ -30,25 +28,20 @@ const char* CAENFlashException::errorStrings(const int& code)
   }
 }
 
-std::string CAENFlashException::toString() const
-{
-  return std::string(magic_enum::enum_name(magic_enum::enum_cast<FLASH_API_ERROR_CODES>(getCode()).value()));
-}
-
 #if experimental_have_source_location == 1
-CAENFlashException::CAENFlashException(const int& code, std::experimental::source_location loc) : Exception(code, errorStrings(code), loc)
+CAENFlashException::CAENFlashException(const int_least32_t& code, const std::experimental::source_location& loc) : Exception(code, errorStrings(code), loc)
 {
-  if(code != 0) throw *this;
+  if(code != SUCCESS) throw *this;
 };
 #elif have_source_location == 1
-CAENFlashException::CAENFlashException(const int& code, std::source_location loc) : Exception(code, errorStrings(code), loc)
+CAENFlashException::CAENFlashException(const int_least32_t& code, const std::source_location& loc) : Exception(code, errorStrings(code), loc)
 {
-  if(code != 0) throw *this;
+  if(code != SUCCESS) throw *this;
 };
 #else
-CAENFlashException::CAENFlashException(const int& code): Exception(code, errorStrings(code))
+CAENFlashException::CAENFlashException(const int_least32_t& code): Exception(code, errorStrings(code))
 {
-  if(code != 0) throw *this;
+  if(code != SUCCESS) throw *this;
 };
 #endif
 

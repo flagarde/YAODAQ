@@ -18,8 +18,9 @@ public:
   toml::value    getConfig(const std::string&);
   ConnectorInfos getConnectorInfos(const std::string&);
   void           clear();
+
 private:
-  static int                            m_ConnectorID;                             
+  static int                            m_ConnectorID;
   int                                   m_CrateConnectorID{0};
   void                                  parseRooms();
   void                                  parseRacks(const toml::value& room);

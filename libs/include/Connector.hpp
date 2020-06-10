@@ -6,21 +6,21 @@
 
 #include <string>
 
-
 class Connector
 {
 public:
   Connector(const std::string& type);
   virtual ~Connector(){};
-  void         printParameters();
-  toml::value  getParameters();
-  virtual void verifyParameters();
-  int32_t      Connect();
-  void         Disconnect();
-  std::string  getType();
-  void         setInfos(const ConnectorInfos& infos);
-  bool         isConnected();
-  virtual Response     sendCommand(const Command&)=0;  
+  void             printParameters();
+  toml::value      getParameters();
+  virtual void     verifyParameters();
+  int32_t          Connect();
+  void             Disconnect();
+  std::string      getType();
+  void             setInfos(const ConnectorInfos& infos);
+  bool             isConnected();
+  virtual Response sendCommand(const Command&) = 0;
+
 protected:
   std::string  m_Type{""};
   virtual void DoConnect()    = 0;

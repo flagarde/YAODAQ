@@ -1,12 +1,9 @@
 #include "CAENHVException.hpp"
-
 #include "CAENHVWrapper.h"
-
-#include "magic_enum.hpp"
 
 namespace CAEN
 {
-const char* CAENHVException::errorStrings(const int& code)
+  const char* CAENHVException::errorStrings(const int_least32_t& code)
 {
   switch(code)
   {
@@ -91,27 +88,18 @@ const char* CAENHVException::errorStrings(const int& code)
   }
 }
 
-std::string CAENHVException::toString() const
-{
-  return std::string(
-      magic_enum::enum_name(magic_enum::enum_cast<HV_ERROR>(getCode()).value()));
-}
-
 #if experimental_have_source_location == 1
-CAENHVException::CAENHVException(const int&                         code,
-                         std::experimental::source_location loc)
-    : Exception(code, errorStrings(code), loc)
+CAENHVException::CAENHVException(const int_least32_t& code, const std::experimental::source_location& loc) : Exception(code, errorStrings(code), loc)
 {
   if(code != CAENHV_OK) throw *this;
 };
 #elif have_source_location == 1
-CAENHVException::CAENHVException(const int& code, std::source_location loc)
-    : Exception(code, errorStrings(code), loc)
+CAENHVException::CAENHVException(const int_least32_t& code, const std::source_location& loc) : Exception(code, errorStrings(code), loc)
 {
   if(code != CAENHV_OK) throw *this;
 };
 #else
-CAENHVException::CAENHVException(const int& code): Exception(code, errorStrings(code))
+CAENHVException::CAENHVException(const int_least32_t& code): Exception(code, errorStrings(code))
 {
   if(code != CAENHV_OK) throw *this;
 };

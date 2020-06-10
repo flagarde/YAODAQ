@@ -1,3 +1,4 @@
+// clang-format off
 #if defined(_MSC_VER)
   #define DISABLE_WARNING_PMFCONVERSIONS
 
@@ -10,3 +11,4 @@
 #else
   #define DISABLE_WARNING_UNREFERENCED_FUNCTION
 #endif
+// clang-format on

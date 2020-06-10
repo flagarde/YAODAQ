@@ -14,7 +14,7 @@ void Message::addKey(const std::string& key, const std::string& value)
   m_Value["Content"][key] = value;
 }
 
-std::size_t  Message::getContentSize()
+std::size_t Message::getContentSize()
 {
   return getContent().size();
 }
@@ -39,7 +39,6 @@ Message::Message(const Types& type, const Json::Value& content, const std::strin
   m_StreamWriterBuilder.settings_["indentation"] = "";
   setContent(Json::writeString(m_StreamWriterBuilder, content));
 }
-
 
 bool Message::isEmpty()
 {
