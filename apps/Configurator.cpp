@@ -2,6 +2,7 @@
 
 #include "CLI/CLI.hpp"
 #include "spdlog.h"
+#include "ProgramInfos.hpp"
 //#include "fmt/core.h"
 //#include "fmt/format.h"
 /*#include "chrono.h"
@@ -17,6 +18,8 @@
 
 int main(int argc, char** argv)
 {
+  ProgramInfos infos;
+  infos.Logo();
   Interrupt interrupt;
   CLI::App  app{"Websocket Server"};
   int       port{8282};

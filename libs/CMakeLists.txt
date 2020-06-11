@@ -27,7 +27,6 @@ add_dependencies(Util CLI11 spdlog magic_enum jsoncpp toml11)
 target_link_libraries(Util INTERFACE spdlog INTERFACE jsoncpp)
 target_include_directories(Util INTERFACE "${INCLUDE_OUTPUT_DIR}"  INTERFACE "${INCLUDE_OUTPUT_DIR}/toml" INTERFACE "${INCLUDE_OUTPUT_DIR}/json" INTERFACE "${INCLUDE_OUTPUT_DIR}/cereal")
 
-
 add_library(File "${YAODAQ_SRC}/File.cpp")
 add_dependencies(File Util)
 target_include_directories(File PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)

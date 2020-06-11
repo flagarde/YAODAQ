@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "spdlog.h"
 
 class ProgramInfos
 {
@@ -11,6 +12,105 @@ public:
     std::string getDescription(){return PROJECT_DESCRIPTION;}
     std::string getHomepage(){return HOMEPAGE_URL;}
     std::string getVersion(){return "@PROJECT_VERSION@";}
+    void Logo()
+  {
+  fmt::print("                                                                         . . . .. ....         \n");
+  fmt::print("                                                                      ..  ......  . ..       \n");
+  fmt::print("                                                                     . ...  . . .. .....     \n");
+  fmt::print("                                                                     .   .......: .  ...     \n");
+  fmt::print("                                                                      ....  . .IM?.......    \n");
+  fmt::print("                                                                     .  .. .. $MMM+ .....    \n");
+  fmt::print("                                                                     . .. . .ZNMMMM+ ....    \n");
+  fmt::print("                                                                      .  . .OMMMMMMM~.....   \n");
+  fmt::print("...... . ..  . ...           .. . .. . . .. .      .. . . . ..      .. . .,OMMMMMMMMM~ .. ...\n");
+  fmt::print(" .  .  $NDDDDDDDDDDNDDDDDDDDDDDDDDDDDDDNDDDDDDDDDDDDDDDDDNDDDDDDDDDDDDDDDDDMMMMMMMMMMN~ .. . \n");
+  fmt::print(". ......OMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMN:. . .\n");
+  fmt::print("....... ..OMMMMMNO$777777777777777$DMMMM$77777777777777DMMMM77777777777777777$7777777777?. .. \n");
+  fmt::print("   .. .. ..I?=:. ..  .         .. .ZMMMM:.    .........8MMMM... ...     . .... ...     .... ..\n");
+  fmt::print("  .... .. .. . ...... .......... . ZMMMM,............. 8MMMM... ...... .... ............ .. . \n");
+  fmt::print(".......... .. . .  .  ..      .  . ZMMMM,.            .8MMMM, .      . . .....  .       ..   .\n");
+  fmt::print("  ... . .   ..  .  .. ....     .. .ZMMMM:. .. .........8MMMM.......  .. . ...  ........... . .\n");
+  fmt::print("         ......   .. ...    ... .. OMMMM: .......  ... 8MMMM. ...........   .. . .. .         \n");
+  fmt::print("          ... .. . .........  . . .ZMMMM,..  .     .. .OMMMM....  ...  ..... ....  . .        \n");
+  fmt::print("           ...  . . . ...   .. .. .ZMMMM, .... ...... .8MMMM . ..  ..  .. .,.  ..... .        \n");
+  fmt::print("           ......... ......    ... ZMMMM:  ..      .   8MMMM.. ... .. .   ?N+ .. . . .        \n");
+  fmt::print("          .... .:NI...  ........ . ZMMMM:........ .....8MMMM.............,NMM$. .. ..         \n");
+  fmt::print("          ......,MMN7...     ... ..ZMMMM,..  . .   ....8MMMM .   ..  .  .ZMMMM8:.. . .        \n");
+  fmt::print("          ......,MMMMN??++++++=++++8MMMM?++++++++++++++DMMMM+++++++++++=7MMMMMMM+ , .         \n");
+  fmt::print("        ...    .MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM$. ...        \n");
+  fmt::print("           ... ..MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM?. ...         \n");
+  fmt::print("           ... ..MMMMM+MMMMO$?~,..,ZMMMM:.,.,,,DM~..,,.OMMMM,,,.+$88$+:.,OMMMM+. ..           \n");
+  fmt::print("           ... ..MMMMM+MMMMMMMMI.. ZMMMM,.. . ~M8I.... 8MMMM. .ZMMMMMMO~ ZMMMM:  .. ..        \n");
+  fmt::print("           ..... NMMMM=M=...,~ZMI..$MMMM:  ...77=M,  ..8MMMM..$M7,..,?MO,ZMMMM:.. ...         \n");
+  fmt::print("           ... . NMMMM=M=. .. .$M:.ZMMMM, . .,M~,M= .  8MMMM ~MI.  .. ?M+ZMMMM:.. .           \n");
+  fmt::print("           ... . DMMMM+M=. . ..~M+.ZMMMM,..  +D, I$ ...8MMMM.IM: ......NOZMMMM~. .   .        \n");
+  fmt::print("           ...   DMMMM+M=  .   ,MI OMMMM,. ..Z?  :M:   8MMMM.Z8 . ... .7MOMMMM~. ....         \n");
+  fmt::print("           ....  DMMMM=M=.. ....MI.ZMMMM,. .:M: ..8?.. 8MMMM DZ. ..    IMZMMMM=. .  .         \n");
+  fmt::print("      .  .. .. ..8MMMM=M=.  .. ,MI ZMMMM,. .IZ. ..+D...8MMMM ZD.  . .  7MZMMMM=.  .  .        \n");
+  fmt::print("      .  .. .. ..8MMMM=M=...  .~M=.ZMMMM,...MMMMMMMM~..8MNMM.IM,.  ...,D$ZMMMM=.  .  .        \n");
+  fmt::print("         .....  .8MMMM+M=.  ...ZM: ZMMMM,. =MMMMMMMM7  OMMMM.~M7..... +M=ZMMMM=.. .  .        \n");
+  fmt::print("          ....  .DMMMM+M=. .,~ZMI .ZMMMM,..ZO.. . .IM:.8MMMM .$M7:..,?M7.ZMMMM+.. .. .        \n");
+  fmt::print("           ...  .NMMMM=MMMMMMMM?.. $MMMM:.:M+   ...,M+ 8MMMM...$MMMMMMI, ZMMMM+.. .. .        \n");
+  fmt::print("       ..  ...  .NMMMM+MMMNO$+:. ..ZMMMM,.?M,. .. . ZO.8MMMM. ..=78MM$...ZMMMM?... . .        \n");
+  fmt::print("       ..  ...  .NMMMM:.. .. . . .,ZNMMM, . ... .  .  .OMMMM. .  . .?M+ .ZMMMM?... . .        \n");
+  fmt::print("       ..  ..   .MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMNMMMM?... . .        \n");
+  fmt::print("      .......    MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMI .. ..         \n");
+  fmt::print("          ... ...MMMMM+~~~~~~~~~~~~~~~~~~:::~:~~~~~~~~~~~~~~~~~~~~~~~~~:~OMMMMI....  .        \n");
+  fmt::print("         ........MMMMM~  . .   .  . .~Z: ... .                  ...... . ZMMMMI,  ...         \n");
+  fmt::print("      .  ...  ..,MMMMM: .. .....  .. 7MM7.............            .......ZMM8+. ... .         \n");
+  fmt::print("              . ,MMMN7....  ...  . . DMMMM? ..                        . .Z8=. ...   .         \n");
+  fmt::print("         ..... .:M8+.. . .... .  . .~MMMMMMD:.......  ................ , :.  ...    .         \n");
+  fmt::print("        ...... .,= ..  . . .  . ....$MMMMMMMM?........                ..... ...  ...          \n");
+  fmt::print("              . .. . .. .. . .  . ..NMMMMMMZ~ ..      ........  ...... .. . . . ..   .        \n");
+  fmt::print(".. . .     .  .        ... .. .. .  IMMMMMM7 .. .... ..                 .. .... .  .?..   .. . \n");
+  fmt::print("... . ....... ......... .  .. .. .. DNMMMMD,. ......  .................. ... ... ..OMZ . .. ...\n");
+  fmt::print(".. ... .....           .......... .~MMMMMM~ .......                    . ... . ..,8MMM7. ......\n");
+  fmt::print(".  . .......  .........    .    .. OMMMMM7...  ........................  . .... ,DMMMMM7.. . . \n");
+  fmt::print("... .. .  .            .. ... . ..~MMMMMD.. ....                       ... .  .~NMMMMMMM7. .. .\n");
+  fmt::print(".. ... ................    .. .. .OMMMMM:....  ........................    ...~NMMMMMMMMM7.   .\n");
+  fmt::print(" . .. ?NDDDDDDDDDDDDDDDDNDDNNNDNDDNMMMMMMDNDDDNNNNDDDDDDDDDDDDDDDDDDDDDDNNDDDDDMMMMMMMMMMMMI .  \n");
+  fmt::print(". .. , 7MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMI...\n");
+  fmt::print("........7MMMMNZ7++++++++++++=++++IMMMMMD+++++++++++++++++++=+++MMMMMM$+++++++++++++++++++=+++...\n");
+  fmt::print("       ++:.   .       . . .  ..DMMMMM:................  .. .?MMMMMN.....  ............... . ..\n");
+  fmt::print(" .......  .. ............ ....?MMMMM? ....   .    ....... . NMMMMM?  ...  ....         . .....\n");
+  fmt::print("....... ...  .   ..     ... ..NMMMMO.             .... .. .?MMNMMN ........           .. ... .\n");
+  fmt::print("   ... .. ........... ...  . ZMMMMM,................... ...NMMMMM+.. ................. .  ....\n");
+  fmt::print("  ....... .   .... .... ... =MMMMM?. .  .              .  $MMMNMO.  .                  .. ... \n");
+  fmt::print("........ .. .. ... ....  . ,NMMMMO .. ................. .+MMMMMM, .  ...................  .  .\n");
+  fmt::print("      ......   ......  .. .ZMMMMN... .  .        .......,NMMMMM? . ........            . ... .\n");
+  fmt::print("                  .... . .+MMMMM=. ...... ......  .. ...ZMMMMM8. ... .                        \n");
+  fmt::print("                    .. ..,NMMMMZ. ..   . ......... ... +MMMMMM: ..  ..                        \n");
+  fmt::print("                      ., ZMMMMN. . ........ . . . ..  ,NMMMMMI .   ...                        \n");
+  fmt::print("               ....... ?MNMMMD$?+: . .... .... ... ..ZMMMMMD .... . .                        \n");
+  fmt::print("               ...... :8NMMMMMMMMMMN8$I+:. .....  . ZMMMMMM:.  .. .                          \n");
+  fmt::print("                       .. .~+7ZDMMMMMMMMMMMN8ZI+:,..7MMMMMM=. ..  ...                         \n");
+  fmt::print("                    ...  ...  ...~?$8MMMMMMMMMMMMMN8MMMMMM7  . . .. ..                        \n");
+  fmt::print("                  .... ..  .... ... ..,=IODMMMMMMMMMMMMMM8  . . .. ..                         \n");
+  fmt::print("                               .. ..  . ..,=7OMMMMMMMMMMMNZ?~...  ..... ... .... ..          \n");
+  fmt::print("                             .  ... .. ..  ....ZMMMMMMMMMMMMMN8I~...  ... ... ... . .        \n");
+  fmt::print("                              ....  .. ,. .. ~8MMMMMMMMMMMMMMMMMMN$=,. ... . .. .. .         \n");
+  fmt::print("                              ..   ... .  . ,ZMMMMMMMD+$NMMMMMMMMMMMMMO?: ...  .....          \n");
+  fmt::print("                              .  ..   . ..,7NMMMMMMNI. ..~ZMMMMMMMMMMMMMM8I,... .. . .        \n");
+  fmt::print("                              ...  ... .:7NMMMMMMM$,. .    .=OMMMMMMMMMMMMMM$: . ..           \n");
+  fmt::print("                               .. .. .:ZMMMMMMMN7: ... .......,IDMMMMMMMMMMMMMZ: . ...        \n");
+  fmt::print("                               .  ..=OMMMMMMMNI. .  . .  .  . ...~ZMMMMMMMMMMMMN?. .          \n");
+  fmt::print("... ... ..  ......  .... . ....  ..=ZMMMMMMMMD?....   ..          .. ,7NMMMMMMMMMMM?.. ....     \n");
+  fmt::print(" ...   ..  ... ..... .. ... .,+ZNMMMMMMMMO=. ,...   .         .. .  ..?DMMMMMMMMMM+ .. ...   .\n");
+  fmt::print(".. ....  ..  ...   ... .. ,+OMMMMMMMMM8?, ...  ...             .   ... .+NMMMMMMMMD.   ....  .\n");
+  fmt::print("..  ..  ...... . .....  ,~78MMMMMMMMM8I:.. .. .. ...             . .. .  ...IMMMMMMMM~.......   \n");
+  fmt::print(".  ,  . ..   ....  ,+$DMMMMMMMMMDZ+, ....    ......   .        ..  .... . . ,$MMMMMM=. .....   \n");
+  fmt::print("..... . .  .....:?ZDMMMMMMMMMD$?,. ....  .... .... .   .         .... ..  ... .+MMMMM+ ..       \n");
+  fmt::print(". .. . ....~?7ONMMMMMMMMO7+:.  . ..  ..... ....   ...  .        ..    .  ..  . .:DMMM,..       .\n");
+  fmt::print(" .  .. IZDMMMMMMMN8$?=, . .. ..... ... ....  ...  ...  .           .. .... ..... .?NO..  ....  .\n");
+  fmt::print(". .. .OMN8Z7I=~.. ...                                                                          \n");
+  fmt::print(". .. . ,....... .. ..  .                                                                        \n");
+  fmt::print("  .   . ....  ..  ...  .                                                                        \n");
+  fmt::print(" .  . ...  .   . ....  .                                                                        \n");
+  fmt::print(". ..... .....  ......  .                                                                        \n");
+  fmt::print(". .. .... ...  ...     .                                                                        \n");
+  fmt::print(".   .. .   .....                                                                                \n");
+  fmt::print(" .. ........     ... {0:>75}\n",getDescription()+" Version : "+getVersion());                                                                       
+}
 private:
     inline static constexpr unsigned int PROJECT_VERSION_MAJOR{@PROJECT_VERSION_MAJOR@};
     inline static constexpr unsigned int PROJECT_VERSION_MINOR{@PROJECT_VERSION_MINOR@};

@@ -2,9 +2,12 @@
 
 #include "CLI/CLI.hpp"
 #include "Interrupt.hpp"
+#include "ProgramInfos.hpp"
 
 int main(int argc, char** argv)
 {
+  ProgramInfos infos;
+  infos.Logo();
   Interrupt interrupt;
   CLI::App  app{"Dump"};
   int       port{8282};
