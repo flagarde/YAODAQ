@@ -7,7 +7,6 @@
 #include "sinks/stdout_color_sinks.h"
 #include "spdlog.h"
 #include "toml.hpp"
-
 std::string Controller::getName()
 {
   return m_Name;

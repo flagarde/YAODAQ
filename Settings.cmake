@@ -45,7 +45,7 @@ set(toml11_version "master")
 set(civet_repository "https://github.com/civetweb/civetweb.git")
 set(civet_version "master")
 # magic_enum
-set(magic_enum_repository "https://github.com/Neargye/magic_enum.git")
+set(magic_enum_repository "https://github.com/sachnk/magic_enum.git")
 set(magic_enum_version "master")
 # jsroot
 set(jsroot_repository "https://github.com/root-project/jsroot.git")

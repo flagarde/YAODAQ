@@ -28,21 +28,11 @@ namespace CAEN
   }
 }
 
-#if experimental_have_source_location == 1
-CAENFlashException::CAENFlashException(const int_least32_t& code, const std::experimental::source_location& loc) : Exception(code, errorStrings(code), loc)
+
+CAENFlashException::CAENFlashException(const int_least32_t& code, const SourceLocation& location) : Exception(code, errorStrings(code), location)
 {
   if(code != SUCCESS) throw *this;
 };
-#elif have_source_location == 1
-CAENFlashException::CAENFlashException(const int_least32_t& code, const std::source_location& loc) : Exception(code, errorStrings(code), loc)
-{
-  if(code != SUCCESS) throw *this;
-};
-#else
-CAENFlashException::CAENFlashException(const int_least32_t& code): Exception(code, errorStrings(code))
-{
-  if(code != SUCCESS) throw *this;
-};
-#endif
+
 
 }  // namespace CAEN

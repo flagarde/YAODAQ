@@ -38,19 +38,19 @@ set(CMAKE_INSTALL_RPATH "${LIBRARY_OUTPUT_DIR}")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 link_directories("${LIBRARY_OUTPUT_DIR}")
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}" )
-##FIXME
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
+# FIXME
 set(CMAKE_PREFIX_PATH "${CMAKE_OUTPUT_DIRECTORY}" "${CMAKE_INSTALL_PREFIX}/lib/cmake" "${CMAKE_INSTALL_PREFIX}/lib64/cmake")
 
 include(Colors)
 
 include(Settings)
 
-## Install doctest to allow testing exectuables and test inside executables
+# Install doctest to allow testing exectuables and test inside executables
 include(CTest)
 include(doctest)
 
-## If we want to have test in the executables 
+# If we want to have test in the executables
 if(ENABLE_DOCTESTS)
   add_dependencies(doctest)
   add_library(doctest)
@@ -58,7 +58,7 @@ if(ENABLE_DOCTESTS)
 endif()
 
 include(ProcessorCount)
-ProcessorCount(N)
+processorcount(N)
 if(NOT N EQUAL 0)
   set(CTEST_BUILD_FLAGS -j${N})
 endif()
@@ -67,7 +67,7 @@ file(DOWNLOAD "${PMM_PATH}" "${CMAKE_BINARY_DIR}/pmm.cmake" SHOW_PROGRESS EXPECT
 include("${CMAKE_BINARY_DIR}/pmm.cmake")
 
 if(WIN32)
-  ##FIXME
+  # FIXME
   set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "" CACHE STRING "Linker")
   set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "" CACHE STRING "Linker")
   set(CMAKE_EXE_LINKER_FLAGS_PROFILE "" CACHE STRING "Linker")
@@ -82,8 +82,6 @@ include(${PROJECT_BINARY_DIR}/conanbuildinfo.cmake)
 
 include(GenerateReadMe)
 generate_readme()
-
-
 
 include(Architectures)
 

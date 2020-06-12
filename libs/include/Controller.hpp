@@ -2,6 +2,7 @@
 
 #include "Exception.hpp"
 #include "Message.hpp"
+#include "StatusCode.hpp"
 #include "WebsocketClient.hpp"
 #include "spdlog.h"
 

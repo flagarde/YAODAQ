@@ -95,7 +95,7 @@ if(BUILD_OLD_WAVEDUMP)
 endif()
 
 if(BUILD_DUMP)
- add_executable(DumpModule DumpModule.cpp)
+  add_executable(DumpModule DumpModule.cpp)
 
   add_dependencies(DumpModule CAENBoards Board)
   target_include_directories(DumpModule PRIVATE ${CMAKE_BINARY_DIR} PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN")

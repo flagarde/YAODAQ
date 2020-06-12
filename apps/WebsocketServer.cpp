@@ -2,8 +2,8 @@
 
 #include "CLI/CLI.hpp"
 #include "Interrupt.hpp"
-#include "spdlog.h"
 #include "ProgramInfos.hpp"
+#include "spdlog.h"
 int main(int argc, char** argv)
 {
   ProgramInfos infos;

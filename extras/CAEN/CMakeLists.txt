@@ -30,8 +30,7 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
   # CAEN Boards
   set(CAENBOARDS_INCLUDE_FILES ${CAEN_INCLUDE}/CAENVMEBoard.hpp ${CAEN_INCLUDE}/CAENCommBoard.hpp ${CAEN_INCLUDE}/CAENDigitizerBoard.hpp ${CAEN_INCLUDE}/Flash.hpp ${CAEN_INCLUDE}/SPI.hpp)
   set(CAENBOARDS_SRC_FILES ${CAEN_SRC}/CAENVMEBoard.cpp ${CAEN_SRC}/CAENCommBoard.cpp ${CAEN_SRC}/CAENDigitizerBoard.cpp ${CAEN_SRC}/SPI.cpp ${CAEN_SRC}/Flash.cpp)
-  
-  
+
   add_library(CAENBoards SHARED "${CAENBOARDS_SRC_FILES}")
   set_target_properties(CAENBoards PROPERTIES PUBLIC_HEADER "${CAENBOARDS_INCLUDE_FILES}" INTERPROCEDURAL_OPTIMIZATION FALSE)
   add_dependencies(CAENBoards Board CAENExceptions)

@@ -59,21 +59,11 @@ const char* CAENDPPException::errorStrings(const int_least32_t& code)
   }
 }
 
-#if experimental_have_source_location == 1
-CAENDPPException::CAENDPPException(const int_least32_t& code, const std::experimental::source_location& loc) : Exception(code, errorStrings(code), loc)
+
+CAENDPPException::CAENDPPException(const int_least32_t& code, const SourceLocation& location) : Exception(code, errorStrings(code), location)
 {
   if(code != CAENDPP_RetCode_Ok) throw *this;
 };
-#elif have_source_location == 1
-CAENDPPException::CAENDPPException(const int_least32_t& code, const std::source_location& loc) : Exception(code, errorStrings(code), loc)
-{
-  if(code != CAENDPP_RetCode_Ok) throw *this;
-};
-#else
-CAENDPPException::CAENDPPException(const int_least32_t& code): Exception(code, errorStrings(code))
-{
-  if(code != CAENDPP_RetCode_Ok) throw *this;
-};
-#endif
+
 
 }  // namespace CAEN

@@ -1,8 +1,8 @@
 #include "Configurator.hpp"
 
 #include "CLI/CLI.hpp"
-#include "spdlog.h"
 #include "ProgramInfos.hpp"
+#include "spdlog.h"
 //#include "fmt/core.h"
 //#include "fmt/format.h"
 /*#include "chrono.h"
