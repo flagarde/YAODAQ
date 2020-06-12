@@ -49,7 +49,6 @@ include(Settings)
 ## Install doctest to allow testing exectuables and test inside executables
 include(CTest)
 include(doctest)
-include(${CMAKE_OUTPUT_DIRECTORY}/doctest/doctest.cmake)
 
 ## If we want to have test in the executables 
 if(ENABLE_DOCTESTS)
@@ -83,8 +82,6 @@ include(${PROJECT_BINARY_DIR}/conanbuildinfo.cmake)
 
 include(GenerateReadMe)
 generate_readme()
-
-
 
 
 
@@ -155,13 +152,13 @@ else()
 endif()
 
 # Optional IPO. Do not use IPO if it's not supported by compiler.
-#include(CheckIPOSupported)
-#check_ipo_supported(RESULT aResult OUTPUT aOutput)
-#if(aResult)
-#  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-#else()
-#  message(WARNING "IPO is not supported:# ${aOutput}")
-#endif()
+include(CheckIPOSupported)
+check_ipo_supported(RESULT aResult OUTPUT aOutput)
+if(aResult)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+  message(WARNING "IPO is not supported:# ${aOutput}")
+endif()
 
 include(Sanitizers)
 
@@ -172,11 +169,6 @@ include(Tools)
 clang_tidy(-format-style=file -checks=* -header-filter='${CMAKE_SOURCE_DIR}/*')
 cppcheck(--enable=warning,performance,portability,missingInclude --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)" --suppress=missingIncludeSystem --quiet --verbose --force)
 include_what_you_use(-Xiwyu)
-
-#if(BUILD_ANALYSIS OR BUILD_OLD_WAVEDUMP)
-#  find_package(ROOT 6.14 REQUIRED)
-#  include(${ROOT_USE_FILE})
-#endif()
 
 add_subdirectory(libs)
 

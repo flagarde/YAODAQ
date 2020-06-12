@@ -18,6 +18,7 @@ if(NOT doctest_project_POPULATED)
   message(INFO "doctest installed !")
 endif()
 
+include(${CMAKE_OUTPUT_DIRECTORY}/doctest/doctest.cmake)
 find_package(doctest REQUIRED)
 add_library(doctest INTERFACE)
 add_dependencies(doctest doctest_project)

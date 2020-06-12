@@ -20,12 +20,6 @@ set(DOCTEST_VERSION "master")
 
 
 
-
-
-
-
-
-
 # IXWebSocket
 set(IXWebSocket_repository "https://github.com/flagarde/IXWebSocket.git")
 set(IXWebSocket_version "master")
