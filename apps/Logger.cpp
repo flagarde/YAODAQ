@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     spdlog::error("{}", e.what());
     return e.get_exit_code();
   }
-  WebsocketClient::setURL("ws://" + host + ":" + std::to_string(port) + "/");
+  GeneralParameters::setURL("ws://" + host + ":" + std::to_string(port) + "/");
   spdlog::info("Logger listening on IP {0} Port {1}", host, port);
 
   Logger logger(loggerName);

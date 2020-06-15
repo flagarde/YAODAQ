@@ -63,7 +63,7 @@ Module::Module(const std::string& name, const std::string& type): m_Type(type), 
 {
   spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
   m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
-  m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
+  m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
   m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
     if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
     else if(msg->type == ix::WebSocketMessageType::Open)

@@ -31,7 +31,7 @@ int main(int argc, char** argv)
     return e.get_exit_code();
   }
 
-  WebsocketClient::setURL("ws://" + host + ":" + std::to_string(port) + "/");
+  GeneralParameters::setURL("ws://" + host + ":" + std::to_string(port) + "/");
 
   Board::setConfigFile("../confs/Configs.toml");
 

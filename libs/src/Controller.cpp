@@ -33,7 +33,7 @@ Controller::Controller(const std::string& name, const std::string& type): m_Type
   spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
   m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
   // Mimic json to parse the message and the level to change it on Loggers;
-  m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
+  m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
 }

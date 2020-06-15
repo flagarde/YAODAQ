@@ -105,11 +105,11 @@ set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Messag
 target_link_libraries(Message PUBLIC Util PUBLIC Exception)
 install(TARGETS Message RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
-add_library(WebSocketClient "${YAODAQ_SRC}/WebsocketClient.cpp")
+add_library(WebSocketClient "${YAODAQ_SRC}/WebsocketClient.cpp" "${YAODAQ_SRC}/GeneralParameters.cpp")
 add_dependencies(WebSocketClient WebSocket Util Exception)
 target_link_libraries(WebSocketClient PUBLIC WebSocket PUBLIC Util PUBLIC Exception)
 target_include_directories(WebSocketClient PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-set_target_properties(WebSocketClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebsocketClient.hpp")
+set_target_properties(WebSocketClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebsocketClient.hpp;${YAODAQ_INCLUDE}/GeneralParameters.hpp")
 install(TARGETS WebSocketClient RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 add_library(Board "${YAODAQ_SRC}/Module.cpp" "${YAODAQ_SRC}/Board.cpp")

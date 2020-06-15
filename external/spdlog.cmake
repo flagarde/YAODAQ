@@ -8,10 +8,10 @@ if(NOT TARGET spdlog)
   if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(SPDLOG_CLOCK_COARSE OFF CACHE BOOL "Use the much faster (but much less accurate) CLOCK_REALTIME_COARSE instead of the regular clock" FORCE)
   endif()
-  message(" ${SPDLOG_CLOCK_COARSE} hgkgkkgg")
   # ----- spdlog package -----
   ExternalProject_Add(
                       spdlog_project
+                      DEPENDS fmt_project
                       GIT_REPOSITORY ${SPDLOG_REPOSITORY}
                       GIT_TAG ${SPDLOG_VERSION}
                       GIT_PROGRESS TRUE

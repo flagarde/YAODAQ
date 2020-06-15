@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     return e.get_exit_code();
   }
 
-  WebsocketClient::setURL("ws://" + host + ":" + std::to_string(port) + "/");
+  GeneralParameters::setURL("ws://" + host + ":" + std::to_string(port) + "/");
 
   Controller toto(controllerName);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));

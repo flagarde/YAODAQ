@@ -10,7 +10,7 @@
 
 Logger::Logger(const std::string& name, const std::string& type): m_Name(name), m_Type(type)
 {
-  m_WebsocketClient.setExtraHeader("Key", "///" + m_Type + "/" + m_Name);
+  m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
 }
