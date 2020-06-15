@@ -198,7 +198,6 @@ void WebsocketServer::sendToAll(const std::string& message)
 
 WebsocketServer::~WebsocketServer()
 {
-  m_Server.stop();
   ix::uninitNetSystem();
 }
 
