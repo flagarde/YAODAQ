@@ -57,41 +57,41 @@ if(BUILD_CONFIGURATOR)
 endif()
 
 if(BUILD_OLD_WAVEDUMP)
-  include(elogpp)
-  add_executable(WaveDump WaveDump.cpp)
+  #include(elogpp)
+  #add_executable(WaveDump WaveDump.cpp)
 
-  add_library(lib1 STATIC supress/Digitizer.cpp supress/flash.cpp supress/spi.cpp supress/WDconfig.cpp supress/X742CorrectionRoutines.cpp)
-  add_dependencies(lib1 CAENlibs)
-  target_include_directories(lib1 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/supress")
-  target_include_directories(lib1 PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
+  #add_library(lib1 STATIC supress/Digitizer.cpp supress/flash.cpp supress/spi.cpp supress/WDconfig.cpp supress/X742CorrectionRoutines.cpp)
+  #add_dependencies(lib1 CAENlibs)
+  #target_include_directories(lib1 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/supress")
+  #target_include_directories(lib1 PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 
-  add_library(lib2 STATIC supress/FileManager.cpp)
-  add_dependencies(lib2 CAENlibs)
-  target_include_directories(lib2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/supress")
-  target_include_directories(lib2 PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
+  #add_library(lib2 STATIC supress/FileManager.cpp)
+  #add_dependencies(lib2 CAENlibs)
+  #target_include_directories(lib2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/supress")
+  #target_include_directories(lib2 PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
 
-  add_library(web STATIC supress/Plotter.cpp supress/WebServer.cpp)
-  add_dependencies(web WebSocket)
-  target_link_libraries(web PUBLIC WebSocket)
-  target_include_directories(web PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/supress")
-  target_include_directories(web PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
+  #add_library(web STATIC supress/Plotter.cpp supress/WebServer.cpp)
+  #add_dependencies(web IXWebSocket)
+  #target_link_libraries(web PUBLIC IXWebSocket)
+  #target_include_directories(web PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/supress")
+  #target_include_directories(web PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN>)
 
-  add_dependencies(WaveDump lib1 lib2 web elogpp)
-  target_include_directories(WaveDump PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIR}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIR}")
-  target_link_libraries(
-    WaveDump
-    lib1
-    lib2
-    web
-    elogcpp
-    Util
-    m
-    Channel_static
-    Event_static
-    CAENDigitizer
-    CAENComm
-    )
-  install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+  #add_dependencies(WaveDump lib1 lib2 web elogpp)
+  #target_include_directories(WaveDump PRIVATE "${INCLUDE_OUTPUT_DIR}/CAEN" PRIVATE "${INCLUDE_OUTPUT_DIR}/elogpp" PRIVATE $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/CAEN> PRIVATE "${INCLUDE_OUTPUT_DIR}")
+  #target_link_libraries(
+  #  WaveDump
+  #  lib1
+  #  lib2
+  #  web
+  #  elogcpp
+  #  Util
+  #  m
+  #  Channel_static
+  #  Event_static
+  #  CAENDigitizer
+  #  CAENComm
+  #  )
+  #install(TARGETS WaveDump RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
 if(BUILD_DUMP)

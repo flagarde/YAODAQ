@@ -1,8 +1,7 @@
 if(NOT TARGET fmt_project)
   include(ExternalProject)
   # ----- fmt_project package -----
-  ExternalProject_Add(
-                      fmt_project
+  ExternalProject_Add(fmt_project
                       GIT_REPOSITORY ${FMT_REPOSITORY}
                       GIT_TAG ${FMT_VERSION}
                       GIT_PROGRESS TRUE
@@ -11,10 +10,17 @@ if(NOT TARGET fmt_project)
                       PREFIX ${CMAKE_BINARY_DIR}/fmt_project
                       INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
                       LOG_DOWNLOAD ON
-                    )
-  add_library(fmt INTERFACE)
-  add_dependencies(fmt fmt_project)
-  target_link_libraries(fmt INTERFACE $<$<CONFIG:DEBUG>:fmtd,fmt>)
-  target_include_directories(fmt INTERFACE "${INCLUDE_OUTPUT_DIR}/fmt")
-  target_compile_definitions(fmt INTERFACE "FMT_LOCALE")
+                     )
+  add_library(fmt_internal INTERFACE)
+  add_dependencies(fmt_internal fmt_project)
+  #FIXME use generator expression
+  if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_link_libraries(fmt_internal INTERFACE fmtd)
+  else()
+    target_link_libraries(fmt_internal INTERFACE fmt)
+  endif()
+  #FIXME uncomment
+  #target_include_directories(fmt_internal INTERFACE "${INCLUDE_OUTPUT_DIR}/fmt")
+  target_compile_definitions(fmt_internal INTERFACE "FMT_LOCALE")
+  add_library(fmt::fmt ALIAS fmt_internal)
 endif()

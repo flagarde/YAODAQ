@@ -1,10 +1,9 @@
-## Due to a bug in spdlog we need to fetch fmt first (not using external package)
 include(FetchContent)
 if(NOT doctest_project_POPULATED)
   message(INFO "Compiling doctest")
   FetchContent_Declare(doctest_project
                        GIT_REPOSITORY ${DOCTEST_REPOSITORY}
-                       GIT_TAG ${DOCTEST_VERSION}
+                       GIT_TAG ${DOCTEST_TAG}
                        GIT_PROGRESS TRUE
                        GIT_SHALLOW TRUE
                        LOG_DOWNLOAD ON

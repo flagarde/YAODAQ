@@ -1,31 +1,25 @@
-find_package(Git REQUIRED)
-
-find_package(Threads)
-find_package(OpenSSL)
-find_package(ZLIB)
-set(THREADS_PREFER_PTHREAD_FLAG TRUE)
-
 set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(YAODAQ_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in" "${INCLUDE_OUTPUT_DIR}/ProgramInfos.hpp" @ONLY)
 
+# Include zlib-ng and openssl even if IXWebSocket include them too.
+include(zlib-ng)
+include(openssl)
 include(IXWebSocket)
-add_library(WebSocket INTERFACE)
-add_dependencies(WebSocket IXWebSocket)
-target_link_libraries(WebSocket INTERFACE ixwebsocket INTERFACE Threads::Threads INTERFACE CONAN_PKG::openssl INTERFACE ${CMAKE_DL_LIBS} INTERFACE CONAN_PKG::zlib)
-target_include_directories(WebSocket INTERFACE "${INCLUDE_OUTPUT_DIR}/ixwebsocket")
 
+# fmt and spdlog have difficulties to work together 
 include(fmt)
-include(CLI11)
 include(spdlog)
+
+include(CLI11)
 include(magic_enum)
 include(jsoncpp)
 include(toml11)
 add_library(Util INTERFACE)
-add_dependencies(Util CLI11 spdlog jsoncpp toml11 magic_enum)
-target_link_libraries(Util INTERFACE spdlog INTERFACE jsoncpp)
-target_include_directories(Util INTERFACE "${INCLUDE_OUTPUT_DIR}" INTERFACE "${INCLUDE_OUTPUT_DIR}/toml" INTERFACE "${INCLUDE_OUTPUT_DIR}/json" INTERFACE "${INCLUDE_OUTPUT_DIR}/cereal")
+add_dependencies(Util CLI11 spdlog::spdlog jsoncpp toml11 magic_enum)
+target_link_libraries(Util INTERFACE spdlog::spdlog INTERFACE jsoncpp)
+target_include_directories(Util INTERFACE "${INCLUDE_OUTPUT_DIR}" INTERFACE "${INCLUDE_OUTPUT_DIR}/toml" INTERFACE "${INCLUDE_OUTPUT_DIR}/json")
 
 add_library(SourceLocation "${YAODAQ_SRC}/SourceLocation.cpp")
 target_include_directories(SourceLocation PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
@@ -106,8 +100,8 @@ target_link_libraries(Message PUBLIC Util PUBLIC Exception)
 install(TARGETS Message RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 add_library(WebSocketClient "${YAODAQ_SRC}/WebsocketClient.cpp" "${YAODAQ_SRC}/GeneralParameters.cpp")
-add_dependencies(WebSocketClient WebSocket Util Exception)
-target_link_libraries(WebSocketClient PUBLIC WebSocket PUBLIC Util PUBLIC Exception)
+add_dependencies(WebSocketClient IXWebSocket Util Exception)
+target_link_libraries(WebSocketClient PUBLIC IXWebSocket PUBLIC Util PUBLIC Exception)
 target_include_directories(WebSocketClient PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 set_target_properties(WebSocketClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebsocketClient.hpp;${YAODAQ_INCLUDE}/GeneralParameters.hpp")
 install(TARGETS WebSocketClient RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
@@ -126,10 +120,10 @@ install(TARGETS Logger_ RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OU
 
 if(BUILD_WEBSOCKETSERVER)
   add_library(WebsocketServer "${YAODAQ_SRC}/WebsocketServer.cpp")
-  add_dependencies(WebsocketServer Util Message Infos WebSocket Exception)
+  add_dependencies(WebsocketServer Util Message Infos IXWebSocket Exception)
   target_include_directories(WebsocketServer PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>)
   set_target_properties(WebsocketServer PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebsocketServer.hpp")
-  target_link_libraries(WebsocketServer PUBLIC Util PUBLIC Message PUBLIC Infos PUBLIC WebSocket PUBLIC Exception)
+  target_link_libraries(WebsocketServer PUBLIC Util PUBLIC Message PUBLIC Infos PUBLIC IXWebSocket PUBLIC Exception)
 
   if(BUILD_CONFIGURATOR)
     # include(soci) add_library(Configurator_ "${YAODAQ_SRC}/Configurator.cpp") add_dependencies(Configurator_ soci WebsocketServer Board) target_include_directories( Configurator_ PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC

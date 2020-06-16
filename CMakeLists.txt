@@ -2,9 +2,12 @@
 #   CMakeLists.txt to build DAQ   #
 #   Author LAGARDE Francois       #
 ###################################
-cmake_minimum_required(VERSION 3.9...3.17.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10...3.17.2 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
+
+# Git is a essential part so test very early
+find_package(Git REQUIRED)
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
@@ -63,22 +66,13 @@ if(NOT N EQUAL 0)
   set(CTEST_BUILD_FLAGS -j${N})
 endif()
 
-file(DOWNLOAD "${PMM_PATH}" "${CMAKE_BINARY_DIR}/pmm.cmake" SHOW_PROGRESS EXPECTED_HASH SHA256=${PMM_SHA256})
-include("${CMAKE_BINARY_DIR}/pmm.cmake")
-
 if(WIN32)
   # FIXME
   set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "" CACHE STRING "Linker")
   set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "" CACHE STRING "Linker")
   set(CMAKE_EXE_LINKER_FLAGS_PROFILE "" CACHE STRING "Linker")
   set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "" CACHE STRING "Linker")
-  pmm(DEBUG CONAN)
-elseif(APPLE)
-  pmm(DEBUG CONAN)
-else()
-  pmm(DEBUG CONAN SETTINGS "compiler.libcxx=libstdc++11;compiler.version=9.2")
 endif()
-include(${PROJECT_BINARY_DIR}/conanbuildinfo.cmake)
 
 include(GenerateReadMe)
 generate_readme()

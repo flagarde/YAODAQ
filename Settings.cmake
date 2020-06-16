@@ -1,16 +1,25 @@
 # Options for the external package
-# PMM
-set(PMM_PATH "https://flagarde.github.io/pmm/pmm.cmake")
-set(PMM_SHA256 "d7e4345d139bdb449a39c1fcf04b79f225569fbea6be6e3d0c342f9edeb3115e")
+##################################
+# doctest
+set(DOCTEST_REPOSITORY "https://github.com/onqtam/doctest.git")
+set(DOCTEST_TAG "master")
+# OpenSSL
+set(OPENSSL_REPOSITORY "https://github.com/janbar/openssl-cmake.git")
+set(OPENSSL_TAG "master")
+##option(SYSTEM_OPENSSL "Try to use system OpenSSL" OFF)
+# zlib-ng
+set(ZLIB-NG_REPOSITORY "https://github.com/zlib-ng/zlib-ng.git")
+set(ZLIB-NG_TAG "develop")
+
+
+
 # fmt
 set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git")
 set(FMT_VERSION "master")
 # spdlog
 set(SPDLOG_REPOSITORY "https://github.com/gabime/spdlog.git")
 set(SPDLOG_VERSION "v1.x")
-# doctest
-set(DOCTEST_REPOSITORY "https://github.com/onqtam/doctest.git")
-set(DOCTEST_VERSION "master")
+
 
 
 
@@ -63,7 +72,7 @@ set(SNMP_version "master" )
 ## Compiling ROOT can be very long so :
 option(USE_ROOT "Try to find a ROOT installation and use it" ON)
 option(BUILD_ROOT "Build ROOT Folder" ON)
-set(LOOK_FOR_ROOT_VERSION "6.20.04")
+set(LOOK_FOR_ROOT_VERSION "6.20.06")
 ## If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
 set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
 #######################################
