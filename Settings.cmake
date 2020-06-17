@@ -4,7 +4,7 @@
 set(DOCTEST_REPOSITORY "https://github.com/onqtam/doctest.git")
 set(DOCTEST_TAG "master")
 # OpenSSL
-set(OPENSSL_REPOSITORY "https://github.com/janbar/openssl-cmake.git")
+set(OPENSSL_REPOSITORY "https://github.com/flagarde/openssl-cmake.git")
 set(OPENSSL_TAG "master")
 ##option(SYSTEM_OPENSSL "Try to use system OpenSSL" OFF)
 # zlib-ng

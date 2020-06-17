@@ -40,7 +40,7 @@ POST_TRIGGER=1
 # EXTERNAL_TRIGGER: external trigger input settings. When enabled, the ext. trg. can be either 
 # propagated (ACQUISITION_AND_TRGOUT) or not (ACQ_ONLY) through the TRGOUT
 # options: DISABLED, ACQ_ONLY, ACQUISITION_AND_TRGOUT
-EXTERNAL_TRIGGER ="DISABLED"
+EXTERNAL_TRIGGER ="ACQ_ONLY"
 # FPIO_LEVEL: type of the front panel I/O LEMO connectors 
 # options: NIM, TTL
 FPIO_LEVEL="NIM"
