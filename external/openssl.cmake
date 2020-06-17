@@ -1,5 +1,18 @@
 if(NOT TARGET openssl_project)
   include(ExternalProject)
+  include(FindPackageHandleStandardArgs)
+  # find_package(OpenSSL) may not have found it,
+  # clear parent scope variables set to NOTFOUND
+  foreach(suffix FOUND INCLUDE_DIR INCLUDE_DIRS CRYPTO_LIBRARY SSL_LIBRARY LIBRARY LIBRARIES VERSION)
+    unset(OPENSSL_${suffix} PARENT_SCOPE)
+  endforeach()
+  
+  foreach(lib ssl crypto)
+    string(TOUPPER ${lib} libupper)
+    set(libname ${CMAKE_STATIC_LIBRARY_PREFIX}${lib}${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set(OPENSSL_${libupper}_LIBRARY ${CMAKE_INSTALL_PREFIX}/lib/${libname})
+  endforeach()
+  
   # ----- openssl_project package -----
   ExternalProject_Add(openssl_project
                       GIT_REPOSITORY ${OPENSSL_REPOSITORY}
@@ -11,17 +24,41 @@ if(NOT TARGET openssl_project)
                       INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
                       LOG_DOWNLOAD ON
                      )
-  set(OPENSSL_ROOT_DIR ${CMAKE_INSTALL_PREFIX})
-  set(OPENSSL_MSVC_STATIC_RT TRUE)
-  set(OPENSSL_FOUND TRUE)
-  set(OPENSSL_INCLUDE_DIR "${INCLUDE_OUTPUT_DIR}/openssl")
-  add_library(ssl_internal INTERFACE)
-  target_link_libraries(ssl_internal INTERFACE ssl)
-  target_include_directories(ssl_internal INTERFACE "${INCLUDE_OUTPUT_DIR}/openssl")
-  add_library(crypto_internal INTERFACE)
-  target_link_libraries(crypto_internal INTERFACE crypto)
-  target_include_directories(crypto_internal INTERFACE "${INCLUDE_OUTPUT_DIR}/openssl")
-  add_library(OpenSSL::SSL ALIAS ssl_internal)
-  add_library(OpenSSL::Crypto ALIAS crypto_internal)
+  set(OPENSSL_VERSION "1.1.1.g")
+  set(OPENSSL_ROOT_DIR CACHE PATH ${CMAKE_INSTALL_PREFIX} FORCE)
+  set(OPENSSL_FOUND TRUE CACHE BOOL "" FORCE)
+  set(OPENSSL_VERSION ${OPENSSL_VERSION} CACHE INTERNAL "" FORCE)
+  set(OPENSSL_VERSION_STRING "${OPENSSL_VERSION}" CACHE INTERNAL "" FORCE)
+  set(OPENSSL_PREFIX ${CMAKE_INSTALL_PREFIX} CACHE INTERNAL "" FORCE) # needed by Davix
+  set(OPENSSL_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX}/include CACHE INTERNAL "" FORCE)
+  set(OPENSSL_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include CACHE INTERNAL "" FORCE)
+  set(OPENSSL_CRYPTO_LIBRARY ${OPENSSL_CRYPTO_LIBRARY} CACHE INTERNAL "" FORCE)
+  set(OPENSSL_SSL_LIBRARY ${OPENSSL_SSL_LIBRARY} CACHE INTERNAL "" FORCE)
+  set(OPENSSL_LIBRARIES ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY} ${CMAKE_DL_LIBS} CACHE INTERNAL "" FORCE)
+  
+  add_library(builtin_crypto INTERFACE)
+  target_include_directories(builtin_crypto INTERFACE $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>)
+  target_link_libraries(builtin_crypto INTERFACE $<BUILD_INTERFACE:${OPENSSL_CRYPTO_LIBRARY}>)
+  add_dependencies(builtin_crypto OPENSSL)
+
+  add_library(builtin_ssl INTERFACE)
+  target_include_directories(builtin_ssl INTERFACE $<BUILD_INTERFACE:${OPENSSL_INCLUDE_DIR}>)
+  target_link_libraries(builtin_ssl INTERFACE $<BUILD_INTERFACE:${OPENSSL_LIBRARIES}>)
+  add_dependencies(builtin_ssl OPENSSL)
+
+  add_library(OpenSSL::Crypto ALIAS builtin_crypto)
+  add_library(OpenSSL::SSL ALIAS builtin_ssl)
+
+  find_package_handle_standard_args(OpenSSL
+    FOUND_VAR
+      OPENSSL_FOUND
+    REQUIRED_VARS
+      OPENSSL_INCLUDE_DIR
+      OPENSSL_CRYPTO_LIBRARY
+      OPENSSL_SSL_LIBRARY
+      OPENSSL_LIBRARIES
+    VERSION_VAR
+      OPENSSL_VERSION_STRING
+  )
 endif()
 
