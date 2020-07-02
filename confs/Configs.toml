@@ -74,7 +74,7 @@ USE_INTERRUPT=0
 #Skip startup calibration
 SKIP_STARTUP_CALIBRATION=false
 #Max. number of events for a block transfer (0 to 1023)
-MAX_NUM_EVENTS_BLT=2
+MAX_NUM_EVENTS_BLT=1023
 
 # ----------------------------------------------------------------
 # Custom Setting for Model 742 

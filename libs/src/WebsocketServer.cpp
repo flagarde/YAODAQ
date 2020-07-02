@@ -32,11 +32,10 @@ std::string WebsocketServer::getkey(const std::shared_ptr<ix::WebSocket>& websoc
   throw Exception(StatusCode::NOT_FOUND, "Client not found !");
 }
 
-WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections, const int& handshakeTimeoutSecs)
-    : m_Server(port, host, backlog, maxConnections, handshakeTimeoutSecs)
+WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily) : ix::WebSocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs,addressFamily)
 {
   ix::initNetSystem();
-  m_Server.setOnConnectionCallback([this](std::shared_ptr<ix::WebSocket> webSocket, std::shared_ptr<ix::ConnectionState> connectionState) {
+  setOnConnectionCallback([this](std::shared_ptr<ix::WebSocket> webSocket, std::shared_ptr<ix::ConnectionState> connectionState) {
     webSocket->setOnMessageCallback([webSocket, connectionState, this](const ix::WebSocketMessagePtr& msg) {
       m_Actual = webSocket;
       if(msg->type == ix::WebSocketMessageType::Open)
@@ -199,21 +198,6 @@ void WebsocketServer::sendToAll(const std::string& message)
 WebsocketServer::~WebsocketServer()
 {
   ix::uninitNetSystem();
-}
-
-void WebsocketServer::start()
-{
-  m_Server.start();
-}
-
-void WebsocketServer::stop()
-{
-  m_Server.stop();
-}
-
-void WebsocketServer::wait()
-{
-  m_Server.wait();
 }
 
 void WebsocketServer::listen()

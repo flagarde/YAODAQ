@@ -1,5 +1,7 @@
-# Options for the external package
-##################################
+####################################
+# Options for the external package #
+####################################
+
 # doctest
 set(DOCTEST_REPOSITORY "https://github.com/onqtam/doctest.git")
 set(DOCTEST_TAG "master")
@@ -10,6 +12,14 @@ set(OPENSSL_TAG "master")
 # zlib-ng
 set(ZLIB-NG_REPOSITORY "https://github.com/zlib-ng/zlib-ng.git")
 set(ZLIB-NG_TAG "develop")
+# IXWebSocket
+set(IXWEBSOCKET_REPOSITORY "https://github.com/machinezone/IXWebSocket.git")
+set(IXWEBSOCKET_TAG "master")
+
+
+# jsoncpp
+set(JSONCPP_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git")
+set(JSONCPP_TAG "master")
 
 
 
@@ -29,9 +39,7 @@ set(SPDLOG_VERSION "v1.x")
 
 
 
-# IXWebSocket
-set(IXWebSocket_repository "https://github.com/flagarde/IXWebSocket.git")
-set(IXWebSocket_version "master")
+
 # CAENlibs
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
@@ -59,9 +67,7 @@ set(magic_enum_version "master")
 # jsroot
 set(jsroot_repository "https://github.com/root-project/jsroot.git")
 set(jsroot_version "master")
-# jsoncpp
-set(jsoncpp_repository "https://github.com/open-source-parsers/jsoncpp.git")
-set(jsoncpp_version "master")
+
 # cereal 
 set(cereal_repository "https://github.com/USCiLab/cereal.git")
 set(cereal_version "master")
