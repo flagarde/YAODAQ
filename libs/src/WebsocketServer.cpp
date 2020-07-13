@@ -35,7 +35,7 @@ std::string WebsocketServer::getkey(const std::shared_ptr<ix::WebSocket>& websoc
 WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily) : ix::WebSocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs,addressFamily)
 {
   ix::initNetSystem();
-  setOnConnectionCallback([this](std::shared_ptr<ix::WebSocket> webSocket, std::shared_ptr<ix::ConnectionState> connectionState) {
+  setOnConnectionCallback([this](std::shared_ptr<ix::WebSocket> webSocket, std::shared_ptr<ix::ConnectionState> connectionState, std::unique_ptr<ix::ConnectionInfo> connectionInfo) {
     webSocket->setOnMessageCallback([webSocket, connectionState, this](const ix::WebSocketMessagePtr& msg) {
       m_Actual = webSocket;
       if(msg->type == ix::WebSocketMessageType::Open)
@@ -202,6 +202,6 @@ WebsocketServer::~WebsocketServer()
 
 void WebsocketServer::listen()
 {
-  std::pair<bool, std::string> res = m_Server.listen();
+  std::pair<bool, std::string> res = ix::WebSocketServer::listen();
   if(!res.first) { Exception(StatusCode::FAILURE, res.second); }
 }

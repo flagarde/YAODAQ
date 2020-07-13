@@ -17,7 +17,6 @@ public:
   std::string getkey(const std::shared_ptr<ix::WebSocket>& websocket);
 
 private:
-  ix::WebSocketServer                             m_Server;
   std::map<Infos, std::shared_ptr<ix::WebSocket>> m_Clients;
   void                                            erase(const std::shared_ptr<ix::WebSocket>& socket);
   void                                            try_emplace(const std::string& key, const std::shared_ptr<ix::WebSocket>& socket);
