@@ -18,8 +18,16 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 include(Settings)
+
+include(Standards)
+cxx_17()
+
 include(doctest_project)
 
+
+
+include(Messages)
+include(Colors)
 
 
 
@@ -63,7 +71,6 @@ include(CTest)
 # If we want to have test in the executables
 if(ENABLE_DOCTESTS)
   add_dependencies(doctest)
-  add_library(doctest)
   add_definitions(-DENABLE_DOCTEST_IN_LIBRARY)
 endif()
 
@@ -86,10 +93,6 @@ generate_readme()
 
 include(Architectures)
 
-# set the C++ standard to C++ 17
-include(CXXStandards)
-cxx_17()
-
 include(Formatting)
 file(
   GLOB_RECURSE
@@ -107,12 +110,11 @@ file(
 clang_format(clang-format ${ALL_CODE_FILES})
 
 file(GLOB_RECURSE CMAKE_FILES CMakeLists.txt ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/extern ${PROJECT_SOURCE_DIR}/Options.cmake)
-
 cmake_format(cmake-format ${CMAKE_FILES})
-
+set(CMAKE_MESSAGE_CONTEXT_SHOW TRUE)
 # guard against in-source builds
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(FATAL_ERROR "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there.")
+  message(STATUS "In-source builds are not allowed.\nPlease create a new directory (called a build directory) and run CMake from there.")
 endif()
 
 if(CMAKE_CONFIGURATION_TYPES)
@@ -184,3 +186,4 @@ endif()
 if(ENABLE_DOCS)
   add_subdirectory(docs)
 endif()
+
