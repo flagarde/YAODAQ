@@ -22,7 +22,7 @@ class Module
 {
 public:
   Module(const std::string& name = "", const std::string& type = "Module");
-  virtual ~Module();
+  virtual ~Module()=default;
   void                                   Initialize();
   void                                   Connect();
   void                                   Configure();
@@ -147,6 +147,7 @@ private:
   bool                                                m_IsFirstStart{true};
   void                                                DoOnAction(const Message& message);
   void                                                DoOnCommand(const Message& message);
+  virtual void                                        DoOnData(const Data& data);
   void                                                sendState();
   void                                                setState(const States& state);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);

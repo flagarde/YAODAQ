@@ -38,11 +38,6 @@ Controller::Controller(const std::string& name, const std::string& type): m_Type
   m_WebsocketClient.start();
 }
 
-Controller::~Controller()
-{
-  m_WebsocketClient.stop();
-}
-
 void Controller::sendAction(const std::string& action)
 {
   auto ac = magic_enum::enum_cast<Actions>(action);

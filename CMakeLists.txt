@@ -5,14 +5,23 @@
 cmake_minimum_required(VERSION 3.10...3.17.2 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
+# Download CMakeCM
+file(DOWNLOAD "https://raw.githubusercontent.com/RPClab/CMakeCM/master/CMakeCM.cmake" "${CMAKE_CURRENT_BINARY_DIR}/CMakeCM.cmake")
+include("${CMAKE_CURRENT_BINARY_DIR}/CMakeCM.cmake")
 
-# Git is a essential part so test very early
-find_package(Git REQUIRED)
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/_cmcm-modules")
+
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
   message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
 endif()
+
+include(Settings)
+include(doctest_project)
+
+
+
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -41,17 +50,15 @@ set(CMAKE_INSTALL_RPATH "${LIBRARY_OUTPUT_DIR}")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 link_directories("${LIBRARY_OUTPUT_DIR}")
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
 # FIXME
 set(CMAKE_PREFIX_PATH "${CMAKE_OUTPUT_DIRECTORY}" "${CMAKE_INSTALL_PREFIX}/lib/cmake" "${CMAKE_INSTALL_PREFIX}/lib64/cmake")
 
-include(Colors)
 
-include(Settings)
+
 
 # Install doctest to allow testing exectuables and test inside executables
 include(CTest)
-include(doctest)
+
 
 # If we want to have test in the executables
 if(ENABLE_DOCTESTS)

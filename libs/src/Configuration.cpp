@@ -35,6 +35,7 @@ void Configuration::clear()
   m_ConnectorInfos.clear();
   m_ConnectorID      = 1;
   m_CrateConnectorID = 0;
+  m_HaveBeenParsed =false;
 }
 
 toml::value Configuration::getConfig(const std::string& module)
@@ -52,10 +53,14 @@ ConnectorInfos Configuration::getConnectorInfos(const std::string& module)
 
 void Configuration::parse()
 {
-  if(m_Filename == "") { throw Exception(StatusCode::NOT_FOUND, "No Configuration file given !"); }
-  m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
-  parseRooms();
-  fillIndexes();
+  if(!m_HaveBeenParsed)
+  {
+    if(m_Filename == "") { throw Exception(StatusCode::NOT_FOUND, "No Configuration file given !"); }
+    m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
+    parseRooms();
+    fillIndexes();
+    m_HaveBeenParsed=true;
+  }
 }
 
 void Configuration::throwIfExists(std::vector<std::string>& type, const std::string& typeName, const std::string& name)

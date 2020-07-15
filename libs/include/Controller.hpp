@@ -6,14 +6,13 @@
 #include "WebsocketClient.hpp"
 #include "spdlog.h"
 
-#include <iostream>
 #include <string>
 
 class Controller
 {
 public:
   Controller(const std::string& name = "", const std::string& type = "Controller");
-  virtual ~Controller();
+  virtual ~Controller()=default;
   std::string           getName();
   std::string           getType();
   void                  stop();

@@ -25,7 +25,7 @@ namespace CAEN
       if(p->GrPresent[i]==1)
       {
         Json::Value group;
-        group["Groupe"]=i;
+        group["Group"]=i;
         group["TriggerTimeTag"]=p->DataGroup[i].TriggerTimeTag;
         group["StartIndexCell"]=p->DataGroup[i].StartIndexCell;
         Json::Value channels = Json::Value(Json::arrayValue);
@@ -1292,23 +1292,14 @@ void  CAENDigitizerBoard::DoLoopOnStart()
     j["EventInfos"]["BoardID"]=eventInfos.getBoardId();
     j["EventInfos"]["Pattern"]=eventInfos.getPattern();
     j["EventInfos"]["ChannelMask"]=eventInfos.getChannelMask();
+    j["EventInfos"]["Period_ns"]=m_Ts;
+    j["EventInfos"]["Model"]=m_Model;
+    j["EventInfos"]["FamilyCode"]=m_FamilyCode;
     m_EventNumber++;
     j["EventInfos"]["EventCounter"]=m_EventNumber;
     j["EventInfos"]["TriggerTimeTag"]=eventInfos.getTriggerTimeTag();
     j["Event"]=parse(reinterpret_cast<CAEN_DGTZ_X742_EVENT_t*>(m_Event));
-    
-    
-    //std::cout<<j<<std::endl;
-    
-    //std::cout<<parse(reinterpret_cast<CAEN_DGTZ_X742_EVENT_t*>(m_Event))<<std::endl;
-    
-    /**reinterpret_cast<CAEN_DGTZ_X742_EVENT_t*>(m_Event);*/
-  //  std::string toto=j.dump();
- // std::cout<<j.dump().c_str()<<std::endl;
     sendData(j);
-    
-    
-  //  Parse();
   }
 }
 

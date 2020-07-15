@@ -6,7 +6,7 @@
     <script src="./gauge.min.js"></script>
     <title>DAQ Control</title>
     
-    <script> var DEBUG=false ;var STATE="TOTO"; var ws; var state;var data_rate=0; var trigger_rate=0; var RunNumber;</script>
+    <script> var DEBUG=false ;var ws; var data_rate=0; var trigger_rate=0; var RunNumber;</script>
     
     
     
@@ -57,12 +57,6 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
         }, '');
     }
 }
-
-
-/*setInterval(() => {
-  const method = (['log', 'debug', 'warn', 'error', 'info'][Math.floor(Math.random() * 5)]);
-  console[method](method, 'logging something...');
-}, 200);*/
     
     
    
@@ -71,7 +65,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
         if ("WebSocket" in window) 
         {
           // Let us open a web socket
-          ws = new WebSocket("ws://127.0.0.1:8282");
+          ws = new WebSocket("ws://192.168.0.103:9999");
           
           
 
@@ -80,7 +74,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
           {
             document.body.style.background = "#b3e0ff";
             var element = document.getElementById('EventNumber');
-            element.innerHTML = "<h1>Event Number : -- </h1>";
+            element.innerHTML = "<h1>Event Number : * </h1>";
             document.getElementById("NotConnected").style.display='none';
             document.getElementById("Actions").style.display='block';
             document.getElementById('Initialize').disabled=true;
@@ -131,29 +125,29 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
             }
             else if(obj.Type=="Data") 
             {
-              var obj2 = JSON.parse(obj["Content"]);
+              //alert(JSON.stringify(obj));
               var element = document.getElementById('EventNumber');
-              element.innerHTML = "<h1>Event Number : "+obj2["EventInfos"]["EventCounter"]+"</h1>";
-              for(i=0;i!=obj2["Event"]["Groups"].length;++i) 
+              element.innerHTML = "<h1>Event Number : "+obj["Content"]["EventInfos"]["EventCounter"]+"</h1>";
+              for(i=0;i!=obj["Content"]["Event"]["Groups"].length;++i) 
               {
-                for(j=0;j!=obj2["Event"]["Groups"][i]["Channels"].length;++j)
+                for(j=0;j!=obj["Content"]["Event"]["Groups"][i]["Channels"].length;++j)
                 {
-                  var histo = JSROOT.CreateHistogram("TH1D",obj2["Event"]["Groups"][i]["Channels"][j]["Data"].length);
-                  for(k=0;k!=obj2["Event"]["Groups"][i]["Channels"][j]["Data"].length;++k)
+                  var histo = JSROOT.CreateHistogram("TH1D",obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length);
+                  for(k=0;k!=obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length;++k)
                   {
-                    histo.setBinContent(k,obj2["Event"]["Groups"][i]["Channels"][j]["Data"][k]);
+                    histo.setBinContent(k,obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"][k]);
                   }
-                  //alert((obj2["Event"]["Groups"][i]["Channels"][j]["Channel"]+8*obj2["Event"]["Groups"][i]["Groupe"]));
+      
 
-                  if(obj2["Event"]["Groups"][i]["Channels"][j]["Channel"]==8)
+                  if(obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Channel"]==8)
                   {
-                    histo.fTitle="Trigger"+obj2["Event"]["Groups"][i]["Groupe"];
-                    JSROOT.redraw("Trigger"+obj2["Event"]["Groups"][i]["Groupe"], histo, "colz");
+                    histo.fTitle="Trigger"+obj["Content"]["Event"]["Groups"][i]["Group"];
+                    JSROOT.redraw("Trigger"+obj["Content"]["Event"]["Groups"][i]["Group"], histo, "colz");
                   }
                   else
                   {
-                    histo.fTitle="Group "+obj2["Event"]["Groups"][i]["Groupe"]+" Channel "+obj2["Event"]["Groups"][i]["Channels"][j]["Channel"];
-                    JSROOT.redraw("Channel"+(obj2["Event"]["Groups"][i]["Channels"][j]["Channel"]+9*obj2["Event"]["Groups"][i]["Groupe"]), histo, "colz");
+                    histo.fTitle="Group "+obj["Content"]["Event"]["Groups"][i]["Group"]+" Channel "+obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Channel"];
+                    JSROOT.redraw("Channel"+(obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Channel"]+9*obj["Content"]["Event"]["Groups"][i]["Group"]), histo, "colz");
                   }
                 }
               }

@@ -15,12 +15,12 @@ set(ZLIB-NG_TAG "develop")
 # IXWebSocket
 set(IXWEBSOCKET_REPOSITORY "https://github.com/machinezone/IXWebSocket.git")
 set(IXWEBSOCKET_TAG "master")
-
-
 # jsoncpp
 set(JSONCPP_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git")
 set(JSONCPP_TAG "master")
-
+# elogpp
+set(ELOGPP_REPOSITORY "https://github.com/RPClab/elogpp.git")
+set(ELOGPP_TAG "master")
 
 
 # fmt
@@ -32,7 +32,8 @@ set(SPDLOG_VERSION "v1.x")
 
 
 
-
+set( serial_repository "https://github.com/RPClab/serial" )
+set( serial_version "master" )
 
 
 
@@ -43,9 +44,7 @@ set(SPDLOG_VERSION "v1.x")
 # CAENlibs
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
-# elogpp
-set(elogpp_repository "https://github.com/RPClab/elogpp.git")
-set(elogpp_version "master")
+
 
 
 # CLI11
@@ -96,7 +95,7 @@ option(BUILD_LOGGER "Build Logger" ON)
 option(ENABLE_EXTRAS "Build extras" ON)
 
 
-option(BUILD_DUMP "Build DUMP" ON)
+option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_SNMP "Build SNMP" OFF)
 
 option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)

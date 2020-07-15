@@ -21,6 +21,7 @@ public:
 
 private:
   static int                            m_ConnectorID;
+  int                                   m_HaveBeenParsed{false};
   int                                   m_CrateConnectorID{0};
   void                                  parseRooms();
   void                                  parseRacks(const toml::value& room);

@@ -19,6 +19,7 @@ enum class Types
   Command,
   Response,
   Data,
+  Unknow,
 };
 
 enum class Actions
@@ -44,7 +45,8 @@ public:
   void         setFrom(const std::string&);
   void         setTo(const std::string&);
   void         addKey(const std::string& key, const std::string& value);
-  virtual void setContent(const std::string&);
+  void         setContent(const std::string&);
+  void         setContent(const Json::Value&);
   std::string  getFrom();
   std::string  getTo();
   std::string  getContent();
@@ -56,6 +58,8 @@ public:
   void         setType(const Types&);
   bool         isEmpty();
   std::size_t  getContentSize();
+  Json::Value        getContentAsJson() const;
+  Json::Value         getContentAsJson();
 
 protected:
   Json::Value m_Value{};
@@ -74,7 +78,7 @@ public:
   std::string               getCommand() const;
   std::string               getCommand();
   template<typename T> void addParameter(const std::string& name, const T& value) { m_Value["Content"]["Parameters"][name] = value; }
-  Json::Value               getParameter(const std::string& parameter)
+  Json::Value               getParameter(const std::string& parameter) const
   {
     if(m_Value["Content"]["Parameters"].isMember(parameter)) return m_Value["Content"]["Parameters"][parameter];
     else
@@ -133,7 +137,7 @@ public:
 class Data: public Message
 {
 public:
-  Data(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Data(const std::string& content, const std::string& to = "ALL", const std::string& from = "");
   Data(const Json::Value& content = {}, const std::string& to = "ALL", const std::string& from = "");
 };
 

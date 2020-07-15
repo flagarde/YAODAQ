@@ -10,7 +10,7 @@ class Connector
 {
 public:
   Connector(const std::string& type);
-  virtual ~Connector(){};
+  virtual ~Connector()=default;
   void             printParameters();
   toml::value      getParameters();
   virtual void     verifyParameters();
@@ -19,7 +19,7 @@ public:
   std::string      getType();
   void             setInfos(const ConnectorInfos& infos);
   bool             isConnected();
-  virtual Response sendCommand(const Command&) = 0;
+  virtual Response sendCommand(const Command&) const { return Response(); };
 
 protected:
   std::string  m_Type{""};

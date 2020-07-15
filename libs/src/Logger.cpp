@@ -6,18 +6,11 @@
 #include "StatusCode.hpp"
 #include "spdlog.h"
 
-#include <iostream>
-
 Logger::Logger(const std::string& name, const std::string& type): m_Name(name), m_Type(type)
 {
   m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
   m_WebsocketClient.start();
-}
-
-Logger::~Logger()
-{
-  m_WebsocketClient.stop();
 }
 
 void Logger::OnOpen(const ix::WebSocketMessagePtr& msg)
@@ -96,6 +89,10 @@ void Logger::OnMessage(const ix::WebSocketMessagePtr& msg)
   else if(message.getType() == "Command")
   {
     spdlog::warn("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
+  }
+  else if(message.getType() == "Data")
+  {
+    spdlog::warn("Sent {0} Mo ; From : {1}; To : {2}",static_cast<float>(msg->wireSize/1048576.0), message.getFrom(), message.getTo());
   }
   else
   {

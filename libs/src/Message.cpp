@@ -36,8 +36,7 @@ Message::Message(const Types& type, const Json::Value& content, const std::strin
   setType(type);
   setFrom(from);
   setTo(to);
-  m_StreamWriterBuilder.settings_["indentation"] = "";
-  setContent(Json::writeString(m_StreamWriterBuilder, content));
+  setContent(content);
 }
 
 bool Message::isEmpty()
@@ -67,6 +66,11 @@ void Message::setContent(const std::string& content)
   m_Value["Content"] = content;
 }
 
+void Message::setContent(const Json::Value& content)
+{
+  m_Value["Content"] = content;
+}
+
 void Message::parse(const std::string& msg)
 {
   Json::String errs;
@@ -90,6 +94,16 @@ std::string Message::getStyled(const std::string& indent)
 {
   m_StreamWriterBuilder.settings_["indentation"] = indent;
   return Json::writeString(m_StreamWriterBuilder, m_Value);
+}
+
+Json::Value Message::getContentAsJson() const
+{
+  return m_Value["Content"];
+}
+
+Json::Value  Message::getContentAsJson()
+{
+  return m_Value["Content"];
 }
 
 std::string Message::getFrom()

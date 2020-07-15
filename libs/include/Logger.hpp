@@ -5,7 +5,7 @@ class Logger
 {
 public:
   Logger(const std::string& name = "", const std::string& type = "Logger");
-  virtual ~Logger();
+  virtual ~Logger()=default;
   void           stop();
   virtual void   OnOpen(const ix::WebSocketMessagePtr& msg);
   virtual void   OnClose(const ix::WebSocketMessagePtr& msg);

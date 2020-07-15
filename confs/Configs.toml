@@ -9,7 +9,18 @@ Name = "Rack1"
     
 [[Room.Rack.Crate]]
 Name = "Crate1"
-      
+
+[[Room.Rack.Crate.Board]]
+Name="FileWritter"
+Type="ROOT"
+[Room.Rack.Crate.Board.Connector]
+Name = "Connector2"
+"Connection Type" = "USB"
+"VME Base Address"=0x32110000
+Type = "CAENDigitizer"
+Model = "V1718"
+"Link Number" = 0
+
 [[Room.Rack.Crate.Board]]
 Name = "Board1"
 Type = "N141X"

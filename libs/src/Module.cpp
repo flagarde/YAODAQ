@@ -103,18 +103,12 @@ void Module::LoadConfig()
 {
   m_Config.parse();
   m_Conf = m_Config.getConfig(m_Name);
-  std::cout << m_Conf << std::endl;
   verifyParameters();
 }
 
 void Module::printParameters()
 {
   m_Logger->info("Parameters :\n{}", toml::format(m_Conf));
-}
-
-Module::~Module()
-{
-  stopListening();
 }
 
 void Module::sendState()
@@ -434,17 +428,21 @@ void Module::DoOnAction(const Message& message)
   }
 }
 
+void Module::DoOnData(const Data& data) {}
+
 void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
-  if(message.getType() == "Action") { DoOnAction(message); }
-  else if(message.getType() == "Command")
+  if(message.getType() == "Action") DoOnAction(message);
+  else if(message.getType() == "Command") DoOnCommand(message);
+  else if(message.getType() == "Data")
   {
-    DoOnCommand(message);
+    Data data;
+    data.parse(message.get());
+    DoOnData(data);
   }
-  else
-    OnMessage(msg);
+  else OnMessage(msg);
 }
 
 void Module::OnOpen(const ix::WebSocketMessagePtr& msg)

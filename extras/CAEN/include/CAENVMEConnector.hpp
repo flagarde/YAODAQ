@@ -11,7 +11,6 @@ class CAENVMEConnector: public Connector
 {
 public:
   CAENVMEConnector();
-  virtual Response sendCommand(const Command&) final;
   virtual void  DoConnect() final;
   virtual void DoDisconnect() final;
   virtual ~CAENVMEConnector()=default;

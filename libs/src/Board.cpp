@@ -20,14 +20,12 @@ void Board::CallBoardConnect()
 
 void Board::CallBoardDisconnect()
 {
-  std::cout << "Board Disconnect" << std::endl;
   if(m_IsConnected == true)
   {
     DoDisconnect();
     m_Connector->Disconnect();
     m_IsConnected = false;
   }
-  std::cout << "Board Disconnect" << std::endl;
 }
 
 void Board::printConnectorParameters()

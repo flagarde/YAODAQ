@@ -1,0 +1,23 @@
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/external")
+include(SNMP)
+
+set(SNMP_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+set(SNMP_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
+add_library(SNMPConnector SHARED "${SNMP_SRC}/SNMPConnector.cpp")
+add_dependencies(SNMPConnector Connector SNMP)
+set_target_properties(SNMPConnector PROPERTIES PUBLIC_HEADER "${SNMP_INCLUDE}/SNMPConnector.hpp")
+target_link_libraries(SNMPConnector PUBLIC Connector PUBLIC SNMP)
+target_include_directories(SNMPConnector PUBLIC $<BUILD_INTERFACE:${SNMP_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}/SNMP>)
+install(TARGETS SNMPConnector RUNTIME DESTINATION "${RUNTIME_OUTPUT_DIR}" LIBRARY DESTINATION "${LIBRARY_OUTPUT_DIR}" ARCHIVE DESTINATION "${ARCHIVE_OUTPUT_DIR}" PUBLIC_HEADER DESTINATION "${INCLUDE_OUTPUT_DIR}/SNMP")
+
+  plugin(
+    TARGET
+    SNMPConnector
+    VERSION
+    ${YAODAQ_VERSION_MAJOR}
+    BASE
+    Connector
+    CHILDS
+    SNMP::SNMPConnector
+    )
