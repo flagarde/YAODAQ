@@ -52,7 +52,7 @@ void DAQFile::parseData(const Data& data)
 }
 void DAQFile::doAfterOpen()
 {
-  m_Tree=new TTree("tree","tree");
+  m_Tree=new TTree("Tree","Tree");
   m_Event=new Event();
   m_Tree->Branch("Events", &m_Event, 10, 0);
 }
