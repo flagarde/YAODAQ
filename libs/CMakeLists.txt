@@ -12,13 +12,13 @@ include(IXWebSocket)
 include(fmt)
 include(spdlog)
 
-include(CLI11)
+
 include(magic_enum)
 include(jsoncpp)
 include(toml11)
 include(elogpp)
 add_library(Util INTERFACE)
-add_dependencies(Util CLI11 spdlog::spdlog jsoncpp::jsoncpp toml11 magic_enum elogpp::elogpp)
+add_dependencies(Util spdlog::spdlog jsoncpp::jsoncpp toml11 magic_enum elogpp::elogpp)
 target_link_libraries(Util INTERFACE spdlog::spdlog INTERFACE jsoncpp::jsoncpp INTERFACE elogpp::elogpp)
 target_include_directories(Util INTERFACE "${INCLUDE_OUTPUT_DIR}" INTERFACE "${INCLUDE_OUTPUT_DIR}/toml")
 

@@ -1,6 +1,6 @@
  #include "DAQFile.hpp"
  #include "FileWritter.hpp"
- #include "CLI/CLI.hpp"
+ #include "CLI.hpp"
  #include "Interrupt.hpp"
  #include "ProgramInfos.hpp"
  

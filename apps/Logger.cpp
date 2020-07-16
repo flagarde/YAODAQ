@@ -1,6 +1,6 @@
 #include "Logger.hpp"
 
-#include "CLI/CLI.hpp"
+#include "CLI.hpp"
 #include "Interrupt.hpp"
 #include "ProgramInfos.hpp"
 #include "spdlog.h"
