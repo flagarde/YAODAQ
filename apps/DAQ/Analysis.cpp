@@ -150,6 +150,28 @@ std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Ch
   return std::pair<std::pair<double, double>, std::pair<double, double>>(noise, signal);
 }
 
+class Chamber
+{
+public:
+  void activateChannel(const int& chn, const std::string& PN)
+  {
+    m_Channels.activateChannel(chn,PN);
+  }
+  double getEfficiency()
+  {
+    return m_NumberFired*1.0/m_Total;
+  }
+  double getMultiplicity()
+  {
+    return m_TotalHit*1.0/m_NumberFired;
+  }
+private:
+  int m_TotalHit{0};
+  int m_NumberFired{0};
+  int m_Total{0};
+  Channels m_Channels;
+};
+
 /*
 TH1D CreateSelectionPlot(const TH1D& th)
 {
@@ -175,6 +197,12 @@ int main(int argc, char** argv)
   app.add_option("-t,--tree",nameTree,"Name of the TTree","Tree");
   std::pair<double,double> SignalWindow;
   app.add_option("-w,--window",SignalWindow,"Signal window")->required()->type_size(2);
+  int NumberChambers{0};
+  app.add_option("-c,--chambers",NumberChambers,"Number of chamber(s)")->check(CLI::PositiveNumber)->required();
+  std::vector<int> distribution;
+  app.add_option("-d,--distribution",distribution,"Channel is in wich chamber start at 0 and -1 if not connected")->required();
+  std::vector<std::string> polarity;
+  app.add_option("-p,--polarity",polarity,"Polarity of the signal Positive,+,Negative,-")->required();
   try 
   {
     app.parse(argc,argv);
@@ -183,6 +211,20 @@ int main(int argc, char** argv)
   {
     return app.exit(e);
   }
+  //Open The file
+  TFile fileIn(file.c_str());
+  if(fileIn.IsZombie())
+  {
+    std::cout << "File Not Opened" << std::endl;
+    std::exit(-3);
+  }
+  TTree* Run = static_cast<TTree*>(fileIn.Get(nameTree.c_str()));
+  if(Run == nullptr || Run->IsZombie())
+  {
+    std::cout << "Problem Opening TTree \"Tree\" !!!" << std::endl;
+    std::exit(-4);
+  }
+  
   TH1D                      sigmas_event("Ration_event", "Ration_event", 100, 0, 5);
   TH1D                      sigmas_noise("Ration_event", "Ration_event", 100, 0, 5);
   double                    scalefactor = (4.2 * 20) / (20 * 20);
@@ -190,18 +232,9 @@ int main(int argc, char** argv)
   channels.activateChannel(0, "N");
   channels.activateChannel(1, "N");
   
-  TFile fileIn(file.c_str());
-  if(fileIn.IsZombie())
-  {
-    std::cout << "File Not Opened" << std::endl;
-    std::exit(-3);
-  }
-  TTree* Run = (TTree*)fileIn.Get(nameTree.c_str());
-  if(Run == nullptr || Run->IsZombie())
-  {
-    std::cout << "Problem Opening TTree \"Tree\" !!!" << std::endl;
-    std::exit(-4);
-  }
+  
+
+
   Long64_t NEntries = Run->GetEntries();
   NbrEvents         = NbrEventToProcess(NbrEvents, NEntries);
   channels.print();
