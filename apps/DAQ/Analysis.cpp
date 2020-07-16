@@ -14,42 +14,17 @@
 #include <utility>
 #include <vector>
 
-void Help()
-{
-  std::cout << "Usage :  ./Analysis <filename> [event number]\n";
-  std::exit(0);
-}
-
-void ParseArguments(const int& argc, char** argv, std::string& file, int& NbrEvents)
-{
-  if(argc <= 1 || argc > 3) { Help(); }
-  else if(argc == 3)
-  {
-    file      = std::string(argv[1]);
-    NbrEvents = std::stoi(argv[2]);
-  }
-  else if(argc == 2)
-  {
-    if(std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help" || std::string(argv[1]) == "help") Help();
-    file = std::string(argv[1]);
-  }
-}
+#include "CLI.hpp"
 
 int NbrEventToProcess(int& nbrEvents, const Long64_t& nentries)
 {
-  if(nbrEvents < 0)
-  {
-    std::cout << "Come on dude do you really want to crash my program !!!" << std::endl;
-    std::exit(-2);
-  }
   if(nbrEvents == 0) return nentries;
   else if(nbrEvents > nentries)
   {
     std::cout << "WARNING : You ask to process " << nbrEvents << " but this run only have " << nentries << " !!!";
     return nbrEvents = nentries;
   }
-  else
-    return nbrEvents;
+  else return nbrEvents;
 }
 
 class PositiveNegative
@@ -191,23 +166,37 @@ TH1D CreateSelectionPlot(const TH1D& th)
 
 int main(int argc, char** argv)
 {
+  CLI::App app{"Analysis"};
+  std::string file{""};
+  app.add_option("-f,--file",file, "Name of the file to process")->required()->check(CLI::ExistingFile);
+  int NbrEvents{0};
+  app.add_option("-n,--events",NbrEvents,"Number of event to process",0)->check(CLI::PositiveNumber);
+  std::string nameTree{"Tree"};
+  app.add_option("-t,--tree",nameTree,"Name of the TTree","Tree");
+  std::pair<double,double> SignalWindow;
+  app.add_option("-w,--window",SignalWindow,"Signal window")->required()->type_size(2);
+  try 
+  {
+    app.parse(argc,argv);
+  } 
+  catch(const CLI::ParseError &e) 
+  {
+    return app.exit(e);
+  }
   TH1D                      sigmas_event("Ration_event", "Ration_event", 100, 0, 5);
   TH1D                      sigmas_noise("Ration_event", "Ration_event", 100, 0, 5);
-  std::pair<double, double> SignalWindow{310, 380};
   double                    scalefactor = (4.2 * 20) / (20 * 20);
   Channels                  channels;
   channels.activateChannel(0, "N");
   channels.activateChannel(1, "N");
-  std::string file{""};
-  int         NbrEvents{0};
-  ParseArguments(argc, argv, file, NbrEvents);
+  
   TFile fileIn(file.c_str());
   if(fileIn.IsZombie())
   {
     std::cout << "File Not Opened" << std::endl;
     std::exit(-3);
   }
-  TTree* Run = (TTree*)fileIn.Get("Tree");
+  TTree* Run = (TTree*)fileIn.Get(nameTree.c_str());
   if(Run == nullptr || Run->IsZombie())
   {
     std::cout << "Problem Opening TTree \"Tree\" !!!" << std::endl;
