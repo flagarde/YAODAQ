@@ -7,11 +7,6 @@
 
 #include "CAENDigitizerException.hpp"
 #include "Flash.hpp"
-#include <iostream>
-
-
-
-
 
 namespace CAEN
 {
@@ -226,7 +221,6 @@ uint32_t CAENDigitizerBoard::VMEIRQWait(const std::string name,const uint8_t& IR
     m_ConetNode = toml::find<int>(config, "Conet Node");
   }
   int handle{0};
-  std::cout<<m_ConnectionType<<"  "<<m_LinkNum<<"  "<<m_ConetNode<<std::endl;
   CAEN_DGTZ_VMEIRQWait((CAEN_DGTZ_ConnectionType)CAEN_DGTZ_USB,m_LinkNum, m_ConetNode,IRQMask,timeout,&handle);
  /* if(m_ConnectionType=="USB")CAENDigitizerException(CAEN_DGTZ_VMEIRQWait(CAEN_DGTZ_USB,m_LinkNum, m_ConetNode,IRQMask,timeout,&handle));
   else CAENDigitizerException(CAEN_DGTZ_VMEIRQWait(CAEN_DGTZ_OpticalLink,m_LinkNum, m_ConetNode,IRQMask,timeout,&handle));*/
@@ -688,7 +682,6 @@ EventInfo CAENDigitizerBoard::GetEventInfo(const std::int32_t& eventnumb)
   char* event{nullptr};
   CAENDigitizerException(CAEN_DGTZ_GetEventInfo(m_Handle,m_Buffer,m_BufferSize,eventnumb,&info,&event));
   EventInfo eventInfo(info,event);
-  std::cout<<eventInfo.getTriggerTimeTag()<<std::endl;
   return eventInfo;
 }
 
@@ -900,12 +893,7 @@ std::string CAENDigitizerBoard::VirtualProbeName(const int& probe)
 
 void CAENDigitizerBoard::AllocateEvent()
 {
-    std::cout<<"Allocate"<<std::endl;
-      if(m_FamilyCode == "XX742")
-      {
-        CAEN_DGTZ_AllocateEvent(m_Handle,&m_Event);
-      }
-  
+  CAEN_DGTZ_AllocateEvent(m_Handle,&m_Event);
 }
 
 void CAENDigitizerBoard::SetIOLevel(const std::string& level)
@@ -1565,7 +1553,6 @@ void CAENDigitizerBoard::verifyParameters()
   {
     throw Exception(StatusCode::INVALID_PARAMETER,"EXTERNAL_TRIGGER can be DISABLED ACQ_ONLY ACQ_AND_EXTOUT");
   }
-  std::cout<<"Set "<<m_ExtTriggerMode<<std::endl;
   //MAX_NUM_EVENTS_BLT
   m_NumberEventBLT= toml::find_or(m_Conf,"MAX_NUM_EVENTS_BLT",1023);
   if(m_NumberEventBLT>1023)
@@ -1620,7 +1607,6 @@ void CAENDigitizerBoard::verifyParameters()
     int dc_offset =toml::find_or<int>(m_Conf, "DC_OFFSET_TR"+std::to_string(trigger),0);
     m_FTDCoffset[trigger* 2]     = (uint32_t)dc_offset;
     m_FTDCoffset[trigger*2+1]     = (uint32_t)dc_offset;
-    std::cout<<m_FTDCoffset[trigger* 2]<<std::endl;
   }
   //COMMON
   int val=toml::find_or<int>(m_Conf, "DC_OFFSET_COMMON",0);
@@ -1707,7 +1693,6 @@ void CAENDigitizerBoard::verifyParameters()
     int dc_offset =toml::find_or<int>(m_Conf, "TRIGGER_THRESHOLD_TR"+std::to_string(trigger),0);
     m_FTThreshold[trigger* 2]     = (uint32_t)dc_offset;
     m_FTThreshold[trigger*2+1]     = (uint32_t)dc_offset;
-    std::cout<<m_FTThreshold[trigger* 2]<<std::endl;
   }
   //COMMON
   val=toml::find_or<int>(m_Conf, "TRIGGER_THRESHOLD_COMMON",0);
@@ -1845,10 +1830,8 @@ void CAENDigitizerBoard::ProgramDigitizer()
       }
     }
     SetMaxNumEventsBLT(m_NumberEventBLT);
-    std::cout<<"MAX"<<GetMaxNumEventsBLT()<<std::endl;
     SetAcquisitionMode("SW_CONTROLLED");
     SetExtTriggerInputMode(m_ExtTriggerMode);
-    std::cout<<GetExtTriggerInputMode()<<std::endl;
     if(m_FamilyCode == "XX740" || m_FamilyCode == "XX742")
     {
       SetGroupEnableMask(m_EnableMask);
@@ -1931,9 +1914,7 @@ void CAENDigitizerBoard::ProgramDigitizer()
       {
         SetDRS4SamplingFrequency(m_DRS4Frequency);
         SetGroupFastTriggerDCOffset(i, m_FTDCoffset[i]);
-        std::cout<<"Asked "<<m_FTDCoffset[i]<<" get "<<GetGroupFastTriggerDCOffset(i)<<std::endl;
         SetGroupFastTriggerThreshold(i, m_FTThreshold[i]);
-        std::cout<<"Asked "<<m_FTThreshold[i]<<" get "<<GetGroupFastTriggerThreshold(i)<<std::endl;
       }
     }
     for(std::size_t i = 0; i < m_WriteRgisters.size(); i++) WriteRegisterBitmask(m_WriteRgisters[i][0],m_WriteRgisters[i][1],m_WriteRgisters[i][2]);
