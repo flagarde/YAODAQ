@@ -84,7 +84,7 @@ set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.s
 
 
 
-option(ENABLE_TESTS "Include tests folder" OFF)
+option(ENABLE_TESTS "Include tests folder" ON)
 option(ENABLE_DOCS "Include docs folder" ON)
 option(BUILD_ANALYSIS "Build the Analysis code" ON)
 option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)

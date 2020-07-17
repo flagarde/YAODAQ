@@ -1,11 +1,11 @@
 #include "doctest.h"
 
 #include <iostream>
-#include "RootFile.hpp"
+#include "LCIOFile.hpp"
 
-TEST_CASE("Test RootFile")
+TEST_CASE("Test LCIOFile")
 {
-  RootFile file("./Data/ROOT/ID${ID}.root","CREATE","tototID${ID}");
+  LCIOFile file("./Data/LCIO/ID${ID}.lcio","WRITE_NEW");
   std::cout<<"Path : "<<file.getPath()<<std::endl;
   std::cout<<"Directory : "<<file.getDirectory()<<std::endl;
   std::cout<<"Name : "<<file.getName()<<std::endl;

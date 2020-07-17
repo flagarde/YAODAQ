@@ -33,7 +33,6 @@
    
    Toto toto("toto","H");
    FileWritter writer("Writer");
-   writer.lookForConfiguration(false);
-   writer.setFile(toto);
+   writer.setFile(std::make_unique<Toto>("toto","H"));
    interrupt.wait();
  }
