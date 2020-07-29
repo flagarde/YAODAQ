@@ -6,21 +6,26 @@ cmake_minimum_required(VERSION 3.10...3.17.2 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 # Download CMakeCM
-file(DOWNLOAD "https://raw.githubusercontent.com/RPClab/CMakeCM/master/CMakeCM.cmake" "${CMAKE_CURRENT_BINARY_DIR}/CMakeCM.cmake")
-include("${CMAKE_CURRENT_BINARY_DIR}/CMakeCM.cmake")
+set(DOWNLOAD_CMAKECM_URL "https://raw.githubusercontent.com/flagarde/CMakeCM/master/DownloadCMakeCM.cmake" CACHE STRING "URL of the CMakeCM package")
+set(DOWNLOAD_CMAKECM_SHA256 "f30eca2c1bc5ff6bc4b314b0abd9b1ea5999ed874e2a710fb0f5ccd5db7b3963" CACHE STRING "SHA256 of DownloadCMakeCM.cmake")
+file(DOWNLOAD "${DOWNLOAD_CMAKECM_URL}"
+              "${CMAKE_BINARY_DIR}/cmake/CMakeCM/DownloadCMakeCM.cmake"
+              INACTIVITY_TIMEOUT 5
+              TIMEOUT 1
+              EXPECTED_HASH SHA256=${DOWNLOAD_CMAKECM_SHA256})
+include(${CMAKE_BINARY_DIR}/cmake/CMakeCM/DownloadCMakeCM.cmake)
+
+include(Common)
+
+default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
+cxx_17()
+
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/_cmcm-modules")
 
 
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/bin" CACHE PATH "Default Install Prefix" FORCE)
-  message(STATUS "Install Prefix set to : ${CMAKE_INSTALL_PREFIX}")
-endif()
-
 include(Settings)
 
-include(Standards)
-cxx_17()
 
 include(doctest_project)
 
@@ -70,7 +75,7 @@ include(CTest)
 
 # If we want to have test in the executables
 if(ENABLE_DOCTESTS)
-  add_dependencies(doctest)
+  add_dependencies(YAODAQ::doctest)
   add_definitions(-DENABLE_DOCTEST_IN_LIBRARY)
 endif()
 

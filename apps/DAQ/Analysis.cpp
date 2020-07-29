@@ -106,7 +106,7 @@ TH1D CreateAndFillWaveform(const int& eventNbr, const Channel& channel, const st
   return std::move(th1);
 }
 
-std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Channel& channel, const std::pair<double, double>& window = std::pair<double, double>{99999999, -999999})
+std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Channel& channel, const std::pair<double, double>& window_signal = std::pair<double, double>{99999999, -999999},const std::pair<double, double>& window_noise = std::pair<double, double>{99999999, -999999})
 {
   double meanwindows{0};
   double sigmawindows{0};
@@ -119,12 +119,12 @@ std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Ch
     /////FIX THIS
     if(channel.Data[j] == 0) continue;
     ////////////////////////////////
-    if(j <= window.first || j >= window.second)
+    if(j>=window_noise.first && j <= window_noise.second)
     {
       binusednoise++;
       meannoise += channel.Data[j];
     }
-    else
+    else if(j>=window_signal.first && j <= window_signal.second)
     {
       binusedwindows++;
       meanwindows += channel.Data[j];
@@ -137,8 +137,11 @@ std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Ch
     /////FIX THIS
     if(channel.Data[j] == 0) continue;
     ////////////////////////////////
-    if(j <= window.first || j >= window.second) { sigmanoise += (channel.Data[j] - meannoise) * (channel.Data[j] - meannoise); }
-    else
+    if(j>=window_noise.first && j <= window_noise.second) 
+    { 
+      sigmanoise += (channel.Data[j] - meannoise) * (channel.Data[j] - meannoise); 
+    }
+    else if(j>=window_signal.first && j <= window_signal.second)
     {
       sigmawindows += (channel.Data[j] - meanwindows) * (channel.Data[j] - meanwindows);
     }
@@ -192,11 +195,14 @@ int main(int argc, char** argv)
   std::string file{""};
   app.add_option("-f,--file",file, "Name of the file to process")->required()->check(CLI::ExistingFile);
   int NbrEvents{0};
-  app.add_option("-n,--events",NbrEvents,"Number of event to process",0)->check(CLI::PositiveNumber);
+  app.add_option("-e,--events",NbrEvents,"Number of event to process",0)->check(CLI::PositiveNumber);
   std::string nameTree{"Tree"};
   app.add_option("-t,--tree",nameTree,"Name of the TTree","Tree");
   std::pair<double,double> SignalWindow;
-  app.add_option("-w,--window",SignalWindow,"Signal window")->required()->type_size(2);
+  app.add_option("-s,--signal",SignalWindow,"Signal window")->required()->type_size(2);
+  std::pair<double,double> NoiseWindow;
+  app.add_option("-n,--noise",SignalWindow,"Noise window")->required()->type_size(2);
+  
   int NumberChambers{0};
   app.add_option("-c,--chambers",NumberChambers,"Number of chamber(s)")->check(CLI::PositiveNumber)->required();
   std::vector<int> distribution;
@@ -227,11 +233,22 @@ int main(int argc, char** argv)
   
   TH1D                      sigmas_event("Ration_event", "Ration_event", 100, 0, 5);
   TH1D                      sigmas_noise("Ration_event", "Ration_event", 100, 0, 5);
-  double                    scalefactor = (4.2 * 20) / (20 * 20);
+  double                    scalefactor = 10.0/13;
   Channels                  channels;
-  channels.activateChannel(0, "N");
+
   channels.activateChannel(1, "N");
-  
+  channels.activateChannel(2, "N");
+  channels.activateChannel(3, "N");
+  channels.activateChannel(4, "N");
+  channels.activateChannel(5, "N");
+  channels.activateChannel(6, "N");
+  channels.activateChannel(7, "N");
+  channels.activateChannel(9, "N");
+  channels.activateChannel(10, "N");
+  channels.activateChannel(11, "N");
+  //channels.activateChannel(12, "N");
+  //channels.activateChannel(13, "N");
+//  channels.activateChannel(14, "N");
   
 
 
@@ -239,6 +256,8 @@ int main(int argc, char** argv)
   NbrEvents         = NbrEventToProcess(NbrEvents, NEntries);
   channels.print();
   Event* event{nullptr};
+  int efficiency{0};
+  bool hasseensomething{false};
   if(Run->SetBranchAddress("Events", &event))
   {
     std::cout << "Error while SetBranchAddress !!!" << std::endl;
@@ -259,13 +278,35 @@ int main(int argc, char** argv)
                    // analyse it !
       if(evt == 0) Efficiency[ch] = 0;
       TH1D                                                            waveform = CreateAndFillWaveform(evt, event->Channels[ch], "Waveform", "Waveform");
-      std::pair<std::pair<double, double>, std::pair<double, double>> meanstd  = MeanSTD(event->Channels[ch], SignalWindow);
+      std::pair<std::pair<double, double>, std::pair<double, double>> meanstd  = MeanSTD(event->Channels[ch], SignalWindow,NoiseWindow);
       // std::cout<<"Event "<<evt<<" Channel "<<ch<<"/n";
       // std::cout<<" Mean : "<<meanstd.first<<" STD :
       // "<<meanstd.second<<std::endl;
       // selected with be updated each time we make some selection... For now
       // it's the same as Waveform one but in Red !!!
       // TH1D selected = CreateSelectionPlot(waveform);
+      
+      
+      ///////////***********************************************************************
+      ///////////***********************************************************************
+      ///////////***********************************************************************
+      ///////////***********************************************************************
+      ///////////***********************************************************************
+      ///////////***********************************************************************
+      if(std::fabs(meanstd.second.first-meanstd.first.first)<1.35*std::fabs(meanstd.first.second)) continue;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<meanstd.second.first<<"    "<<meanstd.second.second<<"    "<<meanstd.first.first<<"    "<<meanstd.first.second<<"    "<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
+      std::cout<<"********************************************************************************************"<<std::endl;
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 0
       // Substract the mean value of amplitudes ( center to 0 )
@@ -275,7 +316,7 @@ int main(int argc, char** argv)
       // Check the mean if 0
       std::pair<std::pair<double, double>, std::pair<double, double>> testmeanstd = MeanSTD(event->Channels[ch]);
       // assert(testmeanstd.first.first==0);
-      testmeanstd = MeanSTD(event->Channels[ch], SignalWindow);
+      testmeanstd = MeanSTD(event->Channels[ch], SignalWindow,NoiseWindow);
       std::vector<TH1D> IterationPlots;
       int               Iter{0};
       bool              ImEvent{false};
@@ -354,6 +395,7 @@ int main(int argc, char** argv)
       can.Clear();
       if(ImEvent == true)
       {
+        hasseensomething=true;
         can.Clear();
         waveform.GetXaxis()->SetRangeUser(300, 370);
         waveform.Scale(1.0 / 4096);
@@ -382,6 +424,12 @@ int main(int argc, char** argv)
         IterationPlots[Iter].Draw("HIST");
       }
       // can.SaveAs(("Compare_Event"+std::to_string(evt)+"_Channel"+std::to_string(ch)+".pdf").c_str());
+
+    }
+    if(hasseensomething==true)
+    {
+      efficiency++;
+      hasseensomething=false;
     }
     /* if(Verif.size()==16)
      {
@@ -408,6 +456,7 @@ int main(int argc, char** argv)
     { std::cout << "NUMBER EVENT " << it->second << " TOTAL EVENT " << evt << " EFFICIENCY CHANNEL " << it->first << " : " << (it->second * 100.0) / (evt * scalefactor) << " % " << std::endl; }
     std::cout << "*******************************************************************" << std::endl;
   }
+  std::cout<<"Chamber efficiency "<<efficiency*1.00/(NbrEvents*scalefactor)<<std::endl;
   if(event != nullptr) delete event;
   if(Run != nullptr) delete Run;
   if(fileIn.IsOpen()) fileIn.Close();

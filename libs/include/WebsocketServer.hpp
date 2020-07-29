@@ -14,14 +14,15 @@ public:
   ~WebsocketServer();
   void        setVerbosity(const std::string&);
   void        listen();
-  std::string getkey(const std::shared_ptr<ix::WebSocket>& websocket);
-
+  std::string getkey();
+  
 private:
-  std::map<Infos, std::shared_ptr<ix::WebSocket>> m_Clients;
-  void                                            erase(const std::shared_ptr<ix::WebSocket>& socket);
-  void                                            try_emplace(const std::string& key, const std::shared_ptr<ix::WebSocket>& socket);
+  std::map<std::string,ix::WebSocket&> m_Clients2;
+  std::map<std::string,Infos> m_Clients3;
+  void                                            erase();
+  void                                            try_emplace(const std::string& id,const std::string& key,ix::WebSocket& socket);
   void                                            sendToLogger(const std::string& message);
   void                                            sendToAll(const std::string& message);
   static int                                      m_BrowserNumber;
-  std::shared_ptr<ix::WebSocket>                  m_Actual;
+  std::string                  m_Actual;
 };

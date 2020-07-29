@@ -23,7 +23,7 @@ public:
   int         getIndex() const;
   std::string getKey() const;
   bool        operator<(const Infos& infos) const;
-
+  Infos()=default;
 private:
   std::string m_RoomName{""};
   int         m_RoomIndex{-1};

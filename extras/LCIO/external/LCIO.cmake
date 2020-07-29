@@ -1,9 +1,11 @@
 include_guard(GLOBAL)
+
 include(Messages)
+
 find_package(LCIO QUIET)
 if(NOT LCIO_FOUND)
   if(NOT LCIO_URL) 
-    set(LCIO_URL "https://github.com/flagarde/LCIO.git")
+    set(LCIO_URL "https://github.com/iLCSoft/LCIO.git")
   endif()
   if(NOT LCIO_TAG) 
     set(LCIO_TAG "master")
@@ -34,7 +36,7 @@ else()
   find_package(LCIO REQUIRED)
   add_library(LCIO_internal INTERFACE)
   target_link_libraries(LCIO_internal INTERFACE ${LCIO_LIBRARIES})
-  target_include_directories(LCIO_internal INTERFACE "${LCIO_INCLUDE_DIRS}/include" INTERFACE "${LCIO_INCLUDE_DIRS}/include/DATA" INTERFACE "${LCIO_INCLUDE_DIRS}/include/EVENT" INTERFACE "${LCIO_INCLUDE_DIRS}/include/IMPL" INTERFACE "${LCIO_INCLUDE_DIRS}/include/IO" INTERFACE "${LCIO_INCLUDE_DIRS}/include/IOIMPL" INTERFACE "${LCIO_INCLUDE_DIRS}/include/LCIO" INTERFACE "${LCIO_INCLUDE_DIRS}/include/MT" INTERFACE "${LCIO_INCLUDE_DIRS}/include/rootDict" INTERFACE "${LCIO_INCLUDE_DIRS}/include/SIO" INTERFACE "${LCIO_INCLUDE_DIRS}/include/UTIL")
+  target_include_directories(LCIO_internal INTERFACE "${LCIO_INCLUDE_DIRS}" INTERFACE "${LCIO_INCLUDE_DIRS}/DATA" INTERFACE "${LCIO_INCLUDE_DIRS}/EVENT" INTERFACE "${LCIO_INCLUDE_DIRS}/IMPL" INTERFACE "${LCIO_INCLUDE_DIRS}/IO" INTERFACE "${LCIO_INCLUDE_DIRS}/IOIMPL" INTERFACE "${LCIO_INCLUDE_DIRS}/LCIO" INTERFACE "${LCIO_INCLUDE_DIRS}/MT" INTERFACE "${LCIO_INCLUDE_DIRS}/rootDict" INTERFACE "${LCIO_INCLUDE_DIRS}/SIO" INTERFACE "${LCIO_INCLUDE_DIRS}/UTIL")
   add_library(LCIO::LCIO ALIAS LCIO_internal)
 endif()
 
