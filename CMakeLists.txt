@@ -18,10 +18,13 @@ include(PreventInSourceBuilds)
 PreventInSourceBuilds()
 
 include(Common)
-include(Formatters)
 
 default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
 cxx_17()
+
+include(Formatters)
+
+
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/_cmcm-modules")
 
