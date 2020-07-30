@@ -17,11 +17,7 @@ elseif(APPLE)
   message(STATUS "Found is MacOS system")
   set(PLATFORM "MACOSX")
   if(CMAKE_SYSTEM_NAME MATCHES Darwin)
-    execute_process(
-      COMMAND sw_vers "-productVersion"
-      COMMAND cut -d . -f 1-2
-      OUTPUT_VARIABLE MACOSX_VERSION
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND sw_vers "-productVersion" COMMAND cut -d . -f 1-2 OUTPUT_VARIABLE MACOSX_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS "Found a Mac OS X System ${MACOSX_VERSION}")
     if(MACOSX_VERSION VERSION_GREATER 10.4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES 64)
@@ -50,23 +46,19 @@ else()
   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES ppc64)
     message(STATUS "Found a 64bit PPC system (ppc64/ppc64le)")
     set(ARCHITECTURE "ppc64")
-    message(
-      FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} incompatible with CAEN libraries")
+    message(FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} incompatible with CAEN libraries")
   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES arm)
     message(STATUS "Found a 32bit ARM system")
     set(ARCHITECTURE "arm")
-    message(
-      FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} incompatible with CAEN libraries")
+    message(FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} incompatible with CAEN libraries")
   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES s390x)
     message(STATUS "Found a 64bit system")
     set(ARCHITECTURE "s390x")
-    message(
-      FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} incompatible with CAEN libraries")
+    message(FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} incompatible with CAEN libraries")
   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES s390)
     message(STATUS "Found a 31bit system")
     set(ARCHITECTURE "s390")
-    message(
-      FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} incompatible with CAEN libraries")
+    message(FATAL_ERROR "${CMAKE_SYSTEM_PROCESSOR} incompatible with CAEN libraries")
   elseif(CMAKE_SYSTEM_PROCESSOR MATCHES i686)
     message(STATUS "Found a 32bit system")
     set(ARCHITECTURE "x86")
@@ -78,10 +70,8 @@ else()
   endif()
   add_definitions("-DPLATFORM=PLATFORM_LINUX")
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    #workaround for xfer_bufptrs public/private bug
-    #http://mailman.isi.edu/pipermail/ns-developers/2016-February/013378.html
-    #https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69470
+    # workaround for xfer_bufptrs public/private bug http://mailman.isi.edu/pipermail/ns-developers/2016-February/013378.html https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69470
     add_definitions("-include sstream")
-  endif()  
+  endif()
   list(APPEND CMAKE_SHARED_LINKER_FLAGS " -Wl,--no-undefined")
 endif()

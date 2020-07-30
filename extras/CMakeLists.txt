@@ -40,8 +40,7 @@ include(IterateFolder)
 sub_dir_list(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(subdir ${SUBDIRS})
-  ##set(CMAKE_MODULE_PATH "")
-  # ADD AN OPTION AND SET IT TO ON ONLY IF IT DOESNT EXIST !"
+  # set(CMAKE_MODULE_PATH "") ADD AN OPTION AND SET IT TO ON ONLY IF IT DOESNT EXIST !"
   if(("${BUILD_${subdir}}" STREQUAL ""))
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}/CMakeLists.txt")
       message(ERROR "BUILD_${subdir} not in Setting.cmake ! By default I will compile !")

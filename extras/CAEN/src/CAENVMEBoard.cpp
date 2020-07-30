@@ -44,7 +44,7 @@ std::string Pulser::returnIOSources(const unsigned char& source)
   else if(source == cvMiscSignals)
     return "MiscSignals";
   else
-    throw - 1;
+    throw -1;
 }
 
 std::string Pulser::returnTimeUnits(const unsigned char& source)
@@ -57,7 +57,7 @@ std::string Pulser::returnTimeUnits(const unsigned char& source)
   else if(source == cvUnit104ms)
     return "104ms";
   else
-    throw - 1;
+    throw -1;
 }
 
 unsigned char Pulser::returnIOSources(const std::string& source)
@@ -74,7 +74,7 @@ unsigned char Pulser::returnIOSources(const std::string& source)
   else if(source == "MiscSignals")
     return cvMiscSignals;
   else
-    throw - 1;
+    throw -1;
 }
 
 unsigned char Pulser::returnTimeUnits(const std::string& source)
@@ -87,7 +87,7 @@ unsigned char Pulser::returnTimeUnits(const std::string& source)
   else if(source == "104ms")
     return cvUnit104ms;
   else
-    throw - 1;
+    throw -1;
 }
 
 void Pulser::setTimeUnits(const std::string& time)
@@ -155,9 +155,7 @@ unsigned char Pulser::getPulseNbr()
   return m_PulseNbr;
 }
 
-CAENVMEBoard::CAENVMEBoard(const std::string& name): Board(name, "CAENVMEBoard")
-{
-}
+CAENVMEBoard::CAENVMEBoard(const std::string& name): Board(name, "CAENVMEBoard") {}
 
 void CAENVMEBoard::StartPulserA()
 {
@@ -181,20 +179,12 @@ void CAENVMEBoard::StopPulserB()
 
 void CAENVMEBoard::SetPulserAConf(Pulser& p)
 {
-  CAENVMEException(
-      CAENVME_SetPulserConf(m_Handle, cvPulserA, p.getPeriod(), p.getWidth(),
-                            CVTimeUnits(p.returnTimeUnits()), p.getPulseNbr(),
-                            CVIOSources(p.returnIOSourcesStart()),
-                            CVIOSources(p.returnIOSourcesStop())));
+  CAENVMEException(CAENVME_SetPulserConf(m_Handle, cvPulserA, p.getPeriod(), p.getWidth(), CVTimeUnits(p.returnTimeUnits()), p.getPulseNbr(), CVIOSources(p.returnIOSourcesStart()), CVIOSources(p.returnIOSourcesStop())));
 }
 
 void CAENVMEBoard::SetPulserBConf(Pulser& p)
 {
-  CAENVMEException(
-      CAENVME_SetPulserConf(m_Handle, cvPulserB, p.getPeriod(), p.getWidth(),
-                            CVTimeUnits(p.returnTimeUnits()), p.getPulseNbr(),
-                            CVIOSources(p.returnIOSourcesStart()),
-                            CVIOSources(p.returnIOSourcesStop())));
+  CAENVMEException(CAENVME_SetPulserConf(m_Handle, cvPulserB, p.getPeriod(), p.getWidth(), CVTimeUnits(p.returnTimeUnits()), p.getPulseNbr(), CVIOSources(p.returnIOSourcesStart()), CVIOSources(p.returnIOSourcesStop())));
 }
 
 Pulser CAENVMEBoard::GetPulserAConf()
@@ -206,8 +196,7 @@ Pulser CAENVMEBoard::GetPulserAConf()
   CVIOSources   start;
   CVIOSources   stop;
   Pulser        p;
-  CAENVMEException(CAENVME_GetPulserConf(m_Handle, cvPulserA, &period, &width,
-                                     &units, &pulseno, &start, &stop));
+  CAENVMEException(CAENVME_GetPulserConf(m_Handle, cvPulserA, &period, &width, &units, &pulseno, &start, &stop));
   p.setPeriod(period);
   p.setWidth(width);
   p.setPulseNbr(pulseno);
@@ -226,8 +215,7 @@ Pulser CAENVMEBoard::GetPulserBConf()
   CVIOSources   start;
   CVIOSources   stop;
   Pulser        p;
-  CAENVMEException(CAENVME_GetPulserConf(m_Handle, cvPulserB, &period, &width,
-                                     &units, &pulseno, &start, &stop));
+  CAENVMEException(CAENVME_GetPulserConf(m_Handle, cvPulserB, &period, &width, &units, &pulseno, &start, &stop));
   p.setPeriod(period);
   p.setWidth(width);
   p.setPulseNbr(pulseno);

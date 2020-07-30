@@ -11,7 +11,7 @@ class Board: public Module
 {
 public:
   Board(const std::string& name = "", const std::string& type = "Board");
-  virtual ~Board()=default;
+  virtual ~Board() = default;
   void printConnectorParameters();
 
 private:

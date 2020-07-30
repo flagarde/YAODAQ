@@ -1,9 +1,10 @@
 #include "CAENHVException.hpp"
+
 #include "CAENHVWrapper.h"
 
 namespace CAEN
 {
-  const char* CAENHVException::errorStrings(const int_least32_t& code)
+const char* CAENHVException::errorStrings(const int_least32_t& code)
 {
   switch(code)
   {
@@ -83,16 +84,14 @@ namespace CAEN
       return "Link type not supported";
     case CAENHV_USERPASSFAILED:
       return "Login failed for username/password";
-    default :
+    default:
       return "Error code unknown";
   }
 }
 
-
-CAENHVException::CAENHVException(const int_least32_t& code, const SourceLocation& location) : Exception(code, errorStrings(code), location)
+CAENHVException::CAENHVException(const int_least32_t& code, const SourceLocation& location): Exception(code, errorStrings(code), location)
 {
   if(code != CAENHV_OK) throw *this;
 };
-
 
 }  // namespace CAEN

@@ -12,7 +12,7 @@ class Controller
 {
 public:
   Controller(const std::string& name = "", const std::string& type = "Controller");
-  virtual ~Controller()=default;
+  virtual ~Controller() = default;
   std::string           getName();
   std::string           getType();
   void                  stop();

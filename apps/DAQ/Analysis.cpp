@@ -1,3 +1,4 @@
+#include "CLI.hpp"
 #include "Channel.hpp"
 #include "Event.hpp"
 #include "TCanvas.h"
@@ -14,8 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "CLI.hpp"
-
 int NbrEventToProcess(int& nbrEvents, const Long64_t& nentries)
 {
   if(nbrEvents == 0) return nentries;
@@ -24,7 +23,8 @@ int NbrEventToProcess(int& nbrEvents, const Long64_t& nentries)
     std::cout << "WARNING : You ask to process " << nbrEvents << " but this run only have " << nentries << " !!!";
     return nbrEvents = nentries;
   }
-  else return nbrEvents;
+  else
+    return nbrEvents;
 }
 
 class PositiveNegative
@@ -39,7 +39,7 @@ public:
     else
       return "NEGATIVE";
   }
-  
+
 private:
   void Parse(const std::string& PN)
   {
@@ -64,7 +64,7 @@ public:
   bool        isPositive() { return m_PN.IsPositiveSignal(); }
   bool        isNegative() { return !m_PN.IsPositiveSignal(); }
   std::string PNasString() { return m_PN.asString(); }
-  
+
 private:
   int              m_channelNumber{-1};
   PositiveNegative m_PN;
@@ -88,7 +88,7 @@ public:
       return false;
   }
   bool ShouldBePositive(const int& ch) { return m_Channel[ch].isPositive(); }
-  
+
 private:
   std::map<int, channel> m_Channel;
 };
@@ -106,7 +106,8 @@ TH1D CreateAndFillWaveform(const int& eventNbr, const Channel& channel, const st
   return std::move(th1);
 }
 
-std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Channel& channel, const std::pair<double, double>& window_signal = std::pair<double, double>{99999999, -999999},const std::pair<double, double>& window_noise = std::pair<double, double>{99999999, -999999})
+std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Channel& channel, const std::pair<double, double>& window_signal = std::pair<double, double>{99999999, -999999},
+                                                                        const std::pair<double, double>& window_noise = std::pair<double, double>{99999999, -999999})
 {
   double meanwindows{0};
   double sigmawindows{0};
@@ -119,12 +120,12 @@ std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Ch
     /////FIX THIS
     if(channel.Data[j] == 0) continue;
     ////////////////////////////////
-    if(j>=window_noise.first && j <= window_noise.second)
+    if(j >= window_noise.first && j <= window_noise.second)
     {
       binusednoise++;
       meannoise += channel.Data[j];
     }
-    else if(j>=window_signal.first && j <= window_signal.second)
+    else if(j >= window_signal.first && j <= window_signal.second)
     {
       binusedwindows++;
       meanwindows += channel.Data[j];
@@ -137,11 +138,8 @@ std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Ch
     /////FIX THIS
     if(channel.Data[j] == 0) continue;
     ////////////////////////////////
-    if(j>=window_noise.first && j <= window_noise.second) 
-    { 
-      sigmanoise += (channel.Data[j] - meannoise) * (channel.Data[j] - meannoise); 
-    }
-    else if(j>=window_signal.first && j <= window_signal.second)
+    if(j >= window_noise.first && j <= window_noise.second) { sigmanoise += (channel.Data[j] - meannoise) * (channel.Data[j] - meannoise); }
+    else if(j >= window_signal.first && j <= window_signal.second)
     {
       sigmawindows += (channel.Data[j] - meanwindows) * (channel.Data[j] - meanwindows);
     }
@@ -156,22 +154,14 @@ std::pair<std::pair<double, double>, std::pair<double, double>> MeanSTD(const Ch
 class Chamber
 {
 public:
-  void activateChannel(const int& chn, const std::string& PN)
-  {
-    m_Channels.activateChannel(chn,PN);
-  }
-  double getEfficiency()
-  {
-    return m_NumberFired*1.0/m_Total;
-  }
-  double getMultiplicity()
-  {
-    return m_TotalHit*1.0/m_NumberFired;
-  }
+  void   activateChannel(const int& chn, const std::string& PN) { m_Channels.activateChannel(chn, PN); }
+  double getEfficiency() { return m_NumberFired * 1.0 / m_Total; }
+  double getMultiplicity() { return m_TotalHit * 1.0 / m_NumberFired; }
+
 private:
-  int m_TotalHit{0};
-  int m_NumberFired{0};
-  int m_Total{0};
+  int      m_TotalHit{0};
+  int      m_NumberFired{0};
+  int      m_Total{0};
   Channels m_Channels;
 };
 
@@ -191,29 +181,29 @@ private:
 
 int main(int argc, char** argv)
 {
-  CLI::App app{"Analysis"};
+  CLI::App    app{"Analysis"};
   std::string file{""};
-  app.add_option("-f,--file",file, "Name of the file to process")->required()->check(CLI::ExistingFile);
+  app.add_option("-f,--file", file, "Name of the file to process")->required()->check(CLI::ExistingFile);
   int NbrEvents{0};
-  app.add_option("-e,--events",NbrEvents,"Number of event to process",0)->check(CLI::PositiveNumber);
+  app.add_option("-e,--events", NbrEvents, "Number of event to process", 0)->check(CLI::PositiveNumber);
   std::string nameTree{"Tree"};
-  app.add_option("-t,--tree",nameTree,"Name of the TTree","Tree");
-  std::pair<double,double> SignalWindow;
-  app.add_option("-s,--signal",SignalWindow,"Signal window")->required()->type_size(2);
-  std::pair<double,double> NoiseWindow;
-  app.add_option("-n,--noise",NoiseWindow,"Noise window")->required()->type_size(2);
-  
+  app.add_option("-t,--tree", nameTree, "Name of the TTree", "Tree");
+  std::pair<double, double> SignalWindow;
+  app.add_option("-s,--signal", SignalWindow, "Signal window")->required()->type_size(2);
+  std::pair<double, double> NoiseWindow;
+  app.add_option("-n,--noise", NoiseWindow, "Noise window")->required()->type_size(2);
+
   int NumberChambers{0};
-  app.add_option("-c,--chambers",NumberChambers,"Number of chamber(s)")->check(CLI::PositiveNumber)->required();
+  app.add_option("-c,--chambers", NumberChambers, "Number of chamber(s)")->check(CLI::PositiveNumber)->required();
   std::vector<int> distribution;
-  app.add_option("-d,--distribution",distribution,"Channel is in wich chamber start at 0 and -1 if not connected")->required();
+  app.add_option("-d,--distribution", distribution, "Channel is in wich chamber start at 0 and -1 if not connected")->required();
   std::vector<std::string> polarity;
-  app.add_option("-p,--polarity",polarity,"Polarity of the signal Positive,+,Negative,-")->required();
-  try 
+  app.add_option("-p,--polarity", polarity, "Polarity of the signal Positive,+,Negative,-")->required();
+  try
   {
-    app.parse(argc,argv);
-  } 
-  catch(const CLI::ParseError &e) 
+    app.parse(argc, argv);
+  }
+  catch(const CLI::ParseError& e)
   {
     return app.exit(e);
   }
@@ -230,12 +220,12 @@ int main(int argc, char** argv)
     std::cout << "Problem Opening TTree \"Tree\" !!!" << std::endl;
     std::exit(-4);
   }
-  
-  TH1D                      sigmas_event("Ration_event", "Ration_event", 100, 0, 5);
-  TH1D                      sigmas_noise("Ration_event", "Ration_event", 100, 0, 5);
-  double                    scalefactor = 1.0;
-  Channels                  channels;
-  
+
+  TH1D     sigmas_event("Ration_event", "Ration_event", 100, 0, 5);
+  TH1D     sigmas_noise("Ration_event", "Ration_event", 100, 0, 5);
+  double   scalefactor = 1.0;
+  Channels channels;
+
   channels.activateChannel(1, "N");
   channels.activateChannel(2, "N");
   channels.activateChannel(3, "N");
@@ -249,22 +239,20 @@ int main(int argc, char** argv)
   //channels.activateChannel(12, "N");
   //channels.activateChannel(13, "N");
   //  channels.activateChannel(14, "N");
-  
-  
-  
+
   Long64_t NEntries = Run->GetEntries();
   NbrEvents         = NbrEventToProcess(NbrEvents, NEntries);
   channels.print();
   Event* event{nullptr};
-  int efficiency{0};
-  bool good=false;
-  bool hasseensomething{false};
+  int    efficiency{0};
+  bool   good = false;
+  bool   hasseensomething{false};
   if(Run->SetBranchAddress("Events", &event))
   {
     std::cout << "Error while SetBranchAddress !!!" << std::endl;
     std::exit(-5);
   }
-  
+
   TCanvas can;
   // std::vector<TH1D> Verif;
   std::map<int, int> Efficiency;
@@ -274,32 +262,31 @@ int main(int argc, char** argv)
     Run->GetEntry(evt);
     for(unsigned int ch = 0; ch != event->Channels.size(); ++ch)
     {
-      if(channels.DontAnalyseIt(ch))
-        continue;  // Data for channel X is in file but i dont give a *** to
-        // analyse it !
-        if(evt == 0) Efficiency[ch] = 0;
-        TH1D                                                            waveform = CreateAndFillWaveform(evt, event->Channels[ch], "Waveform", "Waveform");
-      std::pair<std::pair<double, double>, std::pair<double, double>> meanstd  = MeanSTD(event->Channels[ch], SignalWindow,NoiseWindow);
+      if(channels.DontAnalyseIt(ch)) continue;  // Data for channel X is in file but i dont give a *** to
+      // analyse it !
+      if(evt == 0) Efficiency[ch] = 0;
+      TH1D                                                            waveform = CreateAndFillWaveform(evt, event->Channels[ch], "Waveform", "Waveform");
+      std::pair<std::pair<double, double>, std::pair<double, double>> meanstd  = MeanSTD(event->Channels[ch], SignalWindow, NoiseWindow);
       // std::cout<<"Event "<<evt<<" Channel "<<ch<<"/n";
       // std::cout<<" Mean : "<<meanstd.first<<" STD :
       // "<<meanstd.second<<std::endl;
       // selected with be updated each time we make some selection... For now
       // it's the same as Waveform one but in Red !!!
       // TH1D selected = CreateSelectionPlot(waveform);
-      
-      
+
       ///////////***********************************************************************
       ///////////***********************************************************************
       ///////////***********************************************************************
       ///////////***********************************************************************
       ///////////***********************************************************************
       ///////////***********************************************************************
-      if(std::fabs(meanstd.second.first-meanstd.first.first)<5*meanstd.first.second) hasseensomething=false;
-      else hasseensomething=true;
-      
+      if(std::fabs(meanstd.second.first - meanstd.first.first) < 5 * meanstd.first.second) hasseensomething = false;
+      else
+        hasseensomething = true;
+
       if(hasseensomething == true)
       {
-        good=true;
+        good = true;
         //hasseensomething=true;
         can.Clear();
         waveform.GetXaxis()->SetRangeUser(0, 1024);
@@ -307,36 +294,35 @@ int main(int argc, char** argv)
         waveform.Draw("HIST");
         // if(channels.ShouldBePositive(ch)) waveform.Fit(f1);
         // else waveform.Fit(f1);
-        can.SaveAs(("GOOD/GOOD"+std::to_string(evt)+"_Channel"+std::to_string(ch)+".pdf").c_str());
-        std::cout<<"********************************************************************************************"<<std::endl;
-        std::cout<<"GOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOOD"<<std::endl;
-        std::cout<<meanstd.second.first<<"  "<<meanstd.first.first<<"   "<<std::fabs(meanstd.second.first-meanstd.first.first)<<"    "<<5*meanstd.first.second<<std::endl;
-        std::cout<<"GOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOOD"<<std::endl;
-        std::cout<<"********************************************************************************************"<<std::endl;
+        can.SaveAs(("GOOD/GOOD" + std::to_string(evt) + "_Channel" + std::to_string(ch) + ".pdf").c_str());
+        std::cout << "********************************************************************************************" << std::endl;
+        std::cout << "GOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOOD" << std::endl;
+        std::cout << meanstd.second.first << "  " << meanstd.first.first << "   " << std::fabs(meanstd.second.first - meanstd.first.first) << "    " << 5 * meanstd.first.second << std::endl;
+        std::cout << "GOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOODGOOD" << std::endl;
+        std::cout << "********************************************************************************************" << std::endl;
       }
       else
       {
         can.Clear();
         waveform.GetXaxis()->SetRangeUser(0, 1024);
-       // waveform.Scale(1.0 / 4096);
+        // waveform.Scale(1.0 / 4096);
         waveform.Draw("HIST");
         // if(channels.ShouldBePositive(ch)) waveform.Fit(f1);
         // else waveform.Fit(f1);
-        can.SaveAs(("BAD/BAD"+std::to_string(evt)+"_Channel"+std::to_string(ch)+".pdf").c_str());
-        std::cout<<"********************************************************************************************"<<std::endl;
-        std::cout<<"BADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBAD"<<std::endl;
-        std::cout<<meanstd.second.first<<"  "<<meanstd.first.first<<"   "<<std::fabs(meanstd.second.first-meanstd.first.first)<<"    "<<5*meanstd.first.second<<std::endl;
-        std::cout<<"BADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBAD"<<std::endl;
-        std::cout<<"********************************************************************************************"<<std::endl;
+        can.SaveAs(("BAD/BAD" + std::to_string(evt) + "_Channel" + std::to_string(ch) + ".pdf").c_str());
+        std::cout << "********************************************************************************************" << std::endl;
+        std::cout << "BADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBAD" << std::endl;
+        std::cout << meanstd.second.first << "  " << meanstd.first.first << "   " << std::fabs(meanstd.second.first - meanstd.first.first) << "    " << 5 * meanstd.first.second << std::endl;
+        std::cout << "BADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBADBAD" << std::endl;
+        std::cout << "********************************************************************************************" << std::endl;
       }
-      
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 0
       // Substract the mean value of amplitudes ( center to 0 )
       //for(std::size_t i = 0; i != event->Channels[ch].Data.size(); ++i) { event->Channels[ch].Data[i] = (event->Channels[ch].Data[i]) - meanstd.first.first; }
       //TH1D after0 = CreateAndFillWaveform(evt, event->Channels[ch], "Step_0", "Step 0");
-      
+
       // Check the mean if 0
       //std::pair<std::pair<double, double>, std::pair<double, double>> testmeanstd = MeanSTD(event->Channels[ch], SignalWindow,NoiseWindow);
       // assert(testmeanstd.first.first==0);
@@ -344,7 +330,7 @@ int main(int argc, char** argv)
       //std::vector<TH1D> IterationPlots;
       //int               Iter{0};
       //bool              ImEvent{false};
-      
+
       /*while(1) //for(std::size_t Iter=0;Iter!=10;++Iter)
       {
         int NbrBinStillHere{0};
@@ -485,20 +471,20 @@ int main(int argc, char** argv)
   sigmas_event.SetLineColor(kGreen);
   can.SaveAs(("Ratio"+std::to_string(j)+".pdf").c_str());
   }*/
-    
-   /* std::cout << "*******************************************************************" << std::endl;
+
+      /* std::cout << "*******************************************************************" << std::endl;
     for(std::map<int, int>::iterator it = Efficiency.begin(); it != Efficiency.end(); ++it)
     { std::cout << "NUMBER EVENT " << it->second << " TOTAL EVENT " << evt << " EFFICIENCY CHANNEL " << it->first << " : " << (it->second * 100.0) / (evt * scalefactor) << " % " << std::endl; }
     std::cout << "*******************************************************************" << std::endl;*/
+    }
+    if(good == true)
+    {
+      //hasseensomething=true;
+      efficiency++;
+      good = false;
+    }
   }
-  if(good == true)
-  {
-    //hasseensomething=true;
-    efficiency++;
-    good=false;
-  }
-  }
-  std::cout<<"Chamber efficiency "<<efficiency*1.00/(NbrEvents*scalefactor)<<std::endl;
+  std::cout << "Chamber efficiency " << efficiency * 1.00 / (NbrEvents * scalefactor) << std::endl;
   if(event != nullptr) delete event;
   if(Run != nullptr) delete Run;
   if(fileIn.IsOpen()) fileIn.Close();

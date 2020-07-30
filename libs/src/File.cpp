@@ -3,25 +3,22 @@
 #include <filesystem>
 #include <iostream>
 
-File::File(const std::string& name,const std::string& option):m_Name(name),m_Option(option)
-{
-
-}
+File::File(const std::string& name, const std::string& option): m_Name(name), m_Option(option) {}
 
 void File::setName(const std::string& name)
 {
-  m_Name=name;
+  m_Name = name;
 }
 
 void File::setOptions(const std::string& option)
 {
-  m_Option=option;
+  m_Option = option;
 }
 
 std::string File::getDirectory()
 {
   setPath();
-  std::filesystem::path ret=m_Path;
+  std::filesystem::path ret = m_Path;
   ret.remove_filename();
   return ret;
 }
@@ -44,13 +41,10 @@ std::string File::getPath()
   return m_Path;
 }
 
-std::string File::fillvariables(const std::string& str,const std::string variable,const std::string& value)
+std::string File::fillvariables(const std::string& str, const std::string variable, const std::string& value)
 {
-  std::string ret=str;
-  while(ret.find(variable)!=std::string::npos)
-  {
-    ret.replace(ret.find(variable),variable.size(),value);
-  }
+  std::string ret = str;
+  while(ret.find(variable) != std::string::npos) { ret.replace(ret.find(variable), variable.size(), value); }
   return ret;
 }
 
@@ -59,7 +53,7 @@ void File::setPath()
   if(m_Path.empty())
   {
     setID();
-    m_Path=fillvariables(m_Name,"${ID}",m_ID);
+    m_Path = fillvariables(m_Name, "${ID}", m_ID);
     createDirectories();
   }
 }
@@ -67,5 +61,5 @@ void File::setPath()
 void File::createDirectories()
 {
   std::filesystem::directory_entry directories{getDirectory()};
-  if(!directories.exists()&&directories.path()!="") std::filesystem::create_directories(directories);
+  if(!directories.exists() && directories.path() != "") std::filesystem::create_directories(directories);
 }

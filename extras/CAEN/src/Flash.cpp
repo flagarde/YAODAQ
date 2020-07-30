@@ -4,8 +4,7 @@
 
 namespace CAEN
 {
-
-uint32_t Flash::get_spi_address(const uint16_t& page_addr,const uint16_t& byte_addr)
+uint32_t Flash::get_spi_address(const uint16_t& page_addr, const uint16_t& byte_addr)
 {
   switch(m_DeviceID)
   {
@@ -17,14 +16,13 @@ uint32_t Flash::get_spi_address(const uint16_t& page_addr,const uint16_t& byte_a
       return ((page_addr & 0x0FFF) << 9) | (byte_addr & 0x1FF);  // PA[11:0] & BA[8:0]
     default:
       return 0;
-    }
-  } 
-  
-  
-std::vector<uint8_t> Flash::read_bytes(const uint32_t& addr,const uint16_t& len)
+  }
+}
+
+std::vector<uint8_t> Flash::read_bytes(const uint32_t& addr, const uint16_t& len)
 {
   if(!m_IsInitialized) CAENFlashException((int)UNINITIALIZED);
-  uint32_t page_addr{addr /m_PAGE_SIZE};
+  uint32_t page_addr{addr / m_PAGE_SIZE};
   uint32_t byte_addr{addr % m_PAGE_SIZE};
   uint32_t spi_address = get_spi_address((uint16_t)page_addr, (uint16_t)byte_addr);
   m_SPI.select();
@@ -33,7 +31,7 @@ std::vector<uint8_t> Flash::read_bytes(const uint32_t& addr,const uint16_t& len)
   m_SPI.write(((spi_address >> 16) & 0xFF));
   m_SPI.write(((spi_address >> 8) & 0xFF));
   m_SPI.write(((spi_address >> 0) & 0xFF));
-  std::vector<uint8_t> ret=m_SPI.read_block(len);
+  std::vector<uint8_t> ret = m_SPI.read_block(len);
   m_SPI.unselect();
   return ret;
 }
@@ -43,7 +41,7 @@ std::vector<uint8_t> Flash::read_virtual_page(const uint16_t& page)
   if(!m_IsInitialized) CAENFlashException((int)UNINITIALIZED);
   uint16_t standard_page_addr{page * m_VIRTUAL_PAGE_SIZE};
   uint16_t byte_addr{0};
-  return read_bytes((uint32_t)(standard_page_addr + byte_addr),m_VIRTUAL_PAGE_SIZE);
+  return read_bytes((uint32_t)(standard_page_addr + byte_addr), m_VIRTUAL_PAGE_SIZE);
 }
 
 void Flash::setHandle(const std::uint32_t& han)

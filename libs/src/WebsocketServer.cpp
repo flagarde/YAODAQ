@@ -5,6 +5,7 @@
 #include "Message.hpp"
 #include "StatusCode.hpp"
 #include "spdlog.h"
+
 #include <iostream>
 int WebsocketServer::m_BrowserNumber = 1;
 
@@ -28,16 +29,16 @@ std::string WebsocketServer::getkey()
   return m_Clients3[m_Actual].getKey();
 }
 
-WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily) : ix::WebSocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs,addressFamily)
+WebsocketServer::WebsocketServer(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections, const int& handshakeTimeoutSecs, const int& addressFamily)
+    : ix::WebSocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs, addressFamily)
 {
   ix::initNetSystem();
-  setOnClientMessageCallback([this](std::shared_ptr<ix::ConnectionState> connectionState,ix::ConnectionInfo& connectionInfo,ix::WebSocket& webSocket,const ix::WebSocketMessagePtr& msg)
-  {
+  setOnClientMessageCallback([this](std::shared_ptr<ix::ConnectionState> connectionState, ix::ConnectionInfo& connectionInfo, ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg) {
     // The ConnectionInfo object contains information about the connection,
     // at this point only the client ip address and the port.
     //std::cout << "Remote ip: " << connectionInfo.remoteIp << std::endl;
-    m_Actual=connectionState->getId();
-    if (msg->type == ix::WebSocketMessageType::Open)
+    m_Actual = connectionState->getId();
+    if(msg->type == ix::WebSocketMessageType::Open)
     {
       std::string key = "///";
       Info        infos;
@@ -52,7 +53,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
         spdlog::info("\t{} : {}", it.first, it.second);
         infos.addKey(it.first, it.second);
       }
-      
+
       if(msg->openInfo.headers.find("Key") != msg->openInfo.headers.end()) { key = msg->openInfo.headers["Key"]; }
       else
       {
@@ -144,15 +145,14 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
       {
         spdlog::info("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
         sendToAll(msg->str);
-      }  
+      }
     }
-  }
-  );
+  });
 }
 
 void WebsocketServer::sendToLogger(const std::string& message)
 {
-  for(std::map<std::string,ix::WebSocket&>::iterator it = m_Clients2.begin(); it != m_Clients2.end(); ++it)
+  for(std::map<std::string, ix::WebSocket&>::iterator it = m_Clients2.begin(); it != m_Clients2.end(); ++it)
   {
     if((m_Clients3[it->first].getType() == "Logger" || m_Clients3[it->first].getType() == "Browser") && m_Actual != it->first) it->second.send(message);
   }
@@ -166,9 +166,9 @@ void WebsocketServer::erase()
 
 void WebsocketServer::try_emplace(const std::string& id, const std::string& key, ix::WebSocket& socket)
 {
-  for(std::map<std::string,Infos>::iterator it=m_Clients3.begin();it!=m_Clients3.end();++it)
+  for(std::map<std::string, Infos>::iterator it = m_Clients3.begin(); it != m_Clients3.end(); ++it)
   {
-    if(it->second.getKey()==key)
+    if(it->second.getKey() == key)
     {
       spdlog::error("The Name \"{}\" is already taken so it cannot be connected !", it->second.getName());
       sendToLogger(Error("The Name \"" + it->second.getName() + "\" is already taken so it cannot be connected !", "ALL", "WebSocketServer").get());
@@ -176,13 +176,13 @@ void WebsocketServer::try_emplace(const std::string& id, const std::string& key,
       return;
     }
   }
-  m_Clients2.try_emplace(id,socket);
-  m_Clients3.try_emplace(id,Infos(key));
+  m_Clients2.try_emplace(id, socket);
+  m_Clients3.try_emplace(id, Infos(key));
 }
 
 void WebsocketServer::sendToAll(const std::string& message)
 {
-  for(std::map<std::string,ix::WebSocket&>::iterator it = m_Clients2.begin(); it != m_Clients2.end(); ++it)
+  for(std::map<std::string, ix::WebSocket&>::iterator it = m_Clients2.begin(); it != m_Clients2.end(); ++it)
   {
     if(m_Actual != it->first) it->second.send(message);
   }

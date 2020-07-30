@@ -4,7 +4,6 @@
 
 namespace CAEN
 {
-
 enum FLASH_API_ERROR_CODES : int_least32_t
 {
   SUCCESS                  = 0,
@@ -19,14 +18,12 @@ enum FLASH_API_ERROR_CODES : int_least32_t
 
 class CAENFlashException: public Exception
 {
-  
 public:
   CAENFlashException(const int_least32_t& code, const SourceLocation& location = SourceLocation());
-  
+
 private:
   CAENFlashException() = delete;
   const char* errorStrings(const int_least32_t& code);
-  
 };
 
 }  // namespace CAEN

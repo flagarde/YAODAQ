@@ -28,7 +28,8 @@ find_path(
         $ENV{SystemDrive}/SQLite3/*/include
         $ENV{SQLITE_ROOT}/include
         ${SQLITE_ROOT_DIR}/include
-        $ENV{OSGEO4W_ROOT}/include)
+        $ENV{OSGEO4W_ROOT}/include
+  )
 
 set(SQLITE3_NAMES sqlite3_i sqlite3)
 find_library(
@@ -43,14 +44,13 @@ find_library(
         $ENV{SystemDrive}/SQLite3/*/lib
         $ENV{SQLITE_ROOT}/lib
         ${SQLITE_ROOT_DIR}/lib
-        $ENV{OSGEO4W_ROOT}/lib)
+        $ENV{OSGEO4W_ROOT}/lib
+  )
 
 set(SQLITE3_LIBRARIES ${SQLITE3_LIBRARIES} ${SQLITE3_LIBRARY})
 
-# message(STATUS ${SQLITE3_LIBRARY}) Handle the QUIETLY and REQUIRED arguments
-# and set SQLITE3_FOUND to TRUE if all listed variables are TRUE
+# message(STATUS ${SQLITE3_LIBRARY}) Handle the QUIETLY and REQUIRED arguments and set SQLITE3_FOUND to TRUE if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(SQLite3 DEFAULT_MSG SQLITE3_LIBRARIES
-                                  SQLITE3_INCLUDE_DIR)
+find_package_handle_standard_args(SQLite3 DEFAULT_MSG SQLITE3_LIBRARIES SQLITE3_INCLUDE_DIR)
 
 mark_as_advanced(SQLITE3_LIBRARY SQLITE3_INCLUDE_DIR SQLITE3_LIBRARIES)

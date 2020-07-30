@@ -36,12 +36,12 @@ install(TARGETS DAQFile RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OU
 
 add_executable(DAQFileWritter DAQFileWritter.cpp)
 add_dependencies(DAQFileWritter Board YAODAQ::CLI11)
-target_include_directories(DAQFileWritter PRIVATE ${CMAKE_BINARY_DIR}) 
+target_include_directories(DAQFileWritter PRIVATE ${CMAKE_BINARY_DIR})
 target_link_libraries(DAQFileWritter PRIVATE Board PRIVATE DAQFile PRIVATE FileWritter PRIVATE YAODAQ::CLI11)
 install(TARGETS DAQFileWritter RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 add_executable(Digitizer Digitizer.cpp)
-add_dependencies(Digitizer CAENBoards Board YAODAQ::CLI11 )
+add_dependencies(Digitizer CAENBoards Board YAODAQ::CLI11)
 target_include_directories(Digitizer PRIVATE ${CMAKE_BINARY_DIR})
 target_link_libraries(Digitizer PRIVATE CAENBoards PRIVATE Board PRIVATE YAODAQ::CLI11)
 install(TARGETS Digitizer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})

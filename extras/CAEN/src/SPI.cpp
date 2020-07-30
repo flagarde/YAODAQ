@@ -44,7 +44,7 @@ void SPI::write_block(std::vector<std::uint8_t>& buf)
     m_Addrs[i] = m_SPI_DATA_REG_ADDR;
     m_Datas[i] = (uint32_t)buf[i];
   }
-  CAENCommException(CAENComm_MultiWrite32(m_Handle, &m_Addrs[0], buf.size(),&m_Datas[0],(CAENComm_ErrorCode*)&m_Errors[0]));
+  CAENCommException(CAENComm_MultiWrite32(m_Handle, &m_Addrs[0], buf.size(), &m_Datas[0], (CAENComm_ErrorCode*)&m_Errors[0]));
 }
 
 std::vector<std::uint8_t> SPI::read_block(const std::uint32_t& len)
@@ -52,7 +52,7 @@ std::vector<std::uint8_t> SPI::read_block(const std::uint32_t& len)
   std::vector<std::uint8_t> ret;
   ret.reserve(len);
   for(std::size_t i = 0; i < len; ++i) { m_Addrs[i] = m_SPI_DATA_REG_ADDR; }
-  CAENCommException(CAENComm_MultiRead32(m_Handle, &m_Addrs[0], len, &m_Datas[0],(CAENComm_ErrorCode*)&m_Errors[0]));
+  CAENCommException(CAENComm_MultiRead32(m_Handle, &m_Addrs[0], len, &m_Datas[0], (CAENComm_ErrorCode*)&m_Errors[0]));
   for(std::size_t i = 0; i < len; ++i)
   {
     CAENCommException((int)m_Errors[i]);

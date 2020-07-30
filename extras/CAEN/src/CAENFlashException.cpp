@@ -2,8 +2,7 @@
 
 namespace CAEN
 {
-  
-  const char* CAENFlashException::errorStrings(const int_least32_t& code)
+const char* CAENFlashException::errorStrings(const int_least32_t& code)
 {
   switch(code)
   {
@@ -23,16 +22,14 @@ namespace CAEN
       return "Not implemented";
     case UNSUPPORTED_FLASH_DEVICE:
       return "Unsupported flash device";
-    default :
+    default:
       return "Error code unknown";
   }
 }
 
-
-CAENFlashException::CAENFlashException(const int_least32_t& code, const SourceLocation& location) : Exception(code, errorStrings(code), location)
+CAENFlashException::CAENFlashException(const int_least32_t& code, const SourceLocation& location): Exception(code, errorStrings(code), location)
 {
   if(code != SUCCESS) throw *this;
 };
-
 
 }  // namespace CAEN

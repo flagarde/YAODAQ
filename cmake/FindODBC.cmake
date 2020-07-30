@@ -105,20 +105,13 @@ endif()
 
 # Try unixODBC or iODBC config program ######################################
 if(UNIX AND NOT ODBC_CONFIG)
-  find_program(
-    ODBC_CONFIG
-    NAMES odbc_config iodbc-config
-    DOC "Path to unixODBC or iODBC config program")
+  find_program(ODBC_CONFIG NAMES odbc_config iodbc-config DOC "Path to unixODBC or iODBC config program")
 endif()
 
 if(UNIX AND ODBC_CONFIG)
   # unixODBC and iODBC accept unified command line options
-  execute_process(
-    COMMAND ${ODBC_CONFIG} --cflags
-    OUTPUT_VARIABLE _cflags
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${ODBC_CONFIG} --libs
-                  OUTPUT_VARIABLE _libs OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${ODBC_CONFIG} --cflags OUTPUT_VARIABLE _cflags OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${ODBC_CONFIG} --libs OUTPUT_VARIABLE _libs OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   # Collect paths of include directories from CFLAGS
   separate_arguments(_cflags NATIVE_COMMAND "${_cflags}")
@@ -158,18 +151,10 @@ if(UNIX AND NOT ODBC_CONFIG)
   set(_odbc_lib_paths /usr/local/odbc/lib)
 endif()
 
-# DEBUG message("ODBC_CONFIG=${ODBC_CONFIG}")
-# message("_odbc_include_hints=${_odbc_include_hints}")
-# message("_odbc_include_paths=${_odbc_include_paths}")
-# message("_odbc_lib_paths=${_odbc_lib_paths}")
-# message("_odbc_lib_names=${_odbc_lib_names}")
+# DEBUG message("ODBC_CONFIG=${ODBC_CONFIG}") message("_odbc_include_hints=${_odbc_include_hints}") message("_odbc_include_paths=${_odbc_include_paths}") message("_odbc_lib_paths=${_odbc_lib_paths}") message("_odbc_lib_names=${_odbc_lib_names}")
 
 # Find include directories ##################################################
-find_path(
-  ODBC_INCLUDE_DIR
-  NAMES sql.h
-  HINTS ${_odbc_include_hints}
-  PATHS ${_odbc_include_paths})
+find_path(ODBC_INCLUDE_DIR NAMES sql.h HINTS ${_odbc_include_hints} PATHS ${_odbc_include_paths})
 
 if(NOT ODBC_INCLUDE_DIR AND WIN32)
   set(ODBC_INCLUDE_DIR "")
@@ -177,18 +162,13 @@ endif()
 
 # Find libraries ############################################################
 if(NOT ODBC_LIBRARY)
-  find_library(
-    ODBC_LIBRARY
-    NAMES ${_odbc_lib_names}
-    PATHS ${_odbc_lib_paths}
-    PATH_SUFFIXES odbc)
+  find_library(ODBC_LIBRARY NAMES ${_odbc_lib_names} PATHS ${_odbc_lib_paths} PATH_SUFFIXES odbc)
 
   foreach(_lib IN LISTS _odbc_required_libs_names)
     find_library(
-      _lib_path
-      NAMES ${_lib}
-      PATHS ${_odbc_lib_paths} # system parths or collected from ODBC_CONFIG
-      PATH_SUFFIXES odbc)
+      _lib_path NAMES ${_lib} PATHS ${_odbc_lib_paths} # system parths or collected from ODBC_CONFIG
+      PATH_SUFFIXES odbc
+      )
     if(_lib_path)
       list(APPEND _odbc_required_libs_paths ${_lib_path})
     endif()
@@ -224,22 +204,15 @@ if(ODBC_FOUND)
   if(NOT TARGET ODBC::ODBC)
     if(IS_ABSOLUTE "${ODBC_LIBRARY}")
       add_library(ODBC::ODBC UNKNOWN IMPORTED)
-      set_target_properties(
-        ODBC::ODBC PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "C"
-                              IMPORTED_LOCATION "${ODBC_LIBRARY}")
+      set_target_properties(ODBC::ODBC PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES "C" IMPORTED_LOCATION "${ODBC_LIBRARY}")
     else()
       add_library(ODBC::ODBC INTERFACE IMPORTED)
-      set_target_properties(ODBC::ODBC PROPERTIES IMPORTED_LIBNAME
-                                                  "${ODBC_LIBRARY}")
+      set_target_properties(ODBC::ODBC PROPERTIES IMPORTED_LIBNAME "${ODBC_LIBRARY}")
     endif()
-    set_target_properties(ODBC::ODBC PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-                                                "${ODBC_INCLUDE_DIR}")
+    set_target_properties(ODBC::ODBC PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${ODBC_INCLUDE_DIR}")
 
     if(_odbc_required_libs_paths)
-      set_property(
-        TARGET ODBC::ODBC
-        APPEND
-        PROPERTY INTERFACE_LINK_LIBRARIES "${_odbc_required_libs_paths}")
+      set_property(TARGET ODBC::ODBC APPEND PROPERTY INTERFACE_LINK_LIBRARIES "${_odbc_required_libs_paths}")
     endif()
   endif()
 endif()

@@ -1,4 +1,4 @@
- 
- #ifdef __CLING__
- #pragma link C++ class Event;
- #endif
+
+#ifdef __CLING__
+  #pragma link C++ class Event;
+#endif

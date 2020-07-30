@@ -101,7 +101,7 @@ Json::Value Message::getContentAsJson() const
   return m_Value["Content"];
 }
 
-Json::Value  Message::getContentAsJson()
+Json::Value Message::getContentAsJson()
 {
   return m_Value["Content"];
 }

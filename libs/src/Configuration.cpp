@@ -35,7 +35,7 @@ void Configuration::clear()
   m_ConnectorInfos.clear();
   m_ConnectorID      = 1;
   m_CrateConnectorID = 0;
-  m_HaveBeenParsed =false;
+  m_HaveBeenParsed   = false;
 }
 
 toml::value Configuration::getConfig(const std::string& module)
@@ -59,7 +59,7 @@ void Configuration::parse()
     m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
     parseRooms();
     fillIndexes();
-    m_HaveBeenParsed=true;
+    m_HaveBeenParsed = true;
   }
 }
 

@@ -1,13 +1,15 @@
 #include "LCIOFile.hpp"
-#include <iostream>
-#include "IOIMPL/LCFactory.h"
-#include "EVENT/LCIO.h"
 
-LCIOFile::LCIOFile(const std::string& name,const std::string& option,const std::string& title,const int& compress):File(name,option)
+#include "EVENT/LCIO.h"
+#include "IOIMPL/LCFactory.h"
+
+#include <iostream>
+
+LCIOFile::LCIOFile(const std::string& name, const std::string& option, const std::string& title, const int& compress): File(name, option)
 {
-  m_Title=title;
-  m_CompressionLevel=compress;
-  m_File = IOIMPL::LCFactory::getInstance()->createLCWriter() ;
+  m_Title            = title;
+  m_CompressionLevel = compress;
+  m_File             = IOIMPL::LCFactory::getInstance()->createLCWriter();
   m_File->setCompressionLevel(m_CompressionLevel);
 }
 
@@ -16,14 +18,15 @@ void LCIOFile::open()
   if(!isOpened())
   {
     setID();
-    m_Title=fillvariables(m_Title,"${ID}",m_ID);
-    if(m_Option=="WRITE_APPEND"||m_Option=="LCIO::WRITE_APPEND") m_File->open(m_Title.c_str(),EVENT::LCIO::WRITE_APPEND);
-    else m_File->open(m_Title.c_str(),EVENT::LCIO::WRITE_NEW);
+    m_Title = fillvariables(m_Title, "${ID}", m_ID);
+    if(m_Option == "WRITE_APPEND" || m_Option == "LCIO::WRITE_APPEND") m_File->open(m_Title.c_str(), EVENT::LCIO::WRITE_APPEND);
+    else
+      m_File->open(m_Title.c_str(), EVENT::LCIO::WRITE_NEW);
     m_IsOpened = true;
   }
 }
- 
- void LCIOFile::close()
+
+void LCIOFile::close()
 {
   if(isOpened())
   {
@@ -33,9 +36,7 @@ void LCIOFile::open()
   }
 }
 
-void LCIOFile::setID()
-{
-}
+void LCIOFile::setID() {}
 
 bool LCIOFile::isOpened()
 {
@@ -45,7 +46,7 @@ bool LCIOFile::isOpened()
 LCIOFile::~LCIOFile()
 {
   close();
-  if(m_File!=nullptr) delete m_File;
+  if(m_File != nullptr) delete m_File;
 }
 
-void LCIOFile::parseData(const Data&){}
+void LCIOFile::parseData(const Data&) {}

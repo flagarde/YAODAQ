@@ -5,17 +5,14 @@
 
 namespace CAEN
 {
-  
 const char* CAENVMEException::errorStrings(const int_least32_t& code)
 {
   return CAENVME_DecodeError(static_cast<CVErrorCodes>(code));
 }
 
-
-CAENVMEException::CAENVMEException(const int_least32_t& code, const SourceLocation& location) : Exception(code, errorStrings(code), location)
+CAENVMEException::CAENVMEException(const int_least32_t& code, const SourceLocation& location): Exception(code, errorStrings(code), location)
 {
   if(code != cvSuccess) throw *this;
 };
-
 
 }  // namespace CAEN

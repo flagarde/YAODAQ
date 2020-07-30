@@ -7,10 +7,7 @@
 
 namespace CAEN
 {
-  
-CAENCommBoard::CAENCommBoard(const std::string& name) : Board(name, "CAENCommBoard")
-{
-}
+CAENCommBoard::CAENCommBoard(const std::string& name): Board(name, "CAENCommBoard") {}
 
 void CAENCommBoard::Write32(const std::uint32_t& Address, const std::uint32_t& Data)
 {
@@ -42,8 +39,7 @@ std::vector<std::uint32_t> CAENCommBoard::MultiRead32(std::uint32_t& Address, co
   std::vector<std::uint32_t> ret;
   ret.reserve(nCycles);
   CAENCommException(CAENComm_MultiRead32(m_Handle, &Address, nCycles, &ret[0], erros));
-  for(std::size_t i = 0; i != nCycles; ++i)
-  { CAENCommException(static_cast<int>(erros[i])); }
+  for(std::size_t i = 0; i != nCycles; ++i) { CAENCommException(static_cast<int>(erros[i])); }
   return ret;
 }
 
@@ -53,8 +49,7 @@ std::vector<std::uint16_t> CAENCommBoard::MultiRead16(std::uint32_t& Address, co
   std::vector<std::uint16_t> ret;
   ret.reserve(nCycles);
   CAENCommException(CAENComm_MultiRead16(m_Handle, &Address, nCycles, &ret[0], erros));
-  for(std::size_t i = 0; i != nCycles; ++i)
-  { CAENCommException(static_cast<int>(erros[i])); }
+  for(std::size_t i = 0; i != nCycles; ++i) { CAENCommException(static_cast<int>(erros[i])); }
   return ret;
 }
 
@@ -62,16 +57,14 @@ void CAENCommBoard::MultiWrite16(std::uint32_t& Address, const int& nCycles, std
 {
   CAENComm_ErrorCode erros[nCycles];
   CAENCommException(CAENComm_MultiWrite16(m_Handle, &Address, nCycles, &data[0], erros));
-  for(std::size_t i = 0; i != nCycles; ++i)
-  { CAENCommException(static_cast<int>(erros[i])); }
+  for(std::size_t i = 0; i != nCycles; ++i) { CAENCommException(static_cast<int>(erros[i])); }
 }
 
 void CAENCommBoard::MultiWrite32(std::uint32_t& Address, const int& nCycles, std::vector<std::uint32_t>& data)
 {
   CAENComm_ErrorCode erros[nCycles];
   CAENCommException(CAENComm_MultiWrite32(m_Handle, &Address, nCycles, &data[0], erros));
-  for(std::size_t i = 0; i != nCycles; ++i)
-  { CAENCommException(static_cast<int>(erros[i])); }
+  for(std::size_t i = 0; i != nCycles; ++i) { CAENCommException(static_cast<int>(erros[i])); }
 }
 
 /*

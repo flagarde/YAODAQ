@@ -22,22 +22,14 @@ else()
 endif()
 
 if(NOT DOT_EXE)
-  option(
-    BUILD_DEP_GRAPH
-    "Builds a visual representation of the dependencies of that included targets"
-    OFF)
+  option(BUILD_DEP_GRAPH "Builds a visual representation of the dependencies of that included targets" OFF)
 else()
-  option(
-    BUILD_DEP_GRAPH
-    "Builds a visual representation of the dependencies of that included targets"
-    ON)
+  option(BUILD_DEP_GRAPH "Builds a visual representation of the dependencies of that included targets" ON)
 endif()
 
-# Builds a dependency graph of the active code targets using the `dot`
-# application
+# Builds a dependency graph of the active code targets using the `dot` application
 #
-# This can only be used once per project, as each target generated is as
-# `doc-${PROJECT_NAME}` unless TARGET_NAME is specified.
+# This can only be used once per project, as each target generated is as `doc-${PROJECT_NAME}` unless TARGET_NAME is specified.
 # ~~~
 # Required Arguments:
 # OUTPUT_TYPE
@@ -59,8 +51,7 @@ function(gen_dep_graph)
   set(OPTIONS ADD_TO_DEP_GRAPH)
   set(SINGLE_VALUE_KEYWORDS TARGET_NAME OUTPUT_DIR OUTPUT_TYPE)
   set(MULTI_VALUE_KEYWORDS)
-  cmake_parse_arguments(gen_dep_graph "${OPTIONS}" "${SINGLE_VALUE_KEYWORDS}"
-                        "${MULTI_VALUE_KEYWORDS}" ${ARGN})
+  cmake_parse_arguments(gen_dep_graph "${OPTIONS}" "${SINGLE_VALUE_KEYWORDS}" "${MULTI_VALUE_KEYWORDS}" ${ARGN})
   if(BUILD_DEP_GRAPH)
     if(NOT DOT_EXE)
       message(FATAL_ERROR "`dot` is needed to build the dependency graph.")
@@ -78,20 +69,11 @@ function(gen_dep_graph)
       set(OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
     endif()
     add_custom_target(
-      ${TARGET_NAME}
-      COMMAND ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR}
-              --graphviz=${CMAKE_CURRENT_BINARY_DIR}/graphviz/${TARGET_NAME}.dot
-      COMMAND ${DOT_EXE} -T${gen_dep_graph_OUTPUT_TYPE}
-              ${CMAKE_CURRENT_BINARY_DIR}/graphviz/${TARGET_NAME}.dot -o
-              ${OUT_DIR}/${TARGET_NAME}.${gen_dep_graph_OUTPUT_TYPE})
+      ${TARGET_NAME} COMMAND ${CMAKE_COMMAND} ${CMAKE_SOURCE_DIR} --graphviz=${CMAKE_CURRENT_BINARY_DIR}/graphviz/${TARGET_NAME}.dot COMMAND ${DOT_EXE} -T${gen_dep_graph_OUTPUT_TYPE} ${CMAKE_CURRENT_BINARY_DIR}/graphviz/${TARGET_NAME}.dot -o
+                                                                                                                                             ${OUT_DIR}/${TARGET_NAME}.${gen_dep_graph_OUTPUT_TYPE}
+      )
 
-    add_custom_command(
-      TARGET ${TARGET_NAME}
-      POST_BUILD
-      COMMAND ;
-      COMMENT
-        "Dependency graph for ${TARGET_NAME} generated and located at ${OUT_DIR}/${TARGET_NAME}.${gen_dep_graph_OUTPUT_TYPE}"
-    )
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD COMMAND ; COMMENT "Dependency graph for ${TARGET_NAME} generated and located at ${OUT_DIR}/${TARGET_NAME}.${gen_dep_graph_OUTPUT_TYPE}")
 
     if(gen_dep_graph_ADD_TO_DEP_GRAPH)
       if(NOT TARGET dep-graph)

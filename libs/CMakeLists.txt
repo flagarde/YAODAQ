@@ -8,10 +8,9 @@ include(zlib-ng)
 include(openssl)
 include(IXWebSocket)
 
-# fmt and spdlog have difficulties to work together 
+# fmt and spdlog have difficulties to work together
 include(fmt)
 include(spdlog)
-
 
 include(magic_enum)
 include(jsoncpp)
@@ -127,11 +126,11 @@ if(BUILD_WEBSOCKETSERVER)
   target_link_libraries(WebsocketServer PUBLIC Util PUBLIC Message PUBLIC Infos PUBLIC IXWebSocket PUBLIC Exception)
 
   add_library(FileWritter "${YAODAQ_SRC}/FileWritter.cpp")
-add_dependencies(FileWritter File Board )
-target_link_libraries(FileWritter PUBLIC File PUBLIC Board )
-set_target_properties(FileWritter PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/FileWritter.hpp")
-install(TARGETS FileWritter RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
-  
+  add_dependencies(FileWritter File Board)
+  target_link_libraries(FileWritter PUBLIC File PUBLIC Board)
+  set_target_properties(FileWritter PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/FileWritter.hpp")
+  install(TARGETS FileWritter RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
   if(BUILD_CONFIGURATOR)
     # include(soci) add_library(Configurator_ "${YAODAQ_SRC}/Configurator.cpp") add_dependencies(Configurator_ soci WebsocketServer Board) target_include_directories( Configurator_ PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC
     # ${DATABASES_INCLUDE_DIR}) set_target_properties( Configurator_ PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Configurator.hpp") target_link_libraries( Configurator_ PUBLIC Board PUBLIC WebsocketServer PUBLIC Soci)

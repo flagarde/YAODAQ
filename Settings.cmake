@@ -8,8 +8,7 @@ set(DOCTEST_TAG "master")
 # OpenSSL
 set(OPENSSL_REPOSITORY "https://github.com/flagarde/openssl-cmake.git")
 set(OPENSSL_TAG "master")
-##option(SYSTEM_OPENSSL "Try to use system OpenSSL" OFF)
-# zlib-ng
+# option(SYSTEM_OPENSSL "Try to use system OpenSSL" OFF) zlib-ng
 set(ZLIB-NG_REPOSITORY "https://github.com/zlib-ng/zlib-ng.git")
 set(ZLIB-NG_TAG "develop")
 # IXWebSocket
@@ -22,7 +21,6 @@ set(JSONCPP_TAG "master")
 set(ELOGPP_REPOSITORY "https://github.com/RPClab/elogpp.git")
 set(ELOGPP_TAG "master")
 
-
 # fmt
 set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git")
 set(FMT_VERSION "master")
@@ -30,22 +28,12 @@ set(FMT_VERSION "master")
 set(SPDLOG_REPOSITORY "https://github.com/gabime/spdlog.git")
 set(SPDLOG_VERSION "v1.x")
 
-
-
-set( serial_repository "https://github.com/RPClab/serial" )
-set( serial_version "master" )
-
-
-
-
-
-
+set(serial_repository "https://github.com/RPClab/serial")
+set(serial_version "master")
 
 # CAENlibs
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
-
-
 
 # CLI11
 set(CLI11_repository "https://github.com/RPClab/CLI11.git")
@@ -67,22 +55,20 @@ set(magic_enum_version "master")
 set(jsroot_repository "https://github.com/root-project/jsroot.git")
 set(jsroot_version "master")
 
-# cereal 
+# cereal
 set(cereal_repository "https://github.com/USCiLab/cereal.git")
 set(cereal_version "master")
 
-set(SNMP_repository "https://github.com/RPClab/net-snmp.git" )
-set(SNMP_version "master" )
+set(SNMP_repository "https://github.com/RPClab/net-snmp.git")
+set(SNMP_version "master")
 
-## Compiling ROOT can be very long so :
+# Compiling ROOT can be very long so :
 option(USE_ROOT "Try to find a ROOT installation and use it" ON)
 option(BUILD_ROOT "Build ROOT Folder" ON)
 set(LOOK_FOR_ROOT_VERSION "6.20.06")
-## If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
+# If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
 set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
-#######################################
-
-
+# ########################################################################################################################################################################################################################################################
 
 option(ENABLE_TESTS "Include tests folder" ON)
 option(ENABLE_DOCS "Include docs folder" ON)
@@ -93,7 +79,6 @@ option(BUILD_CONFIGURATOR "Build Configurator" ON)
 option(BUILD_CONTROLLER "Build Controller" ON)
 option(BUILD_LOGGER "Build Logger" ON)
 option(ENABLE_EXTRAS "Build extras" ON)
-
 
 option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_SNMP "Build SNMP" OFF)

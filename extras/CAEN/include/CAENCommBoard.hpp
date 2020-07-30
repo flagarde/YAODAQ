@@ -8,7 +8,7 @@ namespace CAEN
 class CAENCommBoard: public Board
 {
 public:
-  CAENCommBoard(const std::string& name="");
+  CAENCommBoard(const std::string& name = "");
 
   /*##########################################################################*/
   /*
@@ -16,7 +16,7 @@ public:
   */
   /*##########################################################################*/
 
-  /**************************************************************************/ 
+  /**************************************************************************/
   /**
   * \fn      void Write32(const uint32_t& Address,const uint32_t& Data)
   * \brief   Write a 32 bit register of the device
@@ -26,7 +26,7 @@ public:
   ******************************************************************************/
   void Write32(const std::uint32_t& Address, const std::uint32_t& Data);
 
-  /**************************************************************************/ 
+  /**************************************************************************/
   /**
   * \fn      void Write16(const uint32_t& Address,const uint16_t& Data)
   * \brief   Write a 16 bit register of the device
@@ -36,7 +36,7 @@ public:
   ******************************************************************************/
   void Write16(const std::uint32_t& Address, const std::uint16_t& Data);
 
-  /**************************************************************************/ 
+  /**************************************************************************/
   /**
   * \fn      uint32_t CAENComm_Read32(uint32_t Address)
   * \brief   Read a 32 bit data from the specified register.
@@ -63,8 +63,7 @@ public:
   * \param   [IN]  nCycles: the number of read to perform
   * \return  std::vector<uint32_t>: The datas read from the device
   ******************************************************************************/
-  std::vector<std::uint32_t> MultiRead32(std::uint32_t& Address,
-                                         const int&     nCycles);
+  std::vector<std::uint32_t> MultiRead32(std::uint32_t& Address, const int& nCycles);
 
   /**************************************************************************/ /**
   * \fn      std::vector<uint16_t> MultiRead16(const uint32_t Address,const int& nCycles)
@@ -74,8 +73,7 @@ public:
   * \param   [IN]  nCycles: the number of read to perform
   * \return std::vector<uint16_t>: The datas read from the device
   ******************************************************************************/
-  std::vector<std::uint16_t> MultiRead16(std::uint32_t& Address,
-                                         const int&     nCycles);
+  std::vector<std::uint16_t> MultiRead16(std::uint32_t& Address, const int& nCycles);
 
   /**************************************************************************/ /**
   * \fn      void MultiWrite16(const std::uint32_t& Address,const int& nCycles,std::vector<std::uint16_t>& data)
@@ -85,8 +83,7 @@ public:
   * \param   [IN]  nCycles: the number of read to perform
   * \param   [IN]  data: The datas to write to the device
   ******************************************************************************/
-  void MultiWrite16(std::uint32_t& Address, const int& nCycles,
-                    std::vector<std::uint16_t>& data);
+  void MultiWrite16(std::uint32_t& Address, const int& nCycles, std::vector<std::uint16_t>& data);
 
   /**************************************************************************/ /**
   * \fn      void MultiWrite32(const std::uint32_t& Address,const int& nCycles,std::vector<std::uint32_t>& data)
@@ -96,8 +93,7 @@ public:
   * \param   [IN]  nCycles: the number of read to perform
   * \param   [IN]  data: The datas to write to the device
   ******************************************************************************/
-  void MultiWrite32(std::uint32_t& Address, const int& nCycles,
-                    std::vector<std::uint32_t>& data);
+  void MultiWrite32(std::uint32_t& Address, const int& nCycles, std::vector<std::uint32_t>& data);
 
   /**************************************************************************/ /**
   * \fn      CAENComm_ErrorCode STDCALL CAENComm_BLTRead(int handle, uint32_t Address, uint32_t *Buff, int BltSize, int *nw)
@@ -112,7 +108,7 @@ public:
   // CAENComm_ErrorCode STDCALL CAENComm_BLTRead(int handle, uint32_t Address,
   // uint32_t *Buff, int BltSize, int *nw);
 
-  /**************************************************************************/ 
+  /**************************************************************************/
   /**
   * \fn      CAENComm_ErrorCode STDCALL CAENComm_MBLTRead(int handle, uint32_t Address, uint32_t *Buff, int BltSize, int *nw)
   * \brief   Read a block of data from the device using an MBLT (64 bit) cycle
@@ -139,14 +135,14 @@ public:
   // CAENComm_ErrorCode STDCALL CAENComm_VMEIRQCheck(int VMEhandle, uint8_t
   // *Mask);
 
-  /**************************************************************************/ 
+  /**************************************************************************/
   /**
   * \fn      void IRQDisable()
   * \brief   The function disables the IRQ lines.
    ******************************************************************************/
   void IRQDisable();
 
-  /**************************************************************************/ 
+  /**************************************************************************/
   /**
   * \fn      void IRQEnable()
   * \brief   The function enaables the IRQ lines.
@@ -233,7 +229,7 @@ public:
 
   std::string GetVMEOpticalChipsetFirmwareRelease();
 
-  /**************************************************************************/ 
+  /**************************************************************************/
   /**
   * \fn      std::string SWRelease()
   * \brief   Returns the Software Release of the library

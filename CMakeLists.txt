@@ -8,33 +8,23 @@ project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "h
 # Download CMakeCM
 set(DOWNLOAD_CMAKECM_URL "https://raw.githubusercontent.com/flagarde/CMakeCM/master/DownloadCMakeCM.cmake" CACHE STRING "URL of the CMakeCM package")
 set(DOWNLOAD_CMAKECM_SHA256 "f30eca2c1bc5ff6bc4b314b0abd9b1ea5999ed874e2a710fb0f5ccd5db7b3963" CACHE STRING "SHA256 of DownloadCMakeCM.cmake")
-file(DOWNLOAD "${DOWNLOAD_CMAKECM_URL}"
-              "${CMAKE_BINARY_DIR}/cmake/CMakeCM/DownloadCMakeCM.cmake"
-              INACTIVITY_TIMEOUT 5
-              TIMEOUT 1
-              EXPECTED_HASH SHA256=${DOWNLOAD_CMAKECM_SHA256})
+file(DOWNLOAD "${DOWNLOAD_CMAKECM_URL}" "${CMAKE_BINARY_DIR}/cmake/CMakeCM/DownloadCMakeCM.cmake" INACTIVITY_TIMEOUT 5 TIMEOUT 1 EXPECTED_HASH SHA256=${DOWNLOAD_CMAKECM_SHA256})
 include(${CMAKE_BINARY_DIR}/cmake/CMakeCM/DownloadCMakeCM.cmake)
 
 include(Common)
+include(Formatters)
 
 default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
 cxx_17()
 
-
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/_cmcm-modules")
-
 
 include(Settings)
 
-
 include(doctest_project)
-
-
 
 include(Messages)
 include(Colors)
-
-
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -66,12 +56,8 @@ link_directories("${LIBRARY_OUTPUT_DIR}")
 # FIXME
 set(CMAKE_PREFIX_PATH "${CMAKE_OUTPUT_DIRECTORY}" "${CMAKE_INSTALL_PREFIX}/lib/cmake" "${CMAKE_INSTALL_PREFIX}/lib64/cmake")
 
-
-
-
 # Install doctest to allow testing exectuables and test inside executables
 include(CTest)
-
 
 # If we want to have test in the executables
 if(ENABLE_DOCTESTS)
@@ -191,4 +177,3 @@ endif()
 if(ENABLE_DOCS)
   add_subdirectory(docs)
 endif()
-

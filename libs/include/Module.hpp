@@ -22,7 +22,7 @@ class Module
 {
 public:
   Module(const std::string& name = "", const std::string& type = "Module");
-  virtual ~Module()=default;
+  virtual ~Module() = default;
   void                                   Initialize();
   void                                   Connect();
   void                                   Configure();

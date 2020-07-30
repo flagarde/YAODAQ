@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SPI.hpp"
+
 #include <vector>
 
 namespace CAEN
@@ -9,13 +10,13 @@ class Flash
 {
 public:
   void setHandle(const std::uint32_t& han);
-  
-  uint32_t get_spi_address(const uint16_t& page_addr,const uint16_t& byte_addr);
+
+  uint32_t get_spi_address(const uint16_t& page_addr, const uint16_t& byte_addr);
   /* Main functions to access flash with virtual page size (VIRTUAL_PAGE_SIZE)
    */
   /* handle is a CAENComm library handle */
-  void init();
-  std::vector<uint8_t> read_virtual_page(const uint16_t& page=m_OFFSET_CALIBRATION_VIRTUAL_PAGE);
+  void                 init();
+  std::vector<uint8_t> read_virtual_page(const uint16_t& page = m_OFFSET_CALIBRATION_VIRTUAL_PAGE);
   /*
    read_virtual_page_ex(uint16_t page,uint16_t offset, uint32_t size,uint8_t
    *buf); write_virtual_page(uint16_t page, uint8_t *buf);
@@ -31,7 +32,7 @@ public:
 
   /* content access */
   /* read_byte(uint32_t addr, uint8_t *data);*/
-  std::vector<uint8_t> read_bytes(const uint32_t& addr,const uint16_t& len);
+  std::vector<uint8_t> read_bytes(const uint32_t& addr, const uint16_t& len);
   /* write_byte(uint32_t addr, uint8_t data);
    write_bytes(uint32_t addr, uint8_t *buf,uint16_t len);*/
 
@@ -92,8 +93,8 @@ private:
   static constexpr int m_BUFFER_2_WRITE{0x87};
   static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG_BE{0x83}; /* w/ Build-in erase */
   static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG_BE{0x86}; /* w/ Build-in erase */
-  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG{0x88}; /* w/o Build-in erase */
-  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG{0x89}; /* w/o Build-in erase */
+  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG{0x88};    /* w/o Build-in erase */
+  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG{0x89};    /* w/o Build-in erase */
   static constexpr int m_PAGE_ERASE{0x81};
   static constexpr int m_BLOCK_ERASE{0x50};
   static constexpr int m_SECTOR_ERASE{0x7C};

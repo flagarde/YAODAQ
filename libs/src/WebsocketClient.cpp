@@ -1,4 +1,5 @@
 #include "WebsocketClient.hpp"
+
 #include "IXNetSystem.h"
 
 WebsocketClient::WebsocketClient()
@@ -14,16 +15,13 @@ WebsocketClient::~WebsocketClient()
 void WebsocketClient::setUrl(const std::string& url)
 {
   ix::WebSocket::setUrl(url);
-  m_URLIsSet=true;
+  m_URLIsSet = true;
 }
-
 
 void WebsocketClient::setHeaderKey(const std::string& key, const std::string& value)
 {
   m_Headers[key] = value;
 }
-
-
 
 void WebsocketClient::start()
 {

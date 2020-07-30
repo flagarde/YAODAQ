@@ -92,7 +92,7 @@ void Logger::OnMessage(const ix::WebSocketMessagePtr& msg)
   }
   else if(message.getType() == "Data")
   {
-    spdlog::warn("Sent {0} Mo ; From : {1}; To : {2}",static_cast<float>(msg->wireSize/1048576.0), message.getFrom(), message.getTo());
+    spdlog::warn("Sent {0} Mo ; From : {1}; To : {2}", static_cast<float>(msg->wireSize / 1048576.0), message.getFrom(), message.getTo());
   }
   else
   {

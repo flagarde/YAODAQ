@@ -29,33 +29,33 @@
 
 namespace Serial
 {
-  
-  class SerialConnector : public Connector
-  {
-  public:
-    SerialConnector();
-    virtual ~SerialConnector()=default;
-    virtual void         DoDisconnect() final;
-    virtual void DoConnect() final;
-    Response sendCommand(const Command& command) const;
-    void setPort();
-    void setBaudRate();
-    void setTimeout();
-    void setBytesize();
-    void setParity();
-    void setStopbits();
-    void setFlowcontrol();
-  private:
-    virtual void                                verifyParameters() final;
-    serial::Serial m_serial;
-    std::string m_port{""};
-    uint32_t m_baudrate{9600};
-    serial::Timeout m_timeout{serial::Timeout()};
-    serial::bytesize_t m_bytesize{serial::eightbits};
-    serial::parity_t m_parity{serial::parity_none};
-    serial::stopbits_t m_stopbits{serial::stopbits_one};
-    serial::flowcontrol_t m_flowcontrol{serial::flowcontrol_none};
-    std::vector<serial::PortInfo> m_ports;
+class SerialConnector: public Connector
+{
+public:
+  SerialConnector();
+  virtual ~SerialConnector() = default;
+  virtual void DoDisconnect() final;
+  virtual void DoConnect() final;
+  Response     sendCommand(const Command& command) const;
+  void         setPort();
+  void         setBaudRate();
+  void         setTimeout();
+  void         setBytesize();
+  void         setParity();
+  void         setStopbits();
+  void         setFlowcontrol();
+
+private:
+  virtual void                  verifyParameters() final;
+  serial::Serial                m_serial;
+  std::string                   m_port{""};
+  uint32_t                      m_baudrate{9600};
+  serial::Timeout               m_timeout{serial::Timeout()};
+  serial::bytesize_t            m_bytesize{serial::eightbits};
+  serial::parity_t              m_parity{serial::parity_none};
+  serial::stopbits_t            m_stopbits{serial::stopbits_one};
+  serial::flowcontrol_t         m_flowcontrol{serial::flowcontrol_none};
+  std::vector<serial::PortInfo> m_ports;
 };
 
-}
+}  // namespace Serial

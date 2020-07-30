@@ -41,25 +41,25 @@ class Message
 public:
   explicit Message(const Types& type = Types::Info, const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
   explicit Message(const Types& type, const Json::Value& content, const std::string& to = "ALL", const std::string& from = "");
-  void         parse(const std::string&);
-  void         setFrom(const std::string&);
-  void         setTo(const std::string&);
-  void         addKey(const std::string& key, const std::string& value);
-  void         setContent(const std::string&);
-  void         setContent(const Json::Value&);
-  std::string  getFrom();
-  std::string  getTo();
-  std::string  getContent();
-  std::string  getContent() const;
-  std::string  get();
-  std::string  get() const;
-  std::string  getType();
-  std::string  getStyled(const std::string& indent = "\t");
-  void         setType(const Types&);
-  bool         isEmpty();
-  std::size_t  getContentSize();
-  Json::Value        getContentAsJson() const;
-  Json::Value         getContentAsJson();
+  void        parse(const std::string&);
+  void        setFrom(const std::string&);
+  void        setTo(const std::string&);
+  void        addKey(const std::string& key, const std::string& value);
+  void        setContent(const std::string&);
+  void        setContent(const Json::Value&);
+  std::string getFrom();
+  std::string getTo();
+  std::string getContent();
+  std::string getContent() const;
+  std::string get();
+  std::string get() const;
+  std::string getType();
+  std::string getStyled(const std::string& indent = "\t");
+  void        setType(const Types&);
+  bool        isEmpty();
+  std::size_t getContentSize();
+  Json::Value getContentAsJson() const;
+  Json::Value getContentAsJson();
 
 protected:
   Json::Value m_Value{};

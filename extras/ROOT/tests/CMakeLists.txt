@@ -1,4 +1,4 @@
-set(TESTFILES  RootFile.cpp)
+set(TESTFILES RootFile.cpp)
 
 set(TEST_RUNNER_PARAMS "") # Any arguemnts to feed the test runner (change as needed).
 
@@ -15,4 +15,3 @@ target_include_directories(RootTests PUBLIC "${INCLUDE_OUTPUT_DIR}")
 
 target_link_libraries(RootTests PUBLIC RootFile PUBLIC doctestMain)
 doctest_discover_tests(RootTests COMMAND RootTests ${TEST_RUNNER_PARAMS})
-

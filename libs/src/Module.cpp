@@ -435,14 +435,16 @@ void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
   Message message;
   message.parse(msg->str);
   if(message.getType() == "Action") DoOnAction(message);
-  else if(message.getType() == "Command") DoOnCommand(message);
+  else if(message.getType() == "Command")
+    DoOnCommand(message);
   else if(message.getType() == "Data")
   {
     Data data;
     data.parse(message.get());
     DoOnData(data);
   }
-  else OnMessage(msg);
+  else
+    OnMessage(msg);
 }
 
 void Module::OnOpen(const ix::WebSocketMessagePtr& msg)
