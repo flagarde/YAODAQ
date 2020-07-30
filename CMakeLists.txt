@@ -84,24 +84,6 @@ generate_readme()
 
 include(Architectures)
 
-include(Formatting)
-file(
-  GLOB_RECURSE
-  ALL_CODE_FILES
-  ${PROJECT_SOURCE_DIR}/libs/*.[ch]pp
-  ${PROJECT_SOURCE_DIR}/libs/*.[ch]
-  ${PROJECT_SOURCE_DIR}/apps/*.[ch]pp
-  ${PROJECT_SOURCE_DIR}/apps/*.[ch]
-  ${PROJECT_SOURCE_DIR}/examples/*.[ch]pp
-  ${PROJECT_SOURCE_DIR}/examples/*.[ch]
-  ${PROJECT_SOURCE_DIR}/tests/*.[ch]pp
-  ${PROJECT_SOURCE_DIR}/tests/*.[ch]
-  )
-
-clang_format(clang-format ${ALL_CODE_FILES})
-
-file(GLOB_RECURSE CMAKE_FILES CMakeLists.txt ${PROJECT_SOURCE_DIR}/cmake ${PROJECT_SOURCE_DIR}/extern ${PROJECT_SOURCE_DIR}/Options.cmake)
-cmake_format(cmake-format ${CMAKE_FILES})
 set(CMAKE_MESSAGE_CONTEXT_SHOW TRUE)
 # guard against in-source builds
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
