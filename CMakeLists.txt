@@ -5,11 +5,17 @@
 cmake_minimum_required(VERSION 3.10...3.17.2 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
+
 # Download CMakeCM
 set(DOWNLOAD_CMAKECM_URL "https://raw.githubusercontent.com/flagarde/CMakeCM/master/DownloadCMakeCM.cmake" CACHE STRING "URL of the CMakeCM package")
 set(DOWNLOAD_CMAKECM_SHA256 "f30eca2c1bc5ff6bc4b314b0abd9b1ea5999ed874e2a710fb0f5ccd5db7b3963" CACHE STRING "SHA256 of DownloadCMakeCM.cmake")
-file(DOWNLOAD "${DOWNLOAD_CMAKECM_URL}" "${CMAKE_BINARY_DIR}/cmake/CMakeCM/DownloadCMakeCM.cmake" INACTIVITY_TIMEOUT 5 TIMEOUT 1 EXPECTED_HASH SHA256=${DOWNLOAD_CMAKECM_SHA256})
-include(${CMAKE_BINARY_DIR}/cmake/CMakeCM/DownloadCMakeCM.cmake)
+set(INSTALL_CMAKECM_DIR "${CMAKE_BINARY_DIR}/cmake/CMakeCM" CACHE STRING "Path where to install CMakeCM")
+file(DOWNLOAD "${DOWNLOAD_CMAKECM_URL}" "${INSTALL_CMAKECM_DIR}/DownloadCMakeCM.cmake" INACTIVITY_TIMEOUT 5 TIMEOUT 1 EXPECTED_HASH SHA256=${DOWNLOAD_CMAKECM_SHA256})
+include("${INSTALL_CMAKECM_DIR}/DownloadCMakeCM.cmake")
+
+#PreventInSourceBuilds is in  common but try to avoid downloading many files 
+include(PreventInSourceBuilds)
+PreventInSourceBuilds()
 
 include(Common)
 include(Formatters)
@@ -85,10 +91,6 @@ generate_readme()
 include(Architectures)
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW TRUE)
-# guard against in-source builds
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
-  message(STATUS "In-source builds are not allowed.\nPlease create a new directory (called a build directory) and run CMake from there.")
-endif()
 
 if(CMAKE_CONFIGURATION_TYPES)
   if(NOT "Coverage" IN_LIST CMAKE_CONFIGURATION_TYPES)
