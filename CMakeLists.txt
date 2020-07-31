@@ -7,11 +7,13 @@ cmake_minimum_required(VERSION 3.10...3.17.2 FATAL_ERROR)
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
 # Download CMakeCM
-set(DOWNLOAD_CMAKECM_URL "https://raw.githubusercontent.com/flagarde/CMakeCM/master/DownloadCMakeCM.cmake" CACHE STRING "URL of the CMakeCM package")
-set(DOWNLOAD_CMAKECM_SHA256 "f30eca2c1bc5ff6bc4b314b0abd9b1ea5999ed874e2a710fb0f5ccd5db7b3963" CACHE STRING "SHA256 of DownloadCMakeCM.cmake")
-set(INSTALL_CMAKECM_DIR "${CMAKE_BINARY_DIR}/cmake/CMakeCM" CACHE STRING "Path where to install CMakeCM")
-file(DOWNLOAD "${DOWNLOAD_CMAKECM_URL}" "${INSTALL_CMAKECM_DIR}/DownloadCMakeCM.cmake" INACTIVITY_TIMEOUT 5 TIMEOUT 1 EXPECTED_HASH SHA256=${DOWNLOAD_CMAKECM_SHA256})
-include("${INSTALL_CMAKECM_DIR}/DownloadCMakeCM.cmake")
+set(CMAKECM_BASE_URL "https://raw.githubusercontent.com/flagarde/CMakeCM/master" CACHE STRING "URL of the CMakeCM package")
+set(CMAKECM_SHA256 "dcfc87efa3562b36e5ef32cbf572e336cc1bcb19bf36603ae884ab5a285ac498" CACHE STRING "SHA256 of CMakeCM")
+set(CMAKECM_INSTALL_DIR "${CMAKE_BINARY_DIR}/cmake/CMakeCM" CACHE STRING "Path where to install CMakeCM")
+
+##set(CMAKECM_MODULES_DIR "${CMAKECM_INSTALL_DIR}/Modules")
+file(DOWNLOAD "${CMAKECM_BASE_URL}/CMakeCM.cmake" "${CMAKECM_INSTALL_DIR}/CMakeCM.cmake" INACTIVITY_TIMEOUT 5 TIMEOUT 1 EXPECTED_HASH SHA256=${CMAKECM_SHA256})
+include("${CMAKECM_INSTALL_DIR}/CMakeCM.cmake")
 
 #PreventInSourceBuilds is in  common but try to avoid downloading many files 
 include(PreventInSourceBuilds)
@@ -24,9 +26,7 @@ cxx_17()
 
 include(Formatters)
 
-
-
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/_cmcm-modules")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 include(Settings)
 
