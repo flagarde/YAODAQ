@@ -190,7 +190,9 @@ void WebsocketServer::sendToAll(const std::string& message)
 
 WebsocketServer::~WebsocketServer()
 {
+  stop();
   ix::uninitNetSystem();
+  //std::exit(3);
 }
 
 void WebsocketServer::listen()

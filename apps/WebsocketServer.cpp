@@ -46,6 +46,6 @@ int main(int argc, char** argv)
   server.start();
   spdlog::info("Websocket server started on IP {0} Port {1}", host, port);
 
-  //server.stop();
+
   return interrupt.wait();
 }

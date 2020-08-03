@@ -369,62 +369,21 @@ void Module::DoOnAction(const Message& message)
   auto action = magic_enum::enum_cast<Actions>(message.getContent());
   if(action.has_value())
   {
-    switch(action.value())
+    if((m_State==States::UNINITIALIZED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::INITIALIZE) Initialize();
+    else if((m_State==States::INITIALIZED || m_State==States::DISCONNECTED||m_State==States::CONNECTED) && action.value()== Actions::CONNECT ) Connect();
+    else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action.value()== Actions::CONFIGURE )
     {
-      case Actions::INITIALIZE:
-      {
-        Initialize();
-        break;
-      }
-      case Actions::CONNECT:
-      {
-        Connect();
-        break;
-      }
-      case Actions::CONFIGURE:
-      {
-        m_HaveToReloadConfigModules = true;
-        Configure();
-        break;
-      }
-      case Actions::START:
-      {
-        Start();
-        break;
-      }
-      case Actions::PAUSE:
-      {
-        Pause();
-        break;
-      }
-      case Actions::STOP:
-      {
-        Stop();
-        break;
-      }
-      case Actions::CLEAR:
-      {
-        Clear();
-        break;
-      }
-      case Actions::DISCONNECT:
-      {
-        Disconnect();
-        break;
-      }
-      case Actions::RELEASE:
-      {
-        Release();
-        break;
-      }
-      case Actions::QUIT:
-      {
-        Quit();
-        break;
-      }
-      default:
-        break;
+      m_HaveToReloadConfigModules = true;
+      Configure();
     }
+    else if((m_State==States::CONFIGURED || m_State==States::STOPED || m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::START ) Start();
+    else if((m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::PAUSE) Pause();
+    else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPED)  && action.value()== Actions::STOP) Stop();
+    else if((m_State==States::STOPED || m_State==States::CONFIGURED || m_State==States::CLEARED) && action.value()== Actions::CLEAR) Clear();
+    else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action.value()== Actions::DISCONNECT) Disconnect();
+    else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::RELEASE) Release();
+    else if(m_State==States::RELEASED && action.value()== Actions::QUIT) Quit();
+    else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",m_Name,magic_enum::enum_name(m_State),message.getContent());
   }
 }
 
