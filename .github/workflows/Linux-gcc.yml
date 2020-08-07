@@ -97,8 +97,8 @@ jobs:
             -D CODE_COVERAGE=ON
             -D BUILD_DAQ=OFF
             -D BUILD_ROOT=OFF
-            -G Ninja
-            -D CMAKE_MAKE_PROGRAM=ninja
+            #-G Ninja
+            #-D CMAKE_MAKE_PROGRAM=ninja
             -D CMAKE_C_COMPILER_LAUNCHER=ccache
             -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
           RESULT_VARIABLE result
