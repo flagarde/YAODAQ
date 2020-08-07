@@ -95,6 +95,8 @@ jobs:
             -B build
             -D CMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
             -D CODE_COVERAGE=ON
+            -D BUILD_DAQ=OFF
+            -D BUILD_ROOT=OFF
             -G Ninja
             -D CMAKE_MAKE_PROGRAM=ninja
             -D CMAKE_C_COMPILER_LAUNCHER=ccache
@@ -125,7 +127,7 @@ jobs:
         execute_process(COMMAND ccache -z)
 
         execute_process(
-          COMMAND ${{ steps.cmake_and_ninja.outputs.cmake_dir }}/cmake -DBUILD_DAQ=OFF -DBUILD_ROOT=OFF --build build
+          COMMAND ${{ steps.cmake_and_ninja.outputs.cmake_dir }}/cmake --build build
           RESULT_VARIABLE result
         )
         if (NOT result EQUAL 0)
