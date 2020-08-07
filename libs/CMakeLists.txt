@@ -17,7 +17,7 @@ include(jsoncpp)
 include(toml11)
 include(elogpp)
 add_library(Util INTERFACE)
-add_dependencies(Util spdlog::spdlog jsoncpp::jsoncpp toml11 magic_enum elogpp::elogpp openssl)
+add_dependencies(Util spdlog::spdlog jsoncpp::jsoncpp toml11 magic_enum elogpp::elogpp OpenSSL::SSL OpenSSL::Crypto)
 target_link_libraries(Util INTERFACE spdlog::spdlog INTERFACE jsoncpp::jsoncpp INTERFACE elogpp::elogpp INTERFACE OpenSSL::SSL INTERFACE OpenSSL::Crypto)
 target_include_directories(Util INTERFACE "${INCLUDE_OUTPUT_DIR}" INTERFACE "${INCLUDE_OUTPUT_DIR}/toml")
 
