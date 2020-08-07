@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-        
+
      # - name : Download ROOT
      #   if: steps.cache-root.outputs.cache-hit != 'true'
      #   id: ROOT
@@ -30,11 +30,11 @@ jobs:
      #     set(root_url "https://github.com/root-project/root/archive/#v$ENV{ROOT_VERSION}.tar.gz")
      #     file(DOWNLOAD "${root_url}" ./root.tar.gz SHOW_PROGRESS)
      #     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.tar.gz)
-    
+
      # - name: Configure ROOT
      #   if: steps.cache-root.outputs.cache-hit != 'true'
      #   shell: cmake -P {0}
-     #   run: | 
+     #   run: |
      #     execute_process(
      #        COMMAND cmake
      #       -S root-$ENV{ROOT_VERSION}
@@ -44,7 +44,7 @@ jobs:
      #     if (NOT result EQUAL 0)
      #     message(FATAL_ERROR "Bad exit status")
      #     endif()
-    
+
      # - name: Build ROOT
      #   if: steps.cache-root.outputs.cache-hit != 'true'
      #   shell: cmake -P {0}
@@ -56,12 +56,12 @@ jobs:
      #     if (NOT result EQUAL 0)
      #       message(FATAL_ERROR "Bad exit status")
      #     endif()
-        
+
      # - name: Install ROOT
      #   run: sudo cmake --install .
-     
+
       - name: Configure
-        run: mkdir build && cd build && cmake -DBUILD_ANALYSIS=OFF -DBUILD_OLD_WAVEDUMP=OFF ..
+        run: mkdir build && cd build && cmake -DBUILD_DAQ=OFF -DBUILD_ROOT=OFF ..
       - name: Build
         run: cmake --build build
       - name: Install
