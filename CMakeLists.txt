@@ -8,14 +8,14 @@ project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "h
 
 # Download CMakeCM
 set(CMAKECM_BASE_URL "https://raw.githubusercontent.com/flagarde/CMakeCM/master" CACHE STRING "URL of the CMakeCM package")
-set(CMAKECM_SHA256 "dcfc87efa3562b36e5ef32cbf572e336cc1bcb19bf36603ae884ab5a285ac498" CACHE STRING "SHA256 of CMakeCM")
+set(CMAKECM_SHA256 "9493e474c71d279c2b263afffb3ced51cfaf937a7c7103de444ab306f5f23df3" CACHE STRING "SHA256 of CMakeCM")
 set(CMAKECM_INSTALL_DIR "${CMAKE_BINARY_DIR}/cmake/CMakeCM" CACHE STRING "Path where to install CMakeCM")
 
 ##set(CMAKECM_MODULES_DIR "${CMAKECM_INSTALL_DIR}/Modules")
 file(DOWNLOAD "${CMAKECM_BASE_URL}/CMakeCM.cmake" "${CMAKECM_INSTALL_DIR}/CMakeCM.cmake" INACTIVITY_TIMEOUT 5 TIMEOUT 1 EXPECTED_HASH SHA256=${CMAKECM_SHA256})
 include("${CMAKECM_INSTALL_DIR}/CMakeCM.cmake")
 
-#PreventInSourceBuilds is in  common but try to avoid downloading many files 
+#PreventInSourceBuilds is in  common but try to avoid downloading many files
 include(PreventInSourceBuilds)
 PreventInSourceBuilds()
 
