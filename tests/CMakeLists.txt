@@ -8,7 +8,7 @@ set(TEST_RUNNER_PARAMS "") # Any arguemnts to feed the test runner (change as ne
 # ------------------------------------------------------------------------------
 # --
 add_executable(TestFileWritter ${TESTFILES})
-add_dependencies(TestFileWritter doctestMain RootFile)
+add_dependencies(TestFileWritter doctestMain)
 
 set_target_properties(TestFileWritter PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 # target_set_warnings(${TEST_MAIN} ENABLE ALL AS_ERROR ALL DISABLE Annoying) # Set warnings (if needed).
