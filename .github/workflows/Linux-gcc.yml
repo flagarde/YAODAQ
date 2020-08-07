@@ -19,7 +19,7 @@ jobs:
         - {
             name: "Ubuntu Latest GCC", artifact: "Linux-GCC.tar.xz",
             os: ubuntu-latest,
-            cc: "gcc", cxx: "g++"
+            cc: "gcc-9", cxx: "g++-9"
           }
 
     steps:
