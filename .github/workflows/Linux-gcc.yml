@@ -136,7 +136,7 @@ jobs:
 
         execute_process(COMMAND ccache -s)
 
-    - name: Run tests
+    #- name: Run tests
       #shell: cmake -P {0}
       #run: |
       #  include(ProcessorCount)
