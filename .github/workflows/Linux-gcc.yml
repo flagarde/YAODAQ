@@ -9,7 +9,7 @@ on:
 env:
   BUILD_TYPE: Release
   ROOT_VERSION: 6-20-04
-  CXX: gcc++-9
+  CXX: g++-9
   CC: gcc-9
 
 jobs:
