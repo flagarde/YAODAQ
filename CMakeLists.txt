@@ -17,7 +17,7 @@ include("${CMAKECM_INSTALL_DIR}/CMakeCM.cmake")
 
 #PreventInSourceBuilds is in  common but try to avoid downloading many files
 include(PreventInSourceBuilds)
-PreventInSourceBuilds()
+prevent_in_source_builds()
 
 include(Common)
 
