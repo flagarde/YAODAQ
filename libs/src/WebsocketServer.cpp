@@ -33,7 +33,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
     : ix::WebSocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs, addressFamily)
 {
   ix::initNetSystem();
-  setOnClientMessageCallback([this](std::shared_ptr<ix::ConnectionState> connectionState, ix::ConnectionInfo& connectionInfo, ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg) {
+  setOnClientMessageCallback([this](std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg) {
     // The ConnectionInfo object contains information about the connection,
     // at this point only the client ip address and the port.
     //std::cout << "Remote ip: " << connectionInfo.remoteIp << std::endl;
