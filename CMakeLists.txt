@@ -8,7 +8,7 @@ project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "h
 
 # Download CMakeCM
 set(CMAKECM_BASE_URL "https://raw.githubusercontent.com/flagarde/CMakeCM/master" CACHE STRING "URL of the CMakeCM package")
-set(CMAKECM_SHA256 "9493e474c71d279c2b263afffb3ced51cfaf937a7c7103de444ab306f5f23df3" CACHE STRING "SHA256 of CMakeCM")
+set(CMAKECM_SHA256 "a5739917401b3bddbd8a32e280008ed98aa1311cf1f217ac78490c800ed2ff9a" CACHE STRING "SHA256 of CMakeCM")
 set(CMAKECM_INSTALL_DIR "${CMAKE_BINARY_DIR}/cmake/CMakeCM" CACHE STRING "Path where to install CMakeCM")
 
 ##set(CMAKECM_MODULES_DIR "${CMAKECM_INSTALL_DIR}/Modules")
