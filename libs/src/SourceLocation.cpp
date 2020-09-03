@@ -1,11 +1,11 @@
 #include "SourceLocation.hpp"
 
-const uint_least32_t SourceLocation::getLine() const
+const std::uint_least32_t SourceLocation::getLine() const
 {
   return m_Location.line();
 }
 
-const uint_least32_t SourceLocation::getColumn() const
+const std::uint_least32_t SourceLocation::getColumn() const
 {
   return m_Location.column();
 }
