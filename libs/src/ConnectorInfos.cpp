@@ -26,7 +26,7 @@ bool ConnectorInfos::isSharedConnector() const
   return m_IsSharedConnector;
 }
 
-toml::value& ConnectorInfos::getParameters()
+toml::value ConnectorInfos::getParameters()
 {
   return m_Parameters;
 }

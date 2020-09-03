@@ -21,6 +21,7 @@ private:
   std::map<std::string, ix::WebSocket&> m_Clients2;
   std::map<std::string, Infos>          m_Clients3;
   void                                  erase();
+  std::mutex                            m_Mutex;
   void                                  try_emplace(const std::string& id, const std::string& key, ix::WebSocket& socket);
   void                                  sendToLogger(const std::string& message);
   void                                  sendToAll(const std::string& message);

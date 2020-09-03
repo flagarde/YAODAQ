@@ -16,3 +16,6 @@ target_include_directories(Tests PUBLIC "${INCLUDE_OUTPUT_DIR}")
 target_link_libraries(Tests PUBLIC CAENExceptions PUBLIC doctestMain)
 
 doctest_discover_tests(Tests COMMAND Tests ${TEST_RUNNER_PARAMS})
+
+
+

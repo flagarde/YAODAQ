@@ -4,7 +4,7 @@
 
 #include <csignal>
 
-volatile bool Interrupt::m_Continue = true;
+volatile std::atomic<bool>  Interrupt::m_Continue = true;
 
 Interrupt::Interrupt()
 {
@@ -40,8 +40,8 @@ Interrupt::Interrupt()
   });
 }
 
-int Interrupt::wait()
+int Interrupt::wait() noexcept
 {
-  while(m_Continue) std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  while(m_Continue.load()==true) std::this_thread::sleep_for(std::chrono::milliseconds(1));
   return m_Continue;
 }

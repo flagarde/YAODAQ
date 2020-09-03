@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 Lagarde François lagarde.at.sjtu.edu.cn
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -9,10 +9,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -47,14 +47,14 @@ public:
 
 private:
   virtual void                  verifyParameters() final;
-  serial::Serial                m_serial;
-  std::string                   m_port{""};
-  uint32_t                      m_baudrate{9600};
-  serial::Timeout               m_timeout{serial::Timeout()};
-  serial::bytesize_t            m_bytesize{serial::eightbits};
-  serial::parity_t              m_parity{serial::parity_none};
-  serial::stopbits_t            m_stopbits{serial::stopbits_one};
-  serial::flowcontrol_t         m_flowcontrol{serial::flowcontrol_none};
+  serial::Serial                m_Serial;
+  std::string                   m_Port{""};
+  uint32_t                      m_Baudrate{9600};
+  serial::Timeout               m_Timeout{serial::Timeout()};
+  serial::bytesize_t            m_Bytesize{serial::eightbits};
+  serial::parity_t              m_Parity{serial::parity_none};
+  serial::stopbits_t            m_Stopbits{serial::stopbits_one};
+  serial::flowcontrol_t         m_Flowcontrol{serial::flowcontrol_none};
   std::vector<serial::PortInfo> m_ports;
 };
 

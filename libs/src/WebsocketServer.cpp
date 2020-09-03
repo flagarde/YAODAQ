@@ -81,11 +81,11 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
     }
     else if(msg->type == ix::WebSocketMessageType::Message)
     {
-      static Message m_Message;
+      Message m_Message;
       try
       {
         m_Message.parse(msg->str);
-        m_Message.setFrom(getkey());
+        //m_Message.setFrom(getkey());
       }
       catch(const Exception& exception)
       {
@@ -152,6 +152,7 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
 
 void WebsocketServer::sendToLogger(const std::string& message)
 {
+  std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<std::string, ix::WebSocket&>::iterator it = m_Clients2.begin(); it != m_Clients2.end(); ++it)
   {
     if((m_Clients3[it->first].getType() == "Logger" || m_Clients3[it->first].getType() == "Browser") && m_Actual != it->first) it->second.send(message);
@@ -160,12 +161,14 @@ void WebsocketServer::sendToLogger(const std::string& message)
 
 void WebsocketServer::erase()
 {
+  std::lock_guard<std::mutex> guard(m_Mutex);
   m_Clients2.erase(m_Actual);
   m_Clients3.erase(m_Actual);
 }
 
 void WebsocketServer::try_emplace(const std::string& id, const std::string& key, ix::WebSocket& socket)
 {
+  std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<std::string, Infos>::iterator it = m_Clients3.begin(); it != m_Clients3.end(); ++it)
   {
     if(it->second.getKey() == key)
@@ -182,6 +185,7 @@ void WebsocketServer::try_emplace(const std::string& id, const std::string& key,
 
 void WebsocketServer::sendToAll(const std::string& message)
 {
+  std::lock_guard<std::mutex> guard(m_Mutex);
   for(std::map<std::string, ix::WebSocket&>::iterator it = m_Clients2.begin(); it != m_Clients2.end(); ++it)
   {
     if(m_Actual != it->first) it->second.send(message);
@@ -192,7 +196,6 @@ WebsocketServer::~WebsocketServer()
 {
   stop();
   ix::uninitNetSystem();
-  //std::exit(3);
 }
 
 void WebsocketServer::listen()

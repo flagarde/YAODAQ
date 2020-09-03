@@ -45,6 +45,5 @@ void Connector::verifyParameters() {}
 bool Connector::isConnected()
 {
   if(m_Infos.getNumberBoardConnected() == 0) return false;
-  else
-    return true;
+  else return true;
 }

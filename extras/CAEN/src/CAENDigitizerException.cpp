@@ -83,7 +83,7 @@ const char* CAENDigitizerException::errorStrings(const int_least32_t& code)
   }
 }
 
-CAENDigitizerException::CAENDigitizerException(const int_least32_t& code, const SourceLocation& location): Exception(code, errorStrings(code), location)
+CAENDigitizerException::CAENDigitizerException(const int_least32_t& code, const SourceLocation& location): Exception(code,errorStrings(code), location)
 {
   if(code != CAEN_DGTZ_Success) throw *this;
 };

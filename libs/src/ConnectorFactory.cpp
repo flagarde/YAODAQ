@@ -23,8 +23,7 @@ void ConnectorFactory::loadConnectors()
 void ConnectorFactory::checkEnvironmentVariable()
 {
   if(std::getenv("YAODAQ_CONNECTOR_DIR") != nullptr) m_Path = std::string(std::getenv("YAODAQ_CONNECTOR_DIR"));
-  else
-    throw Exception(StatusCode::NOT_FOUND, "YAODAQ_CONNECTOR_DIR environmental variable not found! Can't load libraries for connectors!");
+  else throw Exception(StatusCode::NOT_FOUND, "YAODAQ_CONNECTOR_DIR environmental variable not found! Can't load libraries for connectors!");
 }
 
 std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfos& infos)

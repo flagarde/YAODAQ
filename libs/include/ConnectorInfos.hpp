@@ -10,7 +10,7 @@ public:
   bool         isSharedConnector() const;
   int          getID();
   int          getID() const;
-  toml::value& getParameters();
+  toml::value  getParameters();
   toml::value  getParameters() const;
   void         printParameters();
   void         printParameters() const;

@@ -1,12 +1,14 @@
 #pragma once
 
+#include <atomic>
+
 class Interrupt
 {
 public:
   Interrupt();
-  int wait();
-  virtual ~Interrupt() = default;
+  int wait() noexcept;
+  virtual ~Interrupt() noexcept = default;
 
 private:
-  volatile static bool m_Continue;
+  volatile static std::atomic<bool> m_Continue;
 };

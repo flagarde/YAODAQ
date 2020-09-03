@@ -5,16 +5,16 @@
     <script type="text/javascript" src="./jsroot/scripts/JSRootCore.js?gui"></script>
     <script src="./gauge.min.js"></script>
     <title>DAQ Control</title>
-    
+
     <script> var DEBUG=false ;var ws; var data_rate=0; var trigger_rate=0; var RunNumber;</script>
-    
-    
-    
-    
+
+
+
+
 
     <script type = "text/javascript">
 
-    
+
     rewireLoggingToElement(
     () => document.getElementById("log"),
     () => document.getElementById("log-container"), true);
@@ -26,7 +26,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     fixLoggingFunc('Warning');
     fixLoggingFunc('Critical');
     fixLoggingFunc('Error');
-  
+
     function fixLoggingFunc(name) {
         console['old' + name] = console[name];
         console[name] = function(...arguments) {
@@ -57,20 +57,20 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
         }, '');
     }
 }
-    
-    
-   
-      function StartWebSocket() 
+
+
+
+      function StartWebSocket()
       {
-        if ("WebSocket" in window) 
+        if ("WebSocket" in window)
         {
           // Let us open a web socket
-          ws = new WebSocket("ws://192.168.0.103:9999");
-          
-          
+          ws = new WebSocket("ws://192.168.0.103:8080");
 
-          
-          ws.onopen = function() 
+
+
+
+          ws.onopen = function()
           {
             document.body.style.background = "#b3e0ff";
             var element = document.getElementById('EventNumber');
@@ -94,15 +94,15 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
               checkbox.name = "BoxChannel"+i;
               checkbox.id = "BoxChannel"+i;
               checkbox.for="Channel"+i;
-              checkbox.onclick = function() 
+              checkbox.onclick = function()
               {
                 // access properties using this keyword
-                if ( this.checked ) 
+                if ( this.checked )
                 {
                   // if checked ...
                   document.getElementById(this.for).style.display='block';
-                } 
-                else 
+                }
+                else
                 {
                   // if checked ...
                   document.getElementById(this.for).style.display='none';
@@ -112,9 +112,9 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
             }
             Command("getState");
           };
-          
-          ws.onmessage = function (evt) 
-          { 
+
+          ws.onmessage = function (evt)
+          {
             var obj = JSON.parse(evt.data)
             if(DEBUG==true) alert(evt.data);
             if(obj.Type=="State")
@@ -123,21 +123,32 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
               ParseState(obj);
               console['Warning'](obj["Type"],obj["Content"]);
             }
-            else if(obj.Type=="Data") 
+            else if(obj.Type=="Data")
             {
               //alert(JSON.stringify(obj));
               var element = document.getElementById('EventNumber');
               element.innerHTML = "<h1>Event Number : "+obj["Content"]["EventInfos"]["EventCounter"]+"</h1>";
-              for(i=0;i!=obj["Content"]["Event"]["Groups"].length;++i) 
+              var period = obj["Content"]["EventInfos"]["Period_ns"];
+              for(i=0;i!=obj["Content"]["Event"]["Groups"].length;++i)
               {
                 for(j=0;j!=obj["Content"]["Event"]["Groups"][i]["Channels"].length;++j)
                 {
-                  var histo = JSROOT.CreateHistogram("TH1D",obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length);
-                  for(k=0;k!=obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length;++k)
+
+                          // this is just generation of graph
+         var npoints = 20;
+         var xpts = [], ypts = [];
+         for (var i=0; i<npoints; i++) {
+            xpts.push(i);
+            ypts.push(50*Math.sin((i+cnt)));
+         }
+         var graph1 = JSROOT.CreateTGraph(npoints, xpts, ypts);
+         graph1.fLineColor = 2;
+         graph1.fMarkerSize = 2;
+                  /*for(k=0;k!=obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length;++k)
                   {
                     histo.setBinContent(k,obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"][k]);
-                  }
-      
+                  }*/
+
 
                   if(obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Channel"]==8)
                   {
@@ -158,22 +169,22 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
             else if(obj.Type=="Warning")  console['Warning'](obj["Type"],obj["Content"]);
             else if(obj.Type=="Critical")  console['Critical'](obj["Type"],obj["Content"]);
             else if(obj.Type=="Error")  console['Error'](obj["Type"],obj["Content"]);
-            
+
           };
-          
-          ws.onclose = function() 
-          { 
+
+          ws.onclose = function()
+          {
             document.getElementById("Actions").style.display='none';
           };
-        } 
-        else 
-        {  
+        }
+        else
+        {
           // The browser doesn't support WebSocket
           alert("WebSocket NOT supported by your Browser!");
         }
       }
     </script>
-    
+
     <!-- Execute when the page is opening -->
     <script>
     	window.onload=function()
@@ -218,9 +229,9 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 			send(JSON.stringify(obj));
 			//alert(JSON.stringify(obj));
 		}
-		
-		
-		function Action(...args) 
+
+
+		function Action(...args)
 		{
 			var obj = new Object();
 			obj.Type = "Action";
@@ -233,12 +244,12 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 			send(JSON.stringify(obj));
 		}
 
-		function send(command) 
+		function send(command)
 		{
 			if(DEBUG==true)alert(command);
 			ws.send(command);
 		}
-		
+
 		function ParseState(obj)
 		{
 			if (obj["Content"]=="UNINITIALIZED")
@@ -339,7 +350,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
   			}
 			else if(obj["Content"]=="DISCONNECTED")
 			{
-			    
+
   				document.getElementById('Initialize').disabled=true;
   				document.getElementById('Connect').disabled =false;
   				document.getElementById('Configure').disabled =true;
@@ -404,7 +415,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     				if(percent<=0) return 0;
         return 1 - (function(p) {
             var x = 0.8;
-            return Math.pow(2, 10 * (p - 1)) * 
+            return Math.pow(2, 10 * (p - 1)) *
                    Math.cos(20 * Math.PI * x / 3 * p);
         })(1 - percent);
     },
@@ -447,7 +458,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     				if(percent<=0) return 0;
         return 1 - (function(p) {
             var x = 0.8;
-            return Math.pow(2, 10 * (p - 1)) * 
+            return Math.pow(2, 10 * (p - 1)) *
                    Math.cos(20 * Math.PI * x / 3 * p);
         })(1 - percent);
     },
@@ -456,7 +467,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 				}).draw();
 			}
 		}
-		
+
 	</script>
 </head>
 
@@ -467,7 +478,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
       <h1>WebSocket Not Connected !!!</h1>
     </center>
   </div>
-        
+
   <center>
     <div id="Actions" class="Action_buttons">
       <button id="Initialize" onclick='Action("INITIALIZE");'>Initialize</button>
@@ -481,7 +492,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
       <button id="Release" onclick='Action("RELEASE");'>Release</button>
     </div>
   </center>
- 
+
   <center>
     <form id="Channels"></form>
   </center>
@@ -489,11 +500,11 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
   <center>
     <div style="display:flex; flex-direction: row; justify-content: center; align-items: center">
       <canvas id="DataRate" ></canvas>
-      <div id="EventNumber"></div> 
+      <div id="EventNumber"></div>
       <canvas id="TriggerRate" ></canvas>
     </div>
   </center>
- 
+
   <!-- Run info form -->
   <div class="form-popup" id="myForm">
     <form action="#" class="form-container">
@@ -504,14 +515,14 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
       <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
    </form>
   </div>
- 
- 
- 
- 
+
+
+
+
 
   <!-- Script for the form -->
   <script>
-    function openForm() 
+    function openForm()
     {
       document.getElementById('RunInfos').innerHTML = "<h1>Run "+RunNumber+" Infos</h1>";
       if(STATE=="PAUSED")Action("START");
@@ -524,7 +535,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
       Action("START");
       closeForm();
     }
-    function closeForm() 
+    function closeForm()
     {
       document.getElementById("myForm").style.display = "none";
     }
@@ -534,7 +545,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     <script>
       function myFunction()
       {
-        
+
         var myDiv = document.getElementById("Plots")
         for(var i=0;i<4;i++)
         {
@@ -551,20 +562,20 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
           t.setAttribute("what", "plot");
           t.style.display='none';
           myDiv.appendChild(t);
-          
+
         }
        }
      </script>
- 
+
     <div id="Plots">
 
     </div>
    </center>
-   
+
    <div id="log-container">
   <pre id="log"></pre>
 </div>
-   
-   
+
+
   </body>
 </html>

@@ -21,6 +21,10 @@ set(JSONCPP_TAG "master")
 set(ELOGPP_REPOSITORY "https://github.com/RPClab/elogpp.git")
 set(ELOGPP_TAG "master")
 
+# FlakedTuna
+set(FLAKEDTUNA_REPOSITORY "https://github.com/flagarde/FlakedTuna.git")
+set(FLAKEDTUNA_TAG "master")
+
 # fmt
 set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git")
 set(FMT_VERSION "master")
@@ -49,7 +53,8 @@ set(toml11_version "master")
 set(civet_repository "https://github.com/civetweb/civetweb.git")
 set(civet_version "master")
 # magic_enum
-set(magic_enum_repository "https://github.com/sachnk/magic_enum.git")
+#set(magic_enum_repository "https://github.com/sachnk/magic_enum.git")
+set(magic_enum_repository "https://github.com/Neargye/magic_enum.git")
 set(magic_enum_version "master")
 # jsroot
 set(jsroot_repository "https://github.com/root-project/jsroot.git")
@@ -59,7 +64,7 @@ set(jsroot_version "master")
 set(cereal_repository "https://github.com/USCiLab/cereal.git")
 set(cereal_version "master")
 
-set(SNMP_repository "https://github.com/RPClab/net-snmp.git")
+set(SNMP_repository "https://github.com/net-snmp/net-snmp.git")
 set(SNMP_version "master")
 
 # Compiling ROOT can be very long so :
@@ -81,7 +86,7 @@ option(BUILD_LOGGER "Build Logger" ON)
 option(ENABLE_EXTRAS "Build extras" ON)
 
 option(BUILD_DAQ "Build DAQ" ON)
-option(BUILD_SNMP "Build SNMP" OFF)
+option(BUILD_SNMP "Build SNMP" ON)
 
 option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
 

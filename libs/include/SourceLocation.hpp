@@ -5,8 +5,8 @@
 #if __has_include(<source_location>)
   #include <source_location>
   using std::source_location;
-#elif __has_include(<experimental/source_location>)
-  #include <experimental/source_location>
+  #elif __has_include(<experimental/source_location>)
+#include <experimental/source_location>
   using std::experimental::source_location;
 #else
   class source_location
@@ -22,13 +22,13 @@
 class SourceLocation
 {
 public:
-#if __has_include(<experimental/source_location>)
-  SourceLocation(const source_location& location = source_location::current()): m_Location(location) {}
-#elif __has_include(<source_location>)
-  SourceLocation(const source_location& location = current()): m_Location(location) {}
-#else
-  SourceLocation() {}
-#endif
+  #if __has_include(<experimental/source_location>)
+    SourceLocation(const source_location& location = source_location::current());
+  #elif __has_include(<source_location>)
+    SourceLocation(const source_location& location = current());
+  #else
+    SourceLocation()=default;
+  #endif
   const std::uint_least32_t getLine() const;
   const std::uint_least32_t getColumn() const;
   const char*               getFileName() const;

@@ -9,10 +9,7 @@
 #include "sinks/stdout_color_sinks.h"
 #include "spdlog.h"
 
-bool Module::m_HaveToReloadConfigModules = true;
-bool Module::m_HaveToReloadConfig        = true;
-
-Configuration Module::m_Config = Configuration();
+ConfigurationLoader Module::m_Config = ConfigurationLoader();
 
 void Module::setConfigFile(const std::string& file)
 {
@@ -27,11 +24,13 @@ void Module::setName(const std::string& name)
 void Module::stopListening()
 {
   m_WebsocketClient.stop();
+  while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Closed) std::this_thread::sleep_for(std::chrono::microseconds(1));
 }
 
 void Module::startListening()
 {
   m_WebsocketClient.start();
+  while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(1));
 }
 
 std::string Module::getName()
@@ -93,12 +92,6 @@ Module::Module(const std::string& name, const std::string& type): m_Type(type), 
 
 void Module::verifyParameters() {}
 
-void Module::reparseModules()
-{
-  m_Config.reparseModule();
-  m_Conf = m_Config.getConfig(getName());
-}
-
 void Module::LoadConfig()
 {
   m_Config.parse();
@@ -155,7 +148,8 @@ void Module::Configure()
 {
   try
   {
-    reparseModules();
+    m_Config.reloadParameters(m_Name);
+    m_Conf = m_Config.getConfig(m_Name);
     DoConfigure();
     setState(States::CONFIGURED);
     sendState();
@@ -371,11 +365,7 @@ void Module::DoOnAction(const Message& message)
   {
     if((m_State==States::UNINITIALIZED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::INITIALIZE) Initialize();
     else if((m_State==States::INITIALIZED || m_State==States::DISCONNECTED||m_State==States::CONNECTED) && action.value()== Actions::CONNECT ) Connect();
-    else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action.value()== Actions::CONFIGURE )
-    {
-      m_HaveToReloadConfigModules = true;
-      Configure();
-    }
+    else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action.value()== Actions::CONFIGURE ) Configure();
     else if((m_State==States::CONFIGURED || m_State==States::STOPED || m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::START ) Start();
     else if((m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::PAUSE) Pause();
     else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPED)  && action.value()== Actions::STOP) Stop();
@@ -383,7 +373,7 @@ void Module::DoOnAction(const Message& message)
     else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action.value()== Actions::DISCONNECT) Disconnect();
     else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::RELEASE) Release();
     else if(m_State==States::RELEASED && action.value()== Actions::QUIT) Quit();
-    else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",m_Name,magic_enum::enum_name(m_State),message.getContent());
+    else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",m_Name,std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action.value())));
   }
 }
 
@@ -394,16 +384,14 @@ void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
   Message message;
   message.parse(msg->str);
   if(message.getType() == "Action") DoOnAction(message);
-  else if(message.getType() == "Command")
-    DoOnCommand(message);
+  else if(message.getType() == "Command") DoOnCommand(message);
   else if(message.getType() == "Data")
   {
     Data data;
     data.parse(message.get());
     DoOnData(data);
   }
-  else
-    OnMessage(msg);
+  else OnMessage(msg);
 }
 
 void Module::OnOpen(const ix::WebSocketMessagePtr& msg)

@@ -1,4 +1,5 @@
 #include "CAENDigitizerBoard.hpp"
+#include "NHSBoard.hpp"
 #include "CLI/CLI.hpp"
 #include "Interrupt.hpp"
 #include "ProgramInfos.hpp"
@@ -36,7 +37,11 @@ int main(int argc, char** argv)
   Board::setConfigFile("../confs/Configs.toml");
 
   spdlog::info("Listening on IP {0} Port {1}", host, port);
-  CAEN::CAENDigitizerBoard digitizer(loggerName);
+
+
+    CAEN::CAENDigitizerBoard digitizer(loggerName);
+    //Iseg::NHSBoard iseg("toto");
+
 
   return interrupt.wait();
 }
