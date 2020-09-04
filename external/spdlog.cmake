@@ -1,4 +1,4 @@
-if(NOT TARGET spdlog_project)
+if(NOT TARGET spdlog::spdlog)
   include(ExternalProject)
   include(fmt)
   # misc tweakme options
@@ -12,7 +12,7 @@ if(NOT TARGET spdlog_project)
   # ----- spdlog_project package -----
   externalproject_add(
     spdlog_project
-    # DEPENDS fmt_project
+    DEPENDS fmt_project
     GIT_REPOSITORY ${SPDLOG_REPOSITORY}
     GIT_TAG ${SPDLOG_VERSION}
     GIT_PROGRESS TRUE
@@ -34,12 +34,12 @@ if(NOT TARGET spdlog_project)
                -DSPDLOG_SANITIZE_ADDRESS=OFF
                -DSPDLOG_BUILD_WARNINGS=OFF
                -DSPDLOG_INSTALL=ON
-               -DSPDLOG_FMT_EXTERNAL=OFF
+               -DSPDLOG_FMT_EXTERNAL=ON
                -DSPDLOG_FMT_EXTERNAL_HO=OFF
                -DSPDLOG_NO_EXCEPTIONS=OFF
                -DSPDLOG_WCHAR_SUPPORT=${SPDLOG_WCHAR_SUPPORT}
                -DSPDLOG_WCHAR_FILENAMES=${SPDLOG_WCHAR_FILENAMES}
-               -DSPDLOG_CLOCK_COARSE=OFF
+               -DSPDLOG_CLOCK_COARSE=${SPDLOG_CLOCK_COARSE}
                -DSPDLOG_PREVENT_CHILD_FD=OFF
                -DSPDLOG_NO_THREAD_ID=OFF
                -DSPDLOG_NO_TLS=OFF
@@ -50,11 +50,9 @@ if(NOT TARGET spdlog_project)
     LOG_DOWNLOAD ON
     )
   add_library(spdlog_internal INTERFACE)
-  add_dependencies(spdlog_internal spdlog_project)
-  # add_dependencies(spdlog_internal spdlog_project fmt::fmt)
-  target_link_libraries(spdlog_internal INTERFACE $<$<STREQUAL:${CMAKE_BUILD_TYPE},"Debug">:spdlogd;spdlog>)
-  # target_link_libraries(spdlog_internal  INTERFACE $<$<STREQUAL:${CMAKE_BUILD_TYPE},"Debug">:spdlogd;spdlog>  INTERFACE fmt::fmt)
+  add_dependencies(spdlog_internal spdlog_project fmt::fmt)
+  target_compile_definitions(spdlog_internal INTERFACE SPDLOG_FMT_EXTERNAL)
+  target_link_libraries(spdlog_internal INTERFACE "spdlog$<$<CONFIG:Debug>:d>" INTERFACE fmt::fmt)
   target_include_directories(spdlog_internal INTERFACE "${INCLUDE_OUTPUT_DIR}/spdlog")
-  # target_compile_definitions(spdlog_internal INTERFACE "SPDLOG_FMT_EXTERNAL")
   add_library(spdlog::spdlog ALIAS spdlog_internal)
 endif()

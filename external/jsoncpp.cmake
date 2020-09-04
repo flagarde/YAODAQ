@@ -34,12 +34,11 @@ if(COMPILE_JSONCPP)
       PREFIX ${CMAKE_BINARY_DIR}/jsoncpp_project
       INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
       LOG_DOWNLOAD ON
-      UPDATE_DISCONNECTED ON
       )
     add_library(jsoncpp_internal INTERFACE)
     add_dependencies(jsoncpp_internal jsoncpp_project)
     target_link_libraries(jsoncpp_internal INTERFACE jsoncpp)
-    target_include_directories(jsoncpp_internal INTERFACE "${INCLUDE_OUTPUT_DIR}/json")
+    target_include_directories(jsoncpp_internal INTERFACE "${INCLUDE_OUTPUT_DIR}/json/")
     add_library(jsoncpp::jsoncpp ALIAS jsoncpp_internal)
   endif()
 else()

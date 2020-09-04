@@ -21,10 +21,46 @@ add_dependencies(Util spdlog::spdlog jsoncpp::jsoncpp toml11 magic_enum elogpp::
 target_link_libraries(Util INTERFACE spdlog::spdlog INTERFACE jsoncpp::jsoncpp INTERFACE elogpp::elogpp INTERFACE OpenSSL::SSL INTERFACE OpenSSL::Crypto)
 target_include_directories(Util INTERFACE "${INCLUDE_OUTPUT_DIR}" INTERFACE "${INCLUDE_OUTPUT_DIR}/toml")
 
+
 add_library(SourceLocation "${YAODAQ_SRC}/SourceLocation.cpp")
 target_include_directories(SourceLocation PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 set_target_properties(SourceLocation PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/SourceLocation.hpp")
 install(TARGETS SourceLocation RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
+add_library(Exception "${YAODAQ_SRC}/Exception.cpp")
+add_dependencies(Exception fmt::fmt SourceLocation)
+target_include_directories(Exception PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
+set_target_properties(Exception PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Exception.hpp")
+target_link_libraries(Exception PRIVATE fmt::fmt PRIVATE SourceLocation)
+install(TARGETS Exception RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
+
+
+
+add_library(Message "${YAODAQ_SRC}/Message.cpp")
+add_dependencies(Message Exception Util)
+target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
+set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message.hpp")
+target_link_libraries(Message PUBLIC Exception PUBLIC Util)
+install(TARGETS Message RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
+
+
+add_library(Key "${YAODAQ_SRC}/Key.cpp")
+add_dependencies(Key Util SourceLocation)
+target_include_directories(Key PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
+set_target_properties(Key PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Key.hpp")
+target_link_libraries(Key PUBLIC Util PRIVATE SourceLocation)
+install(TARGETS Key RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
+
+add_library(Interrupt "${YAODAQ_SRC}/Interrupt.cpp")
+add_dependencies(Interrupt Util SourceLocation)
+target_include_directories(Interrupt PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
+set_target_properties(Interrupt PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Interrupt.hpp")
+target_link_libraries(Interrupt PUBLIC Util PRIVATE SourceLocation)
+install(TARGETS Interrupt RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
 
 add_library(File "${YAODAQ_SRC}/File.cpp")
 add_dependencies(File Util Message)
@@ -33,12 +69,7 @@ set_target_properties(File PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/File.hpp"
 target_link_libraries(File PUBLIC Util PUBLIC Message)
 install(TARGETS File RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
-add_library(Exception "${YAODAQ_SRC}/Exception.cpp" "${YAODAQ_SRC}/Interrupt.cpp" "${YAODAQ_SRC}/Key.cpp")
-add_dependencies(Exception Util SourceLocation)
-target_include_directories(Exception PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-set_target_properties(Exception PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Exception.hpp")
-target_link_libraries(Exception PUBLIC Util PRIVATE SourceLocation)
-install(TARGETS Exception RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
 
 add_library(Controller "${YAODAQ_SRC}/Controller.cpp")
 add_dependencies(Controller WebSocketClient Message Exception)
@@ -88,16 +119,11 @@ install(TARGETS BoardInfos RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY
 add_library(Configuration "${YAODAQ_SRC}/Configuration.cpp")
 add_dependencies(Configuration ConnectorInfos BoardInfos)
 target_include_directories(Configuration PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-target_link_libraries(Configuration PUBLIC ConnectorInfos PUBLIC BoardInfos)
+target_link_libraries(Configuration PUBLIC ConnectorInfos PUBLIC BoardInfos PUBLIC Util)
 set_target_properties(Configuration PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Configuration.hpp")
 install(TARGETS Configuration RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
-add_library(Message "${YAODAQ_SRC}/Message.cpp")
-add_dependencies(Message Exception Util)
-target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message.hpp")
-target_link_libraries(Message PUBLIC Util PUBLIC Exception)
-install(TARGETS Message RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+
 
 add_library(WebSocketClient "${YAODAQ_SRC}/WebsocketClient.cpp" "${YAODAQ_SRC}/GeneralParameters.cpp")
 add_dependencies(WebSocketClient IXWebSocket Util Exception)
