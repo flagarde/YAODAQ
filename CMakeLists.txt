@@ -24,6 +24,11 @@ include(Common)
 default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
 cxx_17()
 
+include(DefaultConfigurations)
+include(ConfigurationCheck)
+
+set_default_configuration("Debug")
+
 include(Formatters)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -88,22 +93,6 @@ include(Architectures)
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW TRUE)
 
-if(CMAKE_CONFIGURATION_TYPES)
-  if(NOT "Coverage" IN_LIST CMAKE_CONFIGURATION_TYPES)
-    list(APPEND CMAKE_CONFIGURATION_TYPES Coverage)
-  endif()
-  if(NOT "Profile" IN_LIST CMAKE_CONFIGURATION_TYPES)
-    list(APPEND CMAKE_CONFIGURATION_TYPES Profile)
-  endif()
-else()
-  set(allowableBuildTypes Debug MinSizeRel None RelWithDebInfo Release Coverage Profile)
-  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "${allowableBuildTypes}")
-  if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
-  elseif(NOT CMAKE_BUILD_TYPE IN_LIST allowableBuildTypes)
-    message(FATAL_ERROR "Invalid build type : ${CMAKE_BUILD_TYPE}")
-  endif()
-endif()
 
 if(POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
