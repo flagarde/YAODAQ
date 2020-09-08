@@ -80,13 +80,6 @@ if(NOT N EQUAL 0)
   set(CTEST_BUILD_FLAGS -j${N})
 endif()
 
-if(WIN32)
-  # FIXME
-  set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "" CACHE STRING "Linker")
-  set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "" CACHE STRING "Linker")
-  set(CMAKE_EXE_LINKER_FLAGS_PROFILE "" CACHE STRING "Linker")
-  set(CMAKE_SHARED_LINKER_FLAGS_PROFILE "" CACHE STRING "Linker")
-endif()
 
 include(GenerateReadMe)
 generate_readme()

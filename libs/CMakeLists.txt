@@ -7,7 +7,7 @@ configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in" "${INCLUDE_OUTPUT_DIR}/Progra
 include(zlib-ng)
 include(openssl)
 include(IXWebSocket)
-
+include(FlakedTuna)
 # fmt and spdlog have difficulties to work together
 include(fmt)
 include(spdlog)
@@ -78,9 +78,6 @@ target_include_directories(Controller PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}
 set_target_properties(Controller PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Controller.hpp")
 install(TARGETS Controller RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
-add_library(Plugins "${YAODAQ_SRC}/PlatformDefs.cpp" "${YAODAQ_SRC}/PluginLoader.cpp")
-target_include_directories(Plugins PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-
 add_library(ConnectorInfos "${YAODAQ_SRC}/ConnectorInfos.cpp")
 add_dependencies(ConnectorInfos Exception)
 target_include_directories(ConnectorInfos PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}> PUBLIC "${INCLUDE_OUTPUT_DIR}/toml")
@@ -96,9 +93,9 @@ set_target_properties(Connector PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Conn
 install(TARGETS Connector RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 add_library(ConnectorFactory "${YAODAQ_SRC}/ConnectorFactory.cpp")
-add_dependencies(ConnectorFactory ConnectorInfos Plugins)
+add_dependencies(ConnectorFactory ConnectorInfos YAODAQ::FlakedTuna)
 target_include_directories(ConnectorFactory PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos PRIVATE Plugins)
+target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos  PUBLIC YAODAQ::FlakedTuna)
 set_target_properties(ConnectorFactory PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/ConnectorFactory.hpp")
 install(TARGETS ConnectorFactory RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 

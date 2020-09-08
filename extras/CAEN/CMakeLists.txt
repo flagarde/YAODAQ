@@ -22,9 +22,23 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
   # CAEN Connectors
   set(CAEN_CONNECTOR_INCLUDE_FILES ${CAEN_INCLUDE}/CAENVMEConnector.hpp ${CAEN_INCLUDE}/CAENDigitizerConnector.hpp ${CAEN_INCLUDE}/CAENHVConnector.hpp)
   set(CAEN_CONNECTOR_SRC_FILES ${CAEN_SRC}/CAENVMEConnector.cpp ${CAEN_SRC}/CAENDigitizerConnector.cpp ${CAEN_SRC}/CAENHVConnector.cpp)
-  add_library(CAENConnectors SHARED "${CAEN_CONNECTOR_SRC_FILES}")
+  add_plugin(
+    TARGET
+    CAENConnectors
+    VERSION
+    ${YAODAQ_VERSION_MAJOR}
+    BASE
+    Connector
+    CHILDS
+    CAEN::CAENVMEConnector
+    CAEN::CAENDigitizerConnector
+    CAEN::CAENHVConnector
+    SOURCES ${CAEN_CONNECTOR_SRC_FILES}
+    PUBLIC_HEADERS ${CAEN_CONNECTOR_INCLUDE_FILES}
+  )
+  #add_library(CAENConnectors SHARED "${CAEN_CONNECTOR_SRC_FILES}")
   add_dependencies(CAENConnectors Connector CAENExceptions Message)
-  set_target_properties(CAENConnectors PROPERTIES PUBLIC_HEADER "${CAEN_CONNECTOR_INCLUDE_FILES}")
+  #set_target_properties(CAENConnectors PROPERTIES PUBLIC_HEADER "${CAEN_CONNECTOR_INCLUDE_FILES}")
   target_link_libraries(CAENConnectors PRIVATE CAENExceptions PRIVATE Connector PRIVATE Message)
   install(TARGETS CAENConnectors RUNTIME DESTINATION "${RUNTIME_OUTPUT_DIR}" LIBRARY DESTINATION "${LIBRARY_OUTPUT_DIR}" ARCHIVE DESTINATION "${ARCHIVE_OUTPUT_DIR}" PUBLIC_HEADER DESTINATION "${INCLUDE_OUTPUT_DIR}/CAEN")
 
@@ -38,18 +52,7 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
   target_link_libraries(CAENBoards PUBLIC CAENExceptions PRIVATE Board)
   install(TARGETS CAENBoards RUNTIME DESTINATION "${RUNTIME_OUTPUT_DIR}" LIBRARY DESTINATION "${LIBRARY_OUTPUT_DIR}" ARCHIVE DESTINATION "${ARCHIVE_OUTPUT_DIR}" PUBLIC_HEADER DESTINATION "${INCLUDE_OUTPUT_DIR}/CAEN")
 
-  plugin(
-    TARGET
-    CAENConnectors
-    VERSION
-    ${YAODAQ_VERSION_MAJOR}
-    BASE
-    Connector
-    CHILDS
-    CAEN::CAENVMEConnector
-    CAEN::CAENDigitizerConnector
-    CAEN::CAENHVConnector
-    )
+
   # plugin( TARGET CAENBoards VERSION ${YAODAQ_VERSION_MAJOR} BASE Board CHILDS CAEN::CAENVMEBoard CAEN::CAENDigitizerBoard CAEN::CAENCommBoard )
   add_subdirectory(tests)
 endif()

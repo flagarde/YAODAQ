@@ -62,6 +62,10 @@ set(cereal_version "master")
 set(SNMP_repository "https://github.com/RPClab/net-snmp.git")
 set(SNMP_version "master")
 
+set(FLAKEDTUNA_REPOSITORY "https://github.com/flagarde/FlakedTuna.git")
+set(FLAKEDTUNA_VERSION "master")
+
+
 # Compiling ROOT can be very long so :
 option(USE_ROOT "Try to find a ROOT installation and use it" ON)
 option(BUILD_ROOT "Build ROOT Folder" ON)
