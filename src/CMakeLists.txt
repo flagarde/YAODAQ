@@ -1,5 +1,5 @@
-set(YAODAQ_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(YAODAQ_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(YAODAQ_INCLUDE "${CMAKE_SOURCE_DIR}/include")
+set(YAODAQ_SRC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in" "${INCLUDE_OUTPUT_DIR}/ProgramInfos.hpp" @ONLY)
 

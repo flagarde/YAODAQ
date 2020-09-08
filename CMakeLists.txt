@@ -131,7 +131,7 @@ clang_tidy(-format-style=file -checks=* -header-filter='${CMAKE_SOURCE_DIR}/*')
 cppcheck(--enable=warning,performance,portability,missingInclude --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)" --suppress=missingIncludeSystem --quiet --verbose --force)
 include_what_you_use(-Xiwyu)
 
-add_subdirectory(libs)
+add_subdirectory(src)
 
 if(ENABLE_EXTRAS)
   add_subdirectory(extras)
