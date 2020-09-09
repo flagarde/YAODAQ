@@ -1,12 +1,13 @@
 #include "Exception.hpp"
 
-Exception::Exception(const StatusCode& statusCode, const std::string& description, const SourceLocation& location)
-    : m_Code(static_cast<std::int_least32_t>(statusCode)), m_Description(description), m_SourceLocation(location)
+std::string  Exception::m_Format{"\n\t[Code] : {Code}\n\t[Description] : {Description}\n\t[File] : {File}\n\t[Function] : {Function}\n\t[Line] : {Line}\n\t[Column] : {Column}\n"};
+
+fmt::text_style Exception::m_Style={fg(fmt::color::crimson) | fmt::emphasis::bold};
+
+Exception::Exception(const StatusCode& statusCode, const std::string& description, const SourceLocation& location) : m_Code(static_cast<std::int_least32_t>(statusCode)), m_Description(description), m_SourceLocation(location)
 {
   constructMessage();
 }
-
-Exception::~Exception(){};
 
 const char* Exception::what() const noexcept
 {
@@ -48,14 +49,7 @@ Exception::Exception(const int_least32_t& code, const std::string& description, 
   constructMessage();
 }
 
-void Exception::constructMessage() noexcept
+void Exception::constructMessage()
 {
-  m_Message = "Error ! :";
-  m_Message += "\n\t[Code] : " + std::to_string(m_Code);
-  m_Message += "\n\t[Description] : " + m_Description;
-  m_Message += "\n\t[File] : " + std::string(getFileName());
-  m_Message += "\n\t[Function] : " + std::string(getFunctionName());
-  m_Message += "\n\t[Line] : " + std::to_string(getLine());
-  m_Message += "\n\t[Column] : " + std::to_string(getColumn());
-  m_Message += "\n";
+  m_Message=fmt::format(m_Style,m_Format,fmt::arg("Code",m_Code),fmt::arg("Description",m_Description),fmt::arg("File",getFileName()),fmt::arg("Function",getFunctionName()),fmt::arg("Column",getColumn()),fmt::arg("Line",getLine())).c_str();
 }

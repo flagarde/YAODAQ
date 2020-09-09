@@ -23,11 +23,11 @@ class SourceLocation
 {
 public:
 #if __has_include(<experimental/source_location>)
-  SourceLocation(const source_location& location = source_location::current()): m_Location(location) {}
+  SourceLocation(const source_location& location = source_location::current());
 #elif __has_include(<source_location>)
-  SourceLocation(const source_location& location = current()): m_Location(location) {}
+  SourceLocation(const source_location& location = current());
 #else
-  SourceLocation() {}
+  SourceLocation()=default;
 #endif
   const std::uint_least32_t getLine() const;
   const std::uint_least32_t getColumn() const;

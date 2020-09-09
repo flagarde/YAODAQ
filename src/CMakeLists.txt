@@ -28,10 +28,9 @@ set_target_properties(SourceLocation PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}
 install(TARGETS SourceLocation RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 add_library(Exception "${YAODAQ_SRC}/Exception.cpp")
-add_dependencies(Exception fmt::fmt SourceLocation)
 target_include_directories(Exception PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 set_target_properties(Exception PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Exception.hpp")
-target_link_libraries(Exception PRIVATE fmt::fmt PRIVATE SourceLocation)
+target_link_libraries(Exception PUBLIC fmt::fmt PRIVATE SourceLocation)
 install(TARGETS Exception RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 

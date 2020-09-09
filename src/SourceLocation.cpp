@@ -1,5 +1,11 @@
 #include "SourceLocation.hpp"
 
+#if __has_include(<experimental/source_location>)
+  SourceLocation::SourceLocation(const source_location& location): m_Location(location) {}
+#elif __has_include(<source_location>)
+  SourceLocation::SourceLocation(const source_location& location): m_Location(location) {}
+#endif
+
 const std::uint_least32_t SourceLocation::getLine() const
 {
   return m_Location.line();
