@@ -1,6 +1,6 @@
 /* The popup form - hidden by default */
-.form-popup 
-{ 
+.form-popup
+{
   position:fixed;
   left: 50%;
   top: 50%;
@@ -14,14 +14,14 @@
 }
 
 /* Add styles to the form container */
-.form-container 
+.form-container
 {
   max-width: 500px;
   padding: 20px;
   background-color: white;
 }
 
-.form-container input[type=text], .form-container input[type=Comment] 
+.form-container input[type=text], .form-container input[type=Comment]
 {
  width: 100%;
  padding: 15px;
@@ -31,14 +31,14 @@
 }
 
 /* When the inputs gt focus, do something */
-.form-container input[type=text]:focus, .form-container input[type=Comment]:focus 
+.form-container input[type=text]:focus, .form-container input[type=Comment]:focus
 {
   background-color: #ddd;
   outline: none;
 }
 
 /* Set a style for the submit/login button */
-.form-container .btn 
+.form-container .btn
 {
   background-color: #4CAF50;
   color: white;
@@ -51,13 +51,13 @@
 }
 
 /* Add a red background color to the cancel button */
-.form-container .cancel 
+.form-container .cancel
 {
   background-color: red;
 }
 
 /* Add some hover effects to buttons */
-.form-container .btn:hover, .open-button:hover 
+.form-container .btn:hover, .open-button:hover
 {
  opacity: 1;
 }
@@ -76,7 +76,7 @@ body
   height:12.5%;
 }
 
-table 
+table
 {
   font-family: arial, sans-serif;
   border-collapse: collapse;
@@ -85,7 +85,7 @@ table
   table-layout: fixed;
 }
 
-td, th 
+td, th
 {
   border: 1px solid #4dd2ff;
   text-align: center;
@@ -94,7 +94,7 @@ td, th
 }
 
 
-tr:nth-child(even) 
+tr:nth-child(even)
 {
   background-color: #4dd2ff;
 }
@@ -106,120 +106,120 @@ tr:nth-child(even)
   justify-content: center;
 }
 
-.Action_buttons button 
+.Action_buttons button
 {
   text-align: center;
-  background-color: #2d862d; 
-  border: 1px solid green; 
-  color: white; 
-  padding: 1% 2%; 
+  background-color: #2d862d;
+  border: 1px solid green;
+  color: white;
+  padding: 1% 2%;
   cursor: pointer;
   float:center;
   font-size: 100%; font-family: Roboto;
 }
 
-.Action_buttons button#Start 
+.Action_buttons button#Start
 {
-  background-color: #006600; 
-  border: 1px solid #006600; 
+  background-color: #006600;
+  border: 1px solid #006600;
 }
 
-.Action_buttons button#Stop 
-{	
-  background-color: red; 
-  border: 1px solid red; 
+.Action_buttons button#Stop
+{
+  background-color: red;
+  border: 1px solid red;
 }
 
-.Acction_buttons button#Pause 
-{	
-  background-color: orange; 
-  border: 1px solid orange; 
+.Acction_buttons button#Pause
+{
+  background-color: orange;
+  border: 1px solid orange;
 }
 
-.Action_buttons:after 
+.Action_buttons:after
 {
   content: "";
   clear: both;
   display: table;
 }
 
-.Action_buttons button:not(:last-child) 
+.Action_buttons button:not(:last-child)
 {
-  border-right: none; 
+  border-right: none;
 }
 
 .Action_buttons button#Pause:hover:not([disabled])
 {
   background-color: orange;
-  border: 1px solid orange; 
-  box-shadow: 0 10px 0 0 #F15A29 !important; 
+  border: 1px solid orange;
+  box-shadow: 0 10px 0 0 #F15A29 !important;
   opacity: 1 !important;
 }
 
 .Action_buttons button#Stop:hover:not([disabled])
 {
   background-color: red;
-  border: 1px solid red; 
-  box-shadow: 0 10px 0 0 #F15A29 !important; 
+  border: 1px solid red;
+  box-shadow: 0 10px 0 0 #F15A29 !important;
   opacity: 1 !important;
 }
 
 .Action_buttons button#Start:hover:not([disabled])
 {
   background-color: green;
-  border: 1px solid green; 
-  box-shadow: 0 10px 0 0 #F15A29 !important; 
+  border: 1px solid green;
+  box-shadow: 0 10px 0 0 #F15A29 !important;
   opacity: 1 !important;
 }
 
-.Action_buttons button:hover 
+.Action_buttons button:hover
 {
 }
 
-.Action_buttons button:disabled 
+.Action_buttons button:disabled
 {
   background-color: grey;
   opacity: 0.5;
   cursor: not-allowed;
-  border: 1px solid grey; 
+  border: 1px solid grey;
 }
 
-.Action_buttons button#Start:disabled 
+.Action_buttons button#Start:disabled
 {
   background-color: green;
   opacity: 0.3;
   cursor: not-allowed;
-  border: 1px solid green; 
+  border: 1px solid green;
 }
 
-.Action_buttons button#Pause:disabled 
+.Action_buttons button#Pause:disabled
 {
   background-color: orange;
   opacity: 0.5;
   cursor: not-allowed;
-  border: 1px solid orange; 
+  border: 1px solid orange;
 }
 
-.Action_buttons button#Stop:disabled 
+.Action_buttons button#Stop:disabled
 {
   background-color: red;
   opacity: 0.5;
   cursor: not-allowed;
-  border: 1px solid red; 
+  border: 1px solid red;
 }
 
 div[what=plot]
 {
   position:relative;
-  background:#00b3b3;
+  /*background:#00b3b3;*/
   border-style: solid;
   border-width: 1px;
   display: inline-block;
-  width:100%;
-  height:10%;
+  width:50%;
+  height:4%;
 }
 
-.test 
+.test
 {
   display: none;
   text-align:center;
@@ -227,7 +227,7 @@ div[what=plot]
   z-index: 999999;
 }
 
-.test:checked + label > div 
+.test:checked + label > div
 {
   display: block;
   text-align:center;
@@ -236,7 +236,7 @@ div[what=plot]
   /*  padding: 2em;*/
   max-width: 100%;
   height: 80%;
-  width: 90%; 
+  width: 90%;
   left: 50%;
   top: 60%;
   transform: translate(-50%, -50%)
