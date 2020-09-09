@@ -1,16 +1,27 @@
 #include "Board.hpp"
+#include "Exception.hpp"
 
 ConnectorFactory Board::m_ConnectorFactory = ConnectorFactory();
 
 Board::Board(const std::string& name, const std::string& type): Module(name, type)
 {
-  m_ConnectorFactory.loadConnectors();
+  try
+  {
+    m_ConnectorFactory.loadConnectors();
+  }
+  catch(const Exception& error)
+  {
+    sendError(error.what());
+    stopListening();
+    throw;
+  }
 }
 
 void Board::CallBoardConnect()
 {
   if(m_IsConnected == false)
   {
+    m_Config.reloadConnectorParameters(m_Name);
     m_Connector = m_ConnectorFactory.createConnector(m_Config.getConnectorInfos(m_Name));
     m_Handle    = m_Connector->Connect();
     DoConnect();

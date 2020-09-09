@@ -7,8 +7,10 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <atomic>
+#include <mutex>
 
-class Configuration
+class ConfigurationLoader
 {
 public:
   void           parse();
@@ -18,15 +20,20 @@ public:
   toml::value    getConfig(const std::string&);
   ConnectorInfos getConnectorInfos(const std::string&);
   void           clear();
-
+  /* Reload only the Module/Board parameters */
+  void           reloadParameters(const std::string&);
+  /* Reload only the Board connector parameters */
+  void           reloadConnectorParameters(const std::string&);
 private:
+  std::mutex                            m_Mutex;
   static int                            m_ConnectorID;
-  int                                   m_HaveBeenParsed{false};
+  std::atomic<bool>                     m_HaveBeenParsed{false};
   int                                   m_CrateConnectorID{0};
   void                                  parseRooms();
   void                                  parseRacks(const toml::value& room);
   void                                  parseCrates(const toml::value& rack);
-  void                                  parseModules(const toml::value& crate, const toml::value& connectorParameters, bool haveCrateConnector);
+  void                                  parseModules(const toml::value& crate);
+  void                                  parseBoards(const toml::value& crate, const toml::value& connectorParameters, bool haveCrateConnector);
   void                                  throwIfExists(std::vector<std::string>& type, const std::string& typeName, const std::string& name);
   void                                  fillIndexes();
   std::string                           m_Filename{""};
@@ -36,7 +43,6 @@ private:
   std::vector<std::string>              m_Crate_Names;
   std::vector<std::string>              m_Module_Names;
   std::map<std::string, BoardInfos>     m_BoardsInfos;
-  std::map<std::string, toml::value>    m_ModuleConfig;
   std::map<std::string, ConnectorInfos> m_ConnectorInfos;
   std::string                           actualRoomName{""};
   std::string                           actualRackName{""};

@@ -112,12 +112,12 @@ target_link_libraries(BoardInfos PUBLIC Infos)
 set_target_properties(BoardInfos PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/BoardInfos.hpp")
 install(TARGETS BoardInfos RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
-add_library(Configuration "${YAODAQ_SRC}/Configuration.cpp")
-add_dependencies(Configuration ConnectorInfos BoardInfos)
-target_include_directories(Configuration PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-target_link_libraries(Configuration PUBLIC ConnectorInfos PUBLIC BoardInfos PUBLIC Util)
-set_target_properties(Configuration PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Configuration.hpp")
-install(TARGETS Configuration RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
+add_library(ConfigurationLoader "${YAODAQ_SRC}/ConfigurationLoader.cpp")
+add_dependencies(ConfigurationLoader ConnectorInfos BoardInfos)
+target_include_directories(ConfigurationLoader PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
+target_link_libraries(ConfigurationLoader PUBLIC ConnectorInfos PUBLIC BoardInfos PUBLIC Util)
+set_target_properties(ConfigurationLoader PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/ConfigurationLoader.hpp")
+install(TARGETS ConfigurationLoader RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 
 
@@ -129,8 +129,8 @@ set_target_properties(WebSocketClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE
 install(TARGETS WebSocketClient RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 add_library(Board "${YAODAQ_SRC}/Module.cpp" "${YAODAQ_SRC}/Board.cpp")
-add_dependencies(Board Message Configuration ConnectorFactory WebSocketClient Connector)
-target_link_libraries(Board PUBLIC Message PUBLIC WebSocketClient PUBLIC Configuration PUBLIC ConnectorFactory PRIVATE Connector)
+add_dependencies(Board Message ConfigurationLoader ConnectorFactory WebSocketClient Connector)
+target_link_libraries(Board PUBLIC Message PUBLIC WebSocketClient PUBLIC ConfigurationLoader PUBLIC ConnectorFactory PRIVATE Connector)
 set_target_properties(Board PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Module.hpp" PUBLIC_HEADER "${YAODAQ_INCLUDE}/Board.hpp")
 install(TARGETS Board RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 

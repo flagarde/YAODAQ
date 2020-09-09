@@ -2,16 +2,29 @@
 
 #include "Exception.hpp"
 #include "StatusCode.hpp"
+#include "magic_enum.hpp"
 
 #include <vector>
 
-Infos::Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type)
+Infos::Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type,const Category& category)
 {
   m_RoomName  = roomName;
   m_RackName  = rackName;
   m_CrateName = crateName;
   m_Name      = name;
   m_Type      = type;
+  m_Category  = category;
+}
+
+std::string Infos::getCategory() const
+{
+  return std::string(magic_enum::enum_name(m_Category));
+}
+
+bool Infos::isA(const Category& categorie)
+{
+  if(categorie==m_Category) return true;
+  else return false;
 }
 
 Infos::Infos(const std::string& key)

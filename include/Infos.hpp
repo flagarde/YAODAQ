@@ -2,10 +2,17 @@
 
 #include <string>
 
+enum class Category
+{
+  Module,
+  Board,
+  UNKNOWN,
+};
+
 class Infos
 {
 public:
-  explicit Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type);
+  explicit Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type,const Category& category);
   explicit Infos(const std::string& key);
   void        setRoomIndex(const int&);
   void        setRackIndex(const int&);
@@ -22,8 +29,10 @@ public:
   int         getCrateIndex() const;
   int         getIndex() const;
   std::string getKey() const;
+  std::string getCategory() const;
   bool        operator<(const Infos& infos) const;
   Infos() = default;
+  bool isA(const Category& categorie);
 
 private:
   std::string m_RoomName{""};
@@ -35,4 +44,5 @@ private:
   std::string m_Name{""};
   int         m_Index{-1};
   std::string m_Type{""};
+  Category    m_Category{Category::UNKNOWN};
 };

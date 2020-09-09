@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Configuration.hpp"
+#include "ConfigurationLoader.hpp"
 #include "Message.hpp"
 #include "States.hpp"
 #include "StatusCode.hpp"
@@ -44,12 +44,27 @@ public:
   void                                   printParameters();
   void                                   stopListening();
   void                                   startListening();
+  void                                   send(Message& message)
+  {
+    message.setFrom(m_Type+"/"+m_Name);
+    m_WebsocketClient.send(message.get());
+  }
+  void                                   sendText(Message& message)
+  {
+    message.setFrom(m_Type+"/"+m_Name);
+    m_WebsocketClient.sendText(message.get());
+  }
+  void                                   sendBinary(Message& message)
+  {
+    message.setFrom(m_Type+"/"+m_Name);
+    m_WebsocketClient.sendBinary(message.get());
+  }
   template<typename... Args> inline void sendTrace(yaodaq_string_view fmt, const Args&... args)
   {
     fmt::memory_buffer buf;
     format_to(buf, fmt, args...);
     Trace trace(buf.data());
-    m_WebsocketClient.sendText(trace.get());
+    sendText(trace);
     m_Logger->trace(buf.data());
   }
   template<typename... Args> inline void sendDebug(yaodaq_string_view fmt, const Args&... args)
@@ -57,7 +72,7 @@ public:
     fmt::memory_buffer buf;
     format_to(buf, fmt, args...);
     Debug debug(buf.data());
-    m_WebsocketClient.sendText(debug.get());
+    sendText(debug);
     m_Logger->debug(buf.data());
   }
   template<typename... Args> inline void sendInfo(yaodaq_string_view fmt, const Args&... args)
@@ -65,7 +80,7 @@ public:
     fmt::memory_buffer buf;
     format_to(buf, fmt, args...);
     Info info(buf.data());
-    m_WebsocketClient.sendText(info.get());
+    sendText(info);
     m_Logger->info(buf.data());
   }
   template<typename... Args> inline void sendWarning(yaodaq_string_view fmt, const Args&... args)
@@ -73,14 +88,14 @@ public:
     fmt::memory_buffer buf;
     format_to(buf, fmt, args...);
     Warning warning(buf.data());
-    m_WebsocketClient.sendText(warning.get());
+    sendText(warning);
     m_Logger->warn(buf.data());
   }
   /** Work aroung for Exception message taken by what() **/
   inline void sendError(const char* err)
   {
     Error error(err);
-    m_WebsocketClient.sendText(error.get());
+    sendText(error);
     m_Logger->error(err);
   }
   template<typename... Args> inline void sendError(yaodaq_string_view fmt, const Args&... args)
@@ -88,7 +103,7 @@ public:
     fmt::memory_buffer buf;
     format_to(buf, fmt, args...);
     Error error(buf.data());
-    m_WebsocketClient.sendText(error.get());
+    sendText(error);
     m_Logger->error(buf.data());
   }
   template<typename... Args> inline void sendCritical(yaodaq_string_view fmt, const Args&... args)
@@ -96,14 +111,14 @@ public:
     fmt::memory_buffer buf;
     format_to(buf, fmt, args...);
     Critical critical(buf.data());
-    m_WebsocketClient.sendText(critical.get());
+    sendText(critical);
     m_Logger->critical(buf.data());
   }
-  void sendData(const std::string& dat) { m_WebsocketClient.sendBinary(Data(dat).get()); }
-  void sendData(const Json::Value& dat) { m_WebsocketClient.sendBinary(Data(dat).get()); }
+  void sendData(const std::string& dat) { Data data(dat); sendBinary(data); }
+  void sendData(const Json::Value& dat) { Data data(dat); sendBinary(data); }
 
 protected:
-  static Configuration            m_Config;
+  static ConfigurationLoader            m_Config;
   virtual void                    OnOpen(const ix::WebSocketMessagePtr& msg);
   virtual void                    OnClose(const ix::WebSocketMessagePtr& msg);
   virtual void                    OnPong(const ix::WebSocketMessagePtr& msg);
@@ -127,9 +142,6 @@ private:
   std::mutex      m_Mutex;
   bool            m_LoopOnStartUsed{false};
   bool            m_LoopOnPauseUsed{false};
-  void            reparseModules();
-  static bool     m_HaveToReloadConfigModules;
-  static bool     m_HaveToReloadConfig;
   Module() = delete;
   virtual void                                        DoInitialize();
   virtual void                                        CallBoardConnect(){};

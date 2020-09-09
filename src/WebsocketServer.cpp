@@ -81,11 +81,10 @@ WebsocketServer::WebsocketServer(const int& port, const std::string& host, const
     }
     else if(msg->type == ix::WebSocketMessageType::Message)
     {
-      static Message m_Message;
+      Message m_Message;
       try
       {
         m_Message.parse(msg->str);
-        m_Message.setFrom(getkey());
       }
       catch(const Exception& exception)
       {
