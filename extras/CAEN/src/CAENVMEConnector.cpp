@@ -4,7 +4,6 @@
 #include "CAENVMElib.h"
 #include "StatusCode.hpp"
 #include "magic_enum.hpp"
-#include "spdlog.h"
 #include "toml.hpp"
 
 namespace CAEN
@@ -42,7 +41,7 @@ void CAENVMEConnector::verifyParameters()
     throw Exception(StatusCode::NOT_FOUND, "key \"Model\" not set !");
   }
   auto bridge = magic_enum::enum_cast<VMEBridgeModel>(m_Model);
-  if(!bridge.has_value()) throw Exception(StatusCode::INVALID_PARAMETER, "Model \"" + m_Model + "\" Unknown ! \n Only V1718, V2718, A2818, A2719 and A3818 are implemented !");
+  if(!bridge.has_value()) throw Exception(StatusCode::INVALID_PARAMETER, "Model \"{}\" Unknown ! \n Only V1718, V2718, A2818, A2719 and A3818 are implemented !", m_Model);
   try
   {
     m_LinkNumber = toml::find<short>(getParameters(), "Link Number");

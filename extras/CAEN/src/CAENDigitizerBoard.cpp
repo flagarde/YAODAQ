@@ -117,18 +117,14 @@ void InterruptConfig::setEventNumber(const std::uint32_t eventNumber)
 class EventInfo
 {
 public:
-  EventInfo(const CAEN_DGTZ_EventInfo_t& eventInfos, char* event)
-  {
-    t       = eventInfos;
-    m_Event = event;
-  }
-  std::uint32_t getEventSize() { return t.EventSize; }
-  std::uint32_t getBoardId() { return t.BoardId; }
-  std::uint32_t getPattern() { return t.Pattern; }
-  std::uint32_t getChannelMask() { return t.ChannelMask; }
-  std::uint32_t getEventCounter() { return t.EventCounter; }
-  std::uint32_t getTriggerTimeTag() { return t.TriggerTimeTag; }
-  char*         getEvent() { return m_Event; }
+  EventInfo(const CAEN_DGTZ_EventInfo_t& eventInfos, char* event): t(eventInfos), m_Event(event) {}
+  [[nodiscard]] std::uint32_t getEventSize() const { return t.EventSize; }
+  [[nodiscard]] std::uint32_t getBoardId() const { return t.BoardId; }
+  [[nodiscard]] std::uint32_t getPattern() const { return t.Pattern; }
+  [[nodiscard]] std::uint32_t getChannelMask() const { return t.ChannelMask; }
+  [[nodiscard]] std::uint32_t getEventCounter() const { return t.EventCounter; }
+  [[nodiscard]] std::uint32_t getTriggerTimeTag() const { return t.TriggerTimeTag; }
+  char*                       getEvent() { return m_Event; }
 
 private:
   CAEN_DGTZ_EventInfo_t t;
@@ -1177,31 +1173,31 @@ void CAENDigitizerBoard::DisableDRS4Correction()
 {
   CAENDigitizerException(CAEN_DGTZ_DisableDRS4Correction(m_Handle));
 }
-/*CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DecodeZLEWaveforms(int handle, void *event, void *waveforms); 
+/*CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DecodeZLEWaveforms(int handle, void *event, void *waveforms);
  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_FreeZLEWaveforms(int handle, void *waveforms);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_MallocZLEWaveforms(int handle, void **waveforms,uint32_t *allocatedSize); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_FreeZLEEvents(int handle, void **events); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_MallocZLEEvents(int handle, void **events, uint32_t*allocatedSize); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetZLEEvents(int handle, char *buffer, uint32_t buffsize, void **events, uint32_t* numEventsArray); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_MallocZLEWaveforms(int handle, void **waveforms,uint32_t *allocatedSize);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_FreeZLEEvents(int handle, void **events);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_MallocZLEEvents(int handle, void **events, uint32_t*allocatedSize);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetZLEEvents(int handle, char *buffer, uint32_t buffsize, void **events, uint32_t* numEventsArray);
  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetZLEParameters(int handle, uint32_t channelMask, void* params);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMCorrectionLevel(int handle,CAEN_DGTZ_SAM_CORRECTION_LEVEL_t *level); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMCorrectionLevel(int handle, CAEN_DGTZ_SAM_CORRECTION_LEVEL_t level); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_EnableSAMPulseGen(int handle, int channel, unsigned short  pulsePattern, CAEN_DGTZ_SAMPulseSourceType_t pulseSource); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DisableSAMPulseGen(int handle, int channel); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMPostTriggerSize(int handle, int SamIndex, uint8_t value); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMPostTriggerSize(int handle, int SamIndex, uint32_t *value); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMSamplingFrequency(int handle, CAEN_DGTZ_SAMFrequency_t frequency); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMSamplingFrequency(int handle, CAEN_DGTZ_SAMFrequency_t *frequency); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_Read_EEPROM(int handle, int EEPROMIndex, unsigned short add, int nbOfBytes, unsigned char* buf); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMCorrectionLevel(int handle,CAEN_DGTZ_SAM_CORRECTION_LEVEL_t *level);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMCorrectionLevel(int handle, CAEN_DGTZ_SAM_CORRECTION_LEVEL_t level);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_EnableSAMPulseGen(int handle, int channel, unsigned short  pulsePattern, CAEN_DGTZ_SAMPulseSourceType_t pulseSource);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_DisableSAMPulseGen(int handle, int channel);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMPostTriggerSize(int handle, int SamIndex, uint8_t value);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMPostTriggerSize(int handle, int SamIndex, uint32_t *value);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMSamplingFrequency(int handle, CAEN_DGTZ_SAMFrequency_t frequency);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMSamplingFrequency(int handle, CAEN_DGTZ_SAMFrequency_t *frequency);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_Read_EEPROM(int handle, int EEPROMIndex, unsigned short add, int nbOfBytes, unsigned char* buf);
  CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_Write_EEPROM(int handle, int EEPROMIndex, unsigned short add, int nbOfBytes, void* buf);
  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_LoadSAMCorrectionData(int handle);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_TriggerThreshold(int handle, CAEN_DGTZ_EnaDis_t endis); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SendSAMPulse(int handle); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API _CAEN_DGTZ_TriggerThreshold(int handle, CAEN_DGTZ_EnaDis_t endis);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SendSAMPulse(int handle);
  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetSAMAcquisitionMode(int handle, CAEN_DGTZ_AcquisitionMode_t mode);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMAcquisitionMode(int handle, CAEN_DGTZ_AcquisitionMode_t *mode); 
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetTriggerLogic(int handle, CAEN_DGTZ_TrigerLogic_t logic,  uint32_t majorityLevel); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetSAMAcquisitionMode(int handle, CAEN_DGTZ_AcquisitionMode_t *mode);
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetTriggerLogic(int handle, CAEN_DGTZ_TrigerLogic_t logic,  uint32_t majorityLevel);
  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetTriggerLogic(int handle, CAEN_DGTZ_TrigerLogic_t *logic, uint32_t *majorityLevel);
- CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelPairTriggerLogic(int handle,  uint32_t channelA, uint32_t channelB, CAEN_DGTZ_TrigerLogic_t *logic, uint16_t *coincidenceWindow); 
+ CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_GetChannelPairTriggerLogic(int handle,  uint32_t channelA, uint32_t channelB, CAEN_DGTZ_TrigerLogic_t *logic, uint16_t *coincidenceWindow);
  CAEN_DGTZ_ErrorCode CAENDGTZ_API CAEN_DGTZ_SetChannelPairTriggerLogic(int handle,  uint32_t channelA, uint32_t channelB, CAEN_DGTZ_TrigerLogic_t logic, uint16_t coincidenceWindow);
  */
 
@@ -1337,7 +1333,7 @@ void CAENDigitizerBoard::DoConfigure()
   sendInfo("ROC FPGA Release is  {}", m_ROC_FirmwareRel);
   sendInfo("AMC FPGA Release is {}", m_AMC_FirmwareRel);
   // Check firmware rivision (DPP firmwares cannot be used with WaveDump */
-  if(m_DPPFirmware) Exception(StatusCode::FAILURE, "This digitizer has a DPP firmware");
+  if(m_DPPFirmware) throw Exception(StatusCode::FAILURE, "This digitizer has a DPP firmware");
   GetMoreBoardInfo();
   LoadDACCalibration();
   PerformCalibration();
@@ -1351,7 +1347,7 @@ void CAENDigitizerBoard::DoConfigure()
   // Reload Correction Tables if changed
   if(m_FamilyCode == "XX742")
   {
-    if(m_UseCorrections == true)
+    if(m_UseCorrections)
     {
       m_DRS4Correction = std::make_any<std::array<CAEN_DGTZ_DRS4Correction_t, MAX_X742_GROUP_SIZE>>();
       GetCorrectionTables();
@@ -1364,7 +1360,7 @@ void CAENDigitizerBoard::DoConfigure()
       {  // The user wants to use some custom tables
         uint32_t gr;
         uint32_t GroupMask = dat.WDcfg.UseManualTables;
-        
+
         for(gr = 0; gr < dat.WDcfg.MaxGroupNumber; gr++)
         {
           if(((GroupMask >> gr) & 0x1) == 0) continue;
@@ -1973,7 +1969,7 @@ void CAENDigitizerBoard::Set_calibrated_DCO(const int& ch)
   }
   catch(const Exception& error)
   {
-    throw Exception(StatusCode::INVALID_PARAMETER, "Error setting group " + std::to_string(ch) + " offset");
+    throw Exception(StatusCode::INVALID_PARAMETER, "Error setting group {} offset", ch);
   }
 }
 

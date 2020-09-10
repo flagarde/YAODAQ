@@ -6,14 +6,14 @@
 
 TEST_CASE("Test Exceptions")
 {
-  Exception toto(StatusCode::NOT_FOUND,"Toto l'asticot {0}, {1},",21,"hhh");
+  Exception exception(StatusCode::NOT_FOUND, "This {0} the answer : {1}", "is", 42);
 
-  std::cout<<toto.what()<<std::endl;
+  std::cout << exception.what() << std::endl;
 
   Exception::setStyle();
   Exception::setFormat("********{Code}****************{File}******");
-  Exception toto2(StatusCode::NOT_FOUND,"Toto l'asticot {0}, {1},",21,"hhh");
+  Exception exception2(StatusCode::NOT_FOUND, "The {0} is {1}", "truth", 42);
 
-  std::cout<<toto2.what()<<std::endl;
-  throw toto;
+  std::cout << exception2.what() << std::endl;
+  throw exception2;
 }

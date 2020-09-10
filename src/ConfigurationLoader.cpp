@@ -12,7 +12,7 @@ void ConfigurationLoader::parse()
   std::lock_guard<std::mutex> guard(m_Mutex);
   if(!m_HaveBeenParsed.load())
   {
-    if(m_Filename == "") { throw Exception(StatusCode::NOT_FOUND, "No Configuration file given !"); }
+    if(m_Filename.empty()) { throw Exception(StatusCode::NOT_FOUND, "No Configuration file given !"); }
     m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
     parseRooms();
     fillIndexes();
@@ -30,7 +30,7 @@ void ConfigurationLoader::parseRooms()
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Room should have a name !\n" + std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Room should have a name !\n{}", e.what());
     }
     throwIfExists(m_Room_Names, "Room", actualRoomName);
     parseRacks(room);
@@ -47,7 +47,7 @@ void ConfigurationLoader::parseRacks(const toml::value& room)
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Rack should have a name !\n" + std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Rack should have a name !\n{}", e.what());
     }
     throwIfExists(m_Rack_Names, "Rack", actualRackName);
     parseCrates(rack);
@@ -65,7 +65,7 @@ void ConfigurationLoader::parseCrates(const toml::value& rack)
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Crate should have a name !\n" + std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Crate should have a name !\n{}", e.what());
     }
     throwIfExists(m_Crate_Names, "Crate", actualCrateName);
     try
@@ -96,11 +96,11 @@ void ConfigurationLoader::parseBoards(const toml::value& crate, const toml::valu
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Board should have a name !\n" + std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Board should have a name !\n{}", e.what());
     }
     throwIfExists(m_Module_Names, "Module", moduleName);
     std::string type = toml::find_or<std::string>(board, "Type", "");
-    if(type == "") { throw Exception(StatusCode::NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a \"Type\" key"); }
+    if(type.empty()) { throw Exception(StatusCode::NOT_FOUND, R"(Board "{}" doesn't have a "Type" key)", moduleName); }
     try
     {
       boardConnectorParameters = toml::find<toml::table>(board, "Connector");
@@ -109,8 +109,7 @@ void ConfigurationLoader::parseBoards(const toml::value& crate, const toml::valu
     }
     catch(const std::out_of_range& e)
     {
-      if(haveCrateConnector == false)
-      { throw Exception(StatusCode::NOT_FOUND, "Board \"" + moduleName + "\" doesn't have a Connector and the Crate \"" + actualCrateName + "\" in which is plugged to doesn't have one neither"); }
+      if(haveCrateConnector == false) { throw Exception(StatusCode::NOT_FOUND, R"(Board "{}" doesn't have a Connector and the Crate "{}" in which is plugged to doesn't have one neither)", moduleName, actualCrateName); }
       else
       {
         boardConnectorParameters = crateConnectorParameters;
@@ -139,21 +138,21 @@ void ConfigurationLoader::clear()
 
 ConnectorInfos ConfigurationLoader::getConnectorInfos(const std::string& module)
 {
-  if(m_ConnectorInfos.find(module) == m_ConnectorInfos.end()) { throw Exception(StatusCode::NOT_FOUND, "Board " + module + " not found in configuration !"); }
+  if(m_ConnectorInfos.find(module) == m_ConnectorInfos.end()) { throw Exception(StatusCode::NOT_FOUND, "Board {} not found in configuration !", module); }
   return m_ConnectorInfos[module];
 }
 
 
 void ConfigurationLoader::throwIfExists(std::vector<std::string>& type, const std::string& typeName, const std::string& name)
 {
-  if(std::find(type.begin(), type.end(), name) != type.end()) { throw Exception(StatusCode::ALREADY_PRESENT, typeName + " name \"" + name + "\" is already taken"); }
-  else type.push_back(name);
+  if(std::find(type.begin(), type.end(), name) != type.end()) { throw Exception(StatusCode::ALREADY_PRESENT, typeName + " name \"{}\" is already taken", name); }
+  else
+    type.push_back(name);
 }
-
 
 toml::value ConfigurationLoader::getConfig(const std::string& name)
 {
-  if(m_BoardsInfos.find(name) == m_BoardsInfos.end()) { throw Exception(StatusCode::NOT_FOUND, "Board " + name + " not found in configuration !"); }
+  if(m_BoardsInfos.find(name) == m_BoardsInfos.end()) { throw Exception(StatusCode::NOT_FOUND, "Board {} not found in configuration !", name); }
   return m_BoardsInfos[name].getParameters();
 }
 
@@ -163,18 +162,18 @@ void ConfigurationLoader::parseModules(const toml::value& crate)
   toml::value ModulesConnectorParameters{};
   for(const auto& board: toml::find<toml::array>(crate, "Module"))
   {
-    std::string moduleName{""};
+    std::string moduleName;
     try
     {
       moduleName = toml::find<std::string>(board, "Name");
     }
     catch(const std::out_of_range& e)
     {
-      throw Exception(StatusCode::NOT_FOUND, "Module should have a name !\n" + std::string(e.what()));
+      throw Exception(StatusCode::NOT_FOUND, "Module should have a name !\n{}", e.what());
     }
     throwIfExists(m_Module_Names, "Module", moduleName);
     std::string type = toml::find_or<std::string>(board, "Type", "");
-    if(type == "") { throw Exception(StatusCode::NOT_FOUND, "Module \"" + moduleName + "\" doesn't have a \"Type\" key"); }
+    if(type.empty()) { throw Exception(StatusCode::NOT_FOUND, R"(Module "{}" doesn't have a "Type" key)", moduleName); }
     Infos infos(actualRoomName, actualRackName, actualCrateName, moduleName, type,Category::Module);
     m_BoardsInfos.emplace(moduleName, BoardInfos(infos, board));
   }
@@ -207,7 +206,7 @@ void ConfigurationLoader::reloadParameters(const std::string& name)
         }
       }
       // If it can go there that means the module or board as been erased from the config file !! BAD boys
-      throw Exception(StatusCode::NOT_FOUND, m_BoardsInfos[name].getCategory()+" \"" + name + "\" has been erased from the configuration file !");
+      throw Exception(StatusCode::NOT_FOUND, "{} \"{}\" has been erased from the configuration file !", m_BoardsInfos[name].getCategory(), name);
     }
   }
 }
@@ -243,7 +242,7 @@ void ConfigurationLoader::reloadConnectorParameters(const std::string& name)
           }
           catch(const std::out_of_range& e)
           {
-            throw Exception(StatusCode::NOT_FOUND, "Board \"" + name + "\" doesn't have a connector even does the rack it depends ! connector has been erased from the configuration file !");
+            throw Exception(StatusCode::NOT_FOUND, "Board \"{}\" doesn't have a connector even does the rack it depends ! connector has been erased from the configuration file !", name);
           }
         }
       }
@@ -257,13 +256,13 @@ void ConfigurationLoader::fillIndexes()
   std::sort(m_Room_Names.begin(), m_Room_Names.end());
   std::sort(m_Rack_Names.begin(), m_Rack_Names.end());
   std::sort(m_Crate_Names.begin(), m_Crate_Names.end());
-  for(std::map<std::string, BoardInfos>::iterator it = m_BoardsInfos.begin(); it != m_BoardsInfos.end(); ++it)
+  for(auto& m_BoardsInfo: m_BoardsInfos)
   {
     static int boardindex = 0;
-    it->second.setRoomIndex(std::distance(m_Room_Names.begin(), std::find(m_Room_Names.begin(), m_Room_Names.end(), it->second.getRoomName())));
-    it->second.setRackIndex(std::distance(m_Rack_Names.begin(), std::find(m_Rack_Names.begin(), m_Rack_Names.end(), it->second.getRackName())));
-    it->second.setCrateIndex(std::distance(m_Crate_Names.begin(), std::find(m_Crate_Names.begin(), m_Crate_Names.end(), it->second.getCrateName())));
-    it->second.setIndex(boardindex);
+    m_BoardsInfo.second.setRoomIndex(std::distance(m_Room_Names.begin(), std::find(m_Room_Names.begin(), m_Room_Names.end(), m_BoardsInfo.second.getRoomName())));
+    m_BoardsInfo.second.setRackIndex(std::distance(m_Rack_Names.begin(), std::find(m_Rack_Names.begin(), m_Rack_Names.end(), m_BoardsInfo.second.getRackName())));
+    m_BoardsInfo.second.setCrateIndex(std::distance(m_Crate_Names.begin(), std::find(m_Crate_Names.begin(), m_Crate_Names.end(), m_BoardsInfo.second.getCrateName())));
+    m_BoardsInfo.second.setIndex(boardindex);
     ++boardindex;
   }
 }

@@ -30,16 +30,16 @@ void CAENDigitizerConnector::verifyParameters()
   }
   catch(const std::out_of_range& e)
   {
-    Exception(StatusCode::NOT_FOUND, "\"Connection Type\" key not set !");
+    throw Exception(StatusCode::NOT_FOUND, "\"Connection Type\" key not set !");
   }
-  if(m_ConnectionType != "USB" && m_ConnectionType != "OPTICAL") { Exception(StatusCode::NOT_FOUND, "Connection Type " + m_ConnectionType + " Unknown ! Should be USB or OPTICAL !"); }
+  if(m_ConnectionType != "USB" && m_ConnectionType != "OPTICAL") { throw Exception(StatusCode::NOT_FOUND, "Connection Type \"{}\" Unknown ! Should be USB or OPTICAL !", m_ConnectionType); }
   try
   {
     m_LinkNum = toml::find<int>(getParameters(), "Link Number");
   }
   catch(const std::out_of_range& e)
   {
-    Exception(StatusCode::NOT_FOUND, "\"Link Number\" key not set !");
+    throw Exception(StatusCode::NOT_FOUND, "\"Link Number\" key not set !");
   }
   if(m_ConnectionType == "OPTICAL")
   {
@@ -49,7 +49,7 @@ void CAENDigitizerConnector::verifyParameters()
     }
     catch(const std::out_of_range& e)
     {
-      Exception(StatusCode::NOT_FOUND, "\"Conet Node\" key not set !");
+      throw Exception(StatusCode::NOT_FOUND, "\"Conet Node\" key not set !");
     }
   }
   try
@@ -58,9 +58,9 @@ void CAENDigitizerConnector::verifyParameters()
   }
   catch(const std::out_of_range& e)
   {
-    Exception(StatusCode::NOT_FOUND, "\"VME Base Address\" key not set !");
+    throw Exception(StatusCode::NOT_FOUND, "\"VME Base Address\" key not set !");
   }
-  if(m_VMEBaseAddress < 0 || m_VMEBaseAddress > 0xFFFFFFFF) { Exception(StatusCode::OUT_OF_RANGE, "\"VME Base Address\" should be >0 and <0xFFFFFFFF !"); }
+  if(m_VMEBaseAddress < 0 || m_VMEBaseAddress > 0xFFFFFFFF) { throw Exception(StatusCode::OUT_OF_RANGE, "\"VME Base Address\" should be >0 and <0xFFFFFFFF !"); }
 }
 
 }  // namespace CAEN

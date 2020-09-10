@@ -47,7 +47,7 @@ void Controller::sendAction(const std::string& action)
     sendBinary(a);
   }
   else
-    throw Exception(StatusCode::INVALID_PARAMETER, action + " is not a valid Action");
+    throw Exception(StatusCode::INVALID_PARAMETER, "{} is not a valid Action", action);
 }
 
 void Controller::sendCommand(const std::string& command)

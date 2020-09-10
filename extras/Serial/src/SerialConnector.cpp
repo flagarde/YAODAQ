@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 Lagarde François lagarde.at.sjtu.edu.cn
- * 
+ *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without
@@ -9,10 +9,10 @@
  * copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following
  * conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
  * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -67,7 +67,7 @@ void SerialConnector::setPort()
   }
   catch(const std::out_of_range& e)
   {
-    Exception(StatusCode::NOT_FOUND, "\"Port\" key not set !");
+    throw Exception(StatusCode::NOT_FOUND, "\"Port\" key not set !");
   }
 }
 
@@ -105,7 +105,7 @@ void SerialConnector::setBytesize()
     else if(bytesize == 5)
       m_bytesize = serial::bytesize_t::fivebits;
     else
-      Exception(StatusCode::NOT_FOUND, "\"Bytesize\" should be 8 7 6 or 5 !");
+      throw Exception(StatusCode::NOT_FOUND, "\"Bytesize\" should be 8 7 6 or 5 !");
   }
   catch(const std::out_of_range& e)
   {
@@ -128,7 +128,7 @@ void SerialConnector::setParity()
     else if(parity == "space")
       m_parity = serial::parity_t::parity_space;
     else
-      Exception(StatusCode::NOT_FOUND, "\"Parity\" should be none, odd, even, mark or space !");
+      throw Exception(StatusCode::NOT_FOUND, "\"Parity\" should be none, odd, even, mark or space !");
   }
   catch(const std::out_of_range& e)
   {
@@ -166,7 +166,7 @@ void SerialConnector::setFlowcontrol()
     else if(flow == "hardware")
       m_flowcontrol = serial::flowcontrol_t::flowcontrol_hardware;
     else
-      Exception(StatusCode::NOT_FOUND, "\"Flowcontrol\" should be none, software or hardware !");
+      throw Exception(StatusCode::NOT_FOUND, "\"Flowcontrol\" should be none, software or hardware !");
   }
   catch(const std::out_of_range& e)
   {
@@ -179,7 +179,7 @@ Response SerialConnector::sendCommand(const Command& command) const
   /* std::string respond="";
     std::string real_command=command[0].String()+"\n";
     std::size_t bytes_wrote = m_serial.write(real_command);
-    if(bytes_wrote==real_command.size()) 
+    if(bytes_wrote==real_command.size())
     {
       respond=m_serial.read(bytes_wrote+2000);
       if(respond.size()==bytes_wrote) return std::string();
