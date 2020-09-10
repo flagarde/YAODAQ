@@ -6,12 +6,12 @@
   SourceLocation::SourceLocation(const source_location& location): m_Location(location) {}
 #endif
 
-const std::uint_least32_t SourceLocation::getLine() const
+std::uint_least32_t SourceLocation::getLine() const
 {
   return m_Location.line();
 }
 
-const std::uint_least32_t SourceLocation::getColumn() const
+std::uint_least32_t SourceLocation::getColumn() const
 {
   return m_Location.column();
 }
