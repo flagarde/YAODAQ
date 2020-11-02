@@ -6,14 +6,13 @@ cmake_minimum_required(VERSION 3.10...3.17.2 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
-# Download CMakeCM
-set(CMAKECM_BASE_URL "https://raw.githubusercontent.com/flagarde/CMakeCM/master" CACHE STRING "URL of the CMakeCM package")
-set(CMAKECM_SHA256 "a5739917401b3bddbd8a32e280008ed98aa1311cf1f217ac78490c800ed2ff9a" CACHE STRING "SHA256 of CMakeCM")
-set(CMAKECM_INSTALL_DIR "${CMAKE_BINARY_DIR}/cmake/CMakeCM" CACHE STRING "Path where to install CMakeCM")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
 
-##set(CMAKECM_MODULES_DIR "${CMAKECM_INSTALL_DIR}/Modules")
-file(DOWNLOAD "${CMAKECM_BASE_URL}/CMakeCM.cmake" "${CMAKECM_INSTALL_DIR}/CMakeCM.cmake" INACTIVITY_TIMEOUT 5 TIMEOUT 1 EXPECTED_HASH SHA256=${CMAKECM_SHA256})
-include("${CMAKECM_INSTALL_DIR}/CMakeCM.cmake")
+include(GetCMakeMM)
+
+cmmm(VERSION "1.0" URL "https://raw.githubusercontent.com/flagarde/CMakeMM" VERBOSE DESTINATION "CMakeMM" ALWAYS_DOWNLOAD)
+
+cmmm_modules_list(URL "https://raw.githubusercontent.com/flagarde/CMCM" DESTINATION "Modules")
 
 #PreventInSourceBuilds is in  common but try to avoid downloading many files
 include(PreventInSourceBuilds)
@@ -30,8 +29,6 @@ include(ConfigurationCheck)
 set_default_configuration("Debug")
 
 include(Formatters)
-
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 include(Settings)
 
