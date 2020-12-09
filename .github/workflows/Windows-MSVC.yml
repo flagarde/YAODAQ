@@ -34,7 +34,7 @@ jobs:
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: ➕ Install Ninja
-      uses: seanmiddleditch/gha-setup-ninja@v1
+      uses: seanmiddleditch/gha-setup-ninja@v3
       with:
         version: '${{env.NINJA_VERSION}}'
 
