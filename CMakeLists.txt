@@ -23,6 +23,8 @@ prevent_in_source_builds()
 
 include(DefaultInstallPrefix)
 default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
+
+include(Standards)
 cxx_17()
 
 #include(DefaultConfigurations)
