@@ -14,28 +14,27 @@ cmmm(VERSION "1.0" GIT_REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATI
 
 cmmm_modules_list(URL "https://raw.githubusercontent.com/flagarde/CMakeCM/" DESTINATION "Modules")
 
+include(Colors)
+include(Messages)
+
 #PreventInSourceBuilds is in  common but try to avoid downloading many files
 include(PreventInSourceBuilds)
 prevent_in_source_builds()
 
-include(Common)
-
+include(DefaultInstallPrefix)
 default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
 cxx_17()
 
-include(DefaultConfigurations)
-include(ConfigurationCheck)
+#include(DefaultConfigurations)
+#include(ConfigurationCheck)
 
-set_default_configuration("Debug")
+#set_default_configuration("Debug")
 
-include(Formatters)
+#include(Formatters)
 
 include(Settings)
 
-include(doctest_project)
-
-include(Messages)
-include(Colors)
+include(Doctest)
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
