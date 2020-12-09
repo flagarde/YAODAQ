@@ -26,6 +26,7 @@ default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
 
 include(Standards)
 cxx_17()
+c_11()
 
 #include(DefaultConfigurations)
 #include(ConfigurationCheck)
