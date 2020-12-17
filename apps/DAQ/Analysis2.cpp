@@ -1,4 +1,4 @@
-#include "CLI.hpp"
+#include "CLI/CLI.hpp"
 #include "Channel.hpp"
 #include "Event.hpp"
 #include "TCanvas.h"

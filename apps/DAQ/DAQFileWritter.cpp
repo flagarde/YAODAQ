@@ -1,4 +1,4 @@
-#include "CLI.hpp"
+#include "CLI/CLI.hpp"
 #include "DAQFile.hpp"
 #include "FileWritter.hpp"
 #include "Interrupt.hpp"

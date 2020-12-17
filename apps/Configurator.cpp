@@ -1,6 +1,6 @@
 #include "Configurator.hpp"
 
-#include "CLI.hpp"
+#include "CLI/CLI.hpp"
 #include "ProgramInfos.hpp"
 #include "spdlog.h"
 //#include "fmt/core.h"

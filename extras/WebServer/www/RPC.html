@@ -7,11 +7,15 @@
     <title>DAQ Control</title>
 
     <script> var DEBUG=false ;var ws; var data_rate=0; var trigger_rate=0; var RunNumber;</script>
+    <script> var ip = decodeURIComponent(window.location.search.match(/(\?|&)ip\=([^&]*)/)[2]);
+            var port = decodeURIComponent(window.location.search.match(/(\?|&)port\=([^&]*)/)[2]);
 
+            var address="ws://"+ip+":"+port;
+    </script>
 
-
-
-
+<script type="text/javascript">
+        document.write(address)
+      </script>
     <script type = "text/javascript">
 
 
@@ -64,8 +68,10 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
       {
         if ("WebSocket" in window)
         {
-          // Let us open a web socket
-          ws = new WebSocket("ws://192.168.0.103:9999");
+
+
+
+            ws = new WebSocket(address.toString());
 
 
 
@@ -115,8 +121,11 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 
           ws.onmessage = function (evt)
           {
+
+
             var obj = JSON.parse(evt.data)
             if(DEBUG==true) alert(evt.data);
+            alert(JSON.stringify(obj));
             if(obj.Type=="State")
             {
               STATE=obj["Content"];
@@ -125,7 +134,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
             }
             else if(obj.Type=="Data")
             {
-              //alert(JSON.stringify(obj));
+
               var element = document.getElementById('EventNumber');
               element.innerHTML = "<h1>Event Number : "+obj["Content"]["EventInfos"]["EventCounter"]+"</h1>";
               for(i=0;i!=obj["Content"]["Event"]["Groups"].length;++i)
@@ -176,13 +185,14 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 
     <!-- Execute when the page is opening -->
     <script>
-    	window.onload=function()
+    window.onload=function()
 		{
 			JSROOT.AssertPrerequisites("2d,histo");
 			myFunction();
 			document.getElementById("Actions").style.display='none';
 			document.body.style.background = "red";
 			StartWebSocket();
+			            // Let us open a web socket
 		}
 	</script>
 	<!-- Function for the websocket -->
@@ -543,16 +553,19 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
             tt.setAttribute("what", "plot");
             tt.style.display='true';
             myDiv.appendChild(tt);
-            for(var j = 0; j < 8; j++)
+        }
+
+        for(var j = 0; j < 8; j++)
             {
               var t = document.createElement("div");
-              var channel= j+8*i;
-              t.setAttribute("id", "Channel"+channel);
+              t.setAttribute("id", "Channel"+j);
               t.setAttribute("what", "plot");
               t.style.display='none';
               myDiv.appendChild(t);
             }
-        }
+
+
+
        }
      </script>
 

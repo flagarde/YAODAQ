@@ -1,7 +1,7 @@
 #include "FileWritter.hpp"
 
 #include "Interrupt.hpp"
-#include "doctest.h"
+#include "doctest/doctest.h"
 
 #include <iostream>
 

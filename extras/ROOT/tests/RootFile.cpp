@@ -1,6 +1,6 @@
 #include "RootFile.hpp"
 
-#include "doctest.h"
+#include "doctest/doctest.h"
 
 #include <iostream>
 

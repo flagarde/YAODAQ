@@ -4,7 +4,8 @@
 #include "CAENFlashException.hpp"
 #include "CAENHVException.hpp"
 #include "CAENVMEException.hpp"
-#include "doctest.h"
+
+#include "doctest/doctest.h"
 
 #include <iostream>
 

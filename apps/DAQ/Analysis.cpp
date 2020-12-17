@@ -1,4 +1,4 @@
-#include "CLI.hpp"
+#include "CLI/CLI.hpp"
 #include "Channel.hpp"
 #include "Event.hpp"
 #include "TCanvas.h"
@@ -386,7 +386,7 @@ int main(int argc, char** argv)
         IterationPlots.push_back(CreateAndFillWaveform(evt, event->Channels[ch], name.c_str(), title.c_str()));
         Iter++;
       }
-      
+
       if(ImEvent == true)
       {
         waveform.SetLineColor(kGreen);
@@ -401,7 +401,7 @@ int main(int argc, char** argv)
         sigmas_noise.Fill(testmeanstd.second.second);
       }
       // Verif.push_back(waveform);
-      
+
       can.Clear();
       if(ImEvent == true)
       {
@@ -423,13 +423,13 @@ int main(int argc, char** argv)
         // if(channels.ShouldBePositive(ch)) waveform.Fit(f1);
         // else waveform.Fit(f1);
         can.SaveAs(("BAD/BAD"+std::to_string(evt)+"_Channel"+std::to_string(ch)+".pdf").c_str());
-        
+
       }
-      
+
       can.Clear();
       can.Divide(5, 5);
       can.cd(1);
-      
+
       waveform.Draw("HIST");
       can.cd(2);
       if(ImEvent == true) after0.SetLineColor(kGreen);
@@ -445,7 +445,7 @@ int main(int argc, char** argv)
         IterationPlots[Iter].Draw("HIST");
       }
       // can.SaveAs(("Compare_Event"+std::to_string(evt)+"_Channel"+std::to_string(ch)+".pdf").c_str());
-      
+
     }
     if(hasseensomething==true)
     {

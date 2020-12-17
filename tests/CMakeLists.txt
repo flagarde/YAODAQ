@@ -20,9 +20,9 @@ set(TEST_RUNNER_PARAMS "") # Any arguemnts to feed the test runner (change as ne
 
 
 add_executable(Exceptions Exceptions.cpp)
-add_dependencies(Exceptions doctestMain Exception)
+add_dependencies(Exceptions doctest_with_main Exception)
 set_target_properties(Exceptions PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 # target_set_warnings(${TEST_MAIN} ENABLE ALL AS_ERROR ALL DISABLE Annoying) # Set warnings (if needed).
 target_include_directories(Exceptions PUBLIC "${INCLUDE_OUTPUT_DIR}")
-target_link_libraries(Exceptions PUBLIC Exception PUBLIC doctestMain)
+target_link_libraries(Exceptions PUBLIC Exception PUBLIC doctest_with_main)
 doctest_discover_tests(Exceptions COMMAND Exceptions ${TEST_RUNNER_PARAMS})

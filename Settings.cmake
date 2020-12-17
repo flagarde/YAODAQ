@@ -2,9 +2,19 @@
 # Options for the external package #
 ####################################
 
+
+## INCLUDED BY CPM
+
 # doctest
-set(DOCTEST_REPOSITORY "https://github.com/onqtam/doctest.git")
-set(DOCTEST_TAG "master")
+set(DOCTEST_REPOSITORY "onqtam/doctest")
+set(DOCTEST_VERSION "master")
+
+# CLI11
+set(CLI11_REPOSITORY "CLIUtils/CLI11")
+set(CLI11_VERSION "master")
+
+##
+
 # OpenSSL
 set(OPENSSL_REPOSITORY "https://github.com/flagarde/openssl-cmake.git")
 set(OPENSSL_TAG "master")
@@ -35,14 +45,12 @@ set(serial_version "master")
 set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
 set(CAENlibs_version "master")
 
-# CLI11
-set(CLI11_repository "https://github.com/RPClab/CLI11.git")
-set(CLI11_version "master")
+
 # soci
 set(soci_repository "https://github.com/SOCI/soci.git")
 set(soci_version "master")
 # toml11
-set(toml11_repository "https://github.com/RPClab/toml11.git")
+set(toml11_repository "https://github.com/ToruNiina/toml11.git")
 set(toml11_version "master")
 
 # civet
@@ -86,6 +94,9 @@ option(ENABLE_EXTRAS "Build extras" ON)
 
 option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_SNMP "Build SNMP" OFF)
+
+
+option(BUILD_LCIO "Build LCIO" OFF)
 
 option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
 
