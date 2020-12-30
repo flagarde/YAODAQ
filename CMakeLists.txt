@@ -10,7 +10,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
 
 include(GetCMakeMM)
 
-cmmm(VERSION "1.1" GIT_REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
+cmmm(VERSION "1.2" GIT_REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
 
 cmmm_modules_list(URL "https://raw.githubusercontent.com/flagarde/CMakeCM/" DESTINATION "Modules")
 
