@@ -21,7 +21,6 @@ add_dependencies(Util spdlog::spdlog jsoncpp::jsoncpp toml11 magic_enum elogpp::
 target_link_libraries(Util INTERFACE spdlog::spdlog INTERFACE jsoncpp::jsoncpp INTERFACE elogpp::elogpp INTERFACE OpenSSL::SSL INTERFACE OpenSSL::Crypto)
 target_include_directories(Util INTERFACE "${INCLUDE_OUTPUT_DIR}" INTERFACE "${INCLUDE_OUTPUT_DIR}/toml")
 
-
 add_library(SourceLocation "${YAODAQ_SRC}/SourceLocation.cpp")
 target_include_directories(SourceLocation PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 set_target_properties(SourceLocation PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/SourceLocation.hpp")
@@ -33,17 +32,12 @@ set_target_properties(Exception PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Exce
 target_link_libraries(Exception PUBLIC fmt::fmt PRIVATE SourceLocation)
 install(TARGETS Exception RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
-
-
-
 add_library(Message "${YAODAQ_SRC}/Message.cpp")
 add_dependencies(Message Exception Util)
 target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message.hpp")
 target_link_libraries(Message PUBLIC Exception PUBLIC Util)
 install(TARGETS Message RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
-
-
 
 add_library(Key "${YAODAQ_SRC}/Key.cpp")
 add_dependencies(Key Util SourceLocation)
@@ -52,7 +46,6 @@ set_target_properties(Key PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Key.hpp")
 target_link_libraries(Key PUBLIC Util PRIVATE SourceLocation)
 install(TARGETS Key RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
-
 add_library(Interrupt "${YAODAQ_SRC}/Interrupt.cpp")
 add_dependencies(Interrupt Util SourceLocation)
 target_include_directories(Interrupt PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
@@ -60,15 +53,12 @@ set_target_properties(Interrupt PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Inte
 target_link_libraries(Interrupt PUBLIC Util PRIVATE SourceLocation)
 install(TARGETS Interrupt RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
-
 add_library(File "${YAODAQ_SRC}/File.cpp")
 add_dependencies(File Util Message)
 target_include_directories(File PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 set_target_properties(File PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/File.hpp")
 target_link_libraries(File PUBLIC Util PUBLIC Message)
 install(TARGETS File RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
-
-
 
 add_library(Controller "${YAODAQ_SRC}/Controller.cpp")
 add_dependencies(Controller WebSocketClient Message Exception)
@@ -92,9 +82,9 @@ set_target_properties(Connector PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Conn
 install(TARGETS Connector RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 add_library(ConnectorFactory "${YAODAQ_SRC}/ConnectorFactory.cpp")
-add_dependencies(ConnectorFactory ConnectorInfos FlakedTuna)
+add_dependencies(ConnectorFactory ConnectorInfos)
 target_include_directories(ConnectorFactory PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos  PUBLIC FlakedTuna)
+target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos PUBLIC FlakedTuna)
 set_target_properties(ConnectorFactory PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/ConnectorFactory.hpp")
 install(TARGETS ConnectorFactory RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
@@ -118,8 +108,6 @@ target_include_directories(ConfigurationLoader PUBLIC $<BUILD_INTERFACE:${YAODAQ
 target_link_libraries(ConfigurationLoader PUBLIC ConnectorInfos PUBLIC BoardInfos PUBLIC Util)
 set_target_properties(ConfigurationLoader PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/ConfigurationLoader.hpp")
 install(TARGETS ConfigurationLoader RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
-
-
 
 add_library(WebSocketClient "${YAODAQ_SRC}/WebsocketClient.cpp" "${YAODAQ_SRC}/GeneralParameters.cpp")
 add_dependencies(WebSocketClient IXWebSocket Util Exception)

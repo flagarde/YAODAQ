@@ -12,9 +12,6 @@ include(GetCMakeMM)
 cmmm(VERSION "1.3" GIT_REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
 cmmm_modules_list(GIT_REPOSITORY "flagarde/CMakeCM" DESTINATION "Modules")
 
-include(Colors)
-include(Messages)
-
 #PreventInSourceBuilds is in  common but try to avoid downloading many files
 include(PreventInSourceBuilds)
 prevent_in_source_builds()
