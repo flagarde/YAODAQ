@@ -13,6 +13,10 @@ set(DOCTEST_VERSION "master")
 set(CLI11_REPOSITORY "CLIUtils/CLI11")
 set(CLI11_VERSION "master")
 
+# FlakedTuna
+set(FLAKEDTUNA_REPOSITORY "flagarde/FlakedTuna")
+set(FLAKEDTUNA_VERSION "master")
+
 ##
 
 # OpenSSL
@@ -70,8 +74,7 @@ set(cereal_version "master")
 set(SNMP_repository "https://github.com/RPClab/net-snmp.git")
 set(SNMP_version "master")
 
-set(FLAKEDTUNA_REPOSITORY "https://github.com/flagarde/FlakedTuna.git")
-set(FLAKEDTUNA_VERSION "master")
+
 
 
 # Compiling ROOT can be very long so :

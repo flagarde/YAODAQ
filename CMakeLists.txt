@@ -6,13 +6,11 @@ cmake_minimum_required(VERSION 3.10...3.17.2 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
 
 include(GetCMakeMM)
-
-cmmm(VERSION "1.2" GIT_REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
-
-cmmm_modules_list(URL "https://raw.githubusercontent.com/flagarde/CMakeCM/" DESTINATION "Modules")
+cmmm(VERSION "1.3" GIT_REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
+cmmm_modules_list(GIT_REPOSITORY "flagarde/CMakeCM" DESTINATION "Modules")
 
 include(Colors)
 include(Messages)

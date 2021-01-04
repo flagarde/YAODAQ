@@ -92,9 +92,9 @@ set_target_properties(Connector PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Conn
 install(TARGETS Connector RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
 add_library(ConnectorFactory "${YAODAQ_SRC}/ConnectorFactory.cpp")
-add_dependencies(ConnectorFactory ConnectorInfos YAODAQ::FlakedTuna)
+add_dependencies(ConnectorFactory ConnectorInfos FlakedTuna)
 target_include_directories(ConnectorFactory PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
-target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos  PUBLIC YAODAQ::FlakedTuna)
+target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos  PUBLIC FlakedTuna)
 set_target_properties(ConnectorFactory PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/ConnectorFactory.hpp")
 install(TARGETS ConnectorFactory RUNTIME DESTINATION bin LIBRARY DESTINATION ${LIBRARY_OUTPUT_DIR} ARCHIVE DESTINATION ${ARCHIVE_OUTPUT_DIR} PUBLIC_HEADER DESTINATION include)
 
