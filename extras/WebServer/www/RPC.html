@@ -1,9 +1,12 @@
 <html>
-  <head>.
+  <head>
+
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <script type="text/javascript" src="./jsroot/scripts/JSRootCore.js?gui"></script>
-    <script src="./gauge.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/RPC.css">
+    <script type="text/javascript" src="jsroot/scripts/JSRootCore.js?gui"></script>
+
+
+    <script src="gauge.min.js"></script>
     <title>DAQ Control</title>
 
     <script> var DEBUG=false ;var ws; var data_rate=0; var trigger_rate=0; var RunNumber;</script>
@@ -13,9 +16,6 @@
             var address="ws://"+ip+":"+port;
     </script>
 
-<script type="text/javascript">
-        document.write(address)
-      </script>
     <script type = "text/javascript">
 
 
@@ -121,11 +121,8 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
 
           ws.onmessage = function (evt)
           {
-
-
             var obj = JSON.parse(evt.data)
-            if(DEBUG==true) alert(evt.data);
-            alert(JSON.stringify(obj));
+            //if(DEBUG==true) alert(evt.data);
             if(obj.Type=="State")
             {
               STATE=obj["Content"];
@@ -134,19 +131,31 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
             }
             else if(obj.Type=="Data")
             {
-
+              //alert(JSON.stringify(obj));
               var element = document.getElementById('EventNumber');
               element.innerHTML = "<h1>Event Number : "+obj["Content"]["EventInfos"]["EventCounter"]+"</h1>";
+
+
+
               for(i=0;i!=obj["Content"]["Event"]["Groups"].length;++i)
               {
+
+
+
                 for(j=0;j!=obj["Content"]["Event"]["Groups"][i]["Channels"].length;++j)
                 {
-                  var histo = JSROOT.CreateHistogram("TH1D",obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length);
+
+
+                  var histo = JSROOT.CreateHistogram("TH1F",obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length);
+                  //JSROOT.draw(toto, histo);
+
+
+
+
                   for(k=0;k!=obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length;++k)
                   {
                     histo.setBinContent(k,obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"][k]);
                   }
-
 
                   if(obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Channel"]==8)
                   {
@@ -155,6 +164,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
                   }
                   else
                   {
+                    //alert(obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Channel"]+8*obj["Content"]["Event"]["Groups"][i]["Group"]);
                     histo.fTitle="Group "+obj["Content"]["Event"]["Groups"][i]["Group"]+" Channel "+obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Channel"];
                     JSROOT.redraw("Channel"+(obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Channel"]+8*obj["Content"]["Event"]["Groups"][i]["Group"]), histo, "colz");
                   }
@@ -188,10 +198,11 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     window.onload=function()
 		{
 			JSROOT.AssertPrerequisites("2d,histo");
-			myFunction();
+
 			document.getElementById("Actions").style.display='none';
 			document.body.style.background = "red";
 			StartWebSocket();
+			myFunction();
 			            // Let us open a web socket
 		}
 	</script>
@@ -548,21 +559,22 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
         var myDiv = document.getElementById("Plots")
         for(var i=0;i<4;i++)
         {
-            var tt = document.createElement("div");
-            tt.setAttribute("id", "Trigger"+i);
-            tt.setAttribute("what", "plot");
-            tt.style.display='true';
-            myDiv.appendChild(tt);
+          var tt = document.createElement("div");
+          tt.setAttribute("id", "Trigger"+i);
+          tt.setAttribute("what", "plot");
+          tt.style.display='true';
+          myDiv.appendChild(tt);
+          for(var j = 0; j < 8; j++)
+          {
+            var t = document.createElement("div");
+            t.setAttribute("id", "Channel"+(j+8*i));
+            t.setAttribute("what", "plot");
+            t.style.display='none';
+            myDiv.appendChild(t);
+          }
         }
 
-        for(var j = 0; j < 8; j++)
-            {
-              var t = document.createElement("div");
-              t.setAttribute("id", "Channel"+j);
-              t.setAttribute("what", "plot");
-              t.style.display='none';
-              myDiv.appendChild(t);
-            }
+
 
 
 
