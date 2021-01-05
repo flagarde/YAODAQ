@@ -2,11 +2,7 @@
 #   CMakeLists.txt to build DAQ   #
 #   Author LAGARDE Francois       #
 ###################################
-cmake_minimum_required(VERSION 3.10...3.17.2 FATAL_ERROR)
-
-if(POLICY CMP0077)
-  cmake_policy(SET CMP0077 NEW)
-endif()
+cmake_minimum_required(VERSION 3.10...3.19.2 FATAL_ERROR)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
