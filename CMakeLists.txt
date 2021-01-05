@@ -83,10 +83,6 @@ if(NOT N EQUAL 0)
   set(CTEST_BUILD_FLAGS -j${N})
 endif()
 
-
-include(GenerateReadMe)
-generate_readme()
-
 include(Architectures)
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW TRUE)

@@ -47,8 +47,8 @@ target_link_libraries(Digitizer PRIVATE CAENBoards PRIVATE Board PRIVATE CLI11 P
 install(TARGETS Digitizer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 add_executable(Analysis Analysis.cpp)
-add_dependencies(Analysis CLI11)
-target_link_libraries(Analysis PRIVATE Event_static PRIVATE Channel_static PRIVATE CLI11)
+add_dependencies(Analysis CLI11 fmt::fmt)
+target_link_libraries(Analysis PRIVATE Event_static PRIVATE Channel_static PRIVATE CLI11 PRIVATE fmt::fmt)
 install(TARGETS Analysis RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 target_include_directories(Analysis PUBLIC "include/" PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
 
