@@ -1,11 +1,11 @@
 <html>
   <head>
-
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" type="text/css" href="css/RPC.css">
-    <script type="text/javascript" src="jsroot/scripts/JSRootCore.js?gui"></script>
-
-
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="css/RPC.css"/>
+    <link rel="stylesheet" type="text/css" href="jsroot/scripts/style/JSRootPainter.css"/>
+    <script type="text/javascript" src="jsroot/scripts/JSRoot.core.js">
+      JSROOT.require(['io' 'tree' 'painter' 'gpad' 'hist' 'hist3d' 'more' 'geom' 'v7gpad' 'v7hist' 'v7hist3d' 'v7more' 'math' 'hierarchy' 'jq2d' 'openui5']).then(() => {})
+    </script>
     <script src="gauge.min.js"></script>
     <title>DAQ Control</title>
 
@@ -146,7 +146,7 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
                 {
 
 
-                  var histo = JSROOT.CreateHistogram("TH1F",obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length);
+                  var histo = JSROOT.createHistogram("TH1F",obj["Content"]["Event"]["Groups"][i]["Channels"][j]["Data"].length);
                   //JSROOT.draw(toto, histo);
 
 
@@ -197,7 +197,6 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     <script>
     window.onload=function()
 		{
-			JSROOT.AssertPrerequisites("2d,histo");
 
 			document.getElementById("Actions").style.display='none';
 			document.body.style.background = "red";
