@@ -1,3 +1,4 @@
+if(WIN32)
   set(ARCHITECTURE "x64")
   return()
 if(CMAKE_SYSTEM_PROCESSOR)
