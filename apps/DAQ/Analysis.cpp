@@ -258,29 +258,29 @@ int main(int argc, char** argv)
   TH1D     sigmas_noise("Ration_event", "Ration_event", 100, 0, 5);
   double   scalefactor = 1.0;
   Channels channels;
-
-  /*channels.activateChannel(1, "N");
+  channels.activateChannel(0, "N");
+  channels.activateChannel(1, "N");
   channels.activateChannel(2, "N");
   channels.activateChannel(3, "N");
   channels.activateChannel(4, "N");
   channels.activateChannel(5, "N");
   channels.activateChannel(6, "N");
-  channels.activateChannel(7, "N");*/
+  channels.activateChannel(7, "N");
  // channels.activateChannel(8, "N");
-  channels.activateChannel(9, "N");
+ /* channels.activateChannel(9, "N");
   channels.activateChannel(10, "N");
   channels.activateChannel(11, "N");
   channels.activateChannel(12, "N");
   channels.activateChannel(13, "N");
   channels.activateChannel(14, "N");
   channels.activateChannel(15, "N");
-  channels.activateChannel(16, "N");
+  channels.activateChannel(16, "N");*/
 
   Long64_t NEntries = Run->GetEntries();
   NbrEvents         = NbrEventToProcess(NbrEvents, NEntries);
   channels.print();
   Event* event{nullptr};
-  int    efficiency{0};
+  int    good_stack{0};
   bool   good = false;
   bool   hasseensomething{false};
   if(Run->SetBranchAddress("Events", &event))
@@ -304,8 +304,12 @@ int main(int argc, char** argv)
     Run->GetEntry(evt);
     for(unsigned int ch = 0; ch != event->Channels.size(); ++ch)
     {
-      if(channels.DontAnalyseIt(ch)) continue;  // Data for channel X is in file but i dont give a *** to
-      // analyse it !
+      if(channels.DontAnalyseIt(ch)) continue;  // Data for channel X is in file but i dont give a *** to analyse it !
+      get_terminal_size(width, height);
+      fmt::print(fg(fmt::color::white) | fmt::emphasis::bold,"┌{0:─^{2}}┐\n"
+      "│{1: ^{2}}│\n"
+      "└{0:─^{2}}┘\n"
+      ,"", fmt::format("Channel {}",ch), width-2);
       if(evt == 0) Efficiency[ch] = 0;
       TH1D                                                            waveform = CreateAndFillWaveform(evt, event->Channels[ch], "Waveform", "Waveform");
       std::pair<std::pair<double, double>, std::pair<double, double>> meanstd  = MeanSTD(event->Channels[ch], SignalWindow, NoiseWindow);
@@ -316,12 +320,6 @@ int main(int argc, char** argv)
       // it's the same as Waveform one but in Red !!!
       // TH1D selected = CreateSelectionPlot(waveform);
 
-      ///////////***********************************************************************
-      ///////////***********************************************************************
-      ///////////***********************************************************************
-      ///////////***********************************************************************
-      ///////////***********************************************************************
-      ///////////***********************************************************************
       if((meanstd.second.first-meanstd.first.first)*channels.getPolarity(ch) < 2 * meanstd.first.second) hasseensomething = false;
       else hasseensomething = true;
 
@@ -507,11 +505,12 @@ int main(int argc, char** argv)
     if(good == true)
     {
       //hasseensomething=true;
-      efficiency++;
+      good_stack++;
       good = false;
     }
   }
-  std::cout << "Chamber efficiency " << efficiency * 1.00 / (NbrEvents * scalefactor) << std::endl;
+  float efficiency=good_stack * 1.00 / (NbrEvents * scalefactor);
+  std::cout << "Chamber efficiency " << efficiency << " +-" <<std::sqrt(efficiency*(1-efficiency)/NbrEvents)<< std::endl;
   if(event != nullptr) delete event;
   if(Run != nullptr) delete Run;
   if(fileIn.IsOpen()) fileIn.Close();
