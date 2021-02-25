@@ -2,14 +2,14 @@
 #   CMakeLists.txt to build DAQ   #
 #   Author LAGARDE Francois       #
 ###################################
-cmake_minimum_required(VERSION 3.10...3.19.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15...3.19.2 FATAL_ERROR)
+
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
+include(GetCMakeMM)
+cmmm(VERSION "0.9" REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
-
-include(GetCMakeMM)
-cmmm(VERSION "1.3" GIT_REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
 cmmm_modules_list(GIT_REPOSITORY "flagarde/CMakeCM" DESTINATION "Modules")
 
 #PreventInSourceBuilds is in  common but try to avoid downloading many files
