@@ -136,6 +136,11 @@ if(NOT ROOT_FOUND OR NOT USE_ROOT_SYSTEM)
   compileROOT()
 endif()
 
+if(NOT ROOT_FOUND)
+  set(ROOT_DIR "${ROOT_INSTALL_PREFIX}")
+  find_package(ROOT ${ROOT_VERSION} QUIET CONFIG)
+endif()
+
 find_package(ROOT ${ROOT_VERSION} REQUIRED CONFIG)
 include("${ROOT_USE_FILE}")
 add_library(ROOT INTERFACE)
