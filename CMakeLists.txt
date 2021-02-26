@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.15...3.19.2 FATAL_ERROR)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
 include(GetCMakeMM)
-cmmm(VERSION "0.9" REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
+cmmm(VERSION "1.0" REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
@@ -88,19 +88,7 @@ if(POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif()
 
-if(POLICY CMP0083)
-  cmake_policy(SET CMP0083 NEW)
-  include(CheckPIESupported)
-  check_pie_supported(OUTPUT_VARIABLE output LANGUAGES CXX)
-  if(NOT CMAKE_CXX_LINK_PIE_SUPPORTED)
-    message(WARNING "PIE is not supported at link time: ${output}.\n" "PIE link options will not be passed to linker.")
-  else()
-    set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-    message(STATUS "PIE link options will be passed to linker.")
-  endif()
-else()
-  set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
-endif()
+include(PositionIndependentExecutable)
 
 # Optional IPO. Do not use IPO if it's not supported by compiler.
 include(CheckIPOSupported)
