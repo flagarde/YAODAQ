@@ -1,4 +1,4 @@
-include(PositionIndependentExecutable)
+#include(PositionIndependentExecutable)
 
 set(FETCHCONTENT_QUIET OFF)
 

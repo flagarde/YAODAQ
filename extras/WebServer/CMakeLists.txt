@@ -2,5 +2,5 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/extern
 
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/www/" DESTINATION "${CMAKE_INSTALL_PREFIX}/www/")
 
-include(Jsroot)
+include(JSRoot)
 #include(civet)

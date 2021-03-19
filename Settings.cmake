@@ -2,51 +2,56 @@
 # Options for the external package #
 ####################################
 
+## General options
+set(ENABLE_TESTS TRUE)
 
 ## INCLUDED BY CPM
-
 # doctest
-set(DOCTEST_REPOSITORY "onqtam/doctest")
-set(DOCTEST_VERSION "master")
-
-# CLI11
-set(CLI11_REPOSITORY "CLIUtils/CLI11")
-set(CLI11_VERSION "master")
+set(DOCTEST_REPOSITORY "https://gitlab.com/ExternalRepositories/doctest")
+set(DOCTEST_VERSION "2.4.5")
 
 # FlakedTuna
-set(FLAKEDTUNA_REPOSITORY "flagarde/FlakedTuna")
-set(FLAKEDTUNA_VERSION "master")
+set(FLAKEDTUNA_REPOSITORY "https://gitlab.com/flagarde/FlakedTuna")
+set(FLAKEDTUNA_VERSION "1.0")
+
+# CLI11
+set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11")
+set(CLI11_TAG "master")
+
+
 
 ##
 
 # OpenSSL
-set(OPENSSL_REPOSITORY "https://github.com/flagarde/openssl-cmake.git")
+set(OPENSSL_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake")
+set(OPENSSL_TAG "1_1_1j")
+set(OPENSSL_URL "https://gitlab.com/ExternalRepositories/openssl/-/archive/OpenSSL_${OPENSSL_TAG}/openssl-OpenSSL_${OPENSSL_TAG}.zip")
 set(OPENSSL_TAG "master")
 # option(SYSTEM_OPENSSL "Try to use system OpenSSL" OFF) zlib-ng
-set(ZLIB-NG_REPOSITORY "https://github.com/zlib-ng/zlib-ng.git")
+set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng")
 set(ZLIB-NG_TAG "develop")
 # IXWebSocket
-set(IXWEBSOCKET_REPOSITORY "https://github.com/machinezone/IXWebSocket.git")
+set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket")
 set(IXWEBSOCKET_TAG "master")
 # jsoncpp
-set(JSONCPP_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git")
+set(JSONCPP_REPOSITORY "https://gitlab.com/ExternalRepositories/jsoncpp")
 set(JSONCPP_TAG "master")
 # elogpp
-set(ELOGPP_REPOSITORY "https://github.com/RPClab/elogpp.git")
+set(ELOGPP_REPOSITORY "https://gitlab.com/flagarde/elogpp")
 set(ELOGPP_TAG "master")
 
 # fmt
-set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git")
+set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt")
 set(FMT_VERSION "master")
 # spdlog
-set(SPDLOG_REPOSITORY "https://github.com/gabime/spdlog.git")
+set(SPDLOG_REPOSITORY "https://gitlab.com/ExternalRepositories/spdlog")
 set(SPDLOG_VERSION "v1.x")
 
-set(serial_repository "https://github.com/RPClab/serial")
+set(serial_repository "https://gitlab.com/flagarde/serial")
 set(serial_version "master")
 
 # CAENlibs
-set(CAENlibs_repository "https://github.com/RPClab/CAENlibs.git")
+set(CAENlibs_repository "https://gitlab.com/flagarde/CAENlibs")
 set(CAENlibs_version "master")
 
 
@@ -54,14 +59,14 @@ set(CAENlibs_version "master")
 set(soci_repository "https://github.com/SOCI/soci.git")
 set(soci_version "master")
 # toml11
-set(toml11_repository "https://github.com/ToruNiina/toml11.git")
+set(toml11_repository "https://gitlab.com/ExternalRepositories/toml11")
 set(toml11_version "master")
 
 # civet
 set(civet_repository "https://github.com/civetweb/civetweb.git")
 set(civet_version "master")
 # magic_enum
-set(magic_enum_repository "https://github.com/sachnk/magic_enum.git")
+set(magic_enum_repository "https://gitlab.com/ExternalRepositories/magic_enum")
 set(magic_enum_version "master")
 # jsroot
 set(jsroot_repository "https://github.com/root-project/jsroot.git")
@@ -78,9 +83,9 @@ set(SNMP_version "master")
 
 
 # Compiling ROOT can be very long so :
-option(USE_ROOT "Try to find a ROOT installation and use it" ON)
+option(USE_ROOT_SYSTEM "Try to find a ROOT installation and use it" ON)
 option(BUILD_ROOT "Build ROOT Folder" ON)
-set(LOOK_FOR_ROOT_VERSION "6.20.06")
+set(LOOK_FOR_ROOT_VERSION "6.22.06")
 # If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
 set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
 # ########################################################################################################################################################################################################################################################

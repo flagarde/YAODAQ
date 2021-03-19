@@ -1,8 +1,6 @@
 # List all files containing tests. (Change as needed)
 set(TESTFILES CAENErrors.cpp)
 
-set(TEST_RUNNER_PARAMS "") # Any arguemnts to feed the test runner (change as needed).
-
 # ------------------------------------------------------------------------------
 # -- Make Tests (no change needed).
 # ------------------------------------------------------------------------------
@@ -15,4 +13,4 @@ target_include_directories(Tests PUBLIC "${INCLUDE_OUTPUT_DIR}")
 
 target_link_libraries(Tests PUBLIC CAENExceptions PUBLIC doctest_with_main)
 
-doctest_discover_tests(Tests COMMAND Tests ${TEST_RUNNER_PARAMS})
+doctest_discover_tests(Tests COMMAND Tests)

@@ -1,18 +1,25 @@
-###################################
-#   CMakeLists.txt to build DAQ   #
-#   Author LAGARDE Francois       #
-###################################
-cmake_minimum_required(VERSION 3.15...3.19.2 FATAL_ERROR)
+#########################################################
+#  ██╗   ██╗ █████╗  ██████╗ ██████╗  █████╗  ██████╗   #
+#  ╚██╗ ██╔╝██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔═══██╗  #
+#   ╚████╔╝ ███████║██║   ██║██║  ██║███████║██║   ██║  #
+#    ╚██╔╝  ██╔══██║██║   ██║██║  ██║██╔══██║██║▄▄ ██║  #
+#     ██║   ██║  ██║╚██████╔╝██████╔╝██║  ██║╚██████╔╝  #
+#     ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚══▀▀═╝   #
+#########################################################
+cmake_minimum_required(VERSION 3.16...3.19.2 FATAL_ERROR)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
+
+# Load Setting to be able to change the options etc.
+include(Settings)
+
 include(GetCMakeMM)
-cmmm(VERSION "1.0" REPOSITORY "flagarde/CMakeMM" VERBOSITY VERBOSE DESTINATION "CMakeMM")
+cmmm(VERSION "1.0" REPOSITORY "flagarde/CMakeMM" PROVIDER "gitlab" VERBOSITY VERBOSE DESTINATION "CMakeMM")
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
-cmmm_modules_list(GIT_REPOSITORY "flagarde/CMakeCM" DESTINATION "Modules")
+cmmm_modules_list(REPOSITORY "flagarde/CMakeCM" PROVIDER "gitlab" DESTINATION "Modules" BRANCH "main")
 
-#PreventInSourceBuilds is in  common but try to avoid downloading many files
 include(PreventInSourceBuilds)
 prevent_in_source_builds()
 
@@ -23,6 +30,11 @@ include(Standards)
 cxx_17()
 c_11()
 
+option(ENABLE_TESTS "Build the tests" TRUE)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+MESSAGE(STATUS "${ENABLE_TESTS}")
+
 #include(DefaultConfigurations)
 #include(ConfigurationCheck)
 
@@ -30,9 +42,7 @@ c_11()
 
 #include(Formatters)
 
-include(Settings)
 
-include(Doctest)
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -64,9 +74,6 @@ link_directories("${LIBRARY_OUTPUT_DIR}")
 # FIXME
 set(CMAKE_PREFIX_PATH "${CMAKE_OUTPUT_DIRECTORY}" "${CMAKE_INSTALL_PREFIX}/lib/cmake" "${CMAKE_INSTALL_PREFIX}/lib64/cmake")
 
-# Install doctest to allow testing exectuables and test inside executables
-include(CTest)
-
 # If we want to have test in the executables
 if(ENABLE_DOCTESTS)
   add_dependencies(YAODAQ::doctest)
@@ -88,7 +95,7 @@ if(POLICY CMP0048)
   cmake_policy(SET CMP0048 NEW)
 endif()
 
-include(PositionIndependentExecutable)
+#include(PositionIndependentExecutable)
 
 # Optional IPO. Do not use IPO if it's not supported by compiler.
 include(CheckIPOSupported)
@@ -101,13 +108,18 @@ endif()
 
 include(Sanitizers)
 
-include(DependencyGraph)
-gen_dep_graph(OUTPUT_DIR ${CMAKE_INSTALL_PREFIX} TARGET_NAME dependency-graph OUTPUT_TYPE pdf)
+#include(DependencyGraph)
+#gen_dep_graph(OUTPUT_DIR ${CMAKE_INSTALL_PREFIX} TARGET_NAME dependency-graph OUTPUT_TYPE pdf)
 
-include(Tools)
-clang_tidy(-format-style=file -checks=* -header-filter='${CMAKE_SOURCE_DIR}/*')
-cppcheck(--enable=warning,performance,portability,missingInclude --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)" --suppress=missingIncludeSystem --quiet --verbose --force)
-include_what_you_use(-Xiwyu)
+#include(Tools)
+#clang_tidy(-format-style=file -checks=* -header-filter='${CMAKE_SOURCE_DIR}/*')
+#cppcheck(--enable=warning,performance,portability,missingInclude --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)" --suppress=missingIncludeSystem --quiet --verbose --force)
+#include_what_you_use(-Xiwyu)
+
+if(ENABLE_TESTS)
+  include(Doctest)
+  add_subdirectory(tests)
+endif()
 
 add_subdirectory(src)
 
@@ -117,10 +129,14 @@ endif()
 
 add_subdirectory(apps)
 
-if(ENABLE_TESTS)
-  add_subdirectory(tests)
-endif()
-
 if(ENABLE_DOCS)
   add_subdirectory(docs)
 endif()
+
+set(OPENSSL_VER "1.1.1j")
+if(OPENSSL_VERSION)
+  string(REPLACE "." "_" OPENSSL_TAG ${OPENSSL_VER})
+else()
+  set(OPENSSL_TAG "1_1_1j" CACHE STRING "Version the OpenSSL to download")
+endif()
+

@@ -290,6 +290,7 @@ int main(int argc, char** argv)
   }
 
   TCanvas can;
+  can.Divide(4,2);
   // std::vector<TH1D> Verif;
   std::map<int, int> Efficiency;
   for(Long64_t evt = 0; evt < NbrEvents; ++evt)
@@ -323,31 +324,35 @@ int main(int argc, char** argv)
       if((meanstd.second.first-meanstd.first.first)*channels.getPolarity(ch) < 2 * meanstd.first.second) hasseensomething = false;
       else hasseensomething = true;
 
+      can.cd(ch);
       if(hasseensomething == true)
       {
         good = true;
         //hasseensomething=true;
         can.Clear();
         waveform.GetXaxis()->SetRangeUser(0, 1024);
+        waveform.SetLineColor(kGreen);
         //waveform.Scale(1.0 / 4096);
         waveform.Draw("HIST");
         // if(channels.ShouldBePositive(ch)) waveform.Fit(f1);
         // else waveform.Fit(f1);
-        can.SaveAs(("GOOD/GOOD" + std::to_string(evt) + "_Channel" + std::to_string(ch) + ".pdf").c_str(),"Q");
+
+        //can.SaveAs(("GOOD/GOOD" + std::to_string(evt) + "_Channel" + std::to_string(ch) + ".pdf").c_str(),"Q");
         fmt::print(fg(fmt::color::green) | fmt::emphasis::bold,"{:^{}}\n",fmt::format("Signal region : {:03.2f}+-{:03.2f} Noise region : {:03.2f}+-{:03.2f}",meanstd.second.first,meanstd.second.second,meanstd.first.first,meanstd.first.second),width);
       }
       else
       {
         can.Clear();
         waveform.GetXaxis()->SetRangeUser(0, 1024);
+        waveform.SetLineColor(kRed);
         // waveform.Scale(1.0 / 4096);
         waveform.Draw("HIST");
         // if(channels.ShouldBePositive(ch)) waveform.Fit(f1);
         // else waveform.Fit(f1);
-        can.SaveAs(("BAD/BAD" + std::to_string(evt) + "_Channel" + std::to_string(ch) + ".pdf").c_str(),"Q");
+        //can.SaveAs(("BAD/BAD" + std::to_string(evt) + "_Channel" + std::to_string(ch) + ".pdf").c_str(),"Q");
         fmt::print(fg(fmt::color::red) | fmt::emphasis::bold,"{:^{}}\n",fmt::format("Signal region : {:03.2f}+-{:03.2f} Noise region : {:03.2f}+-{:03.2f}",meanstd.second.first,meanstd.second.second,meanstd.first.first,meanstd.first.second),width);
       }
-
+      can.SaveAs(("Event_" + std::to_string(evt) + ".pdf").c_str(),"Q");
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // 0
       // Substract the mean value of amplitudes ( center to 0 )
