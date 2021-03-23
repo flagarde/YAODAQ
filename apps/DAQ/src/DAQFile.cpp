@@ -1,7 +1,6 @@
 #include "DAQFile.hpp"
 
 #include "Channel.hpp"
-#include "ElogManager.hpp"
 #include "Event.hpp"
 
 #include <iostream>
@@ -10,8 +9,8 @@ DAQFile::DAQFile(const std::string& name, const std::string& option, const std::
 
 DAQFile::~DAQFile()
 {
-  if(m_Tree != nullptr) delete m_Tree;
   if(m_Event != nullptr) delete m_Event;
+  if(m_Tree != nullptr) delete m_Tree;
   std::cout << "Destroing" << std::endl;
 }
 
@@ -49,17 +48,35 @@ void DAQFile::parseData(const Data& data)
 }
 void DAQFile::doAfterOpen()
 {
+  std::cout<<"Run "<<m_ID<<std::endl;
+  elogpp::ElogEntry entry  = m_ElogManager.createEntry();
+  std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
+  std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
+  std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+  long                                  second      = now2.count() / 1000000000;
+  entry.setAttribute("Begin", std::to_string(second));
+  entry.user("DAQ").to("NAS", "Runs").send("V");
   m_Tree  = new TTree("Tree", "Tree");
   m_Event = new Event();
   m_Tree->Branch("Events", &m_Event, 10, 0);
 }
 
-void DAQFile::doBeforeClose() {}
+void DAQFile::doBeforeClose()
+{
+  elogpp::ElogEntry                             entry       = m_ElogManager.createEntry();
+  std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
+  std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
+  std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+  long                                  second      = now2.count() / 1000000000;
+  entry.setAttribute("End", std::to_string(second));
+  entry.user("DAQ").to("NAS", "Runs").edit(m_ID).send();
+}
 
 void DAQFile::setID()
 {
   m_ID = "0";
-  /*elogpp::ElogManager       manager;
-  elogpp::ElogEntry entry  = manager.createEntry();
-  m_ID=entry.user("DAQ").to("NAS", "Runs").getLastID();*/
+  elogpp::ElogEntry entry  = m_ElogManager.createEntry();
+  m_ID=entry.user("DAQ").to("NAS", "Runs").getLastID();
+  std::cout<<m_ID<<std::endl;
+  m_ID=std::to_string(std::stoi(m_ID)+1);
 }

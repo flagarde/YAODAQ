@@ -1,8 +1,8 @@
-
 #pragma once
 #include "Event.hpp"
 #include "RootFile.hpp"
 #include "TTree.h"
+#include "ElogManager.hpp"
 
 class DAQFile: public RootFile
 {
@@ -19,4 +19,5 @@ protected:
 private:
   TTree* m_Tree{nullptr};
   Event* m_Event{nullptr};
+  elogpp::ElogManager m_ElogManager;
 };

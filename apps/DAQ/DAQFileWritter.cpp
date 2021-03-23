@@ -39,6 +39,6 @@ int main(int argc, char** argv)
 
   spdlog::info("Listening on IP {0} Port {1}", host, port);
   FileWritter digitizer(filewritterName);
-  digitizer.setFile(std::make_unique<DAQFile>("File${ID}.root", "RECREATE", "File${ID}", 9));
+  digitizer.setFile(std::make_unique<DAQFile>("Run${ID}.root", "RECREATE", "Run${ID}", 9));
   return interrupt.wait();
 }
