@@ -5,7 +5,7 @@ configure_file("${YAODAQ_SRC}/ProgramInfos.hpp.in" "${INCLUDE_OUTPUT_DIR}/Progra
 
 # Include zlib-ng and openssl even if IXWebSocket include them too.
 include(zlib-ng)
-include(openssl)
+include(OpenSSL)
 include(IXWebSocket)
 include(FlakedTuna)
 # fmt and spdlog have difficulties to work together

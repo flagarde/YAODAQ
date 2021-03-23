@@ -18,16 +18,17 @@ set(FLAKEDTUNA_VERSION "1.0")
 set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11")
 set(CLI11_TAG "master")
 
-
+# OpenSSL
+set(USE_SYSTEM_OPENSSL "Try to use system OpenSSL" OFF)
+set(OPENSSLCMAKE_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake")
+set(OPENSSLCMAKE_VERSION "v2.0")
+set(OPENSSL_URL "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz")
+set(OPENSSL_URL_HASH "SHA256=aaf2fcb575cdf6491b98ab4829abf78a3dec8402b8b81efc8f23c00d443981bf")
+set(OPENSSL_VERSION "1.1.1j")
 
 ##
 
-# OpenSSL
-set(OPENSSL_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake")
-set(OPENSSL_TAG "1_1_1j")
-set(OPENSSL_URL "https://gitlab.com/ExternalRepositories/openssl/-/archive/OpenSSL_${OPENSSL_TAG}/openssl-OpenSSL_${OPENSSL_TAG}.zip")
-set(OPENSSL_TAG "master")
-# option(SYSTEM_OPENSSL "Try to use system OpenSSL" OFF) zlib-ng
+
 set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng")
 set(ZLIB-NG_TAG "develop")
 # IXWebSocket

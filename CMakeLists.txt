@@ -133,10 +133,3 @@ if(ENABLE_DOCS)
   add_subdirectory(docs)
 endif()
 
-set(OPENSSL_VER "1.1.1j")
-if(OPENSSL_VERSION)
-  string(REPLACE "." "_" OPENSSL_TAG ${OPENSSL_VER})
-else()
-  set(OPENSSL_TAG "1_1_1j" CACHE STRING "Version the OpenSSL to download")
-endif()
-

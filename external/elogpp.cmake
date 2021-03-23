@@ -4,7 +4,7 @@ if(NOT TARGET elogpp)
   externalproject_add(
     elogpp_project
     DEPENDS jsoncpp_project
-    DEPENDS openssl_project
+    DEPENDS OpenSSL::SSL
     GIT_REPOSITORY ${ELOGPP_REPOSITORY}
     GIT_TAG ${ELOGPP_TAG}
     GIT_PROGRESS TRUE
