@@ -12,10 +12,10 @@ public:
   virtual void parseData(const Data& data) final;
   virtual void doAfterOpen() final;
   virtual void doBeforeClose() final;
-
 protected:
   virtual void setID() final;
-
+  void createElog();
+  void updateElog();
 private:
   TTree* m_Tree{nullptr};
   Event* m_Event{nullptr};

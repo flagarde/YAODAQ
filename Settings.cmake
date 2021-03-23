@@ -19,12 +19,13 @@ set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11")
 set(CLI11_TAG "master")
 
 # OpenSSL
-set(USE_SYSTEM_OPENSSL "Try to use system OpenSSL" OFF)
+set(USE_SYSTEM_OPENSSL OFF)
 set(OPENSSLCMAKE_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake")
 set(OPENSSLCMAKE_VERSION "v2.0")
+set(OPENSSL_VERSION "1.1.1j")
 set(OPENSSL_URL "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz")
 set(OPENSSL_URL_HASH "SHA256=aaf2fcb575cdf6491b98ab4829abf78a3dec8402b8b81efc8f23c00d443981bf")
-set(OPENSSL_VERSION "1.1.1j")
+
 
 ##
 
@@ -33,7 +34,7 @@ set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng")
 set(ZLIB-NG_TAG "develop")
 # IXWebSocket
 set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket")
-set(IXWEBSOCKET_TAG "master")
+set(IXWEBSOCKET_TAG "v11.0.9")
 # jsoncpp
 set(JSONCPP_REPOSITORY "https://gitlab.com/ExternalRepositories/jsoncpp")
 set(JSONCPP_TAG "master")

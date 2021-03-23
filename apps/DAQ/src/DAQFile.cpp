@@ -4,14 +4,35 @@
 #include "Event.hpp"
 
 #include <iostream>
+#include <thread>
+
+void DAQFile::createElog()
+{
+  elogpp::ElogEntry entry  = m_ElogManager.createEntry();
+  std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
+  std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
+  std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+  long                                  second      = now2.count() / 1000000000;
+  entry.setAttribute("Begin", std::to_string(second));
+  entry.user("DAQ").to("NAS", "Runs").send("V");
+}
+
+void DAQFile::updateElog()
+{
+  elogpp::ElogEntry                             entry       = m_ElogManager.createEntry();
+  std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
+  std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
+  std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
+  long                                  second      = now2.count() / 1000000000;
+  entry.setAttribute("End", std::to_string(second));
+  entry.user("DAQ").to("NAS", "Runs").edit(m_ID).send();
+}
 
 DAQFile::DAQFile(const std::string& name, const std::string& option, const std::string& title, const int& compress, const int& netopt): RootFile(name, option, title, compress, netopt) {}
 
 DAQFile::~DAQFile()
 {
   if(m_Event != nullptr) delete m_Event;
-  if(m_Tree != nullptr) delete m_Tree;
-  std::cout << "Destroing" << std::endl;
 }
 
 void DAQFile::parseData(const Data& data)
@@ -48,14 +69,8 @@ void DAQFile::parseData(const Data& data)
 }
 void DAQFile::doAfterOpen()
 {
-  std::cout<<"Run "<<m_ID<<std::endl;
-  elogpp::ElogEntry entry  = m_ElogManager.createEntry();
-  std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
-  std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
-  std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
-  long                                  second      = now2.count() / 1000000000;
-  entry.setAttribute("Begin", std::to_string(second));
-  entry.user("DAQ").to("NAS", "Runs").send("V");
+  std::thread create(&DAQFile::createElog,this);
+  create.detach();
   m_Tree  = new TTree("Tree", "Tree");
   m_Event = new Event();
   m_Tree->Branch("Events", &m_Event, 10, 0);
@@ -63,20 +78,22 @@ void DAQFile::doAfterOpen()
 
 void DAQFile::doBeforeClose()
 {
-  elogpp::ElogEntry                             entry       = m_ElogManager.createEntry();
-  std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
-  std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
-  std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
-  long                                  second      = now2.count() / 1000000000;
-  entry.setAttribute("End", std::to_string(second));
-  entry.user("DAQ").to("NAS", "Runs").edit(m_ID).send();
+  m_Event->clear();
+  std::thread upload(&DAQFile::updateElog,this);
+  upload.detach();
 }
 
 void DAQFile::setID()
 {
-  m_ID = "0";
-  elogpp::ElogEntry entry  = m_ElogManager.createEntry();
-  m_ID=entry.user("DAQ").to("NAS", "Runs").getLastID();
-  std::cout<<m_ID<<std::endl;
+  //TODO Should fix this in elogpp
+  try
+  {
+    elogpp::ElogEntry entry  = m_ElogManager.createEntry();
+    m_ID=entry.user("DAQ").to("NAS", "Runs").getLastID();
+  }
+  catch(const int& e)
+  {
+    m_ID="0";
+  }
   m_ID=std::to_string(std::stoi(m_ID)+1);
 }

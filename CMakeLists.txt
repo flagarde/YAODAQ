@@ -33,8 +33,6 @@ c_11()
 option(ENABLE_TESTS "Build the tests" TRUE)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-MESSAGE(STATUS "${ENABLE_TESTS}")
-
 #include(DefaultConfigurations)
 #include(ConfigurationCheck)
 
@@ -71,6 +69,8 @@ set(CMAKE_INSTALL_RPATH "${LIBRARY_OUTPUT_DIR}")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 link_directories("${LIBRARY_OUTPUT_DIR}")
 
+
+
 # FIXME
 set(CMAKE_PREFIX_PATH "${CMAKE_OUTPUT_DIRECTORY}" "${CMAKE_INSTALL_PREFIX}/lib/cmake" "${CMAKE_INSTALL_PREFIX}/lib64/cmake")
 
@@ -98,13 +98,13 @@ endif()
 #include(PositionIndependentExecutable)
 
 # Optional IPO. Do not use IPO if it's not supported by compiler.
-include(CheckIPOSupported)
-check_ipo_supported(RESULT aResult OUTPUT aOutput)
-if(aResult)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-else()
-  message(WARNING "IPO is not supported:# ${aOutput}")
-endif()
+#include(CheckIPOSupported)
+#check_ipo_supported(RESULT aResult OUTPUT aOutput)
+#if(aResult)
+#  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+#else()
+#  message(WARNING "IPO is not supported:# ${aOutput}")
+#endif()
 
 include(Sanitizers)
 
