@@ -14,5 +14,3 @@
 [3]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/3?use_travis_com=true
 [4]: https://travis-matrix-badges.herokuapp.com/repos/RPClab/YAODAQ/branches/master/4?use_travis_com=true
 [5]: https://travis-ci.org/RPClab/YAODAQ
-
-To run webserver : civetweb ../confs/civet.conf -cgi_interpreter /usr/bin/php-cgi
