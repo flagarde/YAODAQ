@@ -32,6 +32,19 @@ namespace fs = std::filesystem;
 #include <sys/ioctl.h>
 #endif // Windows/Linux
 
+
+void Clear()
+{
+  #if defined _WIN32
+  system("cls");
+  //clrscr(); // including header file : conio.h
+  #elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+  std::cout<< u8"\033[2J\033[1;1H"; //Using ANSI Escape Sequences
+  #elif defined (__APPLE__)
+  system("clear");
+  #endif
+}
+
 void get_terminal_size(int& width, int& height) {
   #if defined(_WIN32)
   CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -344,6 +357,12 @@ int main(int argc, char** argv)
   app.add_option("-s,--signal", SignalWindow, "Width of the signal windows, delay between signal and trigger")->required()->type_size(2);
   std::pair<double, double> NoiseWindow;
   app.add_option("-n,--noise", NoiseWindow, "Noise window")->required()->type_size(2);
+  std::pair<double, double> NoiseWindowAfter;
+  app.add_option("--noiseAfter", NoiseWindowAfter, "Noise window after")->required()->type_size(2);
+  double NbrSigmaNoise=5.0;
+  app.add_option("--sigmaNoise", NbrSigmaNoise, "NbrSigmaNoise");
+
+
 
   int NumberChambers{0};
   app.add_option("-c,--chambers", NumberChambers, "Number of chamber(s)")->check(CLI::PositiveNumber)->required();
@@ -385,8 +404,9 @@ int main(int argc, char** argv)
   }
 
   TH1D total("Tick Distribution","Tick Distribution",1024,0,1024);
-
-
+  TH1D delta_t("delta_T","delta_T",100,0,10);
+  TH1D delta_T_not_event("delta_T_not_even","delta_T_not_even",100,0,10);
+  TH1D delta_T_noisy("delta_T_noisy","delta_T_noisy",100,0,10);
   /**************************/
   /* Initialize the plotter */
   /**************************/
@@ -443,6 +463,7 @@ int main(int argc, char** argv)
   channels.print();
   Event* event{nullptr};
   int    good_stack{0};
+  int    good_stack_corrected{0};
   bool   good = false;
   bool   hasseensomething{false};
   if(Run->SetBranchAddress("Events", &event))
@@ -455,6 +476,10 @@ int main(int argc, char** argv)
   // std::vector<TH1D> Verif;
   std::map<int, int> Efficiency;
   TCanvas can("","",1280,720);
+
+  int event_skip1{-1};
+  int event_skip2{-1};
+  int total_event{0};
   for(Long64_t evt = 0; evt < NbrEvents; ++evt)
   {
     get_terminal_size(width, height);
@@ -469,6 +494,7 @@ int main(int argc, char** argv)
 
     event->clear();
     Run->GetEntry(evt);
+
     std::vector<TH1D> Plots(event->Channels.size());
     float min=+9999.0;
     float max=-9999.0;
@@ -506,9 +532,29 @@ int main(int argc, char** argv)
     graphPad.Draw();
     graphPad.cd();
     graphPad.Divide(1,8,0.,0.);
+
+    double delta_t_last{0};
+    double delta_t_new{0};
     for(unsigned int ch = 0; ch != event->Channels.size(); ++ch)
     {
       if(channels.DontAnalyseIt(ch)) continue;  // Data for channel X is in file but i dont give a *** to analyse it !
+
+
+
+
+      if(ch==0)
+      {
+        delta_t_new = event->Channels[ch].TriggerTimeTag;
+        if(evt!=0)
+        {
+          delta_t.Fill((delta_t_new-delta_t_last)*8.5e-9);
+        }
+      }
+
+
+
+
+
       get_terminal_size(width, height);
       fmt::print(fg(fmt::color::white) | fmt::emphasis::bold,"┌{0:─^{2}}┐\n"
       "│{1: ^{2}}│\n"
@@ -519,6 +565,8 @@ int main(int argc, char** argv)
       double max=getAbsMax(event->Channels[ch]);
       Normalise(event->Channels[ch],max);
       Plots[ch]=CreateAndFillWaveform(evt, event->Channels[ch], "Waveform", "Waveform");
+
+
       ///BAD PLEASE FIX THIS !!!
       std::pair<int,int> SignalWindow2;
       if(ch<=8)
@@ -527,6 +575,13 @@ int main(int argc, char** argv)
         SignalWindow2.second=trigger_ticks[8]-SignalWindow.second+SignalWindow.first/2;
       }
       std::pair<std::pair<double, double>, std::pair<double, double>> meanstd  = MeanSTD(event->Channels[ch], SignalWindow2, NoiseWindow);
+      std::pair<std::pair<double, double>, std::pair<double, double>> meanstdAfter  = MeanSTD(event->Channels[ch], SignalWindow2, NoiseWindowAfter);
+
+      if(meanstdAfter.first.second*1.0/meanstd.first.second >= NbrSigmaNoise)
+      {
+        event_skip1=evt;
+        event_skip2=evt+1;
+      }
 
       /*
        *
@@ -558,6 +613,7 @@ int main(int argc, char** argv)
       if(hasseensomething == true)
       {
         good = true;
+
         //hasseensomething=true;
         Plots[ch].SetLineColor(4);
         //waveform.Scale(1.0 / 4096);
@@ -643,18 +699,39 @@ int main(int argc, char** argv)
       event_min.DrawLine(0,meanstd.first.first+2 * meanstd.first.second,1024,meanstd.first.first+2 * meanstd.first.second);
       event_min.DrawLine(0,meanstd.first.first-2 * meanstd.first.second,1024,meanstd.first.first-2 * meanstd.first.second);
       event_min.Draw();*/
+
     }
+
+
     can.SetTitle(("Event " + std::to_string(evt)).c_str());
     can.SetName(("Event " + std::to_string(evt)).c_str());
     can.SaveAs((folder+"/Events"+"/Event"+std::to_string(evt)+".pdf").c_str(),"Q");
 
     if(good == true)
     {
-      //hasseensomething=true;
+      if(event_skip2!=evt)
+      {
+        good_stack_corrected++;
+
+      }
       good_stack++;
       good = false;
+      //hasseensomething=true;
+
     }
+    else
+    {
+      delta_T_not_event.Fill((delta_t_new-delta_t_last)*8.5e-9);
+    }
+
+    if(event_skip2!=evt)
+    {
+      total_event++;
+    }
+    delta_t_new=delta_t_last;
+    Clear();
   }
+
   for(std::map<int,TH1D>::iterator it= ticks_distribution.begin();it!= ticks_distribution.end();++it)
   {
     can.Clear();
@@ -673,11 +750,29 @@ int main(int argc, char** argv)
   total.Draw();
   can.SaveAs((folder+"/Others"+"/minimum_position_distribution_total.pdf").c_str(),"Q");
 
+  can.Clear();
+  delta_t.GetXaxis()->SetNdivisions(510);
+  delta_t.Draw();
+  can.SaveAs((folder+"/DeltaT.pdf").c_str(),"Q");
+
+  can.Clear();
+  delta_T_not_event.GetXaxis()->SetNdivisions(510);
+  delta_T_not_event.Draw();
+  can.SaveAs((folder+"/delta_T_not_event.pdf").c_str(),"Q");
+
+  can.Clear();
+  delta_T_noisy.GetXaxis()->SetNdivisions(510);
+  delta_T_noisy.Draw();
+  can.SaveAs((folder+"/delta_T_noisy.pdf").c_str(),"Q");
 
   float efficiency=good_stack * 1.00 / (NbrEvents * scalefactor);
-  std::cout << "Chamber efficiency " << efficiency << " +-" <<std::sqrt(efficiency*(1-efficiency)/NbrEvents)<< std::endl;
+  float efficiency_corrected=good_stack_corrected * 1.00 / (total_event * scalefactor);
+  std::cout << "Chamber efficiency " << efficiency << " +-" <<std::sqrt(efficiency*(1-efficiency)/NbrEvents)<<" with signal "<<good_stack<<" total event "<< NbrEvents<<std::endl;
+  std::cout << "Chamber efficiency corrected " << efficiency_corrected << " +-" <<std::sqrt(efficiency_corrected*(1-efficiency_corrected)/total_event)<<" with signal "<<good_stack_corrected<<" total event "<< total_event <<std::endl;
+
+  std::cout<< "Number event analysed " << total_event*100.0/NbrEvents <<std::endl;
+
   if(event != nullptr) delete event;
   if(Run != nullptr) delete Run;
   if(fileIn.IsOpen()) fileIn.Close();
-  std::cout << "BYE !!!" << std::endl;
 }
