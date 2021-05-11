@@ -10,8 +10,8 @@ class CAENVMEConnector: public Connector
 {
 public:
   CAENVMEConnector();
-  virtual void DoConnect() final;
-  virtual void DoDisconnect() final;
+  void DoConnect() final;
+  void DoDisconnect() final;
   virtual ~CAENVMEConnector() = default;
 
 private:

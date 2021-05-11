@@ -12,10 +12,10 @@ TEST_CASE("Test FileWritter")
   {
   public:
     Toto(const std::string& name = "", const std::string& option = ""): File(name, option){};
-    virtual bool isOpened() final { return true; }
-    virtual void open() final { std::cout << "Open" << std::endl; }
-    virtual void close() final { std::cout << "Close" << std::endl; }
-    virtual void parseData(const Data& data) final
+    bool isOpened() final { return true; }
+    void open() final { std::cout << "Open" << std::endl; }
+    void close() final { std::cout << "Close" << std::endl; }
+    void parseData(const Data& data) final
     {
       static int nevent{0};
       if(nevent == m_StopAfter) std::exit(0);
@@ -25,7 +25,7 @@ TEST_CASE("Test FileWritter")
         nevent++;
       }
     }
-    virtual void setID() final { m_ID = "Toto"; }
+    void setID() final { m_ID = "Toto"; }
 
   private:
     int m_StopAfter{10};

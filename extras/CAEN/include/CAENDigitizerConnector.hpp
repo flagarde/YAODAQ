@@ -11,11 +11,11 @@ class CAENDigitizerConnector: public Connector
 public:
   CAENDigitizerConnector();
   virtual ~CAENDigitizerConnector() = default;
-  virtual void DoDisconnect() final;
-  virtual void DoConnect() final;
+  void DoDisconnect() final;
+  void DoConnect() final;
 
 private:
-  virtual void verifyParameters() final;
+  void verifyParameters() final;
   std::string  m_ConnectionType{""};
   std::string  m_Model{""};
   int          m_LinkNum{0};

@@ -9,9 +9,9 @@ class RootFile: public File
 {
 public:
   RootFile(const std::string& name, const std::string& option = "", const std::string& title = "", const int& compress = ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault, const int& netopt = 0);
-  virtual void open() final;
-  virtual void close() final;
-  virtual bool isOpened() final;
+  void open() final;
+  void close() final;
+  bool isOpened() final;
   virtual void parseData(const Data&);
   virtual ~RootFile();
 

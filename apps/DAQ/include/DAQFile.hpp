@@ -9,11 +9,11 @@ class DAQFile: public RootFile
 public:
   DAQFile(const std::string& name, const std::string& option = "", const std::string& title = "", const int& compress = ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault, const int& netopt = 0);
   virtual ~DAQFile();
-  virtual void parseData(const Data& data) final;
-  virtual void doAfterOpen() final;
-  virtual void doBeforeClose() final;
+  void parseData(const Data& data) final;
+  void doAfterOpen() final;
+  void doBeforeClose() final;
 protected:
-  virtual void setID() final;
+  void setID() final;
   void createElog();
   void updateElog();
 private:

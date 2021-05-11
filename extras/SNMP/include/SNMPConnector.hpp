@@ -13,8 +13,8 @@ class SNMPConnector: public Connector
 public:
   SNMPConnector();
   virtual ~SNMPConnector() = default;
-  virtual void DoDisconnect() final;
-  virtual void DoConnect() final;
+  void DoDisconnect() final;
+  void DoConnect() final;
   Response     sendCommand(const Command& command) const;
 
 private:

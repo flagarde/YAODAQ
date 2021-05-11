@@ -7,9 +7,9 @@ class LCIOFile: public File
 {
 public:
   LCIOFile(const std::string& name, const std::string& option = "", const std::string& title = "", const int& compress = 0);
-  virtual void open() final;
-  virtual void close() final;
-  virtual bool isOpened() final;
+  void open() final;
+  void close() final;
+  bool isOpened() final;
   virtual void parseData(const Data&);
   virtual ~LCIOFile();
 

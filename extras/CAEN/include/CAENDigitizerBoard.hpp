@@ -971,7 +971,7 @@ private:
   bool                       m_DPPFirmware{false};
   //////// Board functions
   void         initilizeParameters();
-  virtual void verifyParameters() final;
+  void verifyParameters() final;
 
 public:
   /*! \fn      int ProgramDigitizer(int handle, WaveDumpConfig_t WDcfg)
