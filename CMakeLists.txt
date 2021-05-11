@@ -6,7 +6,7 @@
 #     ██║   ██║  ██║╚██████╔╝██████╔╝██║  ██║╚██████╔╝  #
 #     ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝ ╚══▀▀═╝   #
 #########################################################
-cmake_minimum_required(VERSION 3.16...3.19.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16...3.20.2 FATAL_ERROR)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -14,7 +14,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
 include(Settings)
 
 include(GetCMakeMM)
-cmmm(VERSION "1.0" REPOSITORY "flagarde/CMakeMM" PROVIDER "gitlab" VERBOSITY VERBOSE DESTINATION "CMakeMM")
+cmmm(VERSION "2.0" REPOSITORY "flagarde/CMakeMM" PROVIDER "gitlab" VERBOSITY VERBOSE)
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "YAODAQ for RPClab" HOMEPAGE_URL "https://github.com/RPClab/YAODAQ" LANGUAGES CXX)
 
@@ -29,6 +29,8 @@ default_install_prefix("${CMAKE_SOURCE_DIR}/bin")
 include(Standards)
 cxx_17()
 c_11()
+
+include(GNUInstallDirs)
 
 option(ENABLE_TESTS "Build the tests" TRUE)
 

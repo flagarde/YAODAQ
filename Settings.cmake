@@ -2,6 +2,31 @@
 # Options for the external package #
 ####################################
 
+# OpenSSL
+set(USE_SYSTEM_OPENSSL OFF)
+set(OPENSSLCMAKE_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake")
+set(OPENSSLCMAKE_TAG "v2.1")
+set(OPENSSL_VERSION "1.1.1j")
+set(OPENSSL_URL "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz")
+set(OPENSSL_URL_HASH "SHA256=aaf2fcb575cdf6491b98ab4829abf78a3dec8402b8b81efc8f23c00d443981bf")
+
+# Zlib-ng
+set(USE_SYSTEM_ZLIB OFF)
+set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng")
+set(ZLIB-NG_TAG "develop")
+
+# fmt
+set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt")
+set(FMT_VERSION "7.1.3")
+
+# spdlog
+set(SPDLOG_REPOSITORY "https://gitlab.com/ExternalRepositories/spdlog")
+set(SPDLOG_VERSION "v1.8.5")
+
+
+
+
+
 ## General options
 set(ENABLE_TESTS TRUE)
 
@@ -18,20 +43,14 @@ set(FLAKEDTUNA_VERSION "1.0")
 set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11")
 set(CLI11_TAG "master")
 
-# OpenSSL
-set(USE_SYSTEM_OPENSSL OFF)
-set(OPENSSLCMAKE_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake")
-set(OPENSSLCMAKE_VERSION "v2.0")
-set(OPENSSL_VERSION "1.1.1j")
-set(OPENSSL_URL "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz")
-set(OPENSSL_URL_HASH "SHA256=aaf2fcb575cdf6491b98ab4829abf78a3dec8402b8b81efc8f23c00d443981bf")
 
+set(TOML11_REPOSITORY "https://gitlab.com/ExternalRepositories/toml11.git")
+set(TOML11_TAG "master")
 
 ##
 
 
-set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng")
-set(ZLIB-NG_TAG "develop")
+
 # IXWebSocket
 set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket")
 set(IXWEBSOCKET_TAG "v11.0.9")
@@ -40,14 +59,10 @@ set(JSONCPP_REPOSITORY "https://gitlab.com/ExternalRepositories/jsoncpp")
 set(JSONCPP_TAG "master")
 # elogpp
 set(ELOGPP_REPOSITORY "https://gitlab.com/flagarde/elogpp")
-set(ELOGPP_TAG "master")
+set(ELOGPP_TAG "main")
 
-# fmt
-set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt")
-set(FMT_VERSION "master")
-# spdlog
-set(SPDLOG_REPOSITORY "https://gitlab.com/ExternalRepositories/spdlog")
-set(SPDLOG_VERSION "v1.x")
+
+
 
 set(serial_repository "https://gitlab.com/flagarde/serial")
 set(serial_version "master")

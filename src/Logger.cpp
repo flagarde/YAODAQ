@@ -4,7 +4,7 @@
 #include "Interrupt.hpp"
 #include "Message.hpp"
 #include "StatusCode.hpp"
-#include "spdlog.h"
+#include "spdlog/spdlog.h"
 
 Logger::Logger(const std::string& name, const std::string& type): m_Name(name), m_Type(type)
 {

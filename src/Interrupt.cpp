@@ -1,8 +1,9 @@
 #include "Interrupt.hpp"
 
-#include "spdlog.h"
+#include "spdlog/spdlog.h"
 
 #include <csignal>
+#include <thread>
 
 volatile bool Interrupt::m_Continue = true;
 

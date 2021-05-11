@@ -2,10 +2,10 @@
 
 #include "StatusCode.hpp"
 #include "magic_enum.hpp"
-#include "sinks/ansicolor_sink.h"
-#include "sinks/ostream_sink.h"
-#include "sinks/stdout_color_sinks.h"
-#include "spdlog.h"
+#include "spdlog/sinks/ansicolor_sink.h"
+#include "spdlog/sinks/ostream_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
 #include "toml.hpp"
 std::string Controller::getName()
 {

@@ -4,7 +4,7 @@
 #include "IXNetSystem.h"
 #include "Message.hpp"
 #include "StatusCode.hpp"
-#include "spdlog.h"
+#include "spdlog/spdlog.h"
 
 #include <iostream>
 int WebsocketServer::m_BrowserNumber = 1;

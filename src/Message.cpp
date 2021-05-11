@@ -2,7 +2,7 @@
 
 #include "Exception.hpp"
 #include "StatusCode.hpp"
-#include "json.h"
+#include "json/json.h"
 #include "magic_enum.hpp"
 
 Json::StreamWriterBuilder Message::m_StreamWriterBuilder = Json::StreamWriterBuilder();

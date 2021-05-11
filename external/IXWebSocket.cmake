@@ -1,14 +1,14 @@
 if(NOT TARGET IXWebSocket_project)
   include(ExternalProject)
   include(OpenSSL)
-  include(zlib-ng)
+  include(Zlib-ng)
   set(THREADS_PREFER_PTHREAD_FLAG ON)
   find_package(Threads REQUIRED)
   # ----- IXWebSocket_project package -----
   externalproject_add(
     IXWebSocket_project
     DEPENDS OpenSSL::SSL
-    DEPENDS zlib-ng_project
+    DEPENDS ZLIB::ZLIB
     GIT_REPOSITORY ${IXWEBSOCKET_REPOSITORY}
     GIT_TAG ${IXWEBSOCKET_TAG}
     GIT_PROGRESS TRUE

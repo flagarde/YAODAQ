@@ -5,7 +5,7 @@
 #include "States.hpp"
 #include "StatusCode.hpp"
 #include "WebsocketClient.hpp"
-#include "spdlog.h"
+#include "spdlog/spdlog.h"
 
 #include <iostream>
 #include <mutex>

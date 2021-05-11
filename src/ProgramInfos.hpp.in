@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "spdlog.h"
+#include "spdlog/spdlog.h"
 
 class ProgramInfos
 {
@@ -109,7 +109,7 @@ public:
   fmt::print(". ..... .....  ......  .                                                                        \n");
   fmt::print(". .. .... ...  ...     .                                                                        \n");
   fmt::print(".   .. .   .....                                                                                \n");
-  fmt::print(" .. ........     ... {0:>75}\n",getDescription()+" Version : "+getVersion());                                                                       
+  fmt::print(" .. ........     ... {0:>75}\n",getDescription()+" Version : "+getVersion());
 }
 private:
     inline static constexpr unsigned int PROJECT_VERSION_MAJOR{@PROJECT_VERSION_MAJOR@};
