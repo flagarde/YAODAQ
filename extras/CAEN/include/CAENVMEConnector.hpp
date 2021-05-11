@@ -15,7 +15,7 @@ public:
   virtual ~CAENVMEConnector() = default;
 
 private:
-  virtual void                                verifyParameters() final;
+  void                                verifyParameters() final;
   std::string                                 m_Model{""};
   short                                       m_ConetNode{0};
   short                                       m_LinkNumber{0};

@@ -46,7 +46,7 @@ public:
   void         setFlowcontrol();
 
 private:
-  virtual void                  verifyParameters() final;
+  void                  verifyParameters() final;
   serial::Serial                m_serial;
   std::string                   m_port{""};
   uint32_t                      m_baudrate{9600};

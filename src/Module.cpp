@@ -58,7 +58,6 @@ Module::Module(const std::string& name, const std::string& type, const yaodaq::C
     }
   }};
   m_WebsocketClient.setOnMessageCallback(m_CallBack);
-
 }
 
 int Module::loop()

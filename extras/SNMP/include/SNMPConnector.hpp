@@ -18,7 +18,7 @@ public:
   Response     sendCommand(const Command& command) const;
 
 private:
-  virtual void    verifyParameters() final;
+  void    verifyParameters() final;
   ::snmp_session* m_session{nullptr};
   std::string     m_MIBFilename{""};
   std::string     m_MIBPath{""};

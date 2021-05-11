@@ -15,5 +15,4 @@ public:
   virtual ~Controller() = default;
   void                  sendAction(const std::string& action);
   void                  sendCommand(const std::string& command);
-
 };
