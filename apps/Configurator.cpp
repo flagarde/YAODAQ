@@ -2,19 +2,9 @@
 
 #include "CLI/CLI.hpp"
 #include "ProgramInfos.hpp"
-#include "spdlog.h"
-//#include "fmt/core.h"
-//#include "fmt/format.h"
-/*#include "chrono.h"
-#include "color.h"
-#include "compile.h"
-#include "format-inl.h"
-#include "locale.h"
-#include "os.h"
-#include "ostream.h"
-#include "posix.h"
-#include "printf.h"
-#include "ranges.h"*/
+#include "spdlog/spdlog.h"
+
+using namespace yaodaq;
 
 int main(int argc, char** argv)
 {
@@ -22,9 +12,9 @@ int main(int argc, char** argv)
   infos.Logo();
   Interrupt interrupt;
   CLI::App  app{"Websocket Server"};
-  int       port{8282};
+  int       port{GeneralParameters::getPort()};
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
-  std::string host{ix::SocketServer::kDefaultHost};
+  std::string host{GeneralParameters::getHost()};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
   int backlog{ix::SocketServer::kDefaultTcpBacklog};
   app.add_option("-b,--backlog", backlog, "Backlog")->check(CLI::Range(0, 5));
@@ -40,19 +30,8 @@ int main(int argc, char** argv)
   {
     return app.exit(e);
   }
-  bool         stop{false};
-  char         answer{'a'};
+
   Configurator configurator(port, host, backlog, maxConnections, handshakeTimeoutSecs);
-  configurator.listen();
-  configurator.start();
-  fmt::print("Websocket server started on ip {0} port {1} !\n", host, port);
-  fmt::print("Type q and ENTER to stop it !\n");
-  do
-  {
-    std::cin >> answer;
-    if(answer == 'q' || answer == 'Q') stop = true;
-  } while(stop == false);
-  configurator.stop();
-  fmt::print("Bye !\n");
-  return interrupt.wait();
+
+  return configurator.loop();
 }

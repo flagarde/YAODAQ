@@ -1,6 +1,11 @@
 #include "FileWritter.hpp"
 
-FileWritter::FileWritter(const std::string& name, const std::string& type): Module(name, type) {}
+#include "Classes.hpp"
+
+FileWritter::FileWritter(const std::string& name, const std::string& type): Module(name, type , yaodaq::CLASS::FileWritter )
+{
+  skipConfigFile();
+}
 
 void FileWritter::setFileName(const std::string& name)
 {

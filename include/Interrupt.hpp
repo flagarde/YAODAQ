@@ -1,12 +1,18 @@
 #pragma once
 
-class Interrupt
+namespace yaodaq
 {
-public:
-  Interrupt();
-  int wait();
-  virtual ~Interrupt() = default;
 
-private:
-  volatile static bool m_Continue;
+  enum class SIGNAL;
+
+  class Interrupt
+  {
+  public:
+    void init();
+    SIGNAL getSignal();
+
+  private:
+    volatile static SIGNAL m_Signal;
+  };
+
 };

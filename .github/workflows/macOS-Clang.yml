@@ -1,4 +1,4 @@
-name: Linux GCC ROOT
+name: MacOS Clang ROOT Geant4
 
 on:
     push:
@@ -11,9 +11,9 @@ env:
   CMAKE_VERSION: 3.16.x
   NINJA_VERSION: 1.10.2
   BUILD_TYPE: Release
-  CC: gcc-10
-  CXX: g++-10
-  artifact: "Linux-GCC.tar.xz"
+  CC: clang
+  CXX: clang++
+  artifact: "macOS.tar.xz"
   INSTALL_ROOT: TRUE
 
 jobs:
@@ -52,11 +52,8 @@ jobs:
   build:
     needs: format
     name: "Build"
-    runs-on: ubuntu-20.04
+    runs-on: macos-latest
     steps:
-
-    #- name: Update Ubuntu
-    #  run: sudo apt update ; sudo apt full-upgrade
 
     - uses: actions/download-artifact@v2
       with:
@@ -73,22 +70,19 @@ jobs:
       with:
         version: '${{env.NINJA_VERSION}}'
 
-    - name: Setup conda
-      uses: s-weigand/setup-conda@v1
-
     - name: Use ccache
       uses: hendrikmuhs/ccache-action@v1.0.2
 
     - name: Install ROOT
-      run: conda install root -c conda-forge
       if: env.INSTALL_ROOT == 'TRUE'
+      run: brew install root
 
     - name: Test ROOT
-      run: root --version
       if: env.INSTALL_ROOT == 'TRUE'
+      run: root --version
 
     - name: Configure
-      run: cmake -S ${{ github.workspace }} -G Ninja  -B build -D CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
+      run: cmake -S ${{ github.workspace }} -B build -D CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
 
     - name: Build
       run: cmake --build build --config ${{ env.BUILD_TYPE }} --parallel 2
@@ -121,15 +115,12 @@ jobs:
     - name: Store Release url
       run: |
         echo "${{ steps.create_release.outputs.upload_url }}" > ./upload_url
-    - name: Pack
-      working-directory: instdir
-      run: cmake -E tar cJfv ../${{ env.artifact }} .
-
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
         path: instdir
         name: ${{ env.artifact }}
+
   publish:
     name: "Publish"
     if: contains(github.ref, 'tags/v')

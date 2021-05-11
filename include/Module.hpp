@@ -1,10 +1,14 @@
 #pragma once
 
+#include "Identifier.hpp"
+#include "Interrupt.hpp"
+#include "Classes.hpp"
+
 #include "ConfigurationLoader.hpp"
 #include "Message.hpp"
 #include "States.hpp"
 #include "StatusCode.hpp"
-#include "WebsocketClient.hpp"
+#include "WebSocketClient.hpp"
 #include "spdlog/spdlog.h"
 
 #include <iostream>
@@ -21,8 +25,14 @@ using yaodaq_string_view = spdlog::string_view_t;
 class Module
 {
 public:
-  Module(const std::string& name = "", const std::string& type = "Module");
+  Module(const std::string& name = "", const std::string& type = "Module", const yaodaq::CLASS& _class = yaodaq::CLASS::Module);
   virtual ~Module() = default;
+
+  int loop();
+  void skipConfigFile();
+
+  void setURL(const std::string&);
+
   void                                   Initialize();
   void                                   Connect();
   void                                   Configure();
@@ -134,6 +144,10 @@ protected:
   std::shared_ptr<spdlog::logger> m_Logger{nullptr};
 
 private:
+  void signalMessage();
+  yaodaq::Identifier m_Identifier;
+  yaodaq::Interrupt  m_Interrupt;
+  bool            m_UseConfigFile{true};
   void            DoDoLoopOnStart();
   void            DoDoLoopOnPause();
   volatile States m_State{States::UNINITIALIZED};
@@ -163,6 +177,6 @@ private:
   void                                                sendState();
   void                                                setState(const States& state);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
-  WebsocketClient                                     m_WebsocketClient;
+  yaodaq::WebSocketClient                                     m_WebsocketClient;
   std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack;
 };

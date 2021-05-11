@@ -1,13 +1,84 @@
 #include "Module.hpp"
 
+#include <thread>
+
+#include "Classes.hpp"
+#include "Signals.hpp"
+
 #include "Exception.hpp"
 #include "Message.hpp"
 #include "StatusCode.hpp"
 #include "magic_enum.hpp"
-#include "spdlog/sinks/ansicolor_sink.h"
-#include "spdlog/sinks/ostream_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
+
+void Module::signalMessage()
+{
+  // Skip one line
+  fmt::print("\n");
+  if(magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Critical)) m_Logger->critical("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Error)) m_Logger->error("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Warning)) m_Logger->warn("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Info)) m_Logger->info("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  else m_Logger->trace("Signal {} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+}
+
+void Module::setURL(const std::string& url)
+{
+  m_WebsocketClient.setUrl(url);
+}
+
+Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): m_Identifier(_class,type,name), m_Type(type), m_Name(name)
+{
+  m_Interrupt.init();
+  spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
+  m_Logger                          = std::make_shared<spdlog::logger>(m_Identifier.getIdentifier(), std::begin(sink_list), std::end(sink_list));
+  m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
+  m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
+    if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
+    else if(msg->type == ix::WebSocketMessageType::Open)
+    {
+      this->OnOpen(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Close)
+    {
+      this->OnClose(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Error)
+    {
+      this->OnError(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Ping)
+    {
+      this->OnPing(msg);
+    }
+    else if(msg->type == ix::WebSocketMessageType::Pong)
+    {
+      this->OnPong(msg);
+    }
+  }};
+  m_WebsocketClient.setOnMessageCallback(m_CallBack);
+
+}
+
+int Module::loop()
+{
+  m_Logger->info("Listening on {}.",m_WebsocketClient.getUrl());
+  std::thread startListening(&Module::startListening,this);
+  startListening.detach();
+  //startListening();
+  while(m_Interrupt.getSignal() == yaodaq::SIGNAL::NO )
+  {
+    std::this_thread::sleep_for(std::chrono::microseconds(500));
+  }
+  m_WebsocketClient.disableAutomaticReconnection();
+  signalMessage();
+  stopListening();
+  return 0;
+}
+
+
+
 
 ConfigurationLoader Module::m_Config = ConfigurationLoader();
 
@@ -58,37 +129,7 @@ States Module::getState()
   return m_State;
 }
 
-Module::Module(const std::string& name, const std::string& type): m_Type(type), m_Name(name)
-{
-  spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
-  m_Logger                          = std::make_shared<spdlog::logger>(m_Type + "/" + m_Name, std::begin(sink_list), std::end(sink_list));
-  m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
-  m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
-    if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
-    else if(msg->type == ix::WebSocketMessageType::Open)
-    {
-      this->OnOpen(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Close)
-    {
-      this->OnClose(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Error)
-    {
-      this->OnError(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Ping)
-    {
-      this->OnPing(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Pong)
-    {
-      this->OnPong(msg);
-    }
-  }};
-  m_WebsocketClient.setOnMessageCallback(m_CallBack);
-  startListening();
-}
+
 
 void Module::verifyParameters() {}
 
@@ -115,7 +156,7 @@ void Module::Initialize()
 {
   try
   {
-    LoadConfig();
+    if(m_UseConfigFile)LoadConfig();
     DoInitialize();
     setState(States::INITIALIZED);
     sendState();
@@ -148,8 +189,11 @@ void Module::Configure()
 {
   try
   {
-    m_Config.reloadParameters(m_Name);
-    m_Conf = m_Config.getConfig(m_Name);
+    if(m_UseConfigFile)
+    {
+      m_Config.reloadParameters(m_Name);
+      m_Conf = m_Config.getConfig(m_Name);
+    }
     DoConfigure();
     setState(States::CONFIGURED);
     sendState();
@@ -394,6 +438,11 @@ void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
   }
   else
     OnMessage(msg);
+}
+
+void Module::skipConfigFile()
+{
+  m_UseConfigFile=false;
 }
 
 void Module::OnOpen(const ix::WebSocketMessagePtr& msg)

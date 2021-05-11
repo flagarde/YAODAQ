@@ -10,7 +10,7 @@
 class Board: public Module
 {
 public:
-  Board(const std::string& name = "", const std::string& type = "Board");
+  Board(const std::string& name = "", const std::string& type = "DefaultBoard", const yaodaq::CLASS& _class = yaodaq::CLASS::Board);
   virtual ~Board() = default;
   void printConnectorParameters();
 

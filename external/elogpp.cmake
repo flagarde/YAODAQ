@@ -11,6 +11,9 @@ if(NOT DEFINED ELOGPP_TAG)
   set(ELOGPP_TAG "main")
 endif()
 
+include(Jsoncpp)
+include(OpenSSL)
+
 declare_option(REPOSITORY elogpp OPTION COMPILE_ELOG VALUE OFF)
 declare_option(REPOSITORY elogpp OPTION BUILD_TEST VALUE OFF)
 declare_option(REPOSITORY elogpp OPTION USE_SYSTEM_OPENSSL VALUE OFF)

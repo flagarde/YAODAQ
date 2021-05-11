@@ -1,48 +1,27 @@
 #include "Interrupt.hpp"
 
-#include "spdlog/spdlog.h"
-
 #include <csignal>
-#include <thread>
 
-volatile bool Interrupt::m_Continue = true;
+#include "Signals.hpp"
 
-Interrupt::Interrupt()
+namespace yaodaq
 {
-  std::signal(SIGTERM, [](int a) -> void {
-    fmt::print("\n");
-    spdlog::warn("Termination request, sent to the program ");
-    m_Continue = false;
-  });
-  std::signal(SIGSEGV, [](int a) -> void {
-    fmt::print("\n");
-    spdlog::critical("Invalid memory access (segmentation fault).");
-    m_Continue = false;
-  });
-  std::signal(SIGINT, [](int a) -> void {
-    fmt::print("\n");
-    spdlog::warn("Interrupt signal received.");
-    m_Continue = false;
-  });
-  std::signal(SIGILL, [](int a) -> void {
-    fmt::print("\n");
-    spdlog::critical("Invalid program image.");
-    m_Continue = false;
-  });
-  std::signal(SIGABRT, [](int a) -> void {
-    fmt::print("\n");
-    spdlog::error("Abnormal termination condition.");
-    m_Continue = false;
-  });
-  std::signal(SIGFPE, [](int a) -> void {
-    fmt::print("\n");
-    spdlog::critical("Erroneous arithmetic operation.");
-    m_Continue = false;
-  });
-}
 
-int Interrupt::wait()
-{
-  while(m_Continue) std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  return m_Continue;
-}
+  volatile SIGNAL Interrupt::m_Signal = SIGNAL::NO;
+
+  void Interrupt::init()
+  {
+    std::signal(SIGTERM, [](int a) -> void { m_Signal = SIGNAL::TERM ; });
+    std::signal(SIGSEGV, [](int a) -> void { m_Signal = SIGNAL::SEGV ; });
+    std::signal(SIGINT, [](int a) -> void { m_Signal = SIGNAL::INT ; });
+    std::signal(SIGILL, [](int a) -> void { m_Signal = SIGNAL::ILL ; });
+    std::signal(SIGABRT, [](int a) -> void { m_Signal = SIGNAL::ABRT ; });
+    std::signal(SIGFPE, [](int a) -> void { m_Signal = SIGNAL::FPE ; });
+  }
+
+  SIGNAL Interrupt::getSignal()
+  {
+    return m_Signal;
+  }
+
+};

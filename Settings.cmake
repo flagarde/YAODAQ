@@ -68,8 +68,8 @@ set(serial_repository "https://gitlab.com/flagarde/serial")
 set(serial_version "master")
 
 # CAENlibs
-set(CAENlibs_repository "https://gitlab.com/flagarde/CAENlibs")
-set(CAENlibs_version "master")
+set(CAENLIBS_REPOSITORY "https://gitlab.com/flagarde/CAENlibs.git")
+set(CAENLIBS_TAG "main")
 
 
 # soci
