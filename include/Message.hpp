@@ -1,7 +1,9 @@
 #pragma once
 
 #include "States.hpp"
-#include "json/json.h"
+#include "json/value.h"
+#include "json/reader.h"
+#include "json/writer.h"
 
 #include <memory>
 #include <set>
