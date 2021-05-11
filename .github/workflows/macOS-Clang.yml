@@ -1,4 +1,4 @@
-name: MacOS Clang ROOT Geant4
+name: MacOS Clang ROOT
 
 on:
     push:
