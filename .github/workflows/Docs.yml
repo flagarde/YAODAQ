@@ -1,13 +1,11 @@
 name: Docs
 
 on:
-  #push:
-  #  branches-ignore:
-  #    - '**'
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    push:
+    pull_request:
+    schedule:
+    #Every Sunday at midnight
+    - cron:  '0 0 * * 0'
 
 env:
   CMAKE_VERSION: 3.16.x
@@ -19,30 +17,30 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - name: ➕ Install required packages
+    - name: Install required packages
       run: brew install doxygen
         && brew install sphinx-doc
         && pip3 install sphinx-rtd-theme
         && pip3 install breathe
         && pip3 install sphinx-sitemap
 
-    - name: 🚀 Checkout
+    - name: Checkout
       uses: actions/checkout@v2.3.2
 
-    - name: ➕ Install cmake
+    - name: Install cmake
       uses: jwlawson/actions-setup-cmake@v1.0
       with:
         cmake-version: '${{env.CMAKE_VERSION}}'
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: 👷 Build docs
+    - name: Build docs
       run: cmake -S . -B build -DCMAKE_INSTALL_PREFIX=bin -DBUILD_DOCS=ON -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
         && cmake --build build --config $ENV{BUILD_TYPE} --parallel ${N}
         && cmake --install build --prefix bin --strip
         && make install
         && touch .nojekyll
 
-    - name: 🚀 Deploy docs
+    - name: Deploy docs
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
