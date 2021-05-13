@@ -69,8 +69,8 @@ void DAQFile::parseData(const Data& data)
 }
 void DAQFile::doAfterOpen()
 {
-  std::thread create(&DAQFile::createElog,this);
-  create.detach();
+ // std::thread create(&DAQFile::createElog,this);
+ // create.detach();
   m_Tree  = new TTree("Tree", "Tree");
   m_Event = new Event();
   m_Tree->Branch("Events", &m_Event, 10, 0);
@@ -79,14 +79,14 @@ void DAQFile::doAfterOpen()
 void DAQFile::doBeforeClose()
 {
   m_Event->clear();
-  std::thread upload(&DAQFile::updateElog,this);
-  upload.detach();
+ // std::thread upload(&DAQFile::updateElog,this);
+//  upload.detach();
 }
 
 void DAQFile::setID()
 {
   //TODO Should fix this in elogpp
-  try
+ /* try
   {
     elogpp::ElogEntry entry  = m_ElogManager.createEntry();
     m_ID=entry.user("DAQ").to("NAS", "Runs").getLastID();
@@ -94,6 +94,6 @@ void DAQFile::setID()
   catch(const int& e)
   {
     m_ID="0";
-  }
+  }*/
   m_ID=std::to_string(std::stoi(m_ID)+1);
 }
