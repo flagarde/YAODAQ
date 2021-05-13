@@ -26,6 +26,7 @@ void Module::signalMessage()
 void Module::setURL(const std::string& url)
 {
   m_WebsocketClient.setUrl(url);
+  URLIsSet=true;
 }
 
 Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): m_Identifier(_class,type,name), m_Type(type), m_Name(name)
@@ -99,6 +100,10 @@ void Module::stopListening()
 
 void Module::startListening()
 {
+  if(!URLIsSet)
+  {
+    setURL(yaodaq::GeneralParameters::getURL());
+  }
   m_WebsocketClient.start();
   while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(1));
 }

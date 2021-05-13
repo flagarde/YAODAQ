@@ -12,10 +12,8 @@ int main(int argc, char** argv)
   CLI::App  app{"DAQFileWritter"};
   int       port{GeneralParameters::getPort()};
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
-  GeneralParameters::setPort(port);
   std::string host{GeneralParameters::getHost()};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
-  GeneralParameters::setHost(host);
   std::string filewritterName = "FileWritter";
   app.add_option("-n,--name", filewritterName, "Name of the mode")
       ->check(
@@ -34,6 +32,9 @@ int main(int argc, char** argv)
     spdlog::error("{}", e.what());
     return e.get_exit_code();
   }
+
+  GeneralParameters::setPort(port);
+  GeneralParameters::setHost(host);
 
   Board::setConfigFile("../confs/Configs.toml");
 

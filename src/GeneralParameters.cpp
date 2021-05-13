@@ -16,7 +16,7 @@ namespace yaodaq
   void        GeneralParameters::setHost(const std::string& host)
   {
     m_Host=host;
-    m_URLIsSet =  true;
+    m_URLIsSet =  false;
   }
 
   std::string GeneralParameters::getHost()
@@ -27,7 +27,7 @@ namespace yaodaq
   void        GeneralParameters::setPort(const int& port)
   {
     m_Port=port;
-    m_URLIsSet =  true;
+    m_URLIsSet = false;
   }
 
   int         GeneralParameters::getPort()
@@ -43,7 +43,11 @@ namespace yaodaq
 
   std::string GeneralParameters::getURL()
   {
-    if(m_URLIsSet) return m_URL;
+
+    if(m_URLIsSet)
+    {
+      return m_URL;
+    }
     else
     {
       return "ws://"+m_Host+":"+std::to_string(m_Port)+"/";

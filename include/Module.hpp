@@ -144,6 +144,7 @@ protected:
   std::shared_ptr<spdlog::logger> m_Logger{nullptr};
 
 private:
+  bool URLIsSet{false};
   void signalMessage();
   yaodaq::Identifier m_Identifier;
   yaodaq::Interrupt  m_Interrupt;

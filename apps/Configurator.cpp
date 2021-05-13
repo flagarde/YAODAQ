@@ -14,10 +14,8 @@ int main(int argc, char** argv)
   CLI::App  app{"Websocket Server"};
   int       port{GeneralParameters::getPort()};
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
-  GeneralParameters::setPort(port);
   std::string host{GeneralParameters::getHost()};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
-  GeneralParameters::setHost(host);
   int backlog{ix::SocketServer::kDefaultTcpBacklog};
   app.add_option("-b,--backlog", backlog, "Backlog")->check(CLI::Range(0, 5));
   std::size_t maxConnections{ix::SocketServer::kDefaultMaxConnections};
@@ -32,6 +30,9 @@ int main(int argc, char** argv)
   {
     return app.exit(e);
   }
+
+  GeneralParameters::setPort(port);
+  GeneralParameters::setHost(host);
 
   Configurator configurator(port, host, backlog, maxConnections, handshakeTimeoutSecs);
 
