@@ -13,7 +13,7 @@ class Infos
 {
 public:
   explicit Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type,const Category& category);
-  explicit Infos(const std::string& key);
+  explicit Infos(const std::string& id,const std::string& key);
   void        setRoomIndex(const int&);
   void        setRackIndex(const int&);
   void        setCrateIndex(const int&);
@@ -33,16 +33,18 @@ public:
   bool        operator<(const Infos& infos) const;
   Infos() = default;
   bool isA(const Category& categorie);
+  std::string getID() const;
 
 private:
-  std::string m_RoomName{""};
+  std::string m_RoomName;
   int         m_RoomIndex{-1};
-  std::string m_RackName{""};
+  std::string m_RackName;
   int         m_RackIndex{-1};
-  std::string m_CrateName{""};
+  std::string m_CrateName;
   int         m_CrateIndex{-1};
-  std::string m_Name{""};
+  std::string m_Name;
   int         m_Index{-1};
-  std::string m_Type{""};
+  std::string m_Type;
   Category    m_Category{Category::UNKNOWN};
+  std::string m_ID;
 };

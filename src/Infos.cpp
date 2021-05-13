@@ -16,6 +16,11 @@ Infos::Infos(const std::string& roomName, const std::string& rackName, const std
   m_Category  = category;
 }
 
+std::string Infos::getID() const
+{
+  return m_ID;
+}
+
 std::string Infos::getCategory() const
 {
   return std::string(magic_enum::enum_name(m_Category));
@@ -27,14 +32,14 @@ bool Infos::isA(const Category& categorie)
   else return false;
 }
 
-Infos::Infos(const std::string& key)
+Infos::Infos(const std::string& id,const std::string& key) : m_ID(id)
 {
   setKey(key);
 }
 
 bool Infos::operator<(const Infos& infos) const
 {
-  return this->getName() < infos.getName();
+  return this->getID() < infos.getID();
 }
 
 void Infos::setKey(const std::string& key)

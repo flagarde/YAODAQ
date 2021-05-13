@@ -465,8 +465,11 @@ void Module::OnClose(const ix::WebSocketMessagePtr& msg)
     m_WebsocketClient.disableAutomaticReconnection();
     throw Exception(StatusCode::ALREADY_PRESENT, msg->closeInfo.reason);
   }
-  m_Logger->info("{}", msg->closeInfo.code);
-  m_Logger->info("{}", msg->closeInfo.reason);
+  else
+  {
+    m_Logger->info("{}", msg->closeInfo.code);
+    m_Logger->info("{}", msg->closeInfo.reason);
+  }
 }
 
 void Module::OnPong(const ix::WebSocketMessagePtr& msg)

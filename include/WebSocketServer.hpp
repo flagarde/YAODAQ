@@ -7,10 +7,9 @@
 #include "Identifier.hpp"
 #include "Interrupt.hpp"
 
-#include <map>
 #include <string>
 
-#include "Infos.hpp"
+#include "Clients.hpp"
 
 namespace yaodaq
 {
@@ -31,16 +30,12 @@ namespace yaodaq
     ~WebSocketServer();
     void        setVerbosity(const std::string&);
     void        listen();
-    std::string getkey();
     int loop();
   private:
     void signalMessage();
     Identifier m_Identifier;
     Interrupt m_Interrupt;
-    std::map<std::string, ix::WebSocket&> m_Clients2;
-    std::map<std::string, Infos>          m_Clients3;
-    void                                  erase();
-    void                                  try_emplace(const std::string& id, const std::string& key, ix::WebSocket& socket);
+    Clients m_Clients;
     void                                  sendToLogger(const std::string& message);
     void                                  sendToAll(const std::string& message);
     int                                   m_BrowserNumber{1};

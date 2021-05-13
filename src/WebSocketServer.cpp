@@ -42,11 +42,6 @@ namespace yaodaq
       m_Logger->set_level(spdlog::level::critical);
   }
 
-  std::string WebSocketServer::getkey()
-  {
-    return m_Clients3[m_Actual].getKey();
-  }
-
 
   int WebSocketServer::loop()
   {
@@ -97,7 +92,16 @@ namespace yaodaq
           m_Logger->info("Key : {}", key);
           ++m_BrowserNumber;
         }
-        try_emplace(connectionState->getId(), key, webSocket);
+        try
+        {
+          m_Clients.try_emplace(connectionState->getId(), key, webSocket);
+        }
+        catch(const Exception& exception)
+        {
+          m_Logger->error(exception.what());
+          sendToLogger(Error(exception.what(), "ALL", "WebSocketServer").get());
+          webSocket.stop(exception.getCode(),exception.getDescription());
+        }
         infos.addKey("ID", connectionState->getId());
         infos.addKey("Key", key);
         infos.addKey("Host", msg->openInfo.headers["Host"]);
@@ -111,7 +115,7 @@ namespace yaodaq
         infos.setTo("ALL");
         infos.addKey("ID", connectionState->getId());
         infos.addKey("Value", "DISCONNECTED");
-        erase();
+        m_Clients.erase(connectionState->getId());
         sendToLogger(infos.get());
         m_Logger->info("Closed connection ID : {}", connectionState->getId());
       }
@@ -124,7 +128,7 @@ namespace yaodaq
         }
         catch(const Exception& exception)
         {
-          sendToLogger(Error(getkey() + " is sending not well formatted messages", "ALL", "WebServer").get());
+          sendToLogger(Error(m_Clients.getInfos(connectionState->getId()).getKey() + " is sending not well formatted messages", "ALL", "WebServer").get());
         }
         if(m_Message.getType() == "Trace")
         {
@@ -187,39 +191,17 @@ namespace yaodaq
 
   void WebSocketServer::sendToLogger(const std::string& message)
   {
-    for(std::map<std::string, ix::WebSocket&>::iterator it = m_Clients2.begin(); it != m_Clients2.end(); ++it)
+    for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
-      if((m_Clients3[it->first].getType() == "Logger" || m_Clients3[it->first].getType() == "Browser") && m_Actual != it->first) it->second.send(message);
+      if((it->first.getType() == "Logger" || it->first.getType() == "Browser") && m_Actual != it->first.getID()) it->second.send(message);
     }
-  }
-
-  void WebSocketServer::erase()
-  {
-    m_Clients2.erase(m_Actual);
-    m_Clients3.erase(m_Actual);
-  }
-
-  void WebSocketServer::try_emplace(const std::string& id, const std::string& key, ix::WebSocket& socket)
-  {
-    for(std::map<std::string, Infos>::iterator it = m_Clients3.begin(); it != m_Clients3.end(); ++it)
-    {
-      if(it->second.getKey() == key)
-      {
-        m_Logger->error("The Name \"{}\" is already taken so it cannot be connected !", it->second.getName());
-        sendToLogger(Error("The Name \"" + it->second.getName() + "\" is already taken so it cannot be connected !", "ALL", "WebSocketServer").get());
-        socket.stop(static_cast<uint16_t>(StatusCode::ALREADY_PRESENT), "The Name \"" + it->second.getName() + "\" is already taken so it cannot be connected !");
-        return;
-      }
-    }
-    m_Clients2.try_emplace(id, socket);
-    m_Clients3.try_emplace(id, Infos(key));
   }
 
   void WebSocketServer::sendToAll(const std::string& message)
   {
-    for(std::map<std::string, ix::WebSocket&>::iterator it = m_Clients2.begin(); it != m_Clients2.end(); ++it)
+    for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
-      if(m_Actual != it->first) it->second.send(message);
+      if(m_Actual != it->first.getID()) it->second.send(message);
     }
   }
 

@@ -98,6 +98,15 @@ set_target_properties(Infos PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Infos.hp
 target_include_directories(Infos PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 install(TARGETS Infos)
 
+add_library(Clients "Clients.cpp")
+target_link_libraries(Clients PUBLIC ixwebsocket::ixwebsocket)
+set_target_properties(Clients PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Clients.hpp")
+target_link_libraries(Clients PUBLIC Infos PUBLIC Exception)
+target_include_directories(Clients PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+install(TARGETS Clients)
+
+
+
 add_library(BoardInfos "BoardInfos.cpp")
 target_include_directories(BoardInfos PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_link_libraries(BoardInfos PUBLIC Infos PUBLIC toml11::toml11)
@@ -129,7 +138,7 @@ install(TARGETS Logger)
 add_library(WebSocketServer "WebSocketServer.cpp")
 target_include_directories(WebSocketServer PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>)
 set_target_properties(WebSocketServer PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebSocketServer.hpp")
-target_link_libraries(WebSocketServer PUBLIC spdlog::spdlog PUBLIC Message PUBLIC Infos PUBLIC ixwebsocket::ixwebsocket PUBLIC Exception PUBLIC Identifier PUBLIC Interrupt PUBLIC GeneralParameters)
+target_link_libraries(WebSocketServer PUBLIC spdlog::spdlog PUBLIC Message PUBLIC Clients PUBLIC ixwebsocket::ixwebsocket PUBLIC Exception PUBLIC Identifier PUBLIC Interrupt PUBLIC GeneralParameters)
 
 add_library(FileWritter "FileWritter.cpp")
 target_link_libraries(FileWritter PUBLIC File PUBLIC Board)
