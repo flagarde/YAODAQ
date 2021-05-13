@@ -261,7 +261,7 @@ void Module::Stop()
 {
   try
   {
-    setState(States::STOPED);
+    setState(States::STOPPED);
     m_IsFirstStart = true;
     if(m_LoopOnStartUsed == true)
     {
@@ -414,10 +414,10 @@ void Module::DoOnAction(const Message& message)
     if((m_State==States::UNINITIALIZED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::INITIALIZE) Initialize();
     else if((m_State==States::INITIALIZED || m_State==States::DISCONNECTED||m_State==States::CONNECTED) && action.value()== Actions::CONNECT ) Connect();
     else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action.value()== Actions::CONFIGURE ) Configure();
-    else if((m_State==States::CONFIGURED || m_State==States::STOPED || m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::START ) Start();
+    else if((m_State==States::CONFIGURED || m_State==States::STOPPED || m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::START ) Start();
     else if((m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::PAUSE) Pause();
-    else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPED)  && action.value()== Actions::STOP) Stop();
-    else if((m_State==States::STOPED || m_State==States::CONFIGURED || m_State==States::CLEARED) && action.value()== Actions::CLEAR) Clear();
+    else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPPED)  && action.value()== Actions::STOP) Stop();
+    else if((m_State==States::STOPPED || m_State==States::CONFIGURED || m_State==States::CLEARED) && action.value()== Actions::CLEAR) Clear();
     else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action.value()== Actions::DISCONNECT) Disconnect();
     else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::RELEASE) Release();
     else if(m_State==States::RELEASED && action.value()== Actions::QUIT) Quit();

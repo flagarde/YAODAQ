@@ -26,9 +26,9 @@ std::string Infos::getCategory() const
   return std::string(magic_enum::enum_name(m_Category));
 }
 
-bool Infos::isA(const Category& categorie)
+bool Infos::isA(const Category& category)
 {
-  if(categorie==m_Category) return true;
+  if(m_Category==category) return true;
   else return false;
 }
 

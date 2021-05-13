@@ -8,7 +8,7 @@ enum class States
   CONFIGURED,
   STARTED,
   PAUSED,
-  STOPED,
+  STOPPED,
   CLEARED,
   DISCONNECTED,
   RELEASED,
