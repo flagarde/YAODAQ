@@ -14,8 +14,8 @@ int main(int argc, char** argv)
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
   std::string host{GeneralParameters::getHost()};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
-  std::string filewritterName = "FileWritter";
-  app.add_option("-n,--name", filewritterName, "Name of the mode")
+  std::string name = "FileWritter";
+  app.add_option("-n,--name", name, "Name of the mode")
       ->check(
           [](const std::string& t) {
             if(t == "") return "Name is empty";
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 
   Board::setConfigFile("../confs/Configs.toml");
 
-  FileWritter digitizer(filewritterName);
+  FileWritter digitizer(name);
   digitizer.setFile(std::make_unique<DAQFile>("Run${ID}.root", "RECREATE", "Run${ID}", 9));
   return digitizer.loop();
 }
