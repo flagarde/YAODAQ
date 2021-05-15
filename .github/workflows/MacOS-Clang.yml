@@ -60,7 +60,7 @@ jobs:
         name: clang-format
 
     - name: Install cmake
-      uses: jwlawson/actions-setup-cmake@v1.6
+      uses: jwlawson/actions-setup-cmake@v1.9
       with:
         cmake-version: '${{env.CMAKE_VERSION}}'
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
