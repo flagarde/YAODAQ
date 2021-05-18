@@ -38,7 +38,7 @@
         fixLoggingFunc("Error");
 
         function fixLoggingFunc(name) {
-          console["old" + name] = console[name];
+          //console["old" + name] = console[name];
           console[name] = function (...arguments) {
             const output = produceOutput(name, arguments);
             const eleLog = eleLocator();
@@ -54,7 +54,7 @@
               eleLog.innerHTML += output + "<br>";
             }
 
-            console["old" + name].apply(undefined, arguments);
+            //console["old" + name].apply(undefined, arguments);
           };
         }
 
@@ -316,92 +316,6 @@
       function ParseInfo(obj) {
         if (obj["Name"] == "RunNumber") {
           RunNumber = obj["RunNumber"];
-        } else if (obj["Name"] == "DataRate") {
-          old_data_rate = data_rate;
-          data_rate = Number(obj["DataRate"]);
-          var gauge = new RadialGauge({
-            renderTo: "DataRate",
-            width: 150,
-            height: 150,
-            value: data_rate,
-            units: "MB/s",
-            minValue: 0,
-            maxValue: 5,
-            majorTicks: ["0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0", "5.0"],
-            minorTicks: 9,
-            strokeTicks: true,
-            highlights: [
-              {
-                from: 0,
-                to: 0,
-                color: "grey",
-              },
-            ],
-            colorPlate: "#fff",
-            borderShadowWidth: 0,
-            borders: true,
-            needleType: "arrow",
-            needleWidth: 2,
-            needleCircleSize: 7,
-            needleCircleOuter: true,
-            needleCircleInner: false,
-            animationDuration: 800,
-            animationRule: function (percent) {
-              if (percent <= 0) return 0;
-              return (
-                1 -
-                (function (p) {
-                  var x = 0.8;
-                  return Math.pow(2, 10 * (p - 1)) * Math.cos(((20 * Math.PI * x) / 3) * p);
-                })(1 - percent)
-              );
-            },
-            animateOnInit: true,
-            animatedValue: true,
-          }).draw();
-        } else if (obj["Name"] == "TriggerRate") {
-          old_trigger_rate = trigger_rate;
-          trigger_rate = Number(obj["TriggerRate"]);
-          var gauge = new RadialGauge({
-            renderTo: "TriggerRate",
-            width: 150,
-            height: 150,
-            value: trigger_rate,
-            units: "Hz",
-            minValue: 0,
-            maxValue: 20,
-            majorTicks: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-            minorTicks: 9,
-            strokeTicks: true,
-            highlights: [
-              {
-                from: 0,
-                to: 0,
-                color: "grey",
-              },
-            ],
-            colorPlate: "#fff",
-            borderShadowWidth: 0,
-            borders: true,
-            needleType: "arrow",
-            needleWidth: 2,
-            needleCircleSize: 7,
-            needleCircleOuter: true,
-            needleCircleInner: false,
-            animationDuration: 800,
-            animationRule: function (percent) {
-              if (percent <= 0) return 0;
-              return (
-                1 -
-                (function (p) {
-                  var x = 0.8;
-                  return Math.pow(2, 10 * (p - 1)) * Math.cos(((20 * Math.PI * x) / 3) * p);
-                })(1 - percent)
-              );
-            },
-            animateOnInit: true,
-            animatedValue: true,
-          }).draw();
         }
       }
     </script>
