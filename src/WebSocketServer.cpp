@@ -100,7 +100,7 @@ namespace yaodaq
         {
           m_Logger->error(exception.what());
           sendToLogger(Error(exception.what(), "ALL", "WebSocketServer").get());
-          webSocket.stop(exception.getCode(),exception.getDescription());
+          webSocket.stop(exception.code(),exception.description());
         }
         infos.addKey("ID", connectionState->getId());
         infos.addKey("Key", key);

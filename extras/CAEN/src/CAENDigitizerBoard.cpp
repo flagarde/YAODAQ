@@ -2259,7 +2259,7 @@ bool CAENDigitizerBoard::Interrupt()
   }
   catch(const Exception& exception)
   {
-    if(exception.getCode() == CAEN_DGTZ_Timeout)
+    if(exception.code() == CAEN_DGTZ_Timeout)
     {
       doInterruptTimeout = true;
       return doInterruptTimeout;
@@ -2273,7 +2273,7 @@ bool CAENDigitizerBoard::Interrupt()
   }
   catch(const Exception& exception)
   {
-    if((exception.getCode() != CAEN_DGTZ_Success) || (boardId != m_VME_INTERRUPT_STATUS_ID))
+    if((exception.code() != CAEN_DGTZ_Success) || (boardId != m_VME_INTERRUPT_STATUS_ID))
     {
       doInterruptTimeout = true;
       return doInterruptTimeout;
