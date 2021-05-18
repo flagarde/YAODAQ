@@ -4,16 +4,20 @@
 
 # OpenSSL
 set(USE_SYSTEM_OPENSSL OFF)
-set(OPENSSLCMAKE_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake")
+set(OPENSSLCMAKE_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake.git")
 set(OPENSSLCMAKE_TAG "v2.1")
-set(OPENSSL_VERSION "1.1.1j")
+set(OPENSSL_VERSION "1.1.1k")
 set(OPENSSL_URL "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz")
-set(OPENSSL_URL_HASH "SHA256=aaf2fcb575cdf6491b98ab4829abf78a3dec8402b8b81efc8f23c00d443981bf")
+set(OPENSSL_URL_HASH "SHA256=892a0875b9872acd04a9fde79b1f943075d5ea162415de3047c327df33fbaee5")
 
 # Zlib-ng
 set(USE_SYSTEM_ZLIB OFF)
-set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng")
-set(ZLIB-NG_TAG "develop")
+set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng.git")
+set(ZLIB-NG_TAG "2.0.3")
+
+# IXWebSocket
+set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket.git")
+set(IXWEBSOCKET_TAG "master")
 
 # fmt
 set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt")
@@ -51,9 +55,7 @@ set(TOML11_TAG "master")
 
 
 
-# IXWebSocket
-set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket")
-set(IXWEBSOCKET_TAG "v11.0.9")
+
 # jsoncpp
 set(JSONCPP_REPOSITORY "https://gitlab.com/ExternalRepositories/jsoncpp")
 set(JSONCPP_TAG "master")
@@ -86,8 +88,8 @@ set(civet_version "master")
 set(magic_enum_repository "https://gitlab.com/ExternalRepositories/magic_enum")
 set(magic_enum_version "master")
 # jsroot
-set(jsroot_repository "https://github.com/root-project/jsroot.git")
-set(jsroot_version "master")
+set(JSROOT_REPOSITORY "https://gitlab.com/ExternalRepositories/jsroot.git")
+set(JSROOT_TAG "6.1.0")
 
 # cereal
 set(cereal_repository "https://github.com/USCiLab/cereal.git")
