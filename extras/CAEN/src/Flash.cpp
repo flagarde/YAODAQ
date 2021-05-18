@@ -39,7 +39,7 @@ std::vector<uint8_t> Flash::read_bytes(const uint32_t& addr, const uint16_t& len
 std::vector<uint8_t> Flash::read_virtual_page(const uint16_t& page)
 {
   if(!m_IsInitialized) CAENFlashException((int)UNINITIALIZED);
-  uint16_t standard_page_addr{page * m_VIRTUAL_PAGE_SIZE};
+  uint16_t standard_page_addr{static_cast<uint16_t>(page * m_VIRTUAL_PAGE_SIZE)};
   uint16_t byte_addr{0};
   return read_bytes((uint32_t)(standard_page_addr + byte_addr), m_VIRTUAL_PAGE_SIZE);
 }
