@@ -31,7 +31,7 @@ install(TARGETS LoggerHandler)
 add_library(MessageHandler "MessageHandler.cpp")
 target_include_directories(MessageHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(MessageHandler PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandler.hpp")
-target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC ixwebsocket::ixwebsocket)
+target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC ixwebsocket::ixwebsocket PUBLIC Message)
 install(TARGETS MessageHandler)
 
 add_library(MessageHandlerServer "MessageHandlerServer.cpp")

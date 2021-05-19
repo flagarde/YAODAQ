@@ -1,13 +1,11 @@
 #include "WebSocketServer.hpp"
 
-#include <thread>
 
 #include "ixwebsocket/IXNetSystem.h"
 
 #include "spdlog/logger.h"
 
 #include "Classes.hpp"
-#include "Signals.hpp"
 
 #include "Exception.hpp"
 
@@ -22,51 +20,14 @@ namespace yaodaq
 {
 
 
-void WebSocketServer::signalMessage(const SIGNAL& signal)
-{
-  int value = magic_enum::enum_integer(signal);
-  if(value>=magic_enum::enum_integer(yaodaq::SEVERITY::Critical))
-  {
-    logger()->critical("Signal {} raised !",SignalName[signal]);
-  }
-  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Error))
-  {
-    logger()->error("Signal {} raised !",SignalName[signal]);
-  }
-  //Should be triggered by user so one character will appears -> Need to return line !
-  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Warning))
-  {
-    fmt::print("\n");
-    logger()->warn("Signal {} raised !",SignalName[signal]);
-  }
-  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Info))
-  {
-    fmt::print("\n");
-    logger()->info("Signal {} raised !",SignalName[signal]);
-  }
-  else
-  {
-    fmt::print("\n");
-    logger()->trace("Signal {} raised !",SignalName[signal]);
-  }
-}
-
   int WebSocketServer::loop()
   {
     m_LoggerHandler.addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     logger()->info("Server started on host {0} port {1}", m_Host, m_Port);
     listen();
     start();
-    static SIGNAL signal;
-    do
-    {
-      signal=m_Interrupt.getSignal();
-      std::this_thread::sleep_for(std::chrono::microseconds(500));
-    }
-    while(signal== yaodaq::SIGNAL::NO);
-    signalMessage(signal);
-    if(magic_enum::enum_integer(signal)>=magic_enum::enum_integer(SEVERITY::Critical)) std::exit(magic_enum::enum_integer(signal));
-    else stop();
+    onRaisingSignal();
+    stop();
     return 0;
   }
 

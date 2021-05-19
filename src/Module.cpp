@@ -3,7 +3,6 @@
 #include <thread>
 
 #include "Classes.hpp"
-#include "Signals.hpp"
 
 #include "Exception.hpp"
 #include "Message.hpp"
@@ -14,35 +13,6 @@
 namespace yaodaq
 {
 
-void Module::signalMessage(const SIGNAL& signal)
-{
-  int value=magic_enum::enum_integer(signal);
-  if(value>=magic_enum::enum_integer(yaodaq::SEVERITY::Critical))
-  {
-    logger()->critical("Signal {} raised !",SignalName[signal]);
-  }
-  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Error))
-  {
-    logger()->error("Signal {} raised !",SignalName[signal]);
-  }
-  //Should be triggered by user so one character will appears -> Need to return line !
-  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Warning))
-  {
-    fmt::print("\n");
-    logger()->warn("Signal {} raised !",SignalName[signal]);
-  }
-  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Info))
-  {
-    fmt::print("\n");
-    logger()->info("Signal {} raised !",SignalName[signal]);
-  }
-  else
-  {
-    fmt::print("\n");
-    logger()->trace("Signal {} raised !",SignalName[signal]);
-  }
-}
-
 void Module::setURL(const std::string& url)
 {
   m_WebsocketClient.setUrl(url);
@@ -51,7 +21,6 @@ void Module::setURL(const std::string& url)
 
 Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): m_Identifier(_class,type,name), m_Type(type), m_Name(name)
 {
-  m_Interrupt.init();
   m_LoggerHandler.setName(m_Identifier.getIdentifier());
   m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
   m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
@@ -82,22 +51,12 @@ Module::Module(const std::string& name, const std::string& type, const yaodaq::C
 
 int Module::loop()
 {
-  static SIGNAL signal;
   m_LoggerHandler.addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
   logger()->info("Listening on {}.",m_WebsocketClient.getUrl());
   std::thread startListening(&Module::startListening,this);
   startListening.detach();
-  //startListening();
-  do
-  {
-    signal=m_Interrupt.getSignal();
-    std::this_thread::sleep_for(std::chrono::microseconds(5));
-  }
-  while(signal== yaodaq::SIGNAL::NO);
-  m_WebsocketClient.disableAutomaticReconnection();
-  signalMessage(signal);
-  if(magic_enum::enum_integer(signal)>=magic_enum::enum_integer(SEVERITY::Critical)) std::exit(magic_enum::enum_integer(signal));
-  else stopListening();
+  onRaisingSignal();
+  stopListening();
   return 0;
 }
 

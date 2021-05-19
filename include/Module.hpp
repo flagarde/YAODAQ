@@ -1,20 +1,18 @@
 #pragma once
 
+#include "WebSocketClient.hpp"
+
 #include "MessageHandlerClient.hpp"
 
 #include "Identifier.hpp"
-#include "Interrupt.hpp"
 #include "Classes.hpp"
 
 #include "ConfigurationLoader.hpp"
 #include "Message.hpp"
 #include "States.hpp"
 #include "StatusCode.hpp"
-#include "WebSocketClient.hpp"
-#include "spdlog/spdlog.h"
 
-#include <iostream>
-#include <mutex>
+#include "spdlog/spdlog.h"
 #include <string>
 #include <thread>
 
@@ -149,9 +147,7 @@ protected:
 
 private:
   bool URLIsSet{false};
-  void signalMessage(const SIGNAL& signal);
   yaodaq::Identifier m_Identifier;
-  yaodaq::Interrupt  m_Interrupt;
   bool            m_UseConfigFile{true};
   void            DoDoLoopOnStart();
   void            DoDoLoopOnPause();
