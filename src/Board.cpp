@@ -24,8 +24,8 @@ void Board::CallBoardConnect()
 {
   if(m_IsConnected == false)
   {
-    m_Config.reloadConnectorParameters(m_Name);
-    m_Connector = m_ConnectorFactory.createConnector(m_Config.getConnectorInfos(m_Name));
+    m_Config.reloadConnectorParameters(getName());
+    m_Connector = m_ConnectorFactory.createConnector(m_Config.getConnectorInfos(getName()));
     m_Handle    = m_Connector->Connect();
     DoConnect();
     m_IsConnected = true;

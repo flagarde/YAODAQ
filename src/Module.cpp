@@ -19,10 +19,10 @@ void Module::setURL(const std::string& url)
   URLIsSet=true;
 }
 
-Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): m_Identifier(_class,type,name), m_Type(type), m_Name(name)
+Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): m_Identifier(_class,type,name)
 {
   m_LoggerHandler.setName(m_Identifier.getIdentifier());
-  m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
+  m_WebsocketClient.setHeaderKey("Key", "///" + getType() + "/" + getName());
   m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
     if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
     else if(msg->type == ix::WebSocketMessageType::Open)
@@ -70,10 +70,6 @@ void Module::setConfigFile(const std::string& file)
   m_Config.setFileName(file);
 }
 
-void Module::setName(const std::string& name)
-{
-  m_Name = name;
-}
 
 void Module::stopListening()
 {
@@ -93,11 +89,11 @@ void Module::startListening()
 
 std::string Module::getName()
 {
-  return m_Name;
+  return m_Identifier.getName();
 }
 std::string Module::getType()
 {
-  return m_Type;
+  return m_Identifier.getType();
 }
 
 void Module::setState(const States& state)
@@ -123,7 +119,7 @@ void Module::verifyParameters() {}
 void Module::LoadConfig()
 {
   m_Config.parse();
-  m_Conf = m_Config.getConfig(m_Name);
+  m_Conf = m_Config.getConfig(getName());
   verifyParameters();
 }
 
@@ -178,8 +174,8 @@ void Module::Configure()
   {
     if(m_UseConfigFile)
     {
-      m_Config.reloadParameters(m_Name);
-      m_Conf = m_Config.getConfig(m_Name);
+      m_Config.reloadParameters(getName());
+      m_Conf = m_Config.getConfig(getName());
     }
     DoConfigure();
     setState(States::CONFIGURED);
@@ -404,7 +400,7 @@ void Module::DoOnAction(const Message& message)
     else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action.value()== Actions::DISCONNECT) Disconnect();
     else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::RELEASE) Release();
     else if(m_State==States::RELEASED && action.value()== Actions::QUIT) Quit();
-    else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",m_Name,std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action.value())));
+    else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",getName(),std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action.value())));
   }
 }
 

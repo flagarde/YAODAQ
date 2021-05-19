@@ -28,7 +28,7 @@ namespace yaodaq
 class Module : public MessageHandlerClient
 {
 public:
-  Module(const std::string& name = "", const std::string& type = "Module", const yaodaq::CLASS& _class = yaodaq::CLASS::Module);
+  Module(const std::string& name = "Unknown", const std::string& type = "Module", const yaodaq::CLASS& _class = yaodaq::CLASS::Module);
   virtual ~Module() = default;
 
   int loop();
@@ -52,24 +52,23 @@ public:
   States                                 getState();
   std::string                            getName();
   std::string                            getType();
-  void                                   setName(const std::string& name);
   static void                            setConfigFile(const std::string&);
   void                                   printParameters();
   void                                   stopListening();
   void                                   startListening();
   void                                   send(Message& message)
   {
-    message.setFrom(m_Type+"/"+m_Name);
+    message.setFrom(getType() + "/" + getName());
     m_WebsocketClient.send(message.get());
   }
   void                                   sendText(Message& message)
   {
-    message.setFrom(m_Type+"/"+m_Name);
+    message.setFrom(getType() + "/" + getName());
     m_WebsocketClient.sendText(message.get());
   }
   void                                   sendBinary(Message& message)
   {
-    message.setFrom(m_Type+"/"+m_Name);
+    message.setFrom(getType() + "/" + getName());
     m_WebsocketClient.sendBinary(message.get());
   }
   template<typename... Args> inline void sendTrace(yaodaq_string_view fmt, const Args&... args)
@@ -142,12 +141,9 @@ protected:
   void                            LoadConfig();
   virtual void                    verifyParameters();
   toml::value                     m_Conf{""};
-  std::string                     m_Name{"Unknown"};
-  std::string                     m_Type{"Unknown"};
-
 private:
   bool URLIsSet{false};
-  yaodaq::Identifier m_Identifier;
+  Identifier m_Identifier;
   bool            m_UseConfigFile{true};
   void            DoDoLoopOnStart();
   void            DoDoLoopOnPause();
@@ -178,7 +174,7 @@ private:
   void                                                sendState();
   void                                                setState(const States& state);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
-  yaodaq::WebSocketClient                                     m_WebsocketClient;
+  WebSocketClient                                     m_WebsocketClient;
   std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack;
 };
 

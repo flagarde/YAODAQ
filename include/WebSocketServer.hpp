@@ -38,7 +38,6 @@ namespace yaodaq
     void                                  sendToLogger(const std::string& message);
     void                                  sendToAll(const std::string& message);
     int                                   m_BrowserNumber{1};
-    //std::shared_ptr<spdlog::logger> m_Logger{nullptr};
     std::string m_Host;
     int m_Port;
     std::string m_Actual;
