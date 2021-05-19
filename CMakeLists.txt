@@ -8,10 +8,10 @@
 #########################################################
 cmake_minimum_required(VERSION 3.16...3.20.2)
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external" "${CMAKE_CURRENT_SOURCE_DIR}")
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external")
 
 # Load Setting to be able to change the options etc.
-include(Settings)
+include("${CMAKE_CURRENT_SOURCE_DIR}/Settings.cmake")
 
 include(GetCMakeMM)
 cmmm(VERSION "2.0" REPOSITORY "flagarde/CMakeMM" PROVIDER "gitlab" VERBOSITY VERBOSE)
