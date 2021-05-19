@@ -149,7 +149,7 @@ protected:
 
 private:
   bool URLIsSet{false};
-  void signalMessage();
+  void signalMessage(const SIGNAL& signal);
   yaodaq::Identifier m_Identifier;
   yaodaq::Interrupt  m_Interrupt;
   bool            m_UseConfigFile{true};

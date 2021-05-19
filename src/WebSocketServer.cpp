@@ -22,16 +22,34 @@ namespace yaodaq
 {
 
 
-  void WebSocketServer::signalMessage()
+void WebSocketServer::signalMessage(const SIGNAL& signal)
+{
+  int value = magic_enum::enum_integer(signal);
+  if(value>=magic_enum::enum_integer(yaodaq::SEVERITY::Critical))
   {
-    // Skip one line
-    fmt::print("\n");
-    if(magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(SEVERITY::Critical)) logger()->critical("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-    else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(SEVERITY::Error)) logger()->error("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-    else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(SEVERITY::Warning)) logger()->warn("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-    else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(SEVERITY::Info)) logger()->info("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-    else logger()->trace("Signal {} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+    logger()->critical("Signal {} raised !",SignalName[signal]);
   }
+  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Error))
+  {
+    logger()->error("Signal {} raised !",SignalName[signal]);
+  }
+  //Should be triggered by user so one character will appears -> Need to return line !
+  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Warning))
+  {
+    fmt::print("\n");
+    logger()->warn("Signal {} raised !",SignalName[signal]);
+  }
+  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Info))
+  {
+    fmt::print("\n");
+    logger()->info("Signal {} raised !",SignalName[signal]);
+  }
+  else
+  {
+    fmt::print("\n");
+    logger()->trace("Signal {} raised !",SignalName[signal]);
+  }
+}
 
   int WebSocketServer::loop()
   {
@@ -39,12 +57,16 @@ namespace yaodaq
     logger()->info("Server started on host {0} port {1}", m_Host, m_Port);
     listen();
     start();
-    while(m_Interrupt.getSignal() == SIGNAL::NO )
+    static SIGNAL signal;
+    do
     {
+      signal=m_Interrupt.getSignal();
       std::this_thread::sleep_for(std::chrono::microseconds(500));
     }
-    signalMessage();
-    stop();
+    while(signal== yaodaq::SIGNAL::NO);
+    signalMessage(signal);
+    if(magic_enum::enum_integer(signal)>=magic_enum::enum_integer(SEVERITY::Critical)) std::exit(magic_enum::enum_integer(signal));
+    else stop();
     return 0;
   }
 

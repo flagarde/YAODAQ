@@ -32,7 +32,7 @@ namespace yaodaq
     void        listen();
     int loop();
   private:
-    void signalMessage();
+    void signalMessage(const SIGNAL& signal);
     Identifier m_Identifier;
     Interrupt m_Interrupt;
     Clients m_Clients;

@@ -10,20 +10,37 @@
 #include "StatusCode.hpp"
 #include "magic_enum.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/spdlog.h"
 
 namespace yaodaq
 {
 
-void Module::signalMessage()
+void Module::signalMessage(const SIGNAL& signal)
 {
-  // Skip one line
-  fmt::print("\n");
-  if(magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Critical)) logger()->critical("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Error)) logger()->error("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Warning)) logger()->warn("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Info)) logger()->info("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-  else logger()->trace("Signal {} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  int value=magic_enum::enum_integer(signal);
+  if(value>=magic_enum::enum_integer(yaodaq::SEVERITY::Critical))
+  {
+    logger()->critical("Signal {} raised !",SignalName[signal]);
+  }
+  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Error))
+  {
+    logger()->error("Signal {} raised !",SignalName[signal]);
+  }
+  //Should be triggered by user so one character will appears -> Need to return line !
+  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Warning))
+  {
+    fmt::print("\n");
+    logger()->warn("Signal {} raised !",SignalName[signal]);
+  }
+  else if (value>=magic_enum::enum_integer(yaodaq::SEVERITY::Info))
+  {
+    fmt::print("\n");
+    logger()->info("Signal {} raised !",SignalName[signal]);
+  }
+  else
+  {
+    fmt::print("\n");
+    logger()->trace("Signal {} raised !",SignalName[signal]);
+  }
 }
 
 void Module::setURL(const std::string& url)
@@ -65,18 +82,22 @@ Module::Module(const std::string& name, const std::string& type, const yaodaq::C
 
 int Module::loop()
 {
+  static SIGNAL signal;
   m_LoggerHandler.addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
   logger()->info("Listening on {}.",m_WebsocketClient.getUrl());
   std::thread startListening(&Module::startListening,this);
   startListening.detach();
   //startListening();
-  while(m_Interrupt.getSignal() == yaodaq::SIGNAL::NO )
+  do
   {
-    std::this_thread::sleep_for(std::chrono::microseconds(500));
+    signal=m_Interrupt.getSignal();
+    std::this_thread::sleep_for(std::chrono::microseconds(5));
   }
+  while(signal== yaodaq::SIGNAL::NO);
   m_WebsocketClient.disableAutomaticReconnection();
-  signalMessage();
-  stopListening();
+  signalMessage(signal);
+  if(magic_enum::enum_integer(signal)>=magic_enum::enum_integer(SEVERITY::Critical)) std::exit(magic_enum::enum_integer(signal));
+  else stopListening();
   return 0;
 }
 

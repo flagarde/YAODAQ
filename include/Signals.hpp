@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include <string>
+
 namespace yaodaq
 {
 
@@ -24,4 +27,5 @@ namespace yaodaq
     TERM=int(SEVERITY::Warning)+2 //(Signal Terminate) Termination request sent to program.
   };
 
+  static std::map<SIGNAL,std::string> SignalName{{SIGNAL::NO,"SIGNO"},{SIGNAL::ABRT,"SIGABRT"},{SIGNAL::FPE,"SIGFPE"},{SIGNAL::ILL,"SIGILL"},{SIGNAL::SEGV,"SIGSEGV"},{SIGNAL::INT,"SIGINT"},{SIGNAL::TERM,"SIGTERM"}};
 };

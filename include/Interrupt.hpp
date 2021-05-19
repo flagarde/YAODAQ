@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 namespace yaodaq
 {
 
@@ -12,7 +14,7 @@ namespace yaodaq
     SIGNAL getSignal();
 
   private:
-    volatile static SIGNAL m_Signal;
+    volatile static std::atomic<SIGNAL> m_Signal;
   };
 
 };

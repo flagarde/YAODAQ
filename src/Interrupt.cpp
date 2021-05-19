@@ -7,21 +7,21 @@
 namespace yaodaq
 {
 
-  volatile SIGNAL Interrupt::m_Signal = SIGNAL::NO;
+  volatile std::atomic<SIGNAL> Interrupt::m_Signal = SIGNAL::NO;
 
   void Interrupt::init()
   {
-    std::signal(SIGTERM, [](int a) -> void { m_Signal = SIGNAL::TERM ; });
-    std::signal(SIGSEGV, [](int a) -> void { m_Signal = SIGNAL::SEGV ; });
-    std::signal(SIGINT, [](int a) -> void { m_Signal = SIGNAL::INT ; });
-    std::signal(SIGILL, [](int a) -> void { m_Signal = SIGNAL::ILL ; });
-    std::signal(SIGABRT, [](int a) -> void { m_Signal = SIGNAL::ABRT ; });
-    std::signal(SIGFPE, [](int a) -> void { m_Signal = SIGNAL::FPE ; });
+    std::signal(SIGTERM, [](int a) -> void { m_Signal.store(SIGNAL::TERM) ; });
+    std::signal(SIGSEGV, [](int a) -> void { m_Signal.store(SIGNAL::SEGV) ; });
+    std::signal(SIGINT, [](int a) -> void { m_Signal.store(SIGNAL::INT) ; });
+    std::signal(SIGILL, [](int a) -> void { m_Signal.store(SIGNAL::ILL) ; });
+    std::signal(SIGABRT, [](int a) -> void { m_Signal.store(SIGNAL::ABRT) ; });
+    std::signal(SIGFPE, [](int a) -> void { m_Signal.store(SIGNAL::FPE) ; });
   }
 
   SIGNAL Interrupt::getSignal()
   {
-    return m_Signal;
+    return m_Signal.load();
   }
 
 };
