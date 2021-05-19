@@ -1,6 +1,9 @@
 #include "Board.hpp"
 #include "Exception.hpp"
 
+namespace yaodaq
+{
+
 ConnectorFactory Board::m_ConnectorFactory = ConnectorFactory();
 
 Board::Board(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): Module(name, type, _class)
@@ -47,3 +50,5 @@ void Board::printConnectorParameters()
 void Board::DoConnect() {}
 
 void Board::DoDisconnect() {}
+
+};

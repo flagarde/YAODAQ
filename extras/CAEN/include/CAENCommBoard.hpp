@@ -5,7 +5,7 @@
 #include <cstdint>
 namespace CAEN
 {
-class CAENCommBoard: public Board
+class CAENCommBoard: public yaodaq::Board
 {
 public:
   CAENCommBoard(const std::string& name = "");

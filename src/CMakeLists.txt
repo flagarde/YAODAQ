@@ -22,6 +22,31 @@ target_link_libraries(ProgramInfos INTERFACE fmt::fmt)
 target_include_directories(ProgramInfos INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_FULL_INCLUDEDIR}>)
 install(TARGETS ProgramInfos)
 
+add_library(LoggerHandler "LoggerHandler.cpp")
+target_include_directories(LoggerHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(LoggerHandler PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/LoggerHandler.hpp")
+target_link_libraries(LoggerHandler PUBLIC spdlog::spdlog)
+install(TARGETS LoggerHandler)
+
+add_library(MessageHandler "MessageHandler.cpp")
+target_include_directories(MessageHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(MessageHandler PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandler.hpp")
+target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC ixwebsocket::ixwebsocket)
+install(TARGETS MessageHandler)
+
+add_library(MessageHandlerServer "MessageHandlerServer.cpp")
+target_include_directories(MessageHandlerServer PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(MessageHandlerServer PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandlerServer.hpp")
+target_link_libraries(MessageHandlerServer PUBLIC MessageHandler)
+install(TARGETS MessageHandlerServer)
+
+add_library(MessageHandlerClient "MessageHandlerClient.cpp")
+target_include_directories(MessageHandlerClient PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(MessageHandlerClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandlerClient.hpp")
+target_link_libraries(MessageHandlerClient PUBLIC MessageHandler)
+install(TARGETS MessageHandlerClient)
+
+
 add_library(Identifier "Identifier.cpp")
 target_include_directories(Identifier PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(Identifier PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Identifier.hpp")
@@ -120,13 +145,13 @@ set_target_properties(ConfigurationLoader PROPERTIES PUBLIC_HEADER "${YAODAQ_INC
 install(TARGETS ConfigurationLoader)
 
 add_library(WebSocketClient "WebSocketClient.cpp")
-target_link_libraries(WebSocketClient PUBLIC ixwebsocket::ixwebsocket PUBLIC Exception PUBLIC GeneralParameters)
+target_link_libraries(WebSocketClient PUBLIC Exception PUBLIC GeneralParameters PUBLIC ixwebsocket::ixwebsocket)
 target_include_directories(WebSocketClient PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(WebSocketClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebSocketClient.hpp")
 install(TARGETS WebSocketClient)
 
 add_library(Board "Module.cpp" "Board.cpp")
-target_link_libraries(Board PUBLIC Message PUBLIC WebSocketClient PUBLIC ConfigurationLoader PUBLIC ConnectorFactory PRIVATE Connector PUBLIC spdlog::spdlog PUBLIC Identifier PUBLIC Interrupt)
+target_link_libraries(Board PUBLIC Message PUBLIC MessageHandlerClient PUBLIC WebSocketClient PUBLIC ConfigurationLoader PUBLIC ConnectorFactory PRIVATE Connector PUBLIC Identifier PUBLIC Interrupt)
 set_target_properties(Board PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Module.hpp" PUBLIC_HEADER "${YAODAQ_INCLUDE}/Board.hpp")
 install(TARGETS Board)
 
@@ -138,7 +163,7 @@ install(TARGETS Logger)
 add_library(WebSocketServer "WebSocketServer.cpp")
 target_include_directories(WebSocketServer PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>)
 set_target_properties(WebSocketServer PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebSocketServer.hpp")
-target_link_libraries(WebSocketServer PUBLIC spdlog::spdlog PUBLIC Message PUBLIC Clients PUBLIC ixwebsocket::ixwebsocket PUBLIC Exception PUBLIC Identifier PUBLIC Interrupt PUBLIC GeneralParameters)
+target_link_libraries(WebSocketServer PUBLIC Message PUBLIC Clients PUBLIC MessageHandlerServer PUBLIC Exception PUBLIC Identifier PUBLIC Interrupt PUBLIC GeneralParameters)
 
 add_library(FileWritter "FileWritter.cpp")
 target_link_libraries(FileWritter PUBLIC File PUBLIC Board)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GeneralParameters.hpp"
+
 #include "ixwebsocket/IXWebSocket.h"
 
 namespace yaodaq

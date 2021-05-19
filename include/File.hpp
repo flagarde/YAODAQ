@@ -30,7 +30,7 @@ protected:
   void                  createDirectories();
   std::string           m_Name{""};
   std::filesystem::path m_Path;
-  std::string           m_ID{""};
+  std::string           m_ID{"-1"};
   std::string           m_Option{""};
 
 private:

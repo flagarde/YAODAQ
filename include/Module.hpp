@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MessageHandlerClient.hpp"
+
 #include "Identifier.hpp"
 #include "Interrupt.hpp"
 #include "Classes.hpp"
@@ -22,7 +24,10 @@
 using yaodaq_string_view = spdlog::string_view_t;
 //#endif
 
-class Module
+namespace yaodaq
+{
+
+class Module : public MessageHandlerClient
 {
 public:
   Module(const std::string& name = "", const std::string& type = "Module", const yaodaq::CLASS& _class = yaodaq::CLASS::Module);
@@ -75,7 +80,7 @@ public:
     format_to(buf, fmt, args...);
     Trace trace(buf.data());
     sendText(trace);
-    m_Logger->trace(buf.data());
+    logger()->trace(buf.data());
   }
   template<typename... Args> inline void sendDebug(yaodaq_string_view fmt, const Args&... args)
   {
@@ -83,7 +88,7 @@ public:
     format_to(buf, fmt, args...);
     Debug debug(buf.data());
     sendText(debug);
-    m_Logger->debug(buf.data());
+    logger()->debug(buf.data());
   }
   template<typename... Args> inline void sendInfo(yaodaq_string_view fmt, const Args&... args)
   {
@@ -91,7 +96,7 @@ public:
     format_to(buf, fmt, args...);
     Info info(buf.data());
     sendText(info);
-    m_Logger->info(buf.data());
+    logger()->info(buf.data());
   }
   template<typename... Args> inline void sendWarning(yaodaq_string_view fmt, const Args&... args)
   {
@@ -99,14 +104,14 @@ public:
     format_to(buf, fmt, args...);
     Warning warning(buf.data());
     sendText(warning);
-    m_Logger->warn(buf.data());
+    logger()->warn(buf.data());
   }
   /** Work aroung for Exception message taken by what() **/
   inline void sendError(const char* err)
   {
     Error error(err);
     sendText(error);
-    m_Logger->error(err);
+    logger()->error(err);
   }
   template<typename... Args> inline void sendError(yaodaq_string_view fmt, const Args&... args)
   {
@@ -114,7 +119,7 @@ public:
     format_to(buf, fmt, args...);
     Error error(buf.data());
     sendText(error);
-    m_Logger->error(buf.data());
+    logger()->error(buf.data());
   }
   template<typename... Args> inline void sendCritical(yaodaq_string_view fmt, const Args&... args)
   {
@@ -122,7 +127,7 @@ public:
     format_to(buf, fmt, args...);
     Critical critical(buf.data());
     sendText(critical);
-    m_Logger->critical(buf.data());
+    logger()->critical(buf.data());
   }
   void sendData(const std::string& dat) { Data data(dat); sendBinary(data); }
   void sendData(const Json::Value& dat) { Data data(dat); sendBinary(data); }
@@ -141,7 +146,6 @@ protected:
   toml::value                     m_Conf{""};
   std::string                     m_Name{"Unknown"};
   std::string                     m_Type{"Unknown"};
-  std::shared_ptr<spdlog::logger> m_Logger{nullptr};
 
 private:
   bool URLIsSet{false};
@@ -180,4 +184,6 @@ private:
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
   yaodaq::WebSocketClient                                     m_WebsocketClient;
   std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack;
+};
+
 };

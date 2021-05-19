@@ -1,5 +1,9 @@
 ####################################
-# Options for the external package #
+#  OPTIONS FOR EXTERNAL PACKAGES.  #
+####################################
+
+####################################
+#        NECESSARY PACKAGES        #
 ####################################
 
 # OpenSSL
@@ -19,46 +23,63 @@ set(ZLIB-NG_TAG "2.0.3")
 set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket.git")
 set(IXWEBSOCKET_TAG "master")
 
-# fmt
-set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt")
-set(FMT_VERSION "7.1.3")
+# Fmt
+set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt.git")
+set(FMT_TAG "7.1.3")
 
-# spdlog
-set(SPDLOG_REPOSITORY "https://gitlab.com/ExternalRepositories/spdlog")
-set(SPDLOG_VERSION "v1.8.5")
+# Spdlog
+set(SPDLOG_REPOSITORY "https://gitlab.com/ExternalRepositories/spdlog.git")
+set(SPDLOG_TAG "v1.8.5")
 
+# magic_enum
+set(MAGIC_ENUM_REPOSITORY "https://gitlab.com/ExternalRepositories/magic_enum.git")
+set(MAGIC_ENUM_TAG "master")
 
+# FlakedTuna
+set(FLAKEDTUNA_REPOSITORY "https://gitlab.com/flagarde/FlakedTuna.git")
+set(FLAKEDTUNA_TAG "1.0")
+
+# Jsoncpp
+set(JSONCPP_REPOSITORY "https://gitlab.com/ExternalRepositories/jsoncpp.git")
+set(JSONCPP_TAG "master")
+
+# Toml11
+set(TOML11_REPOSITORY "https://gitlab.com/ExternalRepositories/toml11.git")
+set(TOML11_TAG "master")
+
+## FOR TESTS ##
+
+# Doctest
+set(DOCTEST_REPOSITORY "https://gitlab.com/ExternalRepositories/doctest.git")
+set(DOCTEST_TAG "2.4.6")
+
+## FOR APPS ##
+
+# CLI11
+set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11.git")
+set(CLI11_TAG "master")
+
+####################################
+#          EXTRA PACKAGES          #
+####################################
 
 
 
 ## General options
 set(ENABLE_TESTS TRUE)
 
-## INCLUDED BY CPM
-# doctest
-set(DOCTEST_REPOSITORY "https://gitlab.com/ExternalRepositories/doctest")
-set(DOCTEST_VERSION "2.4.5")
-
-# FlakedTuna
-set(FLAKEDTUNA_REPOSITORY "https://gitlab.com/flagarde/FlakedTuna")
-set(FLAKEDTUNA_VERSION "1.0")
-
-# CLI11
-set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11")
-set(CLI11_TAG "master")
 
 
-set(TOML11_REPOSITORY "https://gitlab.com/ExternalRepositories/toml11.git")
-set(TOML11_TAG "master")
+
+
+
 
 ##
 
 
 
 
-# jsoncpp
-set(JSONCPP_REPOSITORY "https://gitlab.com/ExternalRepositories/jsoncpp")
-set(JSONCPP_TAG "master")
+
 # elogpp
 set(ELOGPP_REPOSITORY "https://gitlab.com/flagarde/elogpp")
 set(ELOGPP_TAG "main")
@@ -77,16 +98,12 @@ set(CAENLIBS_TAG "main")
 # soci
 set(soci_repository "https://github.com/SOCI/soci.git")
 set(soci_version "master")
-# toml11
-set(toml11_repository "https://gitlab.com/ExternalRepositories/toml11")
-set(toml11_version "master")
+
 
 # civet
 set(civet_repository "https://github.com/civetweb/civetweb.git")
 set(civet_version "master")
-# magic_enum
-set(magic_enum_repository "https://gitlab.com/ExternalRepositories/magic_enum")
-set(magic_enum_version "master")
+
 # jsroot
 set(JSROOT_REPOSITORY "https://gitlab.com/ExternalRepositories/jsroot.git")
 set(JSROOT_TAG "6.1.0")

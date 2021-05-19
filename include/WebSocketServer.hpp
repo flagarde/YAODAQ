@@ -1,7 +1,8 @@
 #pragma once
 
 #include "ixwebsocket/IXWebSocketServer.h"
-#include "spdlog/fwd.h"
+
+#include "MessageHandlerServer.hpp"
 
 #include "GeneralParameters.hpp"
 #include "Identifier.hpp"
@@ -16,7 +17,7 @@ namespace yaodaq
 
   enum class  CLASS;
 
-  class WebSocketServer: public ix::WebSocketServer
+  class WebSocketServer: public ix::WebSocketServer, public MessageHandlerServer
   {
   public:
     WebSocketServer(const std::string& name,const int& port = GeneralParameters::getPort(),
@@ -27,8 +28,7 @@ namespace yaodaq
                     const int& addressFamily = ix::SocketServer::kDefaultAddressFamily,
                     const std::string& type="Default",
                     const CLASS& clas=CLASS::WebSocketServer);
-    ~WebSocketServer();
-    void        setVerbosity(const std::string&);
+    virtual ~WebSocketServer();
     void        listen();
     int loop();
   private:
@@ -39,10 +39,10 @@ namespace yaodaq
     void                                  sendToLogger(const std::string& message);
     void                                  sendToAll(const std::string& message);
     int                                   m_BrowserNumber{1};
-    std::string                           m_Actual;
-    std::shared_ptr<spdlog::logger> m_Logger{nullptr};
+    //std::shared_ptr<spdlog::logger> m_Logger{nullptr};
     std::string m_Host;
     int m_Port;
+    std::string m_Actual;
   };
 
 };

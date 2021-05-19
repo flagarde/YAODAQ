@@ -2,6 +2,9 @@
 
 #include "Classes.hpp"
 
+namespace yaodaq
+{
+
 FileWritter::FileWritter(const std::string& name, const std::string& type): Module(name, type , yaodaq::CLASS::FileWritter )
 {
   skipConfigFile();
@@ -45,3 +48,5 @@ void FileWritter::DoStop()
     m_File->close();
   }
 }
+
+};

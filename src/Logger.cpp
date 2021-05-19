@@ -3,7 +3,9 @@
 #include "Exception.hpp"
 #include "Message.hpp"
 #include "StatusCode.hpp"
-#include "spdlog/spdlog.h"
+
+namespace yaodaq
+{
 
 Logger::Logger(const std::string& name, const std::string& type) : Module(name,type,yaodaq::CLASS::Logger)
 {
@@ -56,3 +58,5 @@ void Logger::OnMessage(const ix::WebSocketMessagePtr& msg)
     spdlog::info("Content : {0}; From : {1}; To : {2}", message.getContent(), message.getFrom(), message.getTo());
   }
 }
+
+};

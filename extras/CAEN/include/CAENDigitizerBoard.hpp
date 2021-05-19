@@ -78,7 +78,7 @@ private:
   std::uint32_t m_StatusID{0};
 };
 
-class CAENDigitizerBoard: public Board
+class CAENDigitizerBoard: public yaodaq::Board
 {
 public:
   CAENDigitizerBoard(const std::string& name = "");

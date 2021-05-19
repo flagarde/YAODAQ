@@ -44,7 +44,7 @@ public:
 private:
 };
 
-class CAENVMEBoard: public Board
+class CAENVMEBoard: public yaodaq::Board
 {
 public:
   CAENVMEBoard(const std::string& name = "");

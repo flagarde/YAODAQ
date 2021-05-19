@@ -4,6 +4,9 @@
 
 #include <memory>
 
+namespace yaodaq
+{
+
 class FileWritter: public Module
 {
 public:
@@ -20,4 +23,6 @@ protected:
 
 private:
   std::unique_ptr<File> m_File{nullptr};
+};
+
 };

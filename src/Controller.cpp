@@ -2,11 +2,10 @@
 
 #include "StatusCode.hpp"
 #include "magic_enum.hpp"
-#include "spdlog/sinks/ansicolor_sink.h"
-#include "spdlog/sinks/ostream_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/spdlog.h"
 #include "toml.hpp"
+
+namespace yaodaq
+{
 
 Controller::Controller(const std::string& name, const std::string& type) : Module(name,type,yaodaq::CLASS::Controller)
 {
@@ -30,3 +29,5 @@ void Controller::sendCommand(const std::string& command)
   Command m_command(command);
   sendBinary(m_command);
 }
+
+};

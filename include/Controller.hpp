@@ -6,7 +6,9 @@
 #include "Exception.hpp"
 #include "Message.hpp"
 #include "StatusCode.hpp"
-#include "spdlog/spdlog.h"
+
+namespace yaodaq
+{
 
 class Controller : public Module
 {
@@ -15,4 +17,6 @@ public:
   virtual ~Controller() = default;
   void                  sendAction(const std::string& action);
   void                  sendCommand(const std::string& command);
+};
+
 };

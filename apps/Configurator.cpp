@@ -2,7 +2,6 @@
 
 #include "CLI/CLI.hpp"
 #include "ProgramInfos.hpp"
-#include "spdlog/spdlog.h"
 
 using namespace yaodaq;
 
@@ -22,6 +21,14 @@ int main(int argc, char** argv)
   app.add_option("-m,--max", maxConnections, "Maximun connections")->check(CLI::PositiveNumber);
   int handshakeTimeoutSecs{3};
   app.add_option("-t,--timeout", handshakeTimeoutSecs, "Timeout in seconds")->check(CLI::PositiveNumber);
+  std::string verbosity{"trace"};
+  app.add_option("-v,--verbosity", verbosity, "Verbosity")->check(
+    [](const std::string& t) {
+      if(t != "off" && t != "trace" && t != "info" && t != "debug" && t != "warning" && t != "critical") return "Wrong verbosity level";
+                                                                  else
+                                                                    return "";
+    },
+    "Verbosity level", "Verbosity level");
   try
   {
     app.parse(argc, argv);
@@ -35,6 +42,6 @@ int main(int argc, char** argv)
   GeneralParameters::setHost(host);
 
   Configurator configurator(port, host, backlog, maxConnections, handshakeTimeoutSecs);
-
+  configurator.setVerbosity(verbosity);
   return configurator.loop();
 }

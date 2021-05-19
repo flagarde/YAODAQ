@@ -12,15 +12,18 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
+namespace yaodaq
+{
+
 void Module::signalMessage()
 {
   // Skip one line
   fmt::print("\n");
-  if(magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Critical)) m_Logger->critical("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Error)) m_Logger->error("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Warning)) m_Logger->warn("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Info)) m_Logger->info("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
-  else m_Logger->trace("Signal {} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  if(magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Critical)) logger()->critical("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Error)) logger()->error("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Warning)) logger()->warn("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  else if (magic_enum::enum_integer(m_Interrupt.getSignal())>=magic_enum::enum_integer(yaodaq::SEVERITY::Info)) logger()->info("Signal SIG{} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
+  else logger()->trace("Signal {} raised !",magic_enum::enum_name(m_Interrupt.getSignal()));
 }
 
 void Module::setURL(const std::string& url)
@@ -32,8 +35,7 @@ void Module::setURL(const std::string& url)
 Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): m_Identifier(_class,type,name), m_Type(type), m_Name(name)
 {
   m_Interrupt.init();
-  spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
-  m_Logger                          = std::make_shared<spdlog::logger>(m_Identifier.getIdentifier(), std::begin(sink_list), std::end(sink_list));
+  m_LoggerHandler.setName(m_Identifier.getIdentifier());
   m_WebsocketClient.setHeaderKey("Key", "///" + m_Type + "/" + m_Name);
   m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
     if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
@@ -63,7 +65,8 @@ Module::Module(const std::string& name, const std::string& type, const yaodaq::C
 
 int Module::loop()
 {
-  m_Logger->info("Listening on {}.",m_WebsocketClient.getUrl());
+  m_LoggerHandler.addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+  logger()->info("Listening on {}.",m_WebsocketClient.getUrl());
   std::thread startListening(&Module::startListening,this);
   startListening.detach();
   //startListening();
@@ -146,14 +149,14 @@ void Module::LoadConfig()
 
 void Module::printParameters()
 {
-  m_Logger->info("Parameters :\n{}", toml::format(m_Conf));
+  logger()->info("Parameters :\n{}", toml::format(m_Conf));
 }
 
 void Module::sendState()
 {
   State state(m_State);
   m_WebsocketClient.sendBinary(state.get());
-  m_Logger->warn(state.get());
+  logger()->warn(state.get());
 }
 
 void Module::Initialize()
@@ -451,9 +454,9 @@ void Module::skipConfigFile()
 
 void Module::OnOpen(const ix::WebSocketMessagePtr& msg)
 {
-  m_Logger->info("Handshake Headers :");
-  for(auto it: msg->openInfo.headers) { m_Logger->info("\t{0}:{1}", it.first, it.second); }
-  m_Logger->info("");
+  logger()->info("Handshake Headers :");
+  for(auto it: msg->openInfo.headers) { logger()->info("\t{0}:{1}", it.first, it.second); }
+  logger()->info("");
 }
 
 void Module::OnClose(const ix::WebSocketMessagePtr& msg)
@@ -467,30 +470,32 @@ void Module::OnClose(const ix::WebSocketMessagePtr& msg)
   }
   else
   {
-    m_Logger->info("{}", msg->closeInfo.code);
-    m_Logger->info("{}", msg->closeInfo.reason);
+    logger()->info("{}", msg->closeInfo.code);
+    logger()->info("{}", msg->closeInfo.reason);
   }
 }
 
 void Module::OnPong(const ix::WebSocketMessagePtr& msg)
 {
-  m_Logger->info("Pong data : {}", msg->str);
+  logger()->info("Pong data : {}", msg->str);
 }
 
 void Module::OnPing(const ix::WebSocketMessagePtr& msg)
 {
-  m_Logger->info("Ping data : {}", msg->str);
+  logger()->info("Ping data : {}", msg->str);
 }
 
 void Module::OnMessage(const ix::WebSocketMessagePtr& msg)
 {
-  m_Logger->info("{}", msg->str);
+  logger()->info("{}", msg->str);
 }
 
 void Module::OnError(const ix::WebSocketMessagePtr& msg)
 {
-  m_Logger->error("Error : {}", msg->errorInfo.reason);
-  m_Logger->error("#retries : {}", msg->errorInfo.retries);
-  m_Logger->error("Wait time(ms) : {}", msg->errorInfo.wait_time);
-  m_Logger->error("HTTP Status : {}", msg->errorInfo.http_status);
+  logger()->error("Error : {}", msg->errorInfo.reason);
+  logger()->error("#retries : {}", msg->errorInfo.retries);
+  logger()->error("Wait time(ms) : {}", msg->errorInfo.wait_time);
+  logger()->error("HTTP Status : {}", msg->errorInfo.http_status);
 }
+
+};

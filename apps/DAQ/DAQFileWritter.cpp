@@ -23,6 +23,14 @@ int main(int argc, char** argv)
               return "";
           },
           "Not Empty", "Test is name is empty");
+  std::string verbosity{"trace"};
+  app.add_option("-v,--verbosity", verbosity, "Verbosity")->check(
+    [](const std::string& t) {
+      if(t != "off" && t != "trace" && t != "info" && t != "debug" && t != "warning" && t != "critical") return "Wrong verbosity level";
+                                                                  else
+                                                                    return "";
+    },
+    "Verbosity level", "Verbosity level");
   try
   {
     app.parse(argc, argv);
@@ -38,7 +46,8 @@ int main(int argc, char** argv)
 
   Board::setConfigFile("../confs/Configs.toml");
 
-  FileWritter digitizer(name);
-  digitizer.setFile(std::make_unique<DAQFile>("Run${ID}.root", "RECREATE", "Run${ID}", 9));
-  return digitizer.loop();
+  FileWritter fileWritter(name);
+  fileWritter.setVerbosity(verbosity);
+  fileWritter.setFile(std::make_unique<DAQFile>("Run${ID}.root", "RECREATE", "Run${ID}", 9));
+  return fileWritter.loop();
 }

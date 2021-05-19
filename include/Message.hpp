@@ -11,6 +11,16 @@
 
 enum class Types
 {
+  //IXWebSocket MessageType
+  // Message is not set here
+  Open,
+  Close,
+  ConnectionError,
+  Ping,
+  Pong,
+  Fragment,
+
+
   Trace,
   Info,
   Debug,

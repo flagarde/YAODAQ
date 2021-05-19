@@ -27,6 +27,14 @@ int main(int argc, char** argv)
   app.add_option("-a,--action", action, "Action");
   std::string command = "";
   app.add_option("-c,--command", command, "Command");
+  std::string verbosity{"trace"};
+  app.add_option("-v,--verbosity", verbosity, "Verbosity")->check(
+    [](const std::string& t) {
+      if(t != "off" && t != "trace" && t != "info" && t != "debug" && t != "warning" && t != "critical") return "Wrong verbosity level";
+                                                                  else
+                                                                    return "";
+    },
+    "Verbosity level", "Verbosity level");
   try
   {
     app.parse(argc, argv);
@@ -41,6 +49,7 @@ int main(int argc, char** argv)
   GeneralParameters::setHost(host);
 
   Controller controller(name);
+  controller.setVerbosity(verbosity);
   controller.startListening();
   if(action != "") controller.sendAction(action);
   if(command != "") controller.sendCommand(command);
