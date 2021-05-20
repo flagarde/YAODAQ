@@ -25,6 +25,6 @@ if(BUILD_CONFIGURATOR)
   # add_executable(Configurator Configurator.cpp) add_dependencies(Configurator Configurator_) target_link_libraries(Configurator PUBLIC Configurator_) install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
 
-if(BUILD_DAQ)
+if(BUILD_DAQ AND NOT APPLE)
   add_subdirectory(DAQ)
 endif()

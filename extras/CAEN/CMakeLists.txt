@@ -1,3 +1,5 @@
+if(NOT APPLE)
+
 if(BUILD_DAQ OR CAEN_HARDWARE)
   set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/external")
 
@@ -52,4 +54,5 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
 
   # plugin( TARGET CAENBoards VERSION ${YAODAQ_VERSION_MAJOR} BASE Board CHILDS CAEN::CAENVMEBoard CAEN::CAENDigitizerBoard CAEN::CAENCommBoard )
   add_subdirectory(tests)
+endif()
 endif()
