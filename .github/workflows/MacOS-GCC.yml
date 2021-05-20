@@ -1,4 +1,4 @@
-name: MacOS Clang
+name: MacOS GCC
 
 env:
   CMAKE_VERSION: 3.16.x
@@ -17,6 +17,11 @@ jobs:
   build:
     name: "Build"
     runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler-version: [[gcc-9, g++-9], [gcc-10, g++-10], [gcc-11, g++-11]]
+        
     steps:
     
     - name: Setup conda
@@ -25,7 +30,7 @@ jobs:
         update-conda: true
         python-version: 3.9
         conda-channels: anaconda, conda-forge
-        
+             
     - name: Install ROOT
       run: conda install root -c conda-forge
       
@@ -38,11 +43,14 @@ jobs:
         cmake-version: '${{env.CMAKE_VERSION}}'
                 
     - name: Configure
+      env:
+        CC: ${{ matrix.compiler-version[0] }}
+        CXX: ${{ matrix.compiler-version[1] }}
       run: cmake -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }} -D CMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }}
       
     - name: Build
       run: cmake --build ${{ env.CMAKE_BUILD_PREFIX }} --config ${{ env.CMAKE_BUILD_TYPE }} --parallel 2
-          
+                
     - name: Run tests
       working-directory: ${{ env.CMAKE_BUILD_PREFIX }}
       run: ctest -C ${{ env.CMAKE_BUILD_TYPE }} -j2 -VV --output-on-failure
