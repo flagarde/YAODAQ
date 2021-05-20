@@ -1,172 +1,30 @@
-name: Linux Clang ROOT
+name: linux
 
-on:
-    push:
-    pull_request:
-    schedule:
-    #Every Sunday at midnight
-    - cron:  '0 0 * * 0'
-
-env:
-  CMAKE_VERSION: 3.16.x
-  NINJA_VERSION: 1.10.2
-  BUILD_TYPE: Release
-  CC: clang-10
-  CXX: clang++-10
-  artifact: "Linux-Clang.tar.xz"
-  INSTALL_ROOT: TRUE
+on: [push, pull_request]
 
 jobs:
-  # Checkout apply clang-format and upload artifact
-  format:
-    name: "Format"
+  linux:
     runs-on: ubuntu-latest
-    steps:
-
-    - name: Checkout
-      uses: actions/checkout@v2.3.4
-
-    - name: Install libusb
-      run: sudo apt-get install libusb-1.0-0-dev
-      
-    - name: Use clang-format
-      uses: DoozyX/clang-format-lint-action@v0.11
-      with:
-        source: '.'
-        clangFormatVersion: 11
-        inplace: True
-
-    - name: Setup Python
-      uses: actions/setup-python@v2
-
-    - name: Install cmakelang
-      uses: BSFishy/pip-action@v1
-      with:
-        packages: cmakelang pyyaml jinja2
-
-    - name: Use cmake-format
-      run: find . \( -name '*.cmake' -o -name 'CMakeLists.txt' \) -exec cmake-format -i {} \;
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: clang-format
-        path: ${{ github.workspace }}
-
-  build:
-    needs: format
-    name: "Build"
-    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
+      matrix:
+        LCG: ["LCG_97apython3/x86_64-centos7-gcc8-opt",
+              "LCG_97/x86_64-centos7-gcc9-opt",
+              "LCG_98/x86_64-centos7-gcc9-opt",
+              "LCG_98python3/x86_64-centos7-gcc10-opt",
+              "LCG_98python3/x86_64-centos7-clang10-opt",
+              "LCG_98/x86_64-ubuntu1804-gcc8-opt",
+              "LCG_98python3/x86_64-ubuntu1804-gcc7-opt"]
     steps:
-
-    - name: Update Ubuntu
-      run: sudo apt install libusb-1.0-0-dev
-
-    - uses: actions/download-artifact@v2
+    - uses: actions/checkout@v2
+    - uses: cvmfs-contrib/github-action-cvmfs@v2
+    - uses: aidasoft/run-lcg-view@v3
       with:
-        name: clang-format
-
-    - name: Install cmake
-      uses: jwlawson/actions-setup-cmake@v1.9
-      with:
-        cmake-version: '${{env.CMAKE_VERSION}}'
-        github-api-token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Install Ninja
-      uses: seanmiddleditch/gha-setup-ninja@v3
-      with:
-        version: '${{env.NINJA_VERSION}}'
-
-    - name: Setup conda
-      uses: s-weigand/setup-conda@v1
-
-    - name: Use ccache
-      uses: hendrikmuhs/ccache-action@v1.0.4
-
-    - name: Install ROOT
-      run: conda install root -c conda-forge
-      if: env.INSTALL_ROOT == 'TRUE'
-
-    - name: Test ROOT
-      run: root --version
-      if: env.INSTALL_ROOT == 'TRUE'
-
-    - name: Configure
-      run: cmake -S ${{ github.workspace }} -G Ninja  -B build -D CMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache
-
-    - name: Build
-      run: sudo cmake --build build --config ${{ env.BUILD_TYPE }} --parallel 2
-
-    - name: Run tests
-      working-directory: ${{ github.workspace }}/build
-      run: ctest -C ${{ env.BUILD_TYPE }} -j2 -VV --output-on-failure
-
-    - name: Install Strip
-      run: cmake --install build --prefix instdir --strip
-
-  release:
-    name: "Release"
-    if: contains(github.ref, 'tags/v')
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1.1.4
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-
-    - name: Store Release url
-      run: |
-        echo "${{ steps.create_release.outputs.upload_url }}" > ./upload_url
-    - name: Pack
-      working-directory: instdir
-      run: cmake -E tar cJfv ../${{ env.artifact }} .
-
-    - name: Upload
-      uses: actions/upload-artifact@v2
-      with:
-        path: instdir
-        name: ${{ env.artifact }}
-
-
-  publish:
-    name: "Publish"
-    if: contains(github.ref, 'tags/v')
-    runs-on: ubuntu-latest
-    needs: release
-
-    steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: ${{ env.artifact }}
-        path: ./
-
-    - name: Download URL
-      uses: actions/download-artifact@v2
-      with:
-        name: upload_url
-        path: ./
-    - id: set_upload_url
-      run: |
-        upload_url=`cat ./upload_url`
-        echo ::set-output name=upload_url::$upload_url
-    - name: Upload to Release
-      id: upload_to_release
-      uses: actions/upload-release-asset@v1.0.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.set_upload_url.outputs.upload_url }}
-        asset_path: ./${{ env.artifact }}
-        asset_name: ${{ env.artifact }}
-        asset_content_type: application/x-gtar
+        release-platform: ${{ matrix.LCG }}
+        run: |
+          mkdir build install
+          cd build
+          cmake -GNinja -DCMAKE_CXX_STANDARD=17 -DBUILD_ROOTDICT=ON -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always" -DCMAKE_INSTALL_PREFIX=../install ..
+          ninja -k0
+          ninja install
+          ctest --output-on-failure
