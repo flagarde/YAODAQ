@@ -15,5 +15,4 @@ TEST_CASE("Test Exceptions")
   Exception exception2(StatusCode::NOT_FOUND, "The {0} is {1}", "truth", 42);
 
   std::cout << exception2.what() << std::endl;
-  throw exception2;
 }
