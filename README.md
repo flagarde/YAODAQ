@@ -7,25 +7,27 @@
 
 [📖 Documentation](https://github.com/RPClab/YAODAQ)
 
+[LC]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml
+[LCB]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml/badge.svg
+
+[LG]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml
+[LGB]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml/badge.svg
+
+[MC]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-Clang.yml
+[MCB]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-Clang.yml/badge.svg
+
+[MG]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-GCC.yml
+[MGB]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-GCC.yml/badge.svg
+
+[MS]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSYS2.yml
+[MSB]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSYS2.yml/badge.svg
+
+[MM]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSVC.yml
+[MMB]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSVC.yml/badge.svg
+
 ## Builds :
 |        | Linux Clang | Linux GCC | MacOS Clang | MacOS GCC | Windows M2sys | Windows MSVC |
 |--------|-------------|-----------|-------------|-----------|---------------|--------------|
-| Github |[![Linux Clang][LC-Badge]][LC]|[![Linux Clang][LC-Badge]][LC]|[![Linux GCC][LGCC-Badge]][LGCC]|[![MacOS Clang][MC-Badge]][MC]|[![MacOS GCC][MGCC-Badge]][MGCC]|[![Windows MSYS2][MSYS2-Badge]][MSYS2]|[![Windows MSVC][MMSVC-Badge]][MMSVC]|
+| Github |[![Linux Clang][LCB]][LC]|[![Linux GCC][LGB]][LG]|[![MacOS Clang][MCB]][MC]|[![MacOS GCC][MGB]][MG]|[![Windows MSYS2][MSB]][MS]|[![Windows MSVC][MMB]][MM]|
 
-[LC]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml
-[LC-Badge]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml/badge.svg
 
-[LGCC]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml
-[LGCC-Badge]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml/badge.svg
-
-[MC]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-Clang.yml
-[MC-Badge]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-Clang.yml/badge.svg
-
-[MGCC]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-GCC.yml
-[MGCC-Badge]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-GCC.yml/badge.svg
-
-[MSYS2]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSYS2.yml
-[MSYS2-Badge]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSYS2.yml/badge.svg
-
-[MMSVC]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSVC.yml
-[MMSVC-Badge]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSVC.yml/badge.svg
