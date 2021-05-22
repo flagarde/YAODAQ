@@ -24,15 +24,15 @@ jobs:
 
     steps:
 
-    - name: Setup conda
-      uses: s-weigand/setup-conda@v1.0.5
-      with:
-        update-conda: true
-        python-version: 3.9
-        conda-channels: anaconda, conda-forge
+    #- name: Setup conda
+    #  uses: s-weigand/setup-conda@v1.0.5
+    #  with:
+    #    update-conda: true
+    #    python-version: 3.9
+    #    conda-channels: anaconda, conda-forge
 
-    - name: Install ROOT
-      run: conda install root=6.24.0 -c conda-forge
+    #- name: Install ROOT
+    #  run: conda install root=6.24.0 -c conda-forge
 
     - name: Checkout
       uses: actions/checkout@v2.3.4
@@ -46,7 +46,7 @@ jobs:
       env:
         CC: ${{ matrix.compiler-version[0] }}
         CXX: ${{ matrix.compiler-version[1] }}
-      run: cmake -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }}/ -D CMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }}
+      run: cmake -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }}/ -D CMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -DBUILD_ROOT=OFF -DBUILD_DAQ=OFF
 
     - name: Build
       run: cmake --build ${{ env.CMAKE_BUILD_PREFIX }} --config ${{ env.CMAKE_BUILD_TYPE }} --parallel 2
