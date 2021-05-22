@@ -50,7 +50,7 @@ jobs:
     #  run: .\root\bin\thisroot.bat && root --version
 
     - name: Configure
-      run: cmake -A Win32 -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }} -DBUILD_ROOT=OFF -DBUILD_DAQ=OFF
+      run: cmake -A Win32 -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }} -DBUILD_ROOT=OFF -DBUILD_DAQ=OFF -DBUILD_CAEN=OFF
       shell: cmd
 
     - name: Build
