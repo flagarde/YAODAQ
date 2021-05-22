@@ -121,7 +121,7 @@ set(SNMP_version "master")
 # Compiling ROOT can be very long so :
 option(USE_ROOT_SYSTEM "Try to find a ROOT installation and use it" ON)
 option(BUILD_ROOT "Build ROOT Folder" ON)
-set(LOOK_FOR_ROOT_VERSION "6.22.02")
+set(LOOK_FOR_ROOT_VERSION "6.20")
 # If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
 set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
 # ########################################################################################################################################################################################################################################################
