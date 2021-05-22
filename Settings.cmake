@@ -138,7 +138,7 @@ option(ENABLE_EXTRAS "Build extras" ON)
 
 option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_SNMP "Build SNMP" OFF)
-
+option(BUILD_Serial "Build Serial" OFF)
 
 option(BUILD_LCIO "Build LCIO" OFF)
 
