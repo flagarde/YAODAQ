@@ -11,7 +11,7 @@ on:
     schedule:
     #Every Sunday at midnight
     - cron:  '0 0 * * 0'
-    
+
 jobs:
   # Checkout apply clang-format and upload artifact
   build:
@@ -24,12 +24,12 @@ jobs:
           { msystem: MINGW64, toolchain: mingw-w64-x86_64-toolchain, cc: gcc, cxx: g++ },
           { msystem: CLANG64, toolchain: mingw-w64-clang-x86_64-toolchain, cc: /clang64/bin/clang.exe, cxx: /clang64/bin/clang++.exe },
         ]
-        
+
     steps:
-      
+
     - name: Checkout
       uses: actions/checkout@v2.3.4
-      
+
     - name: Install MSYS2
       uses: msys2/setup-msys2@v2
       with:
@@ -38,29 +38,29 @@ jobs:
         release: true
         update: true
         install: git msys2-devel base-devel cmake binutils ${{ matrix.toolchain }} mingw-w64-ucrt-x86_64-toolchain ninja
-      
-    - name: Download and unzip ROOT
-      shell: cmake -P {0}
-      run: |
-          if(${{ env.CMAKE_BUILD_TYPE }} STREQUAL "Debug")
-            set(ROOT_URL "$ENV{ROOT_URL}/root_v$ENV{ROOT_VERSION}.win32.vc16.debug.zip")
-          else()
-            set(ROOT_URL "$ENV{ROOT_URL}/root_v$ENV{ROOT_VERSION}.win32.vc16.zip")
-          endif()
-          file(DOWNLOAD "${ROOT_URL}" "./root.zip")
-          execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.zip)
-      
+
+    #- name: Download and unzip ROOT
+    #  shell: cmake -P {0}
+    #  run: |
+    #      if(${{ env.CMAKE_BUILD_TYPE }} STREQUAL "Debug")
+    #        set(ROOT_URL "$ENV{ROOT_URL}/root_v$ENV{ROOT_VERSION}.win32.vc16.debug.zip")
+    #      else()
+    #        set(ROOT_URL "$ENV{ROOT_URL}/root_v$ENV{ROOT_VERSION}.win32.vc16.zip")
+    #      endif()
+    #      file(DOWNLOAD "${ROOT_URL}" "./root.zip")
+    #      execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.zip)
+
     - name: Configure
       env:
         CC: ${{ matrix.cc }}
         CXX: ${{ matrix.cxx }}
-      run: ./root/bin/thisroot.sh && cmake -S . -B ${{ env.CMAKE_BUILD_PREFIX }} -D CMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }}
+      run: cmake -S . -B ${{ env.CMAKE_BUILD_PREFIX }} -D CMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }} -DBUILD_ROOT=OFF -DBUILD_DAQ=OFF
       shell: msys2 {0}
-      
+
     - name: Build
       run: cmake --build ${{ env.CMAKE_BUILD_PREFIX }} --config ${{ env.CMAKE_BUILD_TYPE }} --parallel 2
       shell: msys2 {0}
-                
+
     - name: Run tests
       working-directory: ${{ env.CMAKE_BUILD_PREFIX }}
       run: ctest -C ${{ env.CMAKE_BUILD_TYPE }} -j2 -VV --output-on-failure
