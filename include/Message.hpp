@@ -75,7 +75,7 @@ public:
   Json::Value getContentAsJson();
 
 protected:
-  Json::Value m_Value{};
+  Json::Value m_Value;
 
 private:
   static Json::StreamWriterBuilder    m_StreamWriterBuilder;

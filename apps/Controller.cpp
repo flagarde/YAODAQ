@@ -50,8 +50,10 @@ int main(int argc, char** argv)
 
   Controller controller(name);
   controller.setVerbosity(verbosity);
-  controller.loop();
+
+  controller.startListening();
   if(action != "") controller.sendAction(action);
   if(command != "") controller.sendCommand(command);
+  controller.stopListening();
   return 0;
 }

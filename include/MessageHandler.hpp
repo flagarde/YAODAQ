@@ -3,14 +3,6 @@
 #include "LoggerHandler.hpp"
 #include "Interrupt.hpp"
 
-namespace ix
-{
-  class ConnectionState;
-  class WebSocket;
-  class WebSocketMessage;
-  using WebSocketMessagePtr = std::unique_ptr<WebSocketMessage>;
-};
-
 namespace yaodaq
 {
 

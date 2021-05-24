@@ -12,7 +12,6 @@
 #include "States.hpp"
 #include "StatusCode.hpp"
 
-#include "spdlog/spdlog.h"
 #include <string>
 #include <thread>
 

@@ -2,7 +2,6 @@
 
 #include "Signals.hpp"
 #include "magic_enum.hpp"
-#include "spdlog/spdlog.h"
 
 #include <thread>
 #include <chrono>

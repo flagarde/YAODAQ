@@ -16,17 +16,36 @@ target_link_libraries(ProgramInfos INTERFACE fmt::fmt)
 target_include_directories(ProgramInfos INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_FULL_INCLUDEDIR}>)
 install(TARGETS ProgramInfos)
 
+add_library(Identifier "Identifier.cpp")
+target_include_directories(Identifier PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(Identifier PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Identifier.hpp;${YAODAQ_INCLUDE}/Classes.hpp")
+target_link_libraries(Identifier PUBLIC magic_enum::magic_enum)
+install(TARGETS Identifier)
+
 add_library(LoggerHandler "LoggerHandler.cpp")
 target_include_directories(LoggerHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(LoggerHandler PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/LoggerHandler.hpp")
-target_link_libraries(LoggerHandler PUBLIC spdlog::spdlog)
+target_link_libraries(LoggerHandler PUBLIC spdlog::spdlog PRIVATE Identifier)
 install(TARGETS LoggerHandler)
+
+add_library(Message "Message.cpp")
+target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message.hpp")
+target_link_libraries(Message PUBLIC Exception PRIVATE jsoncpp_static PUBLIC magic_enum::magic_enum)
+install(TARGETS Message)
 
 add_library(MessageHandler "MessageHandler.cpp")
 target_include_directories(MessageHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(MessageHandler PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandler.hpp")
 target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC ixwebsocket::ixwebsocket PUBLIC Message)
 install(TARGETS MessageHandler)
+
+
+
+
+
+
+
 
 add_library(MessageHandlerServer "MessageHandlerServer.cpp")
 target_include_directories(MessageHandlerServer PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -41,11 +60,7 @@ target_link_libraries(MessageHandlerClient PUBLIC MessageHandler)
 install(TARGETS MessageHandlerClient)
 
 
-add_library(Identifier "Identifier.cpp")
-target_include_directories(Identifier PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-set_target_properties(Identifier PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Identifier.hpp")
-target_link_libraries(Identifier PUBLIC magic_enum::magic_enum)
-install(TARGETS Identifier)
+
 
 add_library(GeneralParameters "GeneralParameters.cpp")
 target_include_directories(GeneralParameters PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -63,11 +78,7 @@ set_target_properties(Exception PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Exce
 target_link_libraries(Exception PUBLIC fmt::fmt PRIVATE SourceLocation)
 install(TARGETS Exception)
 
-add_library(Message "Message.cpp")
-target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> PUBLIC "${jsoncpp_SOURCE_DIR}/include")
-set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message.hpp")
-target_link_libraries(Message PUBLIC Exception PUBLIC jsoncpp_static PUBLIC magic_enum::magic_enum)
-install(TARGETS Message)
+
 
 add_library(Key "Key.cpp")
 target_include_directories(Key PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)

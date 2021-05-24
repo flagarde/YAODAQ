@@ -51,8 +51,6 @@ Module::Module(const std::string& name, const std::string& type, const yaodaq::C
 
 int Module::loop()
 {
-  m_LoggerHandler.addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-  logger()->info("Listening on {}.",m_WebsocketClient.getUrl());
   std::thread startListening(&Module::startListening,this);
   startListening.detach();
   onRaisingSignal();
@@ -74,17 +72,19 @@ void Module::setConfigFile(const std::string& file)
 void Module::stopListening()
 {
   m_WebsocketClient.stop();
-  while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Closed) std::this_thread::sleep_for(std::chrono::microseconds(1));
+  while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Closed) std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
 void Module::startListening()
 {
+  m_LoggerHandler.addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+  logger()->info("Listening on {}.",m_WebsocketClient.getUrl());
   if(!URLIsSet)
   {
     setURL(yaodaq::GeneralParameters::getURL());
   }
   m_WebsocketClient.start();
-  while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(1));
+  while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
 std::string Module::getName()

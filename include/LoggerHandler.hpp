@@ -4,13 +4,13 @@
 #include <vector>
 #include <string>
 
-#include "spdlog/fwd.h"
-#include "spdlog/common.h"
+#include "spdlog/spdlog.h"
 
-namespace spdlog
+/*namespace spdlog
 {
+ class logger;
  using sink_ptr = std::shared_ptr<sinks::sink>;
-}
+}*/
 
 namespace yaodaq
 {
