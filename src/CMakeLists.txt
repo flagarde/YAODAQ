@@ -1,13 +1,8 @@
 set(YAODAQ_INCLUDE "${CMAKE_SOURCE_DIR}/include")
 
-# Include zlib-ng and openssl even if IXWebSocket include them too.
-include(Zlib-ng)
-include(OpenSSL)
 include(IXWebSocket)
 include(FlakedTuna)
-
 include(Spdlog)
-include(Fmt)
 include(MagicEnum)
 include(Jsoncpp)
 include(Toml11)
