@@ -10,7 +10,6 @@ class Logger : public Module
 public:
   Logger(const std::string& name = "", const std::string& type = "Default");
   virtual ~Logger() = default;
-  virtual void   OnMessage(const ix::WebSocketMessagePtr& msg);
 };
 
 };
