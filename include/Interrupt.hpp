@@ -10,8 +10,8 @@ namespace yaodaq
   class Interrupt
   {
   public:
-    void init();
-    SIGNAL getSignal();
+    void init() const;
+    SIGNAL getSignal() const;
 
   private:
     volatile static std::atomic<SIGNAL> m_Signal;

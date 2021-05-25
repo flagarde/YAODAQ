@@ -9,7 +9,7 @@ namespace yaodaq
 
   volatile std::atomic<SIGNAL> Interrupt::m_Signal = SIGNAL::NO;
 
-  void Interrupt::init()
+  void Interrupt::init() const
   {
     std::signal(SIGTERM, [](int a) -> void { m_Signal.store(SIGNAL::TERM) ; });
     std::signal(SIGSEGV, [](int a) -> void { m_Signal.store(SIGNAL::SEGV) ; });
@@ -19,7 +19,7 @@ namespace yaodaq
     std::signal(SIGFPE, [](int a) -> void { m_Signal.store(SIGNAL::FPE) ; });
   }
 
-  SIGNAL Interrupt::getSignal()
+  SIGNAL Interrupt::getSignal() const
   {
     return m_Signal.load();
   }
