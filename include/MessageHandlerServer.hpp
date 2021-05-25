@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ixwebsocket/IXWebSocketServer.h"
+
 #include "MessageHandler.hpp"
 
 #include <functional>
@@ -16,10 +18,10 @@ namespace ix
 
 namespace yaodaq
 {
-  class MessageHandlerServer : public MessageHandler
+  class MessageHandlerServer : public ix::WebSocketServer, public MessageHandler
   {
   public:
-    MessageHandlerServer();
+    MessageHandlerServer(const int& port, const std::string& host, const int& backlog,const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily,const Identifier& identifier);
     virtual void onMessage(std::shared_ptr<ix::ConnectionState>,ix::WebSocket&, const ix::WebSocketMessagePtr&);
     virtual void onOpen(std::shared_ptr<ix::ConnectionState>,ix::WebSocket&, const ix::WebSocketMessagePtr&);
     virtual void onClose(std::shared_ptr<ix::ConnectionState>,ix::WebSocket&, const ix::WebSocketMessagePtr&);

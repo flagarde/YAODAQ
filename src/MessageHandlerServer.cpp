@@ -8,7 +8,7 @@
 
 namespace yaodaq
 {
-  MessageHandlerServer::MessageHandlerServer()
+  MessageHandlerServer::MessageHandlerServer(const int& port, const std::string& host, const int& backlog,const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily,const Identifier& identifier) : ix::WebSocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs, addressFamily) , MessageHandler(identifier)
   {
     m_MessageCallback=[this](std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg)
     {

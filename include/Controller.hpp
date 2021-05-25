@@ -13,7 +13,7 @@ namespace yaodaq
 class Controller : public Module
 {
 public:
-  Controller(const std::string& name = "", const std::string& type = "Controller");
+  Controller(const std::string& name = "", const std::string& type = "Default");
   virtual ~Controller() = default;
   void                  sendAction(const std::string& action);
   void                  sendCommand(const std::string& command);

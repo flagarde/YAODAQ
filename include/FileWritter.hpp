@@ -10,7 +10,7 @@ namespace yaodaq
 class FileWritter: public Module
 {
 public:
-  FileWritter(const std::string& name = "", const std::string& type = "FileWritter");
+  FileWritter(const std::string& name = "", const std::string& type = "Default");
   void setFile(std::unique_ptr<File>&& file);
   void setFileName(const std::string& name);
   void setFileOptions(const std::string& option);

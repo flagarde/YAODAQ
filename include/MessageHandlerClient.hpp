@@ -1,5 +1,7 @@
 #pragma once
 
+#include "WebSocketClient.hpp"
+
 #include "MessageHandler.hpp"
 
 #include <functional>
@@ -13,10 +15,10 @@ namespace ix
 
 namespace yaodaq
 {
-  class MessageHandlerClient : public MessageHandler
+  class MessageHandlerClient : public WebSocketClient, public MessageHandler
   {
   public:
-    MessageHandlerClient();
+    MessageHandlerClient(const Identifier& identifier);
     virtual void onOwnMessage(const ix::WebSocketMessagePtr& msg);
     virtual void onOwnOpen(const ix::WebSocketMessagePtr& msg);
     virtual void onOwnClose(const ix::WebSocketMessagePtr& msg);

@@ -32,9 +32,8 @@ namespace yaodaq
   }
 
 
-  WebSocketServer::WebSocketServer(const std::string& name,const int& port, const std::string& host, const int& backlog,const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily, const std::string& type,const CLASS& _class) : m_Identifier(_class,type,name), ix::WebSocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs, addressFamily), m_Host(host), m_Port(port)
+  WebSocketServer::WebSocketServer(const std::string& name,const int& port, const std::string& host, const int& backlog,const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily, const std::string& type,const CLASS& _class) : MessageHandlerServer(port,host,backlog,maxConnections,handshakeTimeoutSecs,addressFamily,Identifier(_class,type,name)), m_Host(host), m_Port(port)
   {
-    m_Interrupt.init();
     m_LoggerHandler.setName(m_Identifier.getIdentifier());
     ix::initNetSystem();
    // m_LoggerHandler.addDefaultSink();

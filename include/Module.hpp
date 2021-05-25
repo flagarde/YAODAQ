@@ -1,10 +1,7 @@
 #pragma once
 
-#include "WebSocketClient.hpp"
-
 #include "MessageHandlerClient.hpp"
 
-#include "Identifier.hpp"
 #include "Classes.hpp"
 
 #include "ConfigurationLoader.hpp"
@@ -142,7 +139,6 @@ protected:
   toml::value                     m_Conf{""};
 private:
   bool URLIsSet{false};
-  Identifier m_Identifier;
   bool            m_UseConfigFile{true};
   void            DoDoLoopOnStart();
   void            DoDoLoopOnPause();

@@ -19,7 +19,7 @@ void Module::setURL(const std::string& url)
   URLIsSet=true;
 }
 
-Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): m_Identifier(_class,type,name)
+Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): MessageHandlerClient(Identifier(_class,type,name))
 {
   m_LoggerHandler.setName(m_Identifier.getIdentifier());
   m_WebsocketClient.setHeaderKey("Key", "///" + getType() + "/" + getName());

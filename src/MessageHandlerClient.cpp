@@ -6,7 +6,7 @@
 
 namespace yaodaq
 {
-  MessageHandlerClient::MessageHandlerClient()
+  MessageHandlerClient::MessageHandlerClient(const Identifier& identifier) : MessageHandler(identifier)
   {
     m_MessageCallback=[this](const ix::WebSocketMessagePtr& msg)
     {

@@ -1,12 +1,8 @@
 #pragma once
 
-#include "ixwebsocket/IXWebSocketServer.h"
-
 #include "MessageHandlerServer.hpp"
 
 #include "GeneralParameters.hpp"
-#include "Identifier.hpp"
-#include "Interrupt.hpp"
 
 #include <string>
 
@@ -17,7 +13,7 @@ namespace yaodaq
 
   enum class  CLASS;
 
-  class WebSocketServer: public ix::WebSocketServer, public MessageHandlerServer
+  class WebSocketServer: public MessageHandlerServer
   {
   public:
     WebSocketServer(const std::string& name,const int& port = GeneralParameters::getPort(),
@@ -32,8 +28,6 @@ namespace yaodaq
     void        listen();
     int loop();
   private:
-    Identifier m_Identifier;
-    Interrupt m_Interrupt;
     Clients m_Clients;
     void                                  sendToLogger(const std::string& message);
     void                                  sendToAll(const std::string& message);

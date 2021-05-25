@@ -37,7 +37,7 @@ install(TARGETS Message)
 add_library(MessageHandler "MessageHandler.cpp")
 target_include_directories(MessageHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(MessageHandler PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandler.hpp")
-target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC ixwebsocket::ixwebsocket PUBLIC Message)
+target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC Message PUBLIC Identifier)
 install(TARGETS MessageHandler)
 
 
@@ -50,13 +50,13 @@ install(TARGETS MessageHandler)
 add_library(MessageHandlerServer "MessageHandlerServer.cpp")
 target_include_directories(MessageHandlerServer PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(MessageHandlerServer PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandlerServer.hpp")
-target_link_libraries(MessageHandlerServer PUBLIC MessageHandler)
+target_link_libraries(MessageHandlerServer PUBLIC MessageHandler PUBLIC ixwebsocket::ixwebsocket )
 install(TARGETS MessageHandlerServer)
 
 add_library(MessageHandlerClient "MessageHandlerClient.cpp")
 target_include_directories(MessageHandlerClient PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(MessageHandlerClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandlerClient.hpp")
-target_link_libraries(MessageHandlerClient PUBLIC MessageHandler)
+target_link_libraries(MessageHandlerClient PUBLIC MessageHandler PUBLIC ixwebsocket::ixwebsocket )
 install(TARGETS MessageHandlerClient)
 
 

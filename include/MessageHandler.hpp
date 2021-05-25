@@ -2,6 +2,7 @@
 
 #include "LoggerHandler.hpp"
 #include "Interrupt.hpp"
+#include "Identifier.hpp"
 
 namespace yaodaq
 {
@@ -9,7 +10,7 @@ namespace yaodaq
   class MessageHandler
   {
   public:
-    MessageHandler();
+    MessageHandler(const Identifier&);
     void setVerbosity(const std::string& verbosity)
     {
       m_LoggerHandler.setVerbosity(verbosity);
@@ -25,6 +26,7 @@ namespace yaodaq
 
   protected:
     LoggerHandler m_LoggerHandler;
+    Identifier m_Identifier;
     std::string m_Name();
     Interrupt  m_Interrupt;
   };
