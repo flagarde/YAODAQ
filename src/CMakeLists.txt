@@ -29,7 +29,7 @@ target_link_libraries(LoggerHandler PUBLIC spdlog::spdlog PRIVATE Identifier)
 install(TARGETS LoggerHandler)
 
 add_library(Message "Message.cpp")
-target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> PRIVATE $<BUILD_INTERFACE:${jsoncpp_SOURCE_DIR}/include>)
 set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message.hpp")
 target_link_libraries(Message PUBLIC Exception PRIVATE jsoncpp_static PUBLIC magic_enum::magic_enum)
 install(TARGETS Message)
