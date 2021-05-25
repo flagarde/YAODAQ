@@ -2,7 +2,7 @@
 
 #include "CLI/CLI.hpp"
 #include "ProgramInfos.hpp"
-
+#include "spdlog/sinks/stdout_color_sinks.h"
 using namespace yaodaq;
 
 int main(int argc, char** argv)

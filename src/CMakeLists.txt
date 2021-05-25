@@ -37,7 +37,7 @@ install(TARGETS Message)
 add_library(MessageHandler "MessageHandler.cpp")
 target_include_directories(MessageHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(MessageHandler PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandler.hpp")
-target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC Message PUBLIC Identifier)
+target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC Message)
 install(TARGETS MessageHandler)
 
 
@@ -156,7 +156,7 @@ set_target_properties(WebSocketClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE
 install(TARGETS WebSocketClient)
 
 add_library(Board "Module.cpp" "Board.cpp")
-target_link_libraries(Board PUBLIC Message PUBLIC MessageHandlerClient PUBLIC WebSocketClient PUBLIC ConfigurationLoader PUBLIC ConnectorFactory PRIVATE Connector PUBLIC Identifier PUBLIC Interrupt)
+target_link_libraries(Board PUBLIC Message PUBLIC MessageHandlerClient PUBLIC WebSocketClient PUBLIC ConfigurationLoader PUBLIC ConnectorFactory PRIVATE Connector PUBLIC Interrupt)
 set_target_properties(Board PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Module.hpp" PUBLIC_HEADER "${YAODAQ_INCLUDE}/Board.hpp")
 install(TARGETS Board)
 
@@ -168,7 +168,7 @@ install(TARGETS Logger)
 add_library(WebSocketServer "WebSocketServer.cpp")
 target_include_directories(WebSocketServer PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>)
 set_target_properties(WebSocketServer PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/WebSocketServer.hpp")
-target_link_libraries(WebSocketServer PUBLIC Message PUBLIC Clients PUBLIC MessageHandlerServer PUBLIC Exception PUBLIC Identifier PUBLIC Interrupt PUBLIC GeneralParameters)
+target_link_libraries(WebSocketServer PUBLIC Message PUBLIC Clients PUBLIC MessageHandlerServer PUBLIC Exception PUBLIC Interrupt PUBLIC GeneralParameters)
 
 add_library(FileWritter "FileWritter.cpp")
 target_link_libraries(FileWritter PUBLIC File PUBLIC Board)

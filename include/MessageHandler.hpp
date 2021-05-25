@@ -2,7 +2,6 @@
 
 #include "LoggerHandler.hpp"
 #include "Interrupt.hpp"
-#include "Identifier.hpp"
 
 namespace yaodaq
 {
@@ -20,14 +19,30 @@ namespace yaodaq
       return m_LoggerHandler.logger();
     }
 
+
+    void clearSinks()
+    {
+      m_LoggerHandler.clearSinks();
+    }
+
+    void addSink(const spdlog::sink_ptr& sink)
+    {
+      m_LoggerHandler.addSink(sink);
+    }
+
+
+    Identifier getIdentifier()
+    {
+      return m_LoggerHandler.getIdentifier();
+    }
+
+
     //Action to do when a signal as been raised on the client/server
     void onRaisingSignal();
 
 
   protected:
     LoggerHandler m_LoggerHandler;
-    Identifier m_Identifier;
-    std::string m_Name();
     Interrupt  m_Interrupt;
   };
 };

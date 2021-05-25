@@ -15,14 +15,13 @@ namespace yaodaq
 
 void Module::setURL(const std::string& url)
 {
-  m_WebsocketClient.setUrl(url);
+  MessageHandlerClient::setUrl(url);
   URLIsSet=true;
 }
 
 Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): MessageHandlerClient(Identifier(_class,type,name))
 {
-  m_LoggerHandler.setName(m_Identifier.getIdentifier());
-  m_WebsocketClient.setHeaderKey("Key", "///" + getType() + "/" + getName());
+  setHeaderKey("Key", "///" + getIdentifier().getType() + "/" + getIdentifier().getName());
   m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
     if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
     else if(msg->type == ix::WebSocketMessageType::Open)
@@ -46,7 +45,7 @@ Module::Module(const std::string& name, const std::string& type, const yaodaq::C
       this->OnPong(msg);
     }
   }};
-  m_WebsocketClient.setOnMessageCallback(m_CallBack);
+  setOnMessageCallback(m_CallBack);
 }
 
 int Module::loop()
@@ -71,29 +70,20 @@ void Module::setConfigFile(const std::string& file)
 
 void Module::stopListening()
 {
-  m_WebsocketClient.stop();
-  while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Closed) std::this_thread::sleep_for(std::chrono::microseconds(10));
+  stop();
+  while(getReadyState()!=ix::ReadyState::Closed) std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
 void Module::startListening()
 {
   m_LoggerHandler.addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-  logger()->info("Listening on {}.",m_WebsocketClient.getUrl());
+  logger()->info("Listening on {}.",getUrl());
   if(!URLIsSet)
   {
     setURL(yaodaq::GeneralParameters::getURL());
   }
-  m_WebsocketClient.start();
-  while(m_WebsocketClient.getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(10));
-}
-
-std::string Module::getName()
-{
-  return m_Identifier.getName();
-}
-std::string Module::getType()
-{
-  return m_Identifier.getType();
+  start();
+  while(getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
 void Module::setState(const States& state)
@@ -119,7 +109,7 @@ void Module::verifyParameters() {}
 void Module::LoadConfig()
 {
   m_Config.parse();
-  m_Conf = m_Config.getConfig(getName());
+  m_Conf = m_Config.getConfig(getIdentifier().getName());
   verifyParameters();
 }
 
@@ -131,7 +121,7 @@ void Module::printParameters()
 void Module::sendState()
 {
   State state(m_State);
-  m_WebsocketClient.sendBinary(state.get());
+  MessageHandlerClient::sendBinary(state.get());
   logger()->warn(state.get());
 }
 
@@ -174,8 +164,8 @@ void Module::Configure()
   {
     if(m_UseConfigFile)
     {
-      m_Config.reloadParameters(getName());
-      m_Conf = m_Config.getConfig(getName());
+      m_Config.reloadParameters(getIdentifier().getName());
+      m_Conf = m_Config.getConfig(getIdentifier().getName());
     }
     DoConfigure();
     setState(States::CONFIGURED);
@@ -400,7 +390,7 @@ void Module::DoOnAction(const Message& message)
     else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action.value()== Actions::DISCONNECT) Disconnect();
     else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::RELEASE) Release();
     else if(m_State==States::RELEASED && action.value()== Actions::QUIT) Quit();
-    else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",getName(),std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action.value())));
+    else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action.value())));
   }
 }
 
@@ -441,7 +431,7 @@ void Module::OnClose(const ix::WebSocketMessagePtr& msg)
   // This data can be accessed through the closeInfo object.
   if(msg->closeInfo.code == static_cast<int16_t>(StatusCode::ALREADY_PRESENT))
   {
-    m_WebsocketClient.disableAutomaticReconnection();
+    disableAutomaticReconnection();
     throw Exception(StatusCode::ALREADY_PRESENT, msg->closeInfo.reason);
   }
   else

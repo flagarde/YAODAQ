@@ -46,26 +46,24 @@ public:
   void                                   LoopOnPause();
   std::string                            getStateString();
   States                                 getState();
-  std::string                            getName();
-  std::string                            getType();
   static void                            setConfigFile(const std::string&);
   void                                   printParameters();
   void                                   stopListening();
   void                                   startListening();
   void                                   send(Message& message)
   {
-    message.setFrom(getType() + "/" + getName());
-    m_WebsocketClient.send(message.get());
+    message.setFrom(getIdentifier().getType() + "/" + getIdentifier().getName());
+    MessageHandlerClient::send(message.get());
   }
   void                                   sendText(Message& message)
   {
-    message.setFrom(getType() + "/" + getName());
-    m_WebsocketClient.sendText(message.get());
+    message.setFrom(getIdentifier().getType() + "/" + getIdentifier().getName());
+    MessageHandlerClient::sendText(message.get());
   }
   void                                   sendBinary(Message& message)
   {
-    message.setFrom(getType() + "/" + getName());
-    m_WebsocketClient.sendBinary(message.get());
+    message.setFrom(getIdentifier().getType() + "/" + getIdentifier().getName());
+    MessageHandlerClient::sendBinary(message.get());
   }
   template<typename... Args> inline void sendTrace(yaodaq_string_view fmt, const Args&... args)
   {
@@ -125,6 +123,11 @@ public:
   void sendData(const std::string& dat) { Data data(dat); sendBinary(data); }
   void sendData(const Json::Value& dat) { Data data(dat); sendBinary(data); }
 
+  std::string getName()
+  {
+    return getIdentifier().getName();
+  }
+
 protected:
   static ConfigurationLoader            m_Config;
   virtual void                    OnOpen(const ix::WebSocketMessagePtr& msg);
@@ -169,7 +172,6 @@ private:
   void                                                sendState();
   void                                                setState(const States& state);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
-  WebSocketClient                                     m_WebsocketClient;
   std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack;
 };
 

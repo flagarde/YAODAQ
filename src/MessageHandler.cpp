@@ -9,7 +9,7 @@
 namespace yaodaq
 {
 
-  MessageHandler::MessageHandler(const Identifier& identifier) : m_Identifier(identifier)
+  MessageHandler::MessageHandler(const Identifier& identifier) : m_LoggerHandler(identifier)
   {
     m_Interrupt.init();
   }

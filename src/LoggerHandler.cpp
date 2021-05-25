@@ -6,7 +6,7 @@
 
 namespace yaodaq
 {
-  LoggerHandler::LoggerHandler()
+  LoggerHandler::LoggerHandler(const Identifier& identifier) : m_Identifier(identifier)
   {
     init();
   }
@@ -19,17 +19,12 @@ namespace yaodaq
 
   void LoggerHandler::setVerbosity(const std::string& verbosity)
   {
-    if(verbosity == "off") m_Verbosity = spdlog::level::off;
-    else if(verbosity == "trace") m_Verbosity = spdlog::level::trace;
-    else if(verbosity == "info") m_Verbosity = spdlog::level::info;
-    else if(verbosity == "debug") m_Verbosity = spdlog::level::debug;
-    else if(verbosity == "warning") m_Verbosity = spdlog::level::warn;
-    else if(verbosity == "critical") m_Verbosity = spdlog::level::critical;
-  }
-
-  void LoggerHandler::setName(const std::string& name)
-  {
-    m_Name=name;
+    if(verbosity == "Off") m_Verbosity = spdlog::level::off;
+    else if(verbosity == "Trace") m_Verbosity = spdlog::level::trace;
+    else if(verbosity == "Info") m_Verbosity = spdlog::level::info;
+    else if(verbosity == "Debug") m_Verbosity = spdlog::level::debug;
+    else if(verbosity == "Warning") m_Verbosity = spdlog::level::warn;
+    else if(verbosity == "Critical") m_Verbosity = spdlog::level::critical;
   }
 
   std::shared_ptr<spdlog::logger> LoggerHandler::logger()
@@ -45,7 +40,7 @@ namespace yaodaq
 
   void LoggerHandler::init()
   {
-    m_Logger=std::make_shared<spdlog::logger>(m_Name, std::begin(m_Sinks), std::end(m_Sinks));
+    m_Logger=std::make_shared<spdlog::logger>(m_Identifier.getIdentifier(), std::begin(m_Sinks), std::end(m_Sinks));
     m_Logger->set_level(m_Verbosity);
   }
 

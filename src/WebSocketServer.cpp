@@ -34,7 +34,6 @@ namespace yaodaq
 
   WebSocketServer::WebSocketServer(const std::string& name,const int& port, const std::string& host, const int& backlog,const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily, const std::string& type,const CLASS& _class) : MessageHandlerServer(port,host,backlog,maxConnections,handshakeTimeoutSecs,addressFamily,Identifier(_class,type,name)), m_Host(host), m_Port(port)
   {
-    m_LoggerHandler.setName(m_Identifier.getIdentifier());
     ix::initNetSystem();
    // m_LoggerHandler.addDefaultSink();
     //spdlog::sinks_init_list sink_list = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
