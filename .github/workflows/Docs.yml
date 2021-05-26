@@ -35,7 +35,7 @@ jobs:
 
     - name: Build docs
       run: cmake -S . -B build -DCMAKE_INSTALL_PREFIX=bin -DBUILD_DOCS=ON -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE} -DBUILD_ROOT=OFF -DBUILD_DAQ=OFF
-        && cmake --build . --target docs
+        && cmake --build build --target docs
         && touch .nojekyll
 
     - name: Deploy docs
