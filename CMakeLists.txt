@@ -32,7 +32,10 @@ c_11()
 
 include(GNUInstallDirs)
 
-option(ENABLE_TESTS "Build the tests" TRUE)
+option(BUILD_TESTS "Build the tests" TRUE)
+option(BUILD_EXAMPLES "Build the examples" TRUE)
+option(BUILD_DOCS "Build the docs" TRUE)
+option(BUILD_EXTRAS "Build the extras" TRUE)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #include(DefaultConfigurations)
@@ -41,8 +44,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #set_default_configuration("Debug")
 
 #include(Formatters)
-
-
 
 # Ask CMake to output a compile_commands.json file for use with things like Vim YCM.
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
@@ -59,7 +60,7 @@ link_directories("${CMAKE_INSTALL_FULL_LIBDIR}")
 
 # If we want to have test in the executables
 if(ENABLE_DOCTESTS)
-  add_dependencies(YAODAQ::doctest)
+  include(Doctest)
   add_definitions(-DENABLE_DOCTEST_IN_LIBRARY)
 endif()
 
@@ -70,8 +71,6 @@ if(NOT N EQUAL 0)
 endif()
 
 include(Architectures)
-
-set(CMAKE_MESSAGE_CONTEXT_SHOW TRUE)
 
 
 if(POLICY CMP0048)
@@ -99,20 +98,20 @@ include(Sanitizers)
 #cppcheck(--enable=warning,performance,portability,missingInclude --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)" --suppress=missingIncludeSystem --quiet --verbose --force)
 #include_what_you_use(-Xiwyu)
 
-if(ENABLE_TESTS)
+if(BUILD_TESTS)
   include(Doctest)
   add_subdirectory(tests)
 endif()
 
 add_subdirectory(src)
 
-if(ENABLE_EXTRAS)
+if(BUILD_EXTRAS)
   add_subdirectory(extras)
 endif()
 
 add_subdirectory(apps)
 
-if(ENABLE_DOCS)
+if(BUILD_DOCS)
   add_subdirectory(docs)
 endif()
 

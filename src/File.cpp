@@ -38,7 +38,7 @@ std::string File::getExtension()
 std::string File::getPath()
 {
   setPath();
-  return m_Path;
+  return m_Path.string();
 }
 
 std::string File::fillvariables(const std::string& str, const std::string variable, const std::string& value)

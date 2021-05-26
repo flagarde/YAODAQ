@@ -68,12 +68,13 @@ set(CLI11_TAG "master")
 ####################################
 
 
-
-## General options
-set(ENABLE_TESTS TRUE)
-
-
-
+####################################
+#         GENERAL OPTIONS          #
+####################################
+option(BUILD_TESTS "Build the tests" TRUE)
+option(BUILD_EXAMPLES "Build the examples" TRUE)
+option(BUILD_DOCS "Build the docs" TRUE)
+option(BUILD_EXTRAS "Build the extras" TRUE)
 
 
 
@@ -128,17 +129,14 @@ option(BUILD_ROOT "Build ROOT Folder" ON)
 set(LOOK_FOR_ROOT_VERSION "6.20")
 # If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
 set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
-# ########################################################################################################################################################################################################################################################
+#
 
-option(ENABLE_TESTS "Include tests folder" ON)
-option(ENABLE_DOCS "Include docs folder" ON)
 option(BUILD_ANALYSIS "Build the Analysis code" ON)
 option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
 option(BUILD_WEBSERVER "Build the civet webserver" ON)
 option(BUILD_CONFIGURATOR "Build Configurator" ON)
 option(BUILD_CONTROLLER "Build Controller" ON)
 option(BUILD_LOGGER "Build Logger" ON)
-option(ENABLE_EXTRAS "Build extras" ON)
 
 option(BUILD_DAQ "Build DAQ" ON)
 option(BUILD_SNMP "Build SNMP" OFF)

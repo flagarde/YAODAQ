@@ -9,8 +9,8 @@ class File
 {
 public:
   File(const std::string& name = "", const std::string& option = "");
-  void         setName(const std::string& name);
-  void         setOptions(const std::string& option);
+  void         setName(const std::string&);
+  void         setOptions(const std::string&);
   std::string  getDirectory();
   std::string  getName();
   std::string  getExtension();
@@ -24,15 +24,14 @@ public:
   virtual ~File()                          = default;
 
 protected:
+  File() = default;
   std::string           fillvariables(const std::string& str, const std::string variable, const std::string& value);
   virtual void          setID() = 0;
   void                  setPath();
   void                  createDirectories();
-  std::string           m_Name{""};
+  std::string           m_Name;
   std::filesystem::path m_Path;
   std::string           m_ID{"-1"};
-  std::string           m_Option{""};
+  std::string           m_Option;
 
-private:
-  File() = default;
 };
