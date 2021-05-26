@@ -20,19 +20,19 @@ std::string File::getDirectory()
   setPath();
   std::filesystem::path ret = m_Path;
   ret.remove_filename();
-  return ret;
+  return ret.string();
 }
 
 std::string File::getName()
 {
   setPath();
-  return m_Path.filename();
+  return m_Path.filename().string();
 }
 
 std::string File::getExtension()
 {
   setPath();
-  return m_Path.extension();
+  return m_Path.extension().string();
 }
 
 std::string File::getPath()
