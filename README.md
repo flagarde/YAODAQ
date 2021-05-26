@@ -19,7 +19,7 @@ Yet An Other DAQ
 
 <h1>
   
-> [📖 Documentation](https://flagarde.github.io/YAODAQ/)
+> [📖 Documentation](https://flagarde.github.io/YAODAQ/) [![Docs](https://github.com/flagarde/YAODAQ/actions/workflows/Docs.yml/badge.svg)](https://github.com/flagarde/YAODAQ/actions/workflows/Docs.yml)
   
 </h1> 
 </h1>
