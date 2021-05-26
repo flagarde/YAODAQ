@@ -61,7 +61,7 @@ set(DOCTEST_TAG "2.4.6")
 
 # CLI11
 set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11.git")
-set(CLI11_TAG "v1.9.1")
+set(CLI11_TAG "master")
 
 ####################################
 #          EXTRA PACKAGES          #
