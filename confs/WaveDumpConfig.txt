@@ -12,10 +12,10 @@
 [COMMON]
 
 # OPEN: open the digitizer
-# options: USB 0 0      Desktop/NIM digitizer through USB              
-#          USB 0 BA     VME digitizer through USB-V1718 (BA = BaseAddress of the VME board, 32 bit hex)
-#          PCI 0 0 0    Desktop/NIM/VME through CONET (optical link) 
-#          PCI 0 0 BA   VME digitizer through V2718 (BA = BaseAddress of the VME board, 32 bit hex)
+# options: USB 0 0      Desktop/NIM digitizer through USB
+#          USB 0 BaseAddress     VME digitizer through USB-V1718 (BaseAddress of the VME board, 32 bit hex)
+#          PCI 0 0 0    Desktop/NIM/VME through CONET (optical link)
+#          PCI 0 0 BaseAddress   VME digitizer through V2718 (BaseAddress of the VME board, 32 bit hex)
 #OPEN USB 0 0
 OPEN USB 0 32100000
 #OPEN PCI 0 0 0
@@ -25,13 +25,13 @@ OPEN USB 0 32100000
 RECORD_LENGTH  128
 
 # DECIMATION_FACTOR: ONLY FOR 740 and 724 MODELS. change the decimation factor for the acquisition.
-# options: 1 2 4 8 16 32 64 128  
+# options: 1 2 4 8 16 32 64 128
 DECIMATION_FACTOR  1
 
 # POST_TRIGGER: post trigger size in percent of the whole acquisition window
 # options: 0 to 100
 # On models 742 there is a delay of about 35nsec on signal Fast Trigger TR; the post trigger is added to
-# this delay  
+# this delay
 POST_TRIGGER  50
 
 #PULSE_POLARITY: input signal polarity.
@@ -39,16 +39,16 @@ POST_TRIGGER  50
 #
 PULSE_POLARITY  NEGATIVE
 
-# EXTERNAL_TRIGGER: external trigger input settings. When enabled, the ext. trg. can be either 
+# EXTERNAL_TRIGGER: external trigger input settings. When enabled, the ext. trg. can be either
 # propagated (ACQUISITION_AND_TRGOUT) or not (ACQUISITION_ONLY) through the TRGOUT
 # options: DISABLED, ACQUISITION_ONLY, ACQUISITION_AND_TRGOUT
-EXTERNAL_TRIGGER   DISABLED	
+EXTERNAL_TRIGGER   DISABLED
 
-# FPIO_LEVEL: type of the front panel I/O LEMO connectors 
+# FPIO_LEVEL: type of the front panel I/O LEMO connectors
 # options: NIM, TTL
 FPIO_LEVEL  NIM
 
-# OUTPUT_FILE_FORMAT: output file can be either ASCII (column of decimal numbers) or binary 
+# OUTPUT_FILE_FORMAT: output file can be either ASCII (column of decimal numbers) or binary
 # (2 bytes per sample, except for Mod 721 and Mod 731 that is 1 byte per sample)
 # options: BINARY, ASCII
 OUTPUT_FILE_FORMAT  ASCII
@@ -75,7 +75,7 @@ TEST_PATTERN   YES
 # WRITE_REGISTER 1080 45 FFFFFFFF
 
 # ----------------------------------------------------------------
-# Individual Settings 
+# Individual Settings
 # ----------------------------------------------------------------
 # The following setting are usually applied on channel by channel
 # basis; however, you can put them also here in the [COMMON] section in
@@ -86,14 +86,14 @@ TEST_PATTERN   YES
 # options: YES, NO
 ENABLE_INPUT          YES
 
-#BASELINE_LEVEL: baseline position in percent of the Full Scale. 
+#BASELINE_LEVEL: baseline position in percent of the Full Scale.
 # POSITIVE PULSE POLARITY (Full Scale = from 0 to + Vpp)
-# 0: analog input dynamic range = from 0 to +Vpp 
-# 50: analog input dynamic range = from +Vpp/2 to +Vpp 
+# 0: analog input dynamic range = from 0 to +Vpp
+# 50: analog input dynamic range = from +Vpp/2 to +Vpp
 # 100: analog input dynamic range = null (usually not used)*
-# NEGATIVE PULSE POLARITY (Full Scale = from -Vpp to 0) 
-# 0: analog input dynamic range = from -Vpp to 0 
-# 50: analog input dynamic range = from -Vpp/2 to 0 
+# NEGATIVE PULSE POLARITY (Full Scale = from -Vpp to 0)
+# 0: analog input dynamic range = from -Vpp to 0
+# 50: analog input dynamic range = from -Vpp/2 to 0
 # 100: analog input dynamic range = null (usually not used)*
 #
 # options: 0 to 100
@@ -107,7 +107,7 @@ BASELINE_LEVEL  50
 #
 TRIGGER_THRESHOLD      100
 
-# CHANNEL_TRIGGER: channel auto trigger settings. When enabled, the ch. auto trg. can be either 
+# CHANNEL_TRIGGER: channel auto trigger settings. When enabled, the ch. auto trg. can be either
 # propagated (ACQUISITION_AND_TRGOUT) or not (ACQUISITION_ONLY) through the TRGOUT
 # options: DISABLED, ACQUISITION_ONLY, ACQUISITION_AND_TRGOUT, TRGOUT_ONLY
 # NOTE: since in x730 boards even and odd channels are paired, their 'CHANNEL_TRIGGER' value
@@ -118,8 +118,8 @@ CHANNEL_TRIGGER        ACQUISITION_ONLY
 #In the following, you can see the use of some individual settings to:
 #	-enable channel [0]
 #	-position the baseline to 10% of the full scale, to use the input dynamic range in a better way
-#	-set the trigger threshold of channel [0] to 50 LSB (relative to the baseline position)   
-# 
+#	-set the trigger threshold of channel [0] to 50 LSB (relative to the baseline position)
+#
 
 [0]
 ENABLE_INPUT           YES
