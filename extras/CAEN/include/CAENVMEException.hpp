@@ -7,7 +7,7 @@ namespace CAEN
 class CAENVMEException: public Exception
 {
 public:
-  CAENVMEException(const int_least32_t& code, const SourceLocation& location = SourceLocation());
+  CAENVMEException(const int_least32_t& code, const source_location& location = source_location::current());
 
 private:
   CAENVMEException() = delete;

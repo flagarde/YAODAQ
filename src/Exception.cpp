@@ -4,8 +4,8 @@ std::string  Exception::m_Format{"\n\t[Code] : {Code}\n\t[Description] : {Descri
 
 fmt::text_style Exception::m_Style={fg(fmt::color::crimson) | fmt::emphasis::bold};
 
-Exception::Exception(const StatusCode& statusCode, std::string description,const SourceLocation& location)
-: SourceLocation(location), m_Code(static_cast<std::int_least32_t>(statusCode)), m_Description(std::move(description))
+Exception::Exception(const StatusCode& statusCode, std::string description,const source_location& location)
+: source_location(location), m_Code(static_cast<std::int_least32_t>(statusCode)), m_Description(std::move(description))
 {
   constructMessage();
 }
@@ -25,7 +25,7 @@ int_least32_t Exception::code() const noexcept
   return m_Code;
 }
 
-Exception::Exception(const int_least32_t& code, std::string description,const SourceLocation& location):SourceLocation(location),  m_Code(static_cast<int_least32_t>(code)), m_Description(std::move(description))
+Exception::Exception(const int_least32_t& code, std::string description,const source_location& location):source_location(location),  m_Code(static_cast<int_least32_t>(code)), m_Description(std::move(description))
 {
   constructMessage();
 }

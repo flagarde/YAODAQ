@@ -27,7 +27,7 @@ const char* CAENFlashException::errorStrings(const int_least32_t& code)
   }
 }
 
-CAENFlashException::CAENFlashException(const int_least32_t& code, const SourceLocation& location): Exception(code, errorStrings(code), location)
+CAENFlashException::CAENFlashException(const int_least32_t& code, const source_location& location): Exception(code, errorStrings(code), location)
 {
   if(code != SUCCESS) throw *this;
 };

@@ -105,7 +105,7 @@ const char* CAENDPPException::errorStrings(const int_least32_t& code)
   }
 }
 
-CAENDPPException::CAENDPPException(const int_least32_t& code, const SourceLocation& location): Exception(code, errorStrings(code), location)
+CAENDPPException::CAENDPPException(const int_least32_t& code, const source_location& location): Exception(code, errorStrings(code), location)
 {
   if(code != CAENDPP_RetCode_Ok) throw *this;
 };

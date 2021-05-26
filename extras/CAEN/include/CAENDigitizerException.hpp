@@ -7,7 +7,7 @@ namespace CAEN
 class CAENDigitizerException: public Exception
 {
 public:
-  CAENDigitizerException(const int_least32_t& code, const SourceLocation& location = SourceLocation());
+  CAENDigitizerException(const int_least32_t& code, const source_location& location = source_location::current());
 
 private:
   CAENDigitizerException() = delete;

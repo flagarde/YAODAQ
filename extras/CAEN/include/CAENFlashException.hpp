@@ -19,7 +19,7 @@ enum FLASH_API_ERROR_CODES : int_least32_t
 class CAENFlashException: public Exception
 {
 public:
-  CAENFlashException(const int_least32_t& code, const SourceLocation& location = SourceLocation());
+  CAENFlashException(const int_least32_t& code, const source_location& location = source_location::current());
 
 private:
   CAENFlashException() = delete;

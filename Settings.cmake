@@ -47,6 +47,10 @@ set(JSONCPP_TAG "master")
 set(TOML11_REPOSITORY "https://gitlab.com/ExternalRepositories/toml11.git")
 set(TOML11_TAG "master")
 
+# SourceLocation
+set(SOURCELOCATION_REPOSITORY "https://gitlab.com/flagarde/source_location.git")
+set(SOURCELOCATION_TAG "main")
+
 ## FOR TESTS ##
 
 # Doctest

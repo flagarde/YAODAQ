@@ -7,6 +7,7 @@ include(MagicEnum)
 include(Jsoncpp)
 include(Toml11)
 include(elogpp)
+include(SourceLocation)
 
 add_library(Interrupt "Interrupt.cpp")
 target_include_directories(Interrupt PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -78,15 +79,10 @@ target_include_directories(GeneralParameters PUBLIC $<BUILD_INTERFACE:${YAODAQ_I
 set_target_properties(GeneralParameters PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/GeneralParameters.hpp")
 install(TARGETS GeneralParameters)
 
-add_library(SourceLocation "SourceLocation.cpp")
-target_include_directories(SourceLocation PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-set_target_properties(SourceLocation PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/SourceLocation.hpp")
-install(TARGETS SourceLocation)
-
 add_library(Exception "Exception.cpp")
 target_include_directories(Exception PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(Exception PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Exception.hpp")
-target_link_libraries(Exception PUBLIC fmt::fmt PRIVATE SourceLocation)
+target_link_libraries(Exception PUBLIC fmt::fmt PUBLIC source_location)
 install(TARGETS Exception)
 
 
@@ -94,7 +90,7 @@ install(TARGETS Exception)
 add_library(Key "Key.cpp")
 target_include_directories(Key PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(Key PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Key.hpp")
-target_link_libraries(Key PRIVATE SourceLocation PRIVATE fmt::fmt)
+target_link_libraries(Key PRIVATE fmt::fmt)
 install(TARGETS Key)
 
 

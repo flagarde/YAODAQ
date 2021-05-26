@@ -11,7 +11,7 @@
 
 using namespace CAEN;
 
-TEST_CASE("Test CAEN Errors")
+void VMEErrors()
 {
   std::cout << "VME Errors" << std::endl;
   for(unsigned int i = 0; i != 6; ++i)
@@ -25,6 +25,10 @@ TEST_CASE("Test CAEN Errors")
       std::cout << evet.what() << std::endl;
     }
   }
+}
+
+void CommErrors()
+{
   std::cout << "CAENComm Errors" << std::endl;
   for(unsigned int i = 0; i != 14; ++i)
   {
@@ -37,6 +41,10 @@ TEST_CASE("Test CAEN Errors")
       std::cout << evet.what() << std::endl;
     }
   }
+}
+
+void HVErrors()
+{
   std::cout << "CAENHV Errors" << std::endl;
   for(int i = 0; i != 38; ++i)
   {
@@ -54,6 +62,10 @@ TEST_CASE("Test CAEN Errors")
       std::cout << evet.what() << std::endl;
     }
   }
+}
+
+void DigitizerErrors()
+{
   std::cout << "CAENDigitizer Errors" << std::endl;
   for(unsigned int i = 0; i != 35; ++i)
   {
@@ -66,6 +78,10 @@ TEST_CASE("Test CAEN Errors")
       std::cout << evet.what() << std::endl;
     }
   }
+}
+
+void DPPErrors()
+{
   std::cout << "CAENDPP Errors" << std::endl;
   for(unsigned int i = 100; i != 145; ++i)
   {
@@ -78,6 +94,10 @@ TEST_CASE("Test CAEN Errors")
       std::cout << evet.what() << std::endl;
     }
   }
+}
+
+void FlashErrors()
+{
   std::cout << "CAENFlash Errors" << std::endl;
   for(unsigned int i = 0; i != 8; ++i)
   {
@@ -90,4 +110,14 @@ TEST_CASE("Test CAEN Errors")
       std::cout << evet.what() << std::endl;
     }
   }
+}
+
+TEST_CASE("Test CAEN Errors")
+{
+  VMEErrors();
+  CommErrors();
+  HVErrors();
+  DigitizerErrors();
+  DPPErrors();
+  FlashErrors();
 }
