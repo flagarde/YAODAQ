@@ -1,6 +1,7 @@
 <h1 align="center"> 
   
-**[![YAODAQ's Logo](https://user-images.githubusercontent.com/8627746/119172227-41ffa380-ba98-11eb-9874-fc252a28176f.png)](https://github.com/flagarde/YAODAQ)**
+**[![YAODAQ's Logo](https://user-images.githubusercontent.com/8627746/119172227-41ffa380-ba98-11eb-9874-fc252a28176f.png)](https://github.com/flagarde/YAODAQ)[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fflagarde%2FYAODAQ.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fflagarde%2FYAODAQ?ref=badge_shield)
+**
   
 ---
 ![GitHub](https://img.shields.io/github/license/flagarde/YAODAQ)
@@ -52,3 +53,7 @@ Yet An Other DAQ
 | Github |[![Linux Clang][LCB]][LC]|[![Linux GCC][LGB]][LG]|[![MacOS Clang][MCB]][MC]|[![MacOS GCC][MGB]][MG]|[![Windows MSYS2][MSB]][MS]|[![Windows MSVC][MMB]][MM]|
 
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fflagarde%2FYAODAQ.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fflagarde%2FYAODAQ?ref=badge_large)
