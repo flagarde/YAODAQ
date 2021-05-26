@@ -52,8 +52,8 @@ enum class Actions
 class Message
 {
 public:
-  explicit Message(const Types& type = Types::Info, const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
-  explicit Message(const Types& type, const Json::Value& content, const std::string& to = "ALL", const std::string& from = "");
+  explicit Message(const Types& type = Types::Info, const std::string& content = "", const std::string& to = "ALL");
+  explicit Message(const Types& type, const Json::Value& content, const std::string& to = "ALL");
   void        parse(const std::string&);
   void        setFrom(const std::string&);
   void        setTo(const std::string&);
@@ -87,7 +87,7 @@ private:
 class Command: public Message
 {
 public:
-  Command(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Command(const std::string& content = "", const std::string& to = "ALL");
   std::string               getCommand() const;
   std::string               getCommand();
   template<typename T> void addParameter(const std::string& name, const T& value) { m_Value["Content"]["Parameters"][name] = value; }
@@ -102,60 +102,60 @@ public:
 class Critical: public Message
 {
 public:
-  Critical(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Critical(const std::string& content = "", const std::string& to = "ALL");
 };
 
 class Warning: public Message
 {
 public:
-  Warning(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Warning(const std::string& content = "", const std::string& to = "ALL");
 };
 
 class Debug: public Message
 {
 public:
-  Debug(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Debug(const std::string& content = "", const std::string& to = "ALL");
 };
 
 class Trace: public Message
 {
 public:
-  Trace(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Trace(const std::string& content = "", const std::string& to = "ALL");
 };
 
 class Error: public Message
 {
 public:
-  Error(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Error(const std::string& content = "", const std::string& to = "ALL");
 };
 
 class Info: public Message
 {
 public:
-  Info(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Info(const std::string& content = "", const std::string& to = "ALL");
 };
 
 class State: public Message
 {
 public:
-  State(States state, const std::string& to = "ALL", const std::string& from = "");
+  State(States state, const std::string& to = "ALL");
 };
 
 class Action: public Message
 {
 public:
-  Action(const Actions& action, const std::string& to = "ALL", const std::string& from = "");
+  Action(const Actions& action, const std::string& to = "ALL");
 };
 
 class Data: public Message
 {
 public:
-  Data(const std::string& content, const std::string& to = "ALL", const std::string& from = "");
-  Data(const Json::Value& content = {}, const std::string& to = "ALL", const std::string& from = "");
+  Data(const std::string& content, const std::string& to = "ALL");
+  Data(const Json::Value& content = {}, const std::string& to = "ALL");
 };
 
 class Response: public Message
 {
 public:
-  Response(const std::string& content = "", const std::string& to = "ALL", const std::string& from = "");
+  Response(const std::string& content = "", const std::string& to = "ALL");
 };

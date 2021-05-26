@@ -19,22 +19,20 @@ std::size_t Message::getContentSize()
   return getContent().size();
 }
 
-Message::Message(const Types& type, const std::string& content, const std::string& to, const std::string& from)
+Message::Message(const Types& type, const std::string& content, const std::string& to)
 {
   m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
   m_Reader.reset(m_CharReaderBuilder.newCharReader());
   setType(type);
-  setFrom(from);
   setTo(to);
   if(content != "") setContent(content);
 }
 
-Message::Message(const Types& type, const Json::Value& content, const std::string& to, const std::string& from)
+Message::Message(const Types& type, const Json::Value& content, const std::string& to)
 {
   m_Writer.reset(m_StreamWriterBuilder.newStreamWriter());
   m_Reader.reset(m_CharReaderBuilder.newCharReader());
   setType(type);
-  setFrom(from);
   setTo(to);
   setContent(content);
 }
@@ -143,23 +141,23 @@ std::string Message::getType()
   return m_Value["Type"].asString();
 }
 
-Info::Info(const std::string& content, const std::string& to, const std::string& from): Message(Types::Info, content, to, from) {}
+Info::Info(const std::string& content, const std::string& to): Message(Types::Info, content, to) {}
 
-State::State(States state, const std::string& to, const std::string& from): Message(Types::State, std::string(magic_enum::enum_name(state)), to, from) {}
+State::State(States state, const std::string& to): Message(Types::State, std::string(magic_enum::enum_name(state)), to) {}
 
-Action::Action(const Actions& action, const std::string& to, const std::string& from): Message(Types::Action, std::string(magic_enum::enum_name(action)), to, from) {}
+Action::Action(const Actions& action, const std::string& to): Message(Types::Action, std::string(magic_enum::enum_name(action)), to) {}
 
-Error::Error(const std::string& content, const std::string& to, const std::string& from): Message(Types::Error, content, to, from) {}
+Error::Error(const std::string& content, const std::string& to): Message(Types::Error, content, to) {}
 
-Trace::Trace(const std::string& content, const std::string& to, const std::string& from): Message(Types::Trace, content, to, from) {}
+Trace::Trace(const std::string& content, const std::string& to): Message(Types::Trace, content, to) {}
 
-Debug::Debug(const std::string& content, const std::string& to, const std::string& from): Message(Types::Debug, content, to, from) {}
+Debug::Debug(const std::string& content, const std::string& to): Message(Types::Debug, content, to) {}
 
-Warning::Warning(const std::string& content, const std::string& to, const std::string& from): Message(Types::Warning, content, to, from) {}
+Warning::Warning(const std::string& content, const std::string& to): Message(Types::Warning, content, to) {}
 
-Critical::Critical(const std::string& content, const std::string& to, const std::string& from): Message(Types::Critical, content, to, from) {}
+Critical::Critical(const std::string& content, const std::string& to): Message(Types::Critical, content, to) {}
 
-Command::Command(const std::string& content, const std::string& to, const std::string& from): Message(Types::Command, std::string(""), to, from)
+Command::Command(const std::string& content, const std::string& to): Message(Types::Command, std::string(""), to)
 {
   m_Value["Content"]["Command"] = content;
 }
@@ -172,6 +170,6 @@ std::string Command::getCommand() const
   return getCommand();
 }
 
-Data::Data(const std::string& content, const std::string& to, const std::string& from): Message(Types::Data, content, to, from) {}
-Data::Data(const Json::Value& content, const std::string& to, const std::string& from): Message(Types::Data, content, to, from) {}
-Response::Response(const std::string& content, const std::string& to, const std::string& from): Message(Types::Response, content, to, from) {}
+Data::Data(const std::string& content, const std::string& to): Message(Types::Data, content, to) {}
+Data::Data(const Json::Value& content, const std::string& to): Message(Types::Data, content, to) {}
+Response::Response(const std::string& content, const std::string& to): Message(Types::Response, content, to) {}
