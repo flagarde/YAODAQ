@@ -5,6 +5,7 @@
 ---
 ![GitHub](https://img.shields.io/github/license/flagarde/YAODAQ)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/flagarde/YAODAQ?sort=semver)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4900/badge)](https://bestpractices.coreinfrastructure.org/projects/4900)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/178cef536a2d4d80a935c3476811e4cb)](https://app.codacy.com/gh/flagarde/YAODAQ?utm_source=github.com&utm_medium=referral&utm_content=flagarde/YAODAQ&utm_campaign=Badge_Grade_Settings)
 [![CodeFactor](https://www.codefactor.io/repository/github/flagarde/yaodaq/badge)](https://www.codefactor.io/repository/github/flagarde/yaodaq)
 [![codecov](https://codecov.io/gh/flagarde/YAODAQ/branch/master/graph/badge.svg?token=dRh5HBpjlb)](https://codecov.io/gh/flagarde/YAODAQ)
