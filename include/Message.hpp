@@ -32,7 +32,7 @@ enum class Types
   Command,
   Response,
   Data,
-  Unknow,
+  Unknown,
 };
 
 enum class Actions

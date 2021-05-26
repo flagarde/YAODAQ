@@ -97,7 +97,7 @@ public:
     sendText(warning);
     logger()->warn(buf.data());
   }
-  /** Work aroung for Exception message taken by what() **/
+  /** Work around for Exception message taken by what() **/
   inline void sendError(const char* err)
   {
     Error error(err);

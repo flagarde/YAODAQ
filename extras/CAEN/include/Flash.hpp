@@ -91,10 +91,10 @@ private:
   /* Program and Erase Command */
   static constexpr int m_BUFFER_1_WRITE{0x84};
   static constexpr int m_BUFFER_2_WRITE{0x87};
-  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG_BE{0x83}; /* w/ Build-in erase */
-  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG_BE{0x86}; /* w/ Build-in erase */
-  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG{0x88};    /* w/o Build-in erase */
-  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG{0x89};    /* w/o Build-in erase */
+  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG_BE{0x83}; /* w/ Built-in erase */
+  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG_BE{0x86}; /* w/ Built-in erase */
+  static constexpr int m_BUFFER_1_MAIN_MEM_PAGE_PROG{0x88};    /* w/o Built-in erase */
+  static constexpr int m_BUFFER_2_MAIN_MEM_PAGE_PROG{0x89};    /* w/o Built-in erase */
   static constexpr int m_PAGE_ERASE{0x81};
   static constexpr int m_BLOCK_ERASE{0x50};
   static constexpr int m_SECTOR_ERASE{0x7C};
@@ -154,7 +154,7 @@ private:
   static constexpr int m_READ_MANUFACTURER_DEVICE_ID{0x9F};
 
   /* Legacy commands
-   * NOT RECCOMMENDED FOR NEW DESIGNS
+   * NOT RECOMMENDED FOR NEW DESIGNS
    */
   static constexpr int m_LEGACY_BUFFER_1_READ{0x54};
   static constexpr int m_LEGACY_BUFFER_2_READ{0x56};

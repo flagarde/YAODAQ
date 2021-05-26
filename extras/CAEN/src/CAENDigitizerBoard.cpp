@@ -1774,7 +1774,7 @@ void CAENDigitizerBoard::verifyParameters()
   else if(m_FamilyCode == "XX742")
   {
     if(m_RecordLength != 1024 && m_RecordLength != 520 && m_RecordLength != 256 && m_RecordLength != 136)
-    { throw Exception(StatusCode::INVALID_PARAMETER, "RECORD_LENGTH can be only 1024, 520, 256 or 136 for XX742 familly"); }
+    { throw Exception(StatusCode::INVALID_PARAMETER, "RECORD_LENGTH can be only 1024, 520, 256 or 136 for XX742 family"); }
   }
 
   //DRS4_FREQUENCY
@@ -1808,11 +1808,11 @@ void CAENDigitizerBoard::verifyParameters()
 
   //FIXME ENABLE_DES_MODE
 
-  //FIXME SHOULDNT BE HERE OUTPUT_FILE_FORMAT
+  //FIXME SHOULDN'T BE HERE OUTPUT_FILE_FORMAT
   m_FileFormat = toml::find_or<std::string>(m_Conf, "OUTPUT_FILE_FORMAT", "ROOT");
   if(m_FileFormat != "ASCII" && m_FileFormat != "ROOT" && m_FileFormat != "BINARY") { throw Exception(StatusCode::INVALID_PARAMETER, "OUTPUT_FILE_FORMAT can be ROOT, ASCII or BINARY"); }
 
-  //FIXME SHOULDNT BE HERE OUTPUT_FILE_HEADER
+  //FIXME SHOULDN'T BE HERE OUTPUT_FILE_HEADER
   m_Header = toml::find_or(m_Conf, "OUTPUT_FILE_HEADER", true);
 
   //USE_interrupt

@@ -144,8 +144,6 @@ option(BUILD_Serial "Build Serial" OFF)
 
 option(BUILD_LCIO "Build LCIO" OFF)
 
-option(BUILD_OLD_WAVEDUMP "Build the old wavedump to supress in the future" ON)
-
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
 
 option(ENABLE_ALL_WARNINGS "Compile with all warnings for the major compilers" ON)

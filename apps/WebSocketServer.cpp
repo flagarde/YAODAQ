@@ -16,7 +16,7 @@ int main(int argc, char** argv)
   int backlog{ix::SocketServer::kDefaultTcpBacklog};
   app.add_option("-b,--backlog", backlog, "Backlog")->check(CLI::Range(0, 5));
   std::size_t maxConnections{ix::SocketServer::kDefaultMaxConnections};
-  app.add_option("-m,--max", maxConnections, "Maximun connections")->check(CLI::PositiveNumber);
+  app.add_option("-m,--max", maxConnections, "Maximum connections")->check(CLI::PositiveNumber);
   int handshakeTimeoutSecs{3};
   app.add_option("-t,--timeout", handshakeTimeoutSecs, "Timeout in seconds")->check(CLI::PositiveNumber);
   std::string verbosity{"trace"};

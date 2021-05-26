@@ -61,7 +61,7 @@ public:
   *
   * \param   [IN]  Address: register address offsets
   * \param   [IN]  nCycles: the number of read to perform
-  * \return  std::vector<uint32_t>: The datas read from the device
+  * \return  std::vector<uint32_t>: The data read from the device
   ******************************************************************************/
   std::vector<std::uint32_t> MultiRead32(std::uint32_t& Address, const int& nCycles);
 
@@ -71,7 +71,7 @@ public:
   *
   * \param   [IN]  Address: register address offsets
   * \param   [IN]  nCycles: the number of read to perform
-  * \return std::vector<uint16_t>: The datas read from the device
+  * \return std::vector<uint16_t>: The data read from the device
   ******************************************************************************/
   std::vector<std::uint16_t> MultiRead16(std::uint32_t& Address, const int& nCycles);
 
@@ -81,7 +81,7 @@ public:
   *
   * \param   [IN]  Address: register address offsets
   * \param   [IN]  nCycles: the number of read to perform
-  * \param   [IN]  data: The datas to write to the device
+  * \param   [IN]  data: The data to write to the device
   ******************************************************************************/
   void MultiWrite16(std::uint32_t& Address, const int& nCycles, std::vector<std::uint16_t>& data);
 
@@ -91,7 +91,7 @@ public:
   *
   * \param   [IN]  Address: register address offsets
   * \param   [IN]  nCycles: the number of read to perform
-  * \param   [IN]  data: The datas to write to the device
+  * \param   [IN]  data: The data to write to the device
   ******************************************************************************/
   void MultiWrite32(std::uint32_t& Address, const int& nCycles, std::vector<std::uint32_t>& data);
 

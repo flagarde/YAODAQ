@@ -69,7 +69,7 @@ const char* CAENDPPException::errorStrings(const int_least32_t& code)
     case CAENDPP_RetCode_NumBins:
       return "Invalid Number of Bins";
     case CAENDPP_RetCode_HistoIndex:
-      return "Invalid Hitogram Index";
+      return "Invalid Histogram Index";
     case CAENDPP_RetCode_UnsupportedFeature:
       return "The feature is not supported by the gve board/channel";
     case CAENDPP_RetCode_BadHistoState:

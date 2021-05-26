@@ -32,7 +32,7 @@ public:
   std::string getCategory() const;
   bool        operator<(const Infos& infos) const;
   Infos() = default;
-  bool isA(const Category& categorie);
+  bool isA(const Category&);
   std::string getID() const;
 
 private:

@@ -234,7 +234,7 @@ public:
 
   /**************************************************************************/ /**
   * \brief     Gets current mask of enabled channels in events.
-  *           If a mask bit is set, corresponding channel is currenly enabled for event readout
+  *           If a mask bit is set, corresponding channel is currently enabled for event readout
   * \return  mask  : enabled channels mask.
   ******************************************************************************/
   std::uint32_t GetChannelEnableMask();
@@ -976,7 +976,7 @@ private:
 public:
   /*! \fn      int ProgramDigitizer(int handle, WaveDumpConfig_t WDcfg)
    *   \brief   configure the digitizer according to the parameters read from
-   *            the cofiguration file and saved in the WDcfg data structure
+   *            the configuration file and saved in the WDcfg data structure
    */
   void ProgramDigitizer();
 
@@ -994,12 +994,12 @@ public:
    */
   void WriteRegisterBitmask(const std::uint32_t& address, const std::uint32_t& data, const std::uint32_t& mask);
 
-  /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
+  /*! \brief   return TRUE if board described by 'BoardInfo' supports
    *            calibration or not.
    */
   bool BoardSupportsCalibration();
 
-  /*! \brief   return TRUE if board descriped by 'BoardInfo' supports
+  /*! \brief   return TRUE if board described by 'BoardInfo' supports
    *            temperature read or not.
    */
   bool BoardSupportsTemperatureRead();
