@@ -22,7 +22,6 @@ public:
   virtual void doBeforeClose(){};
   virtual void parseData(const Data& data) = 0;
   virtual ~File()                          = default;
-  File() = default;
 protected:
   std::string           fillvariables(const std::string& str, const std::string variable, const std::string& value);
   virtual void          setID() = 0;
