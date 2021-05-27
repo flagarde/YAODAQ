@@ -50,21 +50,7 @@ public:
   void                                   printParameters();
   void                                   stopListening();
   void                                   startListening();
-  /*void                                   send(Message& message)
-  {
-    message.setFrom(getIdentifier().getType() + "/" + getIdentifier().getName());
-    MessageHandlerClient::send(message.get());
-  }
-  void                                   sendText(Message& message)
-  {
-    message.setFrom(getIdentifier().getType() + "/" + getIdentifier().getName());
-    MessageHandlerClient::sendText(message.get());
-  }
-  void                                   sendBinary(Message& message)
-  {
-    message.setFrom(getIdentifier().getType() + "/" + getIdentifier().getName());
-    MessageHandlerClient::sendBinary(message.get());
-  }*/
+
   template<typename... Args> inline void sendTrace(yaodaq_string_view fmt, const Args&... args)
   {
     fmt::memory_buffer buf;
