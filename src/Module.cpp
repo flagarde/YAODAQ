@@ -121,7 +121,7 @@ void Module::printParameters()
 void Module::sendState()
 {
   State state(m_State);
-  MessageHandlerClient::sendBinary(state.get());
+  MessageHandlerClient::sendBinary(state);
   logger()->warn(state.get());
 }
 
@@ -377,20 +377,23 @@ void Module::DoOnCommand(const Message& command)
 
 void Module::DoOnAction(const Message& message)
 {
-  auto action = magic_enum::enum_cast<Actions>(message.getContent());
-  if(action.has_value())
+  if(getIdentifier().getClass() != CLASS::Logger && getIdentifier().getClass() != CLASS::Controller)
   {
-    if((m_State==States::UNINITIALIZED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::INITIALIZE) Initialize();
-    else if((m_State==States::INITIALIZED || m_State==States::DISCONNECTED||m_State==States::CONNECTED) && action.value()== Actions::CONNECT ) Connect();
-    else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action.value()== Actions::CONFIGURE ) Configure();
-    else if((m_State==States::CONFIGURED || m_State==States::STOPPED || m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::START ) Start();
-    else if((m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::PAUSE) Pause();
-    else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPPED)  && action.value()== Actions::STOP) Stop();
-    else if((m_State==States::STOPPED || m_State==States::CONFIGURED || m_State==States::CLEARED) && action.value()== Actions::CLEAR) Clear();
-    else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action.value()== Actions::DISCONNECT) Disconnect();
-    else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::RELEASE) Release();
-    else if(m_State==States::RELEASED && action.value()== Actions::QUIT) Quit();
-    else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action.value())));
+    auto action = magic_enum::enum_cast<Actions>(message.getContent());
+    if(action.has_value())
+    {
+      if((m_State==States::UNINITIALIZED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::INITIALIZE) Initialize();
+      else if((m_State==States::INITIALIZED || m_State==States::DISCONNECTED||m_State==States::CONNECTED) && action.value()== Actions::CONNECT ) Connect();
+      else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action.value()== Actions::CONFIGURE ) Configure();
+      else if((m_State==States::CONFIGURED || m_State==States::STOPPED || m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::START ) Start();
+      else if((m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::PAUSE) Pause();
+      else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPPED)  && action.value()== Actions::STOP) Stop();
+      else if((m_State==States::STOPPED || m_State==States::CONFIGURED || m_State==States::CLEARED) && action.value()== Actions::CLEAR) Clear();
+      else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action.value()== Actions::DISCONNECT) Disconnect();
+      else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::RELEASE) Release();
+      else if(m_State==States::RELEASED && action.value()== Actions::QUIT) Quit();
+      else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action.value())));
+    }
   }
 }
 

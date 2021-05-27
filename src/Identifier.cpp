@@ -7,7 +7,7 @@ namespace yaodaq
 
   Identifier::Identifier(const CLASS& clas,const std::string& type, const std::string& name) : m_Class(clas), m_Type(type), m_Name(name){}
 
-  std::string Identifier::getClass() const
+  std::string Identifier::getClassStr() const
   {
     return std::string(magic_enum::enum_name(m_Class));
   }
@@ -22,14 +22,14 @@ namespace yaodaq
     return m_Name;
   }
 
-  CLASS Identifier::getClassValue() const
+  CLASS Identifier::getClass() const
   {
     return m_Class;
   }
 
-  std::string Identifier::getIdentifier() const
+  std::string Identifier::get() const
   {
-    return getClass()+"/"+getType()+"/"+getName();
+    return getClassStr()+"/"+getType()+"/"+getName();
   }
 
 };

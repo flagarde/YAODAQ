@@ -40,7 +40,7 @@ namespace yaodaq
 
   void LoggerHandler::init()
   {
-    m_Logger=std::make_shared<spdlog::logger>(m_Identifier.getIdentifier(), std::begin(m_Sinks), std::end(m_Sinks));
+    m_Logger=std::make_shared<spdlog::logger>(m_Identifier.get(), std::begin(m_Sinks), std::end(m_Sinks));
     m_Logger->set_level(m_Verbosity);
   }
 

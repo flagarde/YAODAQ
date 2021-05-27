@@ -52,7 +52,7 @@ namespace yaodaq
       {
         std::string key = "///";
         Info        infos;
-        infos.setFrom(getIdentifier().getIdentifier());
+        infos.setFrom(getIdentifier().get());
         infos.setTo("ALL");
         // Print in webserver console
         logger()->info("New connection ID : {}", connectionState->getId());
@@ -79,7 +79,7 @@ namespace yaodaq
         {
           logger()->error(exception.what());
           Error error(exception.what());
-          error.setFrom(getIdentifier().getIdentifier());
+          error.setFrom(getIdentifier().get());
 
           sendToLogger(error.get());
           webSocket.stop(exception.code(),exception.description());
@@ -93,7 +93,7 @@ namespace yaodaq
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
         Info infos;
-        infos.setFrom(getIdentifier().getIdentifier());
+        infos.setFrom(getIdentifier().get());
         infos.setTo("ALL");
         infos.addKey("ID", connectionState->getId());
         infos.addKey("Value", "DISCONNECTED");
@@ -111,7 +111,7 @@ namespace yaodaq
         catch(const Exception& exception)
         {
           Error error(m_Clients.getInfos(connectionState->getId()).getKey() + " is sending not well formatted messages");
-          error.setFrom(getIdentifier().getIdentifier());
+          error.setFrom(getIdentifier().get());
           sendToLogger(error.get());
         }
         if(m_Message.getType() == "Trace")

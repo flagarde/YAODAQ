@@ -41,6 +41,33 @@ namespace yaodaq
     };
   }
 
+  // Send commands
+  void MessageHandlerClient::send(Message& message)
+  {
+    message.setFrom(getIdentifier().get());
+    WebSocketClient::send(message.get());
+  }
+
+  void MessageHandlerClient::sendText(Message& message)
+  {
+    message.setFrom(getIdentifier().get());
+    WebSocketClient::sendText(message.get());
+  }
+
+  void MessageHandlerClient::sendBinary(Message& message)
+  {
+    message.setFrom(getIdentifier().get());
+    WebSocketClient::sendBinary(message.get());
+  }
+
+
+
+
+
+
+
+
+
   std::function<void(const ix::WebSocketMessagePtr&)> MessageHandlerClient::getMessageCallback()
   {
     return m_MessageCallback;
