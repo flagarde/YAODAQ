@@ -4,7 +4,7 @@
 
 namespace CAEN
 {
-class CAENHVConnector: public Connector
+class CAENHVConnector: public yaodaq::Connector
 {
 public:
   CAENHVConnector();

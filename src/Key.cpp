@@ -1,5 +1,8 @@
 #include "Key.hpp"
 
+namespace yaodaq
+{
+
 void Key::setRoom(const std::string& room)
 {
   m_Args[ROOM] = room;
@@ -121,4 +124,6 @@ std::string Key::getKey()
 void Key::createkey()
 {
   fmt::format_to(m_Key, "{ROOM}/{RACK}/{CRATE}/{SLOT}/{CLASS}/{TYPE}/{NAME}", m_Args[ROOM], m_Args[RACK], m_Args[CRATE], m_Args[SLOT], m_Args[CLASS], m_Args[TYPE], m_Args[NAME]);
+};
+
 };

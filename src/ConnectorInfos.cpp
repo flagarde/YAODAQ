@@ -4,6 +4,9 @@
 
 #include <iostream>
 
+namespace yaodaq
+{
+
 ConnectorInfos::ConnectorInfos(const toml::value& params, const bool& isShared, const int& id): m_Parameters(params), m_IsSharedConnector(isShared), m_ID(id) {}
 
 int ConnectorInfos::getID()
@@ -63,3 +66,5 @@ int ConnectorInfos::getNumberBoardConnected()
 {
   return m_BoardConnected;
 }
+
+};

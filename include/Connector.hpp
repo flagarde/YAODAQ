@@ -6,6 +6,9 @@
 
 #include <string>
 
+namespace yaodaq
+{
+
 class Connector
 {
 public:
@@ -28,4 +31,6 @@ protected:
   Connector()                 = default;
   int32_t        m_Handle{0};
   ConnectorInfos m_Infos;
+};
+
 };

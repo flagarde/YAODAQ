@@ -4,6 +4,9 @@
 #include "StatusCode.hpp"
 #include "toml.hpp"
 
+namespace yaodaq
+{
+
 void ConnectorFactory::loadConnectors()
 {
   if(!m_Loaded)
@@ -46,3 +49,5 @@ std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfo
   else
     throw Exception(StatusCode::NOT_FOUND, "Connector {0} not loaded ! Connector loaded are : {1}", type, m_StringConnectorNames);
 }
+
+};

@@ -10,6 +10,9 @@
 #include <atomic>
 #include <mutex>
 
+namespace yaodaq
+{
+
 class ConfigurationLoader
 {
 public:
@@ -47,4 +50,6 @@ private:
   std::string                           actualRoomName{""};
   std::string                           actualRackName{""};
   std::string                           actualCrateName{""};
+};
+
 };

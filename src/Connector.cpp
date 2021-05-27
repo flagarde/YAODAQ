@@ -1,5 +1,8 @@
 #include "Connector.hpp"
 
+namespace yaodaq
+{
+
 Connector::Connector(const std::string& type): m_Type(type) {}
 
 toml::value Connector::getParameters()
@@ -48,3 +51,5 @@ bool Connector::isConnected()
   else
     return true;
 }
+
+};

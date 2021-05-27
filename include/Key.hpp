@@ -5,6 +5,9 @@
 #include <array>
 #include <string>
 
+namespace yaodaq
+{
+
 class Key
 {
 public:
@@ -45,4 +48,6 @@ private:
   void                       createkey();
   std::array<std::string, 6> m_Args;
   fmt::memory_buffer         m_Key;
+};
+
 };

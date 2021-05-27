@@ -5,6 +5,9 @@
 
 #include <string>
 
+namespace yaodaq
+{
+
 class Configurator: public WebsocketServer
 {
 public:
@@ -13,4 +16,6 @@ public:
 
 private:
   soci::session m_session;
+};
+
 };

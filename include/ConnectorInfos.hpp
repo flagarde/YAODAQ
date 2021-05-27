@@ -2,6 +2,9 @@
 
 #include "toml.hpp"
 
+namespace yaodaq
+{
+
 class ConnectorInfos
 {
 public:
@@ -25,4 +28,6 @@ private:
   int          m_ID{-1};
   int          m_BoardConnected{0};
   std::int32_t m_Handle{0};
+};
+
 };

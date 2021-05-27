@@ -3,6 +3,9 @@
 #include "Infos.hpp"
 #include "toml.hpp"
 
+namespace yaodaq
+{
+
 class BoardInfos: public Infos
 {
 public:
@@ -28,4 +31,6 @@ public:
 private:
   toml::value m_ConnectorParameters;
   toml::value m_Parameters;
+};
+
 };

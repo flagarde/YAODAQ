@@ -29,7 +29,7 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
     VERSION
     ${YAODAQ_VERSION_MAJOR}
     BASE
-    Connector
+    yaodaq::Connector
     CHILDS
     CAEN::CAENVMEConnector
     CAEN::CAENDigitizerConnector

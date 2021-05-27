@@ -6,7 +6,7 @@
 
 namespace CAEN
 {
-class CAENDigitizerConnector: public Connector
+class CAENDigitizerConnector: public yaodaq::Connector
 {
 public:
   CAENDigitizerConnector();

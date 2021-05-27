@@ -6,7 +6,7 @@
 
 namespace CAEN
 {
-class CAENVMEConnector: public Connector
+class CAENVMEConnector: public yaodaq::Connector
 {
 public:
   CAENVMEConnector();

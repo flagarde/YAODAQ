@@ -8,6 +8,9 @@
 #include <string>
 #include <unordered_map>
 
+namespace yaodaq
+{
+
 class ConnectorFactory
 {
 public:
@@ -22,4 +25,6 @@ private:
   std::string                                                 m_Path{""};
   std::unordered_map<std::string, std::shared_ptr<Connector>> m_Plugins;
   bool                                                        m_Loaded{false};
+};
+
 };

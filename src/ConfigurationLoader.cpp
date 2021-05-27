@@ -5,6 +5,9 @@
 #include "StatusCode.hpp"
 #include "toml.hpp"
 
+namespace yaodaq
+{
+
 int ConfigurationLoader::m_ConnectorID = 1;
 
 void ConfigurationLoader::parse()
@@ -276,3 +279,5 @@ void ConfigurationLoader::setFileName(const std::string& file)
 {
   m_Filename = file;
 }
+
+};

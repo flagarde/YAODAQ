@@ -26,8 +26,13 @@
   #include "soci/empty/soci-empty.h"
 #endif
 
+namespace yaodaq
+{
+
 Configurator::Configurator(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections, const int& handshakeTimeoutSecs)
     : WebsocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs)
 {
   m_session.open(soci::mysql, "");
 }
+
+};
