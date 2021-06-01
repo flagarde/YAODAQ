@@ -10,6 +10,7 @@ namespace yaodaq
   class Identifier
   {
   public:
+    Identifier()=default;
     Identifier(const CLASS&,const std::string&, const std::string&);
     std::string getClassStr() const;
     std::string getType() const;

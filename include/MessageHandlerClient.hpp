@@ -18,20 +18,42 @@ namespace yaodaq
   class MessageHandlerClient : public WebSocketClient, public MessageHandler
   {
   public:
-    MessageHandlerClient(const Identifier& identifier);
+    MessageHandlerClient(const Identifier&);
+
+    virtual void onOwnOpen(const ix::WebSocketMessagePtr&);
+    virtual void onOwnClose(const ix::WebSocketMessagePtr&);
+    virtual void onOwnConnectionError(const ix::WebSocketMessagePtr&);
+    virtual void onOwnPing(const ix::WebSocketMessagePtr&);
+    virtual void onOwnPong(const ix::WebSocketMessagePtr&);
+    virtual void onOwnMessage(const ix::WebSocketMessagePtr&);
+    virtual void onOwnFragment(const ix::WebSocketMessagePtr&);
+
+
+
+    // Open
+    virtual void onOpen(const Open&);
+
+    virtual void sendPing(const std::string&);
+    virtual void sendState(const States&);
+
+    virtual void onAction(const Action&);
+
+
+    virtual void sendData(Data&);
 
     // Send commands
     void send(Message& message);
     void sendText(Message& message);
     void sendBinary(Message& message);
 
-    virtual void onOwnMessage(const ix::WebSocketMessagePtr& msg);
-    virtual void onOwnOpen(const ix::WebSocketMessagePtr& msg);
-    virtual void onOwnClose(const ix::WebSocketMessagePtr& msg);
-    virtual void onOwnConnectionError(const ix::WebSocketMessagePtr& msg);
-    virtual void onOwnPing(const ix::WebSocketMessagePtr& msg);
-    virtual void onOwnPong(const ix::WebSocketMessagePtr& msg);
-    virtual void onOwnFragment(const ix::WebSocketMessagePtr& msg);
+    //Send Log
+    virtual void sendLog(Log& log) final;
+
+
+
+
+
+
   protected:
     std::function<void(const ix::WebSocketMessagePtr&)> getMessageCallback();
   private:

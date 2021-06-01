@@ -9,7 +9,7 @@ class DAQFile: public RootFile
 public:
   DAQFile(const std::string& name, const std::string& option = "", const std::string& title = "", const int& compress = ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault, const int& netopt = 0);
   virtual ~DAQFile();
-  void parseData(const Data& data) final;
+  void parseData(const yaodaq::Data& data) final;
   void doAfterOpen() final;
   void doBeforeClose() final;
 protected:

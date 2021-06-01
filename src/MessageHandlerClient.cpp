@@ -2,6 +2,8 @@
 
 #include "ixwebsocket/IXWebSocketMessage.h"
 
+#include "StatusCode.hpp"
+
 #include <iostream>
 
 namespace yaodaq
@@ -12,34 +14,41 @@ namespace yaodaq
     {
       if(msg->type == ix::WebSocketMessageType::Message)
       {
-        this->onOwnMessage(msg);
+        onOwnMessage(msg);
       }
       else if(msg->type == ix::WebSocketMessageType::Fragment)
       {
-        this->onOwnFragment(msg);
+        onOwnFragment(msg);
       }
       else if(msg->type == ix::WebSocketMessageType::Open)
       {
-        this->onOwnOpen(msg);
+        onOwnOpen(msg);
       }
       else if(msg->type == ix::WebSocketMessageType::Close)
       {
-        this->onOwnClose(msg);
+        onOwnClose(msg);
       }
       else if(msg->type == ix::WebSocketMessageType::Error)
       {
-        this->onOwnConnectionError(msg);
+        onOwnConnectionError(msg);
       }
       else if(msg->type == ix::WebSocketMessageType::Ping)
       {
-        this->onOwnPing(msg);
+        onOwnPing(msg);
       }
       else if(msg->type == ix::WebSocketMessageType::Pong)
       {
-        this->onOwnPong(msg);
+        onOwnPong(msg);
       }
     };
   }
+
+  void MessageHandlerClient::sendData(Data& data)
+  {
+    sendBinary(data);
+    printData(data);
+  }
+
 
   // Send commands
   void MessageHandlerClient::send(Message& message)
@@ -60,12 +69,78 @@ namespace yaodaq
     WebSocketClient::sendBinary(message.get());
   }
 
+  //
+  void MessageHandlerClient::sendLog(Log& log)
+  {
+    sendText(log);
+    printLog(log);
+  }
+
+  void MessageHandlerClient::sendState(const States& state)
+  {
+    State states(state);
+    sendText(states);
+    printState(states);
+  }
+
+  void MessageHandlerClient::onAction(const Action& action)
+  {
+
+  }
+
+  // Open
+  void MessageHandlerClient::onOpen(const Open& open)
+  {
+    if(getIdentifier().getClass()==CLASS::Logger) printOpen(open);
+  }
+
+  void MessageHandlerClient::onOwnOpen(const ix::WebSocketMessagePtr& message)
+  {
+    std::string headers;
+    for(auto it: message->openInfo.headers)
+    {
+      headers+=fmt::format("\t{} : {}\n", it.first,it.second);
+    }
+    logger()->info(fmt::format(fg(fmt::color::green) | fmt::emphasis::bold,"Connected :\nUri : {}\nHeaders :\n{}Protocol : {}\n",message->openInfo.uri,headers,message->openInfo.protocol));
+  }
+
+  // Close
+
+  void MessageHandlerClient::sendPing(const std::string& pin)
+  {
+    ping(pin);
+  }
 
 
 
+  void MessageHandlerClient::onOwnClose(const ix::WebSocketMessagePtr& msg)
+  {
+    Close close(msg->closeInfo.code,msg->closeInfo.reason,msg->closeInfo.remote);
+    printClose(close);
+    if(msg->closeInfo.code== static_cast<int16_t>(StatusCode::ALREADY_PRESENT))
+    {
+      disableAutomaticReconnection();
+      std:exit(static_cast<int16_t>(StatusCode::ALREADY_PRESENT));
+    }
+  }
 
+  void MessageHandlerClient::onOwnConnectionError(const ix::WebSocketMessagePtr& msg)
+  {
+    ConnectionError connectionError(msg->errorInfo.retries,msg->errorInfo.wait_time,msg->errorInfo.http_status,msg->errorInfo.reason,msg->errorInfo.decompressionError);
+    printConnectionError(connectionError);
+  }
 
+  void MessageHandlerClient::onOwnPing(const ix::WebSocketMessagePtr& msg)
+  {
+    Ping ping(msg->str);
+    printPing(ping);
+  }
 
+  void MessageHandlerClient::onOwnPong(const ix::WebSocketMessagePtr& msg)
+  {
+    Pong pong(msg->str);
+    printPong(pong);
+  }
 
 
   std::function<void(const ix::WebSocketMessagePtr&)> MessageHandlerClient::getMessageCallback()
@@ -75,32 +150,6 @@ namespace yaodaq
 
   void MessageHandlerClient::onOwnMessage(const ix::WebSocketMessagePtr& msg)
   {
-    std::cout<<"message"<<std::endl;
-  }
-
-  void MessageHandlerClient::onOwnOpen(const ix::WebSocketMessagePtr& msg)
-  {
-
-  }
-
-  void MessageHandlerClient::onOwnClose(const ix::WebSocketMessagePtr& msg)
-  {
-    std::cout<<"close"<<std::endl;
-  }
-
-  void MessageHandlerClient::onOwnConnectionError(const ix::WebSocketMessagePtr& msg)
-  {
-    std::cout<<"error"<<std::endl;
-  }
-
-  void MessageHandlerClient::onOwnPing(const ix::WebSocketMessagePtr& msg)
-  {
-
-  }
-
-  void MessageHandlerClient::onOwnPong(const ix::WebSocketMessagePtr& msg)
-  {
-
   }
 
   void MessageHandlerClient::onOwnFragment(const ix::WebSocketMessagePtr& msg)

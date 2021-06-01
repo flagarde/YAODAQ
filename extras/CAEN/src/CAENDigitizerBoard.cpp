@@ -1262,7 +1262,7 @@ void CAENDigitizerBoard::LoadDACCalibration()
   flash.setHandle(m_Handle);
   flash.init();
   std::vector<uint8_t> buf = flash.read_virtual_page();
-  if(buf[0] != 0xD) { sendWarning("No DAC Calibration data found in board flash. Use option 'D' to calibrate DAC."); }
+  if(buf[0] != 0xD) { warn("No DAC Calibration data found in board flash. Use option 'D' to calibrate DAC."); }
   else
   {
     for(std::size_t ch = 0; ch < m_Nch; ++ch)
@@ -1271,7 +1271,7 @@ void CAENDigitizerBoard::LoadDACCalibration()
       m_Offset[ch] = static_cast<float>(buf[1 + 2 * ch]);
     }
   }
-  sendInfo("DAC calibration correctly loaded from board flash.");
+  info("DAC calibration correctly loaded from board flash.");
 }
 
 void CAENDigitizerBoard::PerformCalibration()
@@ -1285,18 +1285,17 @@ void CAENDigitizerBoard::PerformCalibration()
       {
         Calibrate();
       }
-      catch(const CAENDigitizerException& error)
+      catch(const CAENDigitizerException& exception)
       {
-        sendError("ADC Calibration failed. CAENDigitizer ERR ");
-        sendError(error.what());
+        error("ADC Calibration failed. CAENDigitizer ERR ");
+        error(exception.what());
       }
-      sendInfo("ADC Calibration successfully executed.");
+      info("ADC Calibration successfully executed.");
     }
     else
-      sendWarning("Can't run ADC calibration while acquisition is running.");
+      warn("Can't run ADC calibration while acquisition is running.");
   }
-  else
-    sendInfo("ADC Calibration not needed for this board family.");
+  else info("ADC Calibration not needed for this board family.");
 }
 
 void CAENDigitizerBoard::MaskChannels()
@@ -1329,9 +1328,9 @@ void CAENDigitizerBoard::DoInitialize() {}
 void CAENDigitizerBoard::DoConfigure()
 {
   GetInfo();
-  sendInfo("Connected to CAEN Digitizer Model {}", m_ModelName);
-  sendInfo("ROC FPGA Release is  {}", m_ROC_FirmwareRel);
-  sendInfo("AMC FPGA Release is {}", m_AMC_FirmwareRel);
+  info("Connected to CAEN Digitizer Model {}", m_ModelName);
+  info("ROC FPGA Release is {}", m_ROC_FirmwareRel);
+  info("AMC FPGA Release is {}", m_AMC_FirmwareRel);
   // Check firmware rivision (DPP firmwares cannot be used with WaveDump */
   if(m_DPPFirmware) throw Exception(StatusCode::FAILURE, "This digitizer has a DPP firmware");
   GetMoreBoardInfo();
@@ -1417,7 +1416,8 @@ void CAENDigitizerBoard::DoLoopOnStart()
     j["EventInfos"]["EventCounter"]   = m_EventNumber;
     j["EventInfos"]["TriggerTimeTag"] = eventInfos.getTriggerTimeTag();
     j["Event"]                        = parse(reinterpret_cast<CAEN_DGTZ_X742_EVENT_t*>(m_Event));
-    sendData(j);
+    yaodaq::Data data(j);
+    sendData(data);
   }
 }
 
@@ -1990,9 +1990,9 @@ void CAENDigitizerBoard::ProgramDigitizer()
   {
     Reset();
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError("Unable to reset digitizer !\nPlease reset digitizer manually then restart the program !");
+    error("Unable to reset digitizer !\nPlease reset digitizer manually then restart the program !");
     throw;
   }
   try
@@ -2025,9 +2025,9 @@ void CAENDigitizerBoard::ProgramDigitizer()
         interruptConfig.setState("ENABLED");
         SetInterruptConfig(interruptConfig);
       }
-      catch(const Exception& error)
+      catch(const Exception& exception)
       {
-        sendError("Error configuring interrupts. Interrupts disabled");
+        error("Error configuring interrupts. Interrupts disabled");
         m_InterruptNumEvents = 0;
       }
     }
@@ -2121,9 +2121,9 @@ void CAENDigitizerBoard::ProgramDigitizer()
     }
     for(std::size_t i = 0; i < m_WriteRgisters.size(); i++) WriteRegisterBitmask(m_WriteRgisters[i][0], m_WriteRgisters[i][1], m_WriteRgisters[i][2]);
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError("Errors found during the programming of the digitizer !\n Some settings may not be executed");
+    error("Errors found during the programming of the digitizer !\n Some settings may not be executed");
     throw;
   }
 }

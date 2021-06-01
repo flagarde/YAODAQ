@@ -10,13 +10,10 @@ name = "My Configuration"
       [[Room.Rack.Crate]]
         Name = "Crate1"
 
-        [[Room.Rack.Crate.Module]]
-          Name="FileWritter"
-          Type="ROOT"
-
         [[Room.Rack.Crate.Board]]
-          Name = "Board1"
-          Type = "N141X"
+          Name = "V1742"
+          Type = "V1742"
+          Slot = 5
           # WRITE_REGISTER: generic write register access. This command allows the user to have a direct write access
           # to the registers of the board. NOTE: all the direct write accesses are executed AFTER the other settings,
           # thus it might happen that the direct write overwrites a specific setting.
@@ -123,6 +120,7 @@ name = "My Configuration"
             "Link Number" = 0
 
 [[Room.Rack.Crate.Board]]
+Slot = 0
 Name="HV"
 Type="Wiener"
 

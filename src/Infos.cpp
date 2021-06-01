@@ -6,14 +6,18 @@
 
 #include <vector>
 
-Infos::Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type,const Category& category)
+#include <iostream>
+
+namespace yaodaq
+{
+
+Infos::Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const int& slot, const CLASS& _class,const std::string& type, const std::string& name)
 {
   m_RoomName  = roomName;
   m_RackName  = rackName;
   m_CrateName = crateName;
-  m_Name      = name;
-  m_Type      = type;
-  m_Category  = category;
+  m_Identifier = Identifier(_class,type,name);
+  m_Slot      = slot;
 }
 
 std::string Infos::getID() const
@@ -21,14 +25,14 @@ std::string Infos::getID() const
   return m_ID;
 }
 
-std::string Infos::getCategory() const
+std::string Infos::getClass() const
 {
-  return std::string(magic_enum::enum_name(m_Category));
+  return m_Identifier.getClassStr();
 }
 
-bool Infos::isA(const Category& category)
+bool Infos::isA(const CLASS& _class) const
 {
-  if(m_Category==category) return true;
+  if(m_Identifier.getClass()==_class) return true;
   else return false;
 }
 
@@ -40,6 +44,11 @@ Infos::Infos(const std::string& id,const std::string& key) : m_ID(id)
 bool Infos::operator<(const Infos& infos) const
 {
   return this->getID() < infos.getID();
+}
+
+Identifier Infos::getIdentifier() const
+{
+  return m_Identifier;
 }
 
 void Infos::setKey(const std::string& key)
@@ -55,29 +64,31 @@ void Infos::setKey(const std::string& key)
       std::string word = tmp.substr(0, second_pos - 0);
       result.push_back(word);
     }
-    else
-      result.push_back("");
+    else result.push_back("");
     tmp        = tmp.substr(second_pos + separator.length());
     second_pos = tmp.find(separator);
     if(second_pos == std::string::npos) result.push_back(tmp);
   }
-  if(result.size() == 5)
+  if(result.size() == 6)
   {
     m_RoomName  = result[0];
     m_RackName  = result[1];
     m_CrateName = result[2];
-    m_Type      = result[3];
-    m_Name      = result[4];
+    m_Identifier= Identifier(magic_enum::enum_cast<CLASS>(result[3]).value(),result[4],result[5]);
   }
   else
   {
-    throw Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "Number of argument in key should be 5 (RoomName/RackName/CrateName/Type/Name) !");
+    for(std::size_t i=0;i!=result.size();++i)
+    {
+      std::cout<<"*"<<result[i]<<"*"<<std::endl;
+    }
+    throw Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "Number of argument in key should be 6 (RoomName/RackName/CrateName/Class/Type/Name) !");
   }
 }
 
 std::string Infos::getKey() const
 {
-  return m_RoomName + "/" + m_RackName + "/" + m_CrateName + "/" + m_Type + "/" + m_Name;
+  return m_RoomName + "/" + m_RackName + "/" + m_CrateName + "/"+ getClass() + "/" + getType() + "/" + getName();
 }
 
 void Infos::setRoomIndex(const int& index)
@@ -117,12 +128,12 @@ std::string Infos::getCrateName() const
 
 std::string Infos::getName() const
 {
-  return m_Name;
+  return m_Identifier.getName();
 }
 
 std::string Infos::getType() const
 {
-  return m_Type;
+  return m_Identifier.getType();
 }
 
 int Infos::getRoomIndex() const
@@ -144,3 +155,5 @@ int Infos::getIndex() const
 {
   return m_Index;
 }
+
+};

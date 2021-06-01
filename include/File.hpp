@@ -5,6 +5,9 @@
 #include <filesystem>
 #include <string>
 
+namespace yaodaq
+{
+
 class File
 {
 public:
@@ -33,3 +36,5 @@ protected:
   std::string           m_Option;
 
 };
+
+}

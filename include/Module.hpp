@@ -2,21 +2,14 @@
 
 #include "MessageHandlerClient.hpp"
 
-#include "Classes.hpp"
+#include "GeneralParameters.hpp"
 
 #include "ConfigurationLoader.hpp"
 #include "Message.hpp"
-#include "States.hpp"
 #include "StatusCode.hpp"
 
 #include <string>
 #include <thread>
-
-//#ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
-//using yaodaq_string_view = spdlog::wstring_view_t;
-//#else
-using yaodaq_string_view = spdlog::string_view_t;
-//#endif
 
 namespace yaodaq
 {
@@ -24,13 +17,11 @@ namespace yaodaq
 class Module : public MessageHandlerClient
 {
 public:
-  Module(const std::string& name = "Unknown", const std::string& type = "Module", const yaodaq::CLASS& _class = yaodaq::CLASS::Module);
+  Module(const std::string& name = "Unknown", const std::string& type = "Module", const CLASS& _class = CLASS::Module);
   virtual ~Module() = default;
 
   int loop();
   void skipConfigFile();
-
-  void setURL(const std::string&);
 
   void                                   Initialize();
   void                                   Connect();
@@ -42,72 +33,17 @@ public:
   void                                   Disconnect();
   void                                   Release();
   void                                   Quit();
+
   void                                   LoopOnStart();
   void                                   LoopOnPause();
-  std::string                            getStateString();
   States                                 getState();
   static void                            setConfigFile(const std::string&);
   void                                   printParameters();
   void                                   stopListening();
   void                                   startListening();
-
-  template<typename... Args> inline void sendTrace(yaodaq_string_view fmt, const Args&... args)
-  {
-    fmt::memory_buffer buf;
-    format_to(buf, fmt, args...);
-    Trace trace(buf.data());
-    sendText(trace);
-    logger()->trace(buf.data());
-  }
-  template<typename... Args> inline void sendDebug(yaodaq_string_view fmt, const Args&... args)
-  {
-    fmt::memory_buffer buf;
-    format_to(buf, fmt, args...);
-    Debug debug(buf.data());
-    sendText(debug);
-    logger()->debug(buf.data());
-  }
-  template<typename... Args> inline void sendInfo(yaodaq_string_view fmt, const Args&... args)
-  {
-    fmt::memory_buffer buf;
-    format_to(buf, fmt, args...);
-    Info info(buf.data());
-    sendText(info);
-    logger()->info(buf.data());
-  }
-  template<typename... Args> inline void sendWarning(yaodaq_string_view fmt, const Args&... args)
-  {
-    fmt::memory_buffer buf;
-    format_to(buf, fmt, args...);
-    Warning warning(buf.data());
-    sendText(warning);
-    logger()->warn(buf.data());
-  }
-  /** Work around for Exception message taken by what() **/
-  inline void sendError(const char* err)
-  {
-    Error error(err);
-    sendText(error);
-    logger()->error(err);
-  }
-  template<typename... Args> inline void sendError(yaodaq_string_view fmt, const Args&... args)
-  {
-    fmt::memory_buffer buf;
-    format_to(buf, fmt, args...);
-    Error error(buf.data());
-    sendText(error);
-    logger()->error(buf.data());
-  }
-  template<typename... Args> inline void sendCritical(yaodaq_string_view fmt, const Args&... args)
-  {
-    fmt::memory_buffer buf;
-    format_to(buf, fmt, args...);
-    Critical critical(buf.data());
-    sendText(critical);
-    logger()->critical(buf.data());
-  }
-  void sendData(const std::string& dat) { Data data(dat); sendBinary(data); }
-  void sendData(const Json::Value& dat) { Data data(dat); sendBinary(data); }
+/*
+  void sendData(const std::string& dat) { Data data(dat); printData(dat); sendBinary(data); }
+  void sendData(const Json::Value& dat) { Data data(dat); printData(dat); sendBinary(data); }*/
 
   std::string getName()
   {
@@ -116,25 +52,19 @@ public:
 
 protected:
   static ConfigurationLoader            m_Config;
-  virtual void                    OnOpen(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnClose(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnPong(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnPing(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnMessage(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnError(const ix::WebSocketMessagePtr& msg);
-  virtual void                    OnCommand(Command& command);
+  virtual void                    onOwnMessage(const ix::WebSocketMessagePtr&) override;
+  virtual void                    OnMessage(const ix::WebSocketMessagePtr&);
+  virtual void                    OnCommand(Command&);
   void                            LoadConfig();
   virtual void                    verifyParameters();
   toml::value                     m_Conf{""};
 private:
-  bool URLIsSet{false};
   bool            m_UseConfigFile{true};
   void            DoDoLoopOnStart();
   void            DoDoLoopOnPause();
-  volatile States m_State{States::UNINITIALIZED};
+  States m_State{States::UNINITIALIZED};
   std::thread     m_LoopOnStart;
   std::thread     m_LoopOnPause;
-  std::mutex      m_Mutex;
   bool            m_LoopOnStartUsed{false};
   bool            m_LoopOnPauseUsed{false};
   Module() = delete;
@@ -152,13 +82,12 @@ private:
   virtual void                                        DoLoopOnPause();
   virtual void                                        DoAtFirstStart();
   bool                                                m_IsFirstStart{true};
-  void                                                DoOnAction(const Message& message);
-  void                                                DoOnCommand(const Message& message);
-  virtual void                                        DoOnData(const Data& data);
-  void                                                sendState();
-  void                                                setState(const States& state);
-  void                                                DoOnMessage(const ix::WebSocketMessagePtr& msg);
-  std::function<void(const ix::WebSocketMessagePtr&)> m_CallBack;
+  void                                                DoOnAction(const Action&);
+  void                                                DoOnCommand(const Message&);
+  //virtual void                                        DoOnData(const Data& data);
+  //void                                                sendState();
+  void                                                setState(const States&);
+  void                                                DoOnMessage(const ix::WebSocketMessagePtr&);
 };
 
 };

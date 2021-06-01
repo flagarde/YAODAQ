@@ -17,7 +17,7 @@ public:
   virtual ~FileWritter() = default;
 
 protected:
-  void DoOnData(const Data& data);
+  void onData(const Data&) override;
   void DoStart();
   void DoStop();
 

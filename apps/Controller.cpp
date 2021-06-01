@@ -2,6 +2,7 @@
 
 #include "CLI/CLI.hpp"
 #include "ProgramInfos.hpp"
+#include "magic_enum.hpp"
 
 using namespace yaodaq;
 
@@ -35,6 +36,12 @@ int main(int argc, char** argv)
                                                                     return "";
     },
     "Verbosity level", "Verbosity level");
+
+  std::string log;
+  app.add_option("-l,--log", log, "log to send.");
+  std::string level{"Info"};
+  app.add_option("--level", level, "level of the log.");
+
   try
   {
     app.parse(argc, argv);
@@ -54,6 +61,20 @@ int main(int argc, char** argv)
   controller.startListening();
   if(action != "") controller.sendAction(action);
   if(command != "") controller.sendCommand(command);
+  if(!log.empty())
+  {
+    auto _level = magic_enum::enum_cast<yaodaq::LEVEL>(level);
+    if(_level.has_value())
+    {
+      controller.log(_level.value(),log);
+      // color.value() -> Color::GREEN
+    }
+    else
+    {
+      controller.logger()->warn("{} level is unknown ! Falling back to Info",level);
+      controller.log(LEVEL::Info,log);
+    }
+  }
   controller.stopListening();
   return 0;
 }

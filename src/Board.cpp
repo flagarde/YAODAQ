@@ -12,9 +12,9 @@ Board::Board(const std::string& name, const std::string& type, const yaodaq::CLA
   {
     m_ConnectorFactory.loadConnectors();
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }

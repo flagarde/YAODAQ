@@ -2,18 +2,17 @@
 
 #include <string>
 
-enum class Category
+#include "Classes.hpp"
+#include "Identifier.hpp"
+
+namespace yaodaq
 {
-  Module,
-  Board,
-  UNKNOWN,
-};
 
 class Infos
 {
 public:
-  explicit Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName, const std::string& name, const std::string& type,const Category& category);
-  explicit Infos(const std::string& id,const std::string& key);
+  explicit Infos(const std::string& roomName, const std::string& rackName, const std::string& crateName,const int& slot,const CLASS& _class,const std::string& type, const std::string& name);
+  explicit Infos(const std::string& id,const std::string& identifier);
   void        setRoomIndex(const int&);
   void        setRackIndex(const int&);
   void        setCrateIndex(const int&);
@@ -29,12 +28,12 @@ public:
   int         getCrateIndex() const;
   int         getIndex() const;
   std::string getKey() const;
-  std::string getCategory() const;
+  std::string getClass() const;
   bool        operator<(const Infos& infos) const;
   Infos() = default;
-  bool isA(const Category&);
+  bool isA(const CLASS&) const;
   std::string getID() const;
-
+  Identifier getIdentifier() const;
 private:
   std::string m_RoomName;
   int         m_RoomIndex{-1};
@@ -42,9 +41,10 @@ private:
   int         m_RackIndex{-1};
   std::string m_CrateName;
   int         m_CrateIndex{-1};
-  std::string m_Name;
+  int         m_Slot{-1};
   int         m_Index{-1};
-  std::string m_Type;
-  Category    m_Category{Category::UNKNOWN};
   std::string m_ID;
+  Identifier m_Identifier;
+};
+
 };

@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   app.add_option("-p,--port", port, "Port to listen")->check(CLI::Range(0, 65535));
   std::string host{yaodaq::GeneralParameters::getHost()};
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
-  std::string name = "Board1";
+  std::string name = "V1742";
   app.add_option("-n,--name", name, "Name of the mode")
       ->check(
           [](const std::string& t) {

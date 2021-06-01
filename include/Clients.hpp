@@ -21,6 +21,7 @@ public:
   std::map<Infos, ix::WebSocket&>::iterator begin();
   std::map<Infos, ix::WebSocket&>::iterator end();
   const Infos& getInfos(const std::string& id) const;
+  std::size_t getNumberOfClients() const;
 private:
 
   std::map<Infos, ix::WebSocket&>       m_Clients;

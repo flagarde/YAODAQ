@@ -5,14 +5,14 @@
 
 #include <memory>
 
-class RootFile: public File
+class RootFile: public yaodaq::File
 {
 public:
   RootFile(const std::string& name, const std::string& option = "", const std::string& title = "", const int& compress = ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault, const int& netopt = 0);
   void open() final;
   void close() final;
   bool isOpened() final;
-  virtual void parseData(const Data&);
+  virtual void parseData(const yaodaq::Data&);
   virtual ~RootFile();
 
 protected:

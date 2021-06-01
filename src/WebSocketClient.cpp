@@ -2,6 +2,8 @@
 
 #include "ixwebsocket/IXNetSystem.h"
 
+#include "GeneralParameters.hpp"
+
 namespace yaodaq
 {
 

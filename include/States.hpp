@@ -1,6 +1,8 @@
 #pragma once
 
-enum class States
+#include <cstdint>
+
+enum class States : std::uint_least8_t
 {
   UNINITIALIZED,
   INITIALIZED,

@@ -9,8 +9,8 @@ namespace yaodaq
 class BoardInfos: public Infos
 {
 public:
-  BoardInfos(const std::string& roomName = "", const std::string& rackName = "", const std::string& crateName = "", const std::string& name = "", const std::string& type = "", const toml::value& parameters = {},
-             const toml::value& connectorParameters = {}, const Category& category=Category::UNKNOWN);
+  BoardInfos(const std::string& roomName = "", const std::string& rackName = "", const std::string& crateName = "", const int& slot=0,const std::string& name = "", const std::string& type = "", const toml::value& parameters = {},
+             const toml::value& connectorParameters = {}, const CLASS& _class=CLASS::Unknown);
   BoardInfos(const Infos& infos, const toml::value& parameters = {}, const toml::value& connectorParameters = {});
   void setParameters(const toml::value& parameters)
   {

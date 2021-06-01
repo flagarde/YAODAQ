@@ -3,6 +3,9 @@
 #include "Exception.hpp"
 #include "StatusCode.hpp"
 
+
+#include <iostream>
+
 namespace yaodaq
 {
 
@@ -30,6 +33,11 @@ const Infos& Clients::getInfos(const std::string& id) const
     }
   }
   return found->first;
+}
+
+std::size_t Clients::getNumberOfClients() const
+{
+  return m_Clients.size();
 }
 
 void Clients::try_emplace(const std::string& id, const std::string& key, ix::WebSocket& socket)

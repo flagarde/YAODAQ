@@ -44,4 +44,4 @@ RootFile::~RootFile()
   if(m_File != nullptr) delete m_File;
 }
 
-void RootFile::parseData(const Data&) {}
+void RootFile::parseData(const yaodaq::Data&) {}

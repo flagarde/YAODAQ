@@ -25,9 +25,8 @@ void FileWritter::setFileOptions(const std::string& option)
   m_File->setOptions(option);
 }
 
-void FileWritter::DoOnData(const Data& data)
+void FileWritter::onData(const Data& data)
 {
-  //std::cout<<data.get()<<std::endl;
   m_File->parseData(data);
 }
 

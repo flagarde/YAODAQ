@@ -80,8 +80,20 @@ void ConfigurationLoader::parseCrates(const toml::value& rack)
     }
     catch(const std::out_of_range& e)
     {
-      parseBoards(crate,{},false);
-      parseModules(crate);
+      try
+      {
+        parseBoards(crate,{},false);
+      }
+      catch(const std::out_of_range& e)
+      {
+      }
+      try
+      {
+        parseModules(crate);
+      }
+      catch(const std::out_of_range& e)
+      {
+      }
     }
   }
 }
@@ -102,6 +114,16 @@ void ConfigurationLoader::parseBoards(const toml::value& crate, const toml::valu
       throw Exception(StatusCode::NOT_FOUND, "Board should have a name !\n{}", e.what());
     }
     throwIfExists(m_Module_Names, "Module", moduleName);
+    int slot{-1};
+    try
+    {
+      slot = toml::find<int>(board, "Slot");
+    }
+    catch(const std::out_of_range& e)
+    {
+      throw Exception(StatusCode::NOT_FOUND, "Board should have a Slot !\n{}", e.what());
+    }
+
     std::string type = toml::find_or<std::string>(board, "Type", "");
     if(type.empty()) { throw Exception(StatusCode::NOT_FOUND, R"(Board "{}" doesn't have a "Type" key)", moduleName); }
     try
@@ -119,7 +141,7 @@ void ConfigurationLoader::parseBoards(const toml::value& crate, const toml::valu
         boardConnectorID         = m_CrateConnectorID;
       }
     }
-    Infos infos(actualRoomName, actualRackName, actualCrateName, moduleName, type,Category::Board);
+    Infos infos(actualRoomName, actualRackName, actualCrateName,slot,CLASS::Board,type, moduleName);
     m_BoardsInfos.emplace(moduleName, BoardInfos(infos, board, boardConnectorParameters));
     m_ConnectorInfos.emplace(moduleName, ConnectorInfos(boardConnectorParameters, haveCrateConnector, boardConnectorID));
   }
@@ -177,7 +199,7 @@ void ConfigurationLoader::parseModules(const toml::value& crate)
     throwIfExists(m_Module_Names, "Module", moduleName);
     std::string type = toml::find_or<std::string>(board, "Type", "");
     if(type.empty()) { throw Exception(StatusCode::NOT_FOUND, R"(Module "{}" doesn't have a "Type" key)", moduleName); }
-    Infos infos(actualRoomName, actualRackName, actualCrateName, moduleName, type,Category::Module);
+    Infos infos(actualRoomName, actualRackName, actualCrateName,-1,CLASS::Module,type, moduleName);
     m_BoardsInfos.emplace(moduleName, BoardInfos(infos, board));
   }
 }
@@ -191,7 +213,7 @@ void ConfigurationLoader::reloadParameters(const std::string& name)
     {
       for(const auto& crate: toml::find<toml::array>(rack, "Crate"))
       {
-        for(const auto& board: toml::find<toml::array>(crate, m_BoardsInfos[name].getCategory()))
+        for(const auto& board: toml::find<toml::array>(crate, m_BoardsInfos[name].getClass()))
         {
           //Should not need to check this because we check it before but the user could do mistake and erase this part
           try
@@ -209,7 +231,7 @@ void ConfigurationLoader::reloadParameters(const std::string& name)
         }
       }
       // If it can go there that means the module or board as been erased from the config file !! BAD boys
-      throw Exception(StatusCode::NOT_FOUND, "{} \"{}\" has been erased from the configuration file !", m_BoardsInfos[name].getCategory(), name);
+      throw Exception(StatusCode::NOT_FOUND, "{} \"{}\" has been erased from the configuration file !", m_BoardsInfos[name].getClass(), name);
     }
   }
 }

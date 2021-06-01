@@ -13,7 +13,7 @@ namespace yaodaq
     Configurator,
     FileWritter,
     SlowController,
-    WebViewer,
+    WebBrowser,
     Viewer,
     Analyser,
     Unknown

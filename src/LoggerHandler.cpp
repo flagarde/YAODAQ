@@ -21,10 +21,12 @@ namespace yaodaq
   {
     if(verbosity == "Off") m_Verbosity = spdlog::level::off;
     else if(verbosity == "Trace") m_Verbosity = spdlog::level::trace;
-    else if(verbosity == "Info") m_Verbosity = spdlog::level::info;
     else if(verbosity == "Debug") m_Verbosity = spdlog::level::debug;
-    else if(verbosity == "Warning") m_Verbosity = spdlog::level::warn;
+    else if(verbosity == "Info") m_Verbosity = spdlog::level::info;
+    else if(verbosity == "Warn") m_Verbosity = spdlog::level::warn;
+    else if(verbosity == "Error") m_Verbosity = spdlog::level::err;
     else if(verbosity == "Critical") m_Verbosity = spdlog::level::critical;
+    init();
   }
 
   std::shared_ptr<spdlog::logger> LoggerHandler::logger()

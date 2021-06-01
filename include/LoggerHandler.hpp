@@ -36,7 +36,7 @@ namespace yaodaq
     std::shared_ptr<spdlog::logger> m_Logger{nullptr};
     void init();
     std::vector<spdlog::sink_ptr> m_Sinks;
-    spdlog::level::level_enum m_Verbosity{spdlog::level::info};
+    spdlog::level::level_enum m_Verbosity{spdlog::level::trace};
 
 
   };

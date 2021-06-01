@@ -35,7 +35,7 @@ DAQFile::~DAQFile()
   if(m_Event != nullptr) delete m_Event;
 }
 
-void DAQFile::parseData(const Data& data)
+void DAQFile::parseData(const yaodaq::Data& data)
 {
   Json::Value json        = data.getContentAsJson();
   m_Event->BoardID        = json["EventInfos"]["BoardID"].asDouble();

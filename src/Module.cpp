@@ -8,44 +8,14 @@
 #include "Message.hpp"
 #include "StatusCode.hpp"
 #include "magic_enum.hpp"
-#include "spdlog/sinks/stdout_color_sinks.h"
 
 namespace yaodaq
 {
 
-void Module::setURL(const std::string& url)
+Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class) : MessageHandlerClient(Identifier(_class,type,name))
 {
-  MessageHandlerClient::setUrl(url);
-  URLIsSet=true;
-}
-
-Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class): MessageHandlerClient(Identifier(_class,type,name))
-{
-  setHeaderKey("Key", "///" + getIdentifier().getType() + "/" + getIdentifier().getName());
-  m_CallBack = {[this](const ix::WebSocketMessagePtr& msg) {
-    if(msg->type == ix::WebSocketMessageType::Message) { this->DoOnMessage(msg); }
-    else if(msg->type == ix::WebSocketMessageType::Open)
-    {
-      this->OnOpen(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Close)
-    {
-      this->OnClose(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Error)
-    {
-      this->OnError(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Ping)
-    {
-      this->OnPing(msg);
-    }
-    else if(msg->type == ix::WebSocketMessageType::Pong)
-    {
-      this->OnPong(msg);
-    }
-  }};
-  setOnMessageCallback(m_CallBack);
+  setHeaderKey("Key", getIdentifier().get());
+  setOnMessageCallback(getMessageCallback());
 }
 
 int Module::loop()
@@ -57,16 +27,12 @@ int Module::loop()
   return 0;
 }
 
-
-
-
 ConfigurationLoader Module::m_Config = ConfigurationLoader();
 
 void Module::setConfigFile(const std::string& file)
 {
   m_Config.setFileName(file);
 }
-
 
 void Module::stopListening()
 {
@@ -76,33 +42,20 @@ void Module::stopListening()
 
 void Module::startListening()
 {
-  m_LoggerHandler.addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
   logger()->info("Listening on {}.",getUrl());
-  if(!URLIsSet)
-  {
-    setURL(yaodaq::GeneralParameters::getURL());
-  }
   start();
   while(getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
 void Module::setState(const States& state)
 {
-  std::lock_guard<std::mutex> guard(m_Mutex);
   m_State = state;
-}
-
-std::string Module::getStateString()
-{
-  return std::string(magic_enum::enum_name(m_State));
 }
 
 States Module::getState()
 {
   return m_State;
 }
-
-
 
 void Module::verifyParameters() {}
 
@@ -118,12 +71,12 @@ void Module::printParameters()
   logger()->info("Parameters :\n{}", toml::format(m_Conf));
 }
 
-void Module::sendState()
+/*void Module::sendState()
 {
   State state(m_State);
   MessageHandlerClient::sendBinary(state);
   logger()->warn(state.get());
-}
+}*/
 
 void Module::Initialize()
 {
@@ -131,12 +84,12 @@ void Module::Initialize()
   {
     if(m_UseConfigFile)LoadConfig();
     DoInitialize();
+    sendState(States::INITIALIZED);
     setState(States::INITIALIZED);
-    sendState();
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -147,12 +100,12 @@ void Module::Connect()
   try
   {
     CallBoardConnect();
+    sendState(States::CONNECTED);
     setState(States::CONNECTED);
-    sendState();
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -168,12 +121,12 @@ void Module::Configure()
       m_Conf = m_Config.getConfig(getIdentifier().getName());
     }
     DoConfigure();
+    sendState(States::CONFIGURED);
     setState(States::CONFIGURED);
-    sendState();
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -195,11 +148,11 @@ void Module::Start()
       m_IsFirstStart = false;
     }
     DoStart();
-    sendState();
+    sendState(States::STARTED);
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -216,11 +169,11 @@ void Module::Pause()
       m_LoopOnStartUsed = false;
     }
     DoPause();
-    sendState();
+    sendState(States::PAUSED);
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -243,11 +196,11 @@ void Module::Stop()
       m_LoopOnPauseUsed = false;
     }
     DoStop();
-    sendState();
+    sendState(States::STOPPED);
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -259,11 +212,11 @@ void Module::Clear()
   {
     DoClear();
     setState(States::CLEARED);
-    sendState();
+    sendState(States::CLEARED);
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -275,11 +228,11 @@ void Module::Disconnect()
   {
     CallBoardDisconnect();
     setState(States::DISCONNECTED);
-    sendState();
+    sendState(States::DISCONNECTED);
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -292,11 +245,11 @@ void Module::Release()
     DoRelease();
     m_Config.clear();
     setState(States::RELEASED);
-    sendState();
+    sendState(States::RELEASED);
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -308,11 +261,11 @@ void Module::Quit()
   {
     DoQuit();
     setState(States::QUITED);
-    sendState();
+    sendState(States::QUITED);
   }
-  catch(const Exception& error)
+  catch(const Exception& exception)
   {
-    sendError(error.what());
+    error(exception.what());
     stopListening();
     throw;
   }
@@ -372,48 +325,50 @@ void Module::DoOnCommand(const Message& command)
 {
   Command m_command;
   m_command.parse(command.get());
-  if(m_command.getCommand() == "getState") sendState();
+  if(m_command.getCommand() == "getState") sendState(m_State);
 }
 
-void Module::DoOnAction(const Message& message)
+void Module::DoOnAction(const Action& action)
 {
   if(getIdentifier().getClass() != CLASS::Logger && getIdentifier().getClass() != CLASS::Controller)
   {
-    auto action = magic_enum::enum_cast<Actions>(message.getContent());
-    if(action.has_value())
+    auto action_ = magic_enum::enum_cast<Actions>(action.getContent());
+    if(action_.has_value())
     {
-      if((m_State==States::UNINITIALIZED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::INITIALIZE) Initialize();
-      else if((m_State==States::INITIALIZED || m_State==States::DISCONNECTED||m_State==States::CONNECTED) && action.value()== Actions::CONNECT ) Connect();
-      else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action.value()== Actions::CONFIGURE ) Configure();
-      else if((m_State==States::CONFIGURED || m_State==States::STOPPED || m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::START ) Start();
-      else if((m_State==States::STARTED || m_State==States::PAUSED) && action.value()== Actions::PAUSE) Pause();
-      else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPPED)  && action.value()== Actions::STOP) Stop();
-      else if((m_State==States::STOPPED || m_State==States::CONFIGURED || m_State==States::CLEARED) && action.value()== Actions::CLEAR) Clear();
-      else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action.value()== Actions::DISCONNECT) Disconnect();
-      else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action.value()== Actions::RELEASE) Release();
-      else if(m_State==States::RELEASED && action.value()== Actions::QUIT) Quit();
-      else sendError("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action.value())));
+      if((m_State==States::UNINITIALIZED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action_.value()== Actions::INITIALIZE) Initialize();
+      else if((m_State==States::INITIALIZED || m_State==States::DISCONNECTED||m_State==States::CONNECTED) && action_.value()== Actions::CONNECT ) Connect();
+      else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action_.value()== Actions::CONFIGURE ) Configure();
+      else if((m_State==States::CONFIGURED || m_State==States::STOPPED || m_State==States::STARTED || m_State==States::PAUSED) && action_.value()== Actions::START ) Start();
+      else if((m_State==States::STARTED || m_State==States::PAUSED) && action_.value()== Actions::PAUSE) Pause();
+      else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPPED)  && action_.value()== Actions::STOP) Stop();
+      else if((m_State==States::STOPPED || m_State==States::CONFIGURED || m_State==States::CLEARED) && action_.value()== Actions::CLEAR) Clear();
+      else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action_.value()== Actions::DISCONNECT) Disconnect();
+      else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action_.value()== Actions::RELEASE) Release();
+      else if(m_State==States::RELEASED && action_.value()== Actions::QUIT) Quit();
+      else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action_.value())));
     }
+    printAction(action);
   }
 }
 
-void Module::DoOnData(const Data& data) {}
+/*void Module::DoOnData(const Data& data)
+{
+  printData(data);
+}*/
 
-void Module::DoOnMessage(const ix::WebSocketMessagePtr& msg)
+void Module::onOwnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
-  if(message.getType() == "Action") DoOnAction(message);
-  else if(message.getType() == "Command")
-    DoOnCommand(message);
-  else if(message.getType() == "Data")
-  {
-    Data data;
-    data.parse(message.get());
-    DoOnData(data);
-  }
-  else
-    OnMessage(msg);
+
+  if(message.getType() == TYPE::Action) DoOnAction(message);
+  else if(message.getType() == TYPE::Open) onOpen(message);
+  else if(message.getType() == TYPE::Close) onClose(message);
+  else if(message.getType() == TYPE::State) onState(message);
+  else if(message.getType() == TYPE::Data) onData(message);
+  else if(message.getType() == TYPE::Command) DoOnCommand(message);
+  else if(message.getType() == TYPE::Log) onLog(message);
+  else OnMessage(msg);
 }
 
 void Module::skipConfigFile()
@@ -421,50 +376,9 @@ void Module::skipConfigFile()
   m_UseConfigFile=false;
 }
 
-void Module::OnOpen(const ix::WebSocketMessagePtr& msg)
-{
-  logger()->info("Handshake Headers :");
-  for(auto it: msg->openInfo.headers) { logger()->info("\t{0}:{1}", it.first, it.second); }
-  logger()->info("");
-}
-
-void Module::OnClose(const ix::WebSocketMessagePtr& msg)
-{
-  // The server can send an explicit code and reason for closing.
-  // This data can be accessed through the closeInfo object.
-  if(msg->closeInfo.code == static_cast<int16_t>(StatusCode::ALREADY_PRESENT))
-  {
-    disableAutomaticReconnection();
-    throw Exception(StatusCode::ALREADY_PRESENT, msg->closeInfo.reason);
-  }
-  else
-  {
-    logger()->info("{}", msg->closeInfo.code);
-    logger()->info("{}", msg->closeInfo.reason);
-  }
-}
-
-void Module::OnPong(const ix::WebSocketMessagePtr& msg)
-{
-  logger()->info("Pong data : {}", msg->str);
-}
-
-void Module::OnPing(const ix::WebSocketMessagePtr& msg)
-{
-  logger()->info("Ping data : {}", msg->str);
-}
-
 void Module::OnMessage(const ix::WebSocketMessagePtr& msg)
 {
   logger()->info("{}", msg->str);
-}
-
-void Module::OnError(const ix::WebSocketMessagePtr& msg)
-{
-  logger()->error("Error : {}", msg->errorInfo.reason);
-  logger()->error("#retries : {}", msg->errorInfo.retries);
-  logger()->error("Wait time(ms) : {}", msg->errorInfo.wait_time);
-  logger()->error("HTTP Status : {}", msg->errorInfo.http_status);
 }
 
 };
