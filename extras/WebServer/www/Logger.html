@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logger</title>
+  <link rel="shortcut icon" href="./imgs/YAODAQ.png" />
+  <link rel="stylesheet" type="text/css" href="css/logger.css" />
+  <script>
+    var ws;
+    var DEBUG = true;
+  </script>
+  <script>
+    var ip = decodeURIComponent(window.location.search.match(/(\?|&)ip\=([^&]*)/)[2]);
+    var port = decodeURIComponent(window.location.search.match(/(\?|&)port\=([^&]*)/)[2]);
+    var address = "ws://" + ip + ":" + port + "/logger";
+  </script>
+</head>
+
+<body>
+  <!-- Execute when the page is opening -->
+  <script type="text/javascript">
+  window.onload = function()
+  {
+    document.body.style.background = "red";
+    document.getElementById("NotConnected").style.display = "block";
+    StartWebSocket();
+  };
+
+  function send(message)
+  {
+    //if(DEBUG == true) alert(message);
+    ws.send(message);
+  }
+
+  rewireLoggingToElement(() => document.getElementById("log"),() => document.getElementById("log-container"),true);
+
+  function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll)
+  {
+    fixLoggingFunc("Trace");
+    fixLoggingFunc("Debug");
+    fixLoggingFunc("Info");
+    fixLoggingFunc("Warn");
+    fixLoggingFunc("Error");
+    fixLoggingFunc("Critical");
+
+
+    function fixLoggingFunc(level)
+    {
+      console[level] = function (...arguments)
+      {
+        const output = produceOutput(level, arguments);
+        const eleLog = eleLocator();
+        if(autoScroll)
+        {
+          const eleContainerLog = eleOverflowLocator();
+          const isScrolledToBottom = eleContainerLog.scrollHeight - eleContainerLog.clientHeight <= eleContainerLog.scrollTop + 1;
+          eleLog.innerHTML += output;
+          if(isScrolledToBottom)
+          {
+            eleContainerLog.scrollTop = eleContainerLog.scrollHeight - eleContainerLog.clientHeight;
+          }
+        }
+        else
+        {
+          eleLog.innerHTML +=output;
+        }
+      };
+    }
+    var odd = false;
+    function produceOutput(level, args)
+    {
+      var now = new Date();
+      if(odd == true)
+      {
+        odd = false;
+        return args.reduce
+        (
+          (output, arg) =>
+          {
+            return output + '<span class="odd cell">[' + now.toLocaleString() + '] [<span class="log-' + level + '">' + level + '</span>] <span class="log-'+level+'">' + (typeof arg === "object" && (JSON || {}).stringify ? JSON.stringify(arg) : arg) + "</span></span></br>";
+          }
+          ,""
+        );
+      }
+      else
+      {
+        odd = true;
+        return args.reduce
+        (
+          (output, arg) =>
+          {
+            return output + '<span class="even cell">[' + now.toLocaleString() + '] [<span class="log-' + level + '">' + level + '</span>] <span class="log-'+level+'">' + (typeof arg === "object" && (JSON || {}).stringify ? JSON.stringify(arg) : arg) + "</span></span></br>";
+          }
+          ,""
+        );
+      }
+
+
+    }
+
+  }
+      function StartWebSocket()
+      {
+        if("WebSocket" in window)
+        {
+          ws = new WebSocket(address.toString());
+
+          ws.onopen = function()
+          {
+            document.getElementById("NotConnected").style.display = "none";
+            document.body.style.background = "#b3e0ff";
+            Command("getState");
+          };
+
+          ws.onmessage = function(evt)
+          {
+            var obj = JSON.parse(evt.data);
+            if(obj.Type == "State")
+            {
+              STATE = obj["Content"]["State"];
+              console["Warn"]("<span style=\"color:black;\"><em>"+obj["From"]+ "</em> on state</span> <span style=\"color:red;\">"+ obj["Content"]["State"]+"</span>");
+            }
+            else if(obj.Type == "Action")
+            {
+              ACTION = obj["Content"]["Action"];
+              console["Warn"]("<span style=\"color:black;\"><em>"+obj["From"]+ "</em> sent action </span> "+ obj["Content"]["Action"]);
+            }
+            else if(obj.Type == "Data")
+            {
+              var size = (JSON.stringify(obj["Content"]).length /1048576.0).toFixed(2);
+              //alert(size);
+              console["Warn"]("<span style=\"color:black;\"><em>"+obj["From"]+ "</em> sent data </span><span style=\"color:orange;\">("+ size +" Mo)</span>");
+            }
+            else if(obj.Type == "Log")
+            {
+              console[obj.Content.Level]("From <span style=\"color:black;\"><em>"+obj["From"]+ "</em></span> : "+obj["Content"]["Log"]);
+            }
+            else if(obj.Type == "Command")
+            {
+              console["Warn"]("From <span style=\"color:black;\"><em>"+obj["From"]+ "</em></span> : "+obj["Content"]);
+            }
+          };
+
+          ws.onclose = function()
+          {
+
+          };
+        }
+        else
+        {
+          // The browser doesn't support WebSocket
+          alert("WebSocket NOT supported by your Browser!");
+        }
+      }
+    </script>
+    <script>
+function Command(...args) {
+        var obj = new Object();
+        var obj2 = new Object();
+        obj2.Command = arguments[0];
+        obj.Type = "Command";
+        obj.Content = obj2;
+        obj.From = "";
+        obj.To = "";
+        for (var arg = 1; arg < arguments.length; ++arg) {
+          obj[arguments[arg].toString()] = arguments[arg + 1].toString();
+          ++arg;
+        }
+        send(JSON.stringify(obj));
+        //alert(JSON.stringify(obj));
+      }
+      </script>
+
+  <div id="NotConnected">
+    <center>
+      <h1>WebSocket Not Connected !!!</h1>
+    </center>
+  </div>
+
+  <center><h1>Logger</h1></center>
+  <div id="log-container" class="log-container">
+    <pre id="log"></pre>
+  </div>
+
+</body>
+</html>

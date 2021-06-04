@@ -36,7 +36,7 @@ public:
 
   void                                   LoopOnStart();
   void                                   LoopOnPause();
-  States                                 getState();
+  STATE                                 getState();
   static void                            setConfigFile(const std::string&);
   void                                   printParameters();
   void                                   stopListening();
@@ -62,7 +62,7 @@ private:
   bool            m_UseConfigFile{true};
   void            DoDoLoopOnStart();
   void            DoDoLoopOnPause();
-  States m_State{States::UNINITIALIZED};
+  STATE m_State{STATE::Uninitialized};
   std::thread     m_LoopOnStart;
   std::thread     m_LoopOnPause;
   bool            m_LoopOnStartUsed{false};
@@ -86,7 +86,7 @@ private:
   void                                                DoOnCommand(const Message&);
   //virtual void                                        DoOnData(const Data& data);
   //void                                                sendState();
-  void                                                setState(const States&);
+  void                                                setState(const STATE&);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr&);
 };
 

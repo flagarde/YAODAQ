@@ -7,6 +7,8 @@
 #include "Exception.hpp"
 
 
+#include "Actions.hpp"
+
 #include "json/value.h"
 #include "json/reader.h"
 #include "json/writer.h"
@@ -48,20 +50,6 @@ enum class TYPE
   Response,
   Data,
   Unknown,
-};
-
-enum class Actions
-{
-  INITIALIZE,
-  CONNECT,
-  CONFIGURE,
-  START,
-  PAUSE,
-  STOP,
-  CLEAR,
-  DISCONNECT,
-  RELEASE,
-  QUIT
 };
 
 class Message
@@ -217,8 +205,8 @@ public:
 class State: public Message
 {
 public:
-  State(const States& state, const std::string& to = "ALL");
-  States getState() const;
+  State(const STATE& state, const std::string& to = "ALL");
+  STATE getState() const;
   std::string getStateStr() const;
   State(const Message&);
 };
@@ -227,8 +215,8 @@ public:
 class Action: public Message
 {
 public:
-  Action(const Actions& action, const std::string& to = "ALL");
-  Actions getAction() const;
+  Action(const ACTION& action, const std::string& to = "ALL");
+  ACTION getAction() const;
   std::string getActionStr() const;
   Action(const Message&);
 };

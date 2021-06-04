@@ -1,8 +1,11 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" type="text/css" href="css/RPC.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./imgs/YAODAQ.png" />
+    <link rel="stylesheet" type="text/css" href="css/viewer.css" />
     <link rel="stylesheet" type="text/css" href="jsroot/style/JSRootPainter.css" />
+
     <script type="text/javascript" src="jsroot/scripts/JSRoot.core.js">
       JSROOT.require(['io' 'tree' 'painter' 'gpad' 'hist' 'hist3d' 'more' 'geom' 'v7gpad' 'v7hist' 'v7hist3d' 'v7more' 'math' 'hierarchy' 'jq2d' 'openui5']).then(() => {})
     </script>
@@ -23,47 +26,6 @@
     </script>
 
     <script type="text/javascript">
-      rewireLoggingToElement(
-        () => document.getElementById("log"),
-        () => document.getElementById("log-container"),
-        true
-      );
-
-      function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
-        fixLoggingFunc("Trace");
-        fixLoggingFunc("Info");
-        fixLoggingFunc("Debug");
-        fixLoggingFunc("Warning");
-        fixLoggingFunc("Critical");
-        fixLoggingFunc("Error");
-
-        function fixLoggingFunc(name) {
-          //console["old" + name] = console[name];
-          console[name] = function (...arguments) {
-            const output = produceOutput(name, arguments);
-            const eleLog = eleLocator();
-
-            if (autoScroll) {
-              const eleContainerLog = eleOverflowLocator();
-              const isScrolledToBottom = eleContainerLog.scrollHeight - eleContainerLog.clientHeight <= eleContainerLog.scrollTop + 1;
-              eleLog.innerHTML += output + "<br>";
-              if (isScrolledToBottom) {
-                eleContainerLog.scrollTop = eleContainerLog.scrollHeight - eleContainerLog.clientHeight;
-              }
-            } else {
-              eleLog.innerHTML += output + "<br>";
-            }
-
-            //console["old" + name].apply(undefined, arguments);
-          };
-        }
-
-        function produceOutput(name, args) {
-          return args.reduce((output, arg) => {
-            return output + '<span class="log-' + typeof arg + " log-" + name + '">' + (typeof arg === "object" && (JSON || {}).stringify ? JSON.stringify(arg) : arg) + "</span>&nbsp;";
-          }, "");
-        }
-      }
 
       function StartWebSocket() {
         if ("WebSocket" in window) {
@@ -106,14 +68,21 @@
             Command("getState");
           };
 
-          ws.onmessage = function (evt) {
+          ws.onmessage = function(evt)
+          {
             var obj = JSON.parse(evt.data);
             //if(DEBUG==true) alert(evt.data);
-            if (obj.Type == "State") {
-              STATE = obj["Content"];
-              ParseState(obj);
-              console["Warning"](obj["Type"], obj["Content"]);
-            } else if (obj.Type == "Data") {
+            if(obj.Type == "State")
+            {
+              STATE = obj["Content"]["State"];
+              ParseState(STATE);
+            }
+            else if(obj.Type == "Action")
+            {
+              ACTION = obj["Content"]["Action"];
+            }
+            else if (obj.Type == "Data")
+            {
               //alert(JSON.stringify(obj));
               var element = document.getElementById("EventNumber");
               element.innerHTML = "<h1>Event Number : " + obj["Content"]["EventInfos"]["EventCounter"] + "</h1>";
@@ -137,12 +106,7 @@
                   }
                 }
               }
-            } else if (obj.Type == "Trace") console["Trace"](obj["Trace"], obj["Content"]);
-            else if (obj.Type == "Info") console["Info"](obj["Type"], obj["Content"]);
-            else if (obj.Type == "Debug") console["Debug"](obj["Type"], obj["Content"]);
-            else if (obj.Type == "Warning") console["Warning"](obj["Type"], obj["Content"]);
-            else if (obj.Type == "Critical") console["Critical"](obj["Type"], obj["Content"]);
-            else if (obj.Type == "Error") console["Error"](obj["Type"], obj["Content"]);
+            }
           };
 
           ws.onclose = function () {
@@ -194,15 +158,13 @@
         //alert(JSON.stringify(obj));
       }
 
-      function Action(...args) {
-        var obj = new Object();
-        obj.Type = "Action";
-        obj.Content = arguments[0].toString();
-        for (var arg = 1; arg < arguments.length; ++arg) {
-          obj[arguments[arg].toString()] = arguments[arg + 1].toString();
-          ++arg;
-        }
-        send(JSON.stringify(obj));
+      function Action(action)
+      {
+        json = new Object();
+        json.Type = "Action";
+        json.Content = new Object();
+        json.Content.Action = action.toString();
+        send(JSON.stringify(json));
       }
 
       function send(command) {
@@ -211,7 +173,7 @@
       }
 
       function ParseState(obj) {
-        if (obj["Content"] == "UNINITIALIZED") {
+        if (obj == "Uninitialized") {
           document.getElementById("Initialize").disabled = false;
           document.getElementById("Connect").disabled = true;
           document.getElementById("Configure").disabled = true;
@@ -221,7 +183,7 @@
           document.getElementById("Clear").disabled = true;
           document.getElementById("Disconnect").disabled = true;
           document.getElementById("Release").disabled = true;
-        } else if (obj["Content"] == "INITIALIZED") {
+        } else if (obj == "Initialized") {
           document.getElementById("Initialize").disabled = true;
           document.getElementById("Connect").disabled = false;
           document.getElementById("Configure").disabled = true;
@@ -231,7 +193,7 @@
           document.getElementById("Clear").disabled = true;
           document.getElementById("Disconnect").disabled = true;
           document.getElementById("Release").disabled = false;
-        } else if (obj["Content"] == "CONNECTED") {
+        } else if (obj == "Connected") {
           document.getElementById("Initialize").disabled = true;
           document.getElementById("Connect").disabled = true;
           document.getElementById("Configure").disabled = false;
@@ -241,7 +203,7 @@
           document.getElementById("Clear").disabled = true;
           document.getElementById("Disconnect").disabled = false;
           document.getElementById("Release").disabled = true;
-        } else if (obj["Content"] == "CONFIGURED") {
+        } else if (obj == "Configured") {
           document.getElementById("Initialize").disabled = true;
           document.getElementById("Connect").disabled = true;
           document.getElementById("Configure").disabled = true;
@@ -251,7 +213,7 @@
           document.getElementById("Clear").disabled = false;
           document.getElementById("Disconnect").disabled = true;
           document.getElementById("Release").disabled = true;
-        } else if (obj["Content"] == "STARTED") {
+        } else if (obj == "Started") {
           document.getElementById("Initialize").disabled = true;
           document.getElementById("Connect").disabled = true;
           document.getElementById("Configure").disabled = true;
@@ -261,7 +223,7 @@
           document.getElementById("Clear").disabled = true;
           document.getElementById("Disconnect").disabled = true;
           document.getElementById("Release").disabled = true;
-        } else if (obj["Content"] == "PAUSED") {
+        } else if (obj == "Paused") {
           document.getElementById("Initialize").disabled = true;
           document.getElementById("Connect").disabled = true;
           document.getElementById("Configure").disabled = true;
@@ -271,7 +233,7 @@
           document.getElementById("Clear").disabled = true;
           document.getElementById("Disconnect").disabled = true;
           document.getElementById("Release").disabled = true;
-        } else if (obj["Content"] == "STOPPED") {
+        } else if (obj == "Stopped") {
           document.getElementById("Initialize").disabled = true;
           document.getElementById("Connect").disabled = true;
           document.getElementById("Configure").disabled = true;
@@ -281,7 +243,7 @@
           document.getElementById("Clear").disabled = false;
           document.getElementById("Disconnect").disabled = true;
           document.getElementById("Release").disabled = true;
-        } else if (obj["Content"] == "CLEARED") {
+        } else if (obj == "Cleared") {
           document.getElementById("Initialize").disabled = true;
           document.getElementById("Connect").disabled = true;
           document.getElementById("Configure").disabled = false;
@@ -291,7 +253,7 @@
           document.getElementById("Clear").disabled = true;
           document.getElementById("Disconnect").disabled = false;
           document.getElementById("Release").disabled = true;
-        } else if (obj["Content"] == "DISCONNECTED") {
+        } else if (obj == "Disconnected") {
           document.getElementById("Initialize").disabled = true;
           document.getElementById("Connect").disabled = false;
           document.getElementById("Configure").disabled = true;
@@ -301,7 +263,7 @@
           document.getElementById("Clear").disabled = true;
           document.getElementById("Disconnect").disabled = true;
           document.getElementById("Release").disabled = false;
-        } else if (obj["Content"] == "RELEASED") {
+        } else if (obj == "Released") {
           document.getElementById("Initialize").disabled = false;
           document.getElementById("Connect").disabled = true;
           document.getElementById("Configure").disabled = true;
@@ -330,15 +292,15 @@
 
     <center>
       <div id="Actions" class="Action_buttons">
-        <button id="Initialize" onclick='Action("INITIALIZE");'>Initialize</button>
-        <button id="Connect" onclick='Action("CONNECT");'>Connect</button>
-        <button id="Configure" onclick='Action("CONFIGURE");'>Configure</button>
-        <button id="Start" onclick='openForm("START");'>Start</button>
-        <button id="Pause" onclick='Action("PAUSE");'>Pause</button>
-        <button id="Stop" onclick='Action("STOP");'>Stop</button>
-        <button id="Clear" onclick='Action("CLEAR");'>Clear</button>
-        <button id="Disconnect" onclick='Action("DISCONNECT");'>Disconnect</button>
-        <button id="Release" onclick='Action("RELEASE");'>Release</button>
+        <button id="Initialize" onclick='Action("Initialize");'>Initialize</button>
+        <button id="Connect" onclick='Action("Connect");'>Connect</button>
+        <button id="Configure" onclick='Action("Configure");'>Configure</button>
+        <button id="Start" onclick='openForm("Start");'>Start</button>
+        <button id="Pause" onclick='Action("Pause");'>Pause</button>
+        <button id="Stop" onclick='Action("Stop");'>Stop</button>
+        <button id="Clear" onclick='Action("Clear");'>Clear</button>
+        <button id="Disconnect" onclick='Action("Disconnect");'>Disconnect</button>
+        <button id="Release" onclick='Action("Release");'>Release</button>
       </div>
     </center>
 
@@ -369,13 +331,13 @@
     <script>
       function openForm() {
         document.getElementById("RunInfos").innerHTML = "<h1>Run " + RunNumber + " Infos</h1>";
-        if (STATE == "PAUSED") Action("START");
+        if (STATE == "PAUSED") Action("Start");
         else document.getElementById("myForm").style.display = "block";
       }
 
       function startAquisition(oForm) {
         Info("RunInfos =" + oForm.elements["Comment"].value);
-        Action("START");
+        Action("Start");
         closeForm();
       }
       function closeForm() {
@@ -407,8 +369,5 @@
       <div id="Plots"></div>
     </center>
 
-    <div id="log-container">
-      <pre id="log"></pre>
-    </div>
   </body>
 </html>

@@ -211,12 +211,12 @@ tr:nth-child(even)
 div[what=plot]
 {
   position:relative;
-  /*background:#00b3b3;*/
+  background:#00b3b3;
   border-style: solid;
   border-width: 1px;
   display: inline-block;
-  width:50%;
-  height:4%;
+  width:100%;
+  height:10%;
 }
 
 .test
@@ -241,20 +241,4 @@ div[what=plot]
   top: 60%;
   transform: translate(-50%, -50%)
   /*transform: scale(5);*/
-}
-
-
-#log-container { overflow: auto; height: 500px; width:100%;background:white; }
-
-.log-warning { color: orange }
-.log-error { color: red }
-.log-info { color: skyblue }
-.log-log { color: silver }
-
-.log-warn, .log-error { font-weight: bold; }
-
-
-div
-{
-  text-align:center;
 }

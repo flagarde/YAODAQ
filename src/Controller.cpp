@@ -13,7 +13,7 @@ Controller::Controller(const std::string& name, const std::string& type) : Modul
 
 void Controller::sendAction(const std::string& action)
 {
-  auto ac = magic_enum::enum_cast<Actions>(action);
+  auto ac = magic_enum::enum_cast<ACTION>(action);
   if(ac.has_value())
   {
     Action a(ac.value());

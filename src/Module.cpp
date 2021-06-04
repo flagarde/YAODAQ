@@ -47,12 +47,12 @@ void Module::startListening()
   while(getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(10));
 }
 
-void Module::setState(const States& state)
+void Module::setState(const STATE& state)
 {
   m_State = state;
 }
 
-States Module::getState()
+STATE Module::getState()
 {
   return m_State;
 }
@@ -84,8 +84,8 @@ void Module::Initialize()
   {
     if(m_UseConfigFile)LoadConfig();
     DoInitialize();
-    sendState(States::INITIALIZED);
-    setState(States::INITIALIZED);
+    sendState(STATE::Initialized);
+    setState(STATE::Initialized);
   }
   catch(const Exception& exception)
   {
@@ -100,8 +100,8 @@ void Module::Connect()
   try
   {
     CallBoardConnect();
-    sendState(States::CONNECTED);
-    setState(States::CONNECTED);
+    sendState(STATE::Connected);
+    setState(STATE::Connected);
   }
   catch(const Exception& exception)
   {
@@ -121,8 +121,8 @@ void Module::Configure()
       m_Conf = m_Config.getConfig(getIdentifier().getName());
     }
     DoConfigure();
-    sendState(States::CONFIGURED);
-    setState(States::CONFIGURED);
+    sendState(STATE::Configured);
+    setState(STATE::Configured);
   }
   catch(const Exception& exception)
   {
@@ -136,7 +136,7 @@ void Module::Start()
 {
   try
   {
-    setState(States::STARTED);
+    setState(STATE::Started);
     if(m_LoopOnPauseUsed == true)
     {
       m_LoopOnPause.join();
@@ -148,7 +148,7 @@ void Module::Start()
       m_IsFirstStart = false;
     }
     DoStart();
-    sendState(States::STARTED);
+    sendState(STATE::Started);
   }
   catch(const Exception& exception)
   {
@@ -162,14 +162,14 @@ void Module::Pause()
 {
   try
   {
-    setState(States::PAUSED);
+    setState(STATE::Paused);
     if(m_LoopOnStartUsed == true)
     {
       m_LoopOnStart.join();
       m_LoopOnStartUsed = false;
     }
     DoPause();
-    sendState(States::PAUSED);
+    sendState(STATE::Paused);
   }
   catch(const Exception& exception)
   {
@@ -183,7 +183,7 @@ void Module::Stop()
 {
   try
   {
-    setState(States::STOPPED);
+    setState(STATE::Stopped);
     m_IsFirstStart = true;
     if(m_LoopOnStartUsed == true)
     {
@@ -196,7 +196,7 @@ void Module::Stop()
       m_LoopOnPauseUsed = false;
     }
     DoStop();
-    sendState(States::STOPPED);
+    sendState(STATE::Stopped);
   }
   catch(const Exception& exception)
   {
@@ -211,8 +211,8 @@ void Module::Clear()
   try
   {
     DoClear();
-    setState(States::CLEARED);
-    sendState(States::CLEARED);
+    setState(STATE::Cleared);
+    sendState(STATE::Cleared);
   }
   catch(const Exception& exception)
   {
@@ -227,8 +227,8 @@ void Module::Disconnect()
   try
   {
     CallBoardDisconnect();
-    setState(States::DISCONNECTED);
-    sendState(States::DISCONNECTED);
+    setState(STATE::Disconnected);
+    sendState(STATE::Disconnected);
   }
   catch(const Exception& exception)
   {
@@ -244,8 +244,8 @@ void Module::Release()
   {
     DoRelease();
     m_Config.clear();
-    setState(States::RELEASED);
-    sendState(States::RELEASED);
+    setState(STATE::Released);
+    sendState(STATE::Released);
   }
   catch(const Exception& exception)
   {
@@ -260,8 +260,8 @@ void Module::Quit()
   try
   {
     DoQuit();
-    setState(States::QUITED);
-    sendState(States::QUITED);
+    setState(STATE::Quited);
+    sendState(STATE::Quited);
   }
   catch(const Exception& exception)
   {
@@ -311,12 +311,12 @@ void Module::DoAtFirstStart(){};
 
 void Module::DoDoLoopOnStart()
 {
-  while(getState() == States::STARTED) { DoLoopOnStart(); }
+  while(getState() == STATE::Started) { DoLoopOnStart(); }
 }
 
 void Module::DoDoLoopOnPause()
 {
-  while(getState() == States::PAUSED) { DoLoopOnPause(); }
+  while(getState() == STATE::Paused) { DoLoopOnPause(); }
 }
 
 void Module::OnCommand(Command& command) {}
@@ -332,20 +332,68 @@ void Module::DoOnAction(const Action& action)
 {
   if(getIdentifier().getClass() != CLASS::Logger && getIdentifier().getClass() != CLASS::Controller)
   {
-    auto action_ = magic_enum::enum_cast<Actions>(action.getContent());
-    if(action_.has_value())
+    switch(action.getAction())
     {
-      if((m_State==States::UNINITIALIZED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action_.value()== Actions::INITIALIZE) Initialize();
-      else if((m_State==States::INITIALIZED || m_State==States::DISCONNECTED||m_State==States::CONNECTED) && action_.value()== Actions::CONNECT ) Connect();
-      else if((m_State==States::CONNECTED || m_State==States::CLEARED || m_State==States::CONFIGURED ) && action_.value()== Actions::CONFIGURE ) Configure();
-      else if((m_State==States::CONFIGURED || m_State==States::STOPPED || m_State==States::STARTED || m_State==States::PAUSED) && action_.value()== Actions::START ) Start();
-      else if((m_State==States::STARTED || m_State==States::PAUSED) && action_.value()== Actions::PAUSE) Pause();
-      else if((m_State==States::STARTED || m_State==States::PAUSED || m_State==States::STOPPED)  && action_.value()== Actions::STOP) Stop();
-      else if((m_State==States::STOPPED || m_State==States::CONFIGURED || m_State==States::CLEARED) && action_.value()== Actions::CLEAR) Clear();
-      else if((m_State==States::CLEARED || m_State==States::CONNECTED|| m_State==States::DISCONNECTED) && action_.value()== Actions::DISCONNECT) Disconnect();
-      else if((m_State==States::DISCONNECTED || m_State==States::INITIALIZED|| m_State==States::RELEASED) && action_.value()== Actions::RELEASE) Release();
-      else if(m_State==States::RELEASED && action_.value()== Actions::QUIT) Quit();
-      else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),std::string(magic_enum::enum_name(action_.value())));
+      case ACTION::Initialize :
+      {
+        if(m_State==STATE::Uninitialized || m_State==STATE::Initialized|| m_State==STATE::Released) Initialize();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Connect :
+      {
+        if(m_State==STATE::Initialized || m_State==STATE::Disconnected||m_State==STATE::Connected) Connect();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Configure :
+      {
+        if(m_State==STATE::Connected || m_State==STATE::Cleared || m_State==STATE::Configured ) Configure();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Start :
+      {
+        if(m_State==STATE::Configured || m_State==STATE::Stopped || m_State==STATE::Started || m_State==STATE::Paused) Start();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Pause :
+      {
+        if(m_State==STATE::Started || m_State==STATE::Paused) Start();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Stop :
+      {
+        if(m_State==STATE::Started || m_State==STATE::Paused || m_State==STATE::Stopped) Stop();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Clear :
+      {
+        if(m_State==STATE::Stopped || m_State==STATE::Configured || m_State==STATE::Cleared) Clear();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Disconnect :
+      {
+        if(m_State==STATE::Cleared || m_State==STATE::Connected|| m_State==STATE::Disconnected) Disconnect();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Release :
+      {
+        if(m_State==STATE::Disconnected || m_State==STATE::Initialized|| m_State==STATE::Released) Release();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
+      case ACTION::Quit :
+      {
+        if(m_State==STATE::Released) Quit();
+        else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
+        break;
+      }
     }
     printAction(action);
   }

@@ -128,10 +128,14 @@ namespace yaodaq
       headers[it.first]=it.second;
     }
 
-    if(msg->openInfo.headers.find("Key") != msg->openInfo.headers.end()) { key += msg->openInfo.headers["Key"]; }
+    if(msg->openInfo.headers.find("Key") != msg->openInfo.headers.end())
+    {
+      key += msg->openInfo.headers["Key"];
+    }
     else
     {
-      key += "WebBrowser/Default/Browser" + std::to_string(m_BrowserNumber);
+      if(msg->openInfo.uri == "/logger") key += "Logger/WebLogger/Logger" + std::to_string(m_BrowserNumber);
+      else key += "WebBrowser/Default/Browser" + std::to_string(m_BrowserNumber);
       ++m_BrowserNumber;
     }
     try

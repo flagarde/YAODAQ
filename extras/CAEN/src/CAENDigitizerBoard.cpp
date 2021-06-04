@@ -1279,7 +1279,7 @@ void CAENDigitizerBoard::PerformCalibration()
   if(!m_StartupCalibration) return;
   if(BoardSupportsCalibration())
   {
-    if(getState() != States::STARTED)
+    if(getState() != STATE::Started)
     {
       try
       {

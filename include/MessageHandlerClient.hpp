@@ -34,7 +34,7 @@ namespace yaodaq
     virtual void onOpen(const Open&);
 
     virtual void sendPing(const std::string&);
-    virtual void sendState(const States&);
+    virtual void sendState(const STATE&);
 
     virtual void onAction(const Action&);
 

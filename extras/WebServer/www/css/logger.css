@@ -1,0 +1,74 @@
+.html
+{
+  min-width: 100%;
+  height: 100%;
+}
+
+.log-container
+{
+  position:relative;
+  overflow: auto;
+  margin-left: auto;
+  margin-right: auto;
+  height: 90vh; /* For 100% screen height */
+  width:  98vw; /* For 100% screen width */
+  background: white;
+  text-align:left;
+  border: 1px solid #095484;
+  font-size:13px;
+}
+
+.cell
+{
+  position:absolute;
+  margin-left: auto;
+  margin-top: -13px;
+  margin-right: auto;
+}
+
+.odd
+{
+  width:  100%;
+  background-color: LightCyan;
+  opacity: 0.9;
+}
+
+.even
+{
+  width:  100%;
+  background-color: 	Gainsboro;
+  opacity: 0.9;
+}
+
+.log-Trace
+{
+  color: black
+}
+
+.log-Debug
+{
+  color: skyblue
+}
+
+.log-Info
+{
+  color: green
+}
+
+.log-Warn
+{
+  color: orange
+}
+
+.log-Error
+{
+  color: red;
+  font-weight: bold;
+}
+
+.log-Critical
+{
+  color: white;
+  background-color: red;
+  font-weight: bold;
+}

@@ -76,7 +76,7 @@ namespace yaodaq
     printLog(log);
   }
 
-  void MessageHandlerClient::sendState(const States& state)
+  void MessageHandlerClient::sendState(const STATE& state)
   {
     State states(state);
     sendText(states);

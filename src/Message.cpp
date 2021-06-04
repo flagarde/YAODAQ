@@ -435,19 +435,19 @@ Pong::Pong(const Message& message)
 
 //State
 //FIXME should have a proper ["content"]["State"] NEED TO FIX THE WEBPAGE
-State::State(const States& state, const std::string& to): Message(TYPE::State, std::string(magic_enum::enum_name(state)), to)
+State::State(const STATE& state, const std::string& to): Message(TYPE::State,Json::Value{} , to)
 {
-
+  addKey("State",std::string(magic_enum::enum_name(state)));
 }
 
-States State::getState() const
+STATE State::getState() const
 {
-  return magic_enum::enum_cast<States>(getStateStr()).value();
+  return magic_enum::enum_cast<STATE>(getStateStr()).value();
 }
 
 std::string State::getStateStr() const
 {
-  return m_Value["Content"].asString();
+  return m_Value["Content"]["State"].asString();
 }
 
 State::State(const Message& message)
@@ -459,21 +459,19 @@ State::State(const Message& message)
   else setType(message.getType());
 }
 
-//ACTION
-//FIXME should have a proper ["content"]["Action"] NEED TO FIX THE WEBPAGE
-Action::Action(const Actions& action, const std::string& to): Message(TYPE::Action, std::string(magic_enum::enum_name(action)), to)
+Action::Action(const ACTION& action, const std::string& to): Message(TYPE::Action, Json::Value{}, to)
 {
-
+  addKey("Action",std::string(magic_enum::enum_name(action)));
 }
 
-Actions Action::getAction() const
+ACTION Action::getAction() const
 {
-  return magic_enum::enum_cast<Actions>(getActionStr()).value();
+  return magic_enum::enum_cast<ACTION>(getActionStr()).value();
 }
 
 std::string Action::getActionStr() const
 {
-  return m_Value["Content"].asString();
+  return m_Value["Content"]["Action"].asString();
 }
 
 Action::Action(const Message& message)
