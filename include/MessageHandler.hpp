@@ -3,6 +3,8 @@
 #include "LoggerHandler.hpp"
 #include "Interrupt.hpp"
 #include "Message.hpp"
+#include "jsonrpc/server.h"
+#include "jsonrpc/client.h"
 
 namespace yaodaq
 {
@@ -11,6 +13,12 @@ namespace yaodaq
   {
   public:
     MessageHandler(const Identifier&);
+
+    // Send command
+    virtual void send(Message&) = 0;
+    virtual void sendText(Message&) = 0;
+    virtual void sendBinary(Message&) = 0;
+
 
     //******************* LOGS ******************************//
     // Log messages
@@ -57,7 +65,36 @@ namespace yaodaq
       log(LEVEL::Critical,fmt,args...);
     }
 
+
+    Command command(const std::string& methodName, const jsonrpc::Request::Parameters& params = {})
+    {
+      std::shared_ptr<jsonrpc::FormattedData> jsonRequest = m_JsonRPCClient.BuildRequestData(methodName,params);
+      Command command(jsonRequest->GetData());
+      return std::move(command);
+    }
+
+    template<typename FirstType, typename... RestTypes>  Command command(const std::string& methodName, FirstType&& first, RestTypes&&... rest)
+    {
+      std::shared_ptr<jsonrpc::FormattedData> jsonRequest = m_JsonRPCClient.BuildRequestData(methodName,first,rest...);
+      Command command(jsonRequest->GetData());
+      return std::move(command);
+    }
+
     //******************************************************//
+    virtual void onUnknown(const Unknown&);
+
+
+    // Command
+    virtual void printCommand(const Command&);
+    virtual void onCommand(const Command&);
+
+
+    //Response
+    virtual void printResponse(const Response&);
+
+    virtual void onResponse(const Response&);
+
+
 
     //*********************** Except ***********************//
     virtual void printException(const Exception& exception)
@@ -145,5 +182,15 @@ namespace yaodaq
 
     LoggerHandler m_LoggerHandler;
     Interrupt  m_Interrupt;
+
+    auto& getDispatcher()
+    {
+      return m_JsonRPCServer.GetDispatcher();
+    }
+    jsonrpc::Server m_JsonRPCServer;
+    jsonrpc::Client m_JsonRPCClient;
+  private:
+    std::shared_ptr<jsonrpc::FormattedData> outputFormattedData;
+    jsonrpc::JsonFormatHandler m_JsonFormatHandler;
   };
 };

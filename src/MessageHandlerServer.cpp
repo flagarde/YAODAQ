@@ -37,40 +37,83 @@ namespace yaodaq
         {
           m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           printState(m_Message);
-          sendToAll(m_Message);
+          send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Action)
         {
           m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           printAction(m_Message);
-          sendToAll(m_Message);
-        }
-        else if(m_Message.getType() == TYPE::Command)
-        {
-          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
-          logger()->warn("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
-          sendToAll(m_Message);
+          send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Data)
         {
           m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           printData(m_Message);
-          sendToAll(m_Message);
+          send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Log)
         {
           m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           onLog(m_Message);
         }
+        else if(m_Message.getType() == TYPE::Command)
+        {
+          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
+          printCommand(m_Message);
+          send(m_Message);
+        }
+        else if(m_Message.getType() == TYPE::Response)
+        {
+          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
+          printResponse(m_Message);
+          sendToLogger(m_Message);
+          sendToName(m_Message,m_Message.getTo());
+        }
         else
         {
           m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           logger()->info("Content : {0}; From : {1}; To : {2}", m_Message.getContent(), m_Message.getFrom(), m_Message.getTo());
-          sendToAll(m_Message);
+          send(m_Message);
         }
       }
     };
   }
+
+  // Send command
+  void MessageHandlerServer::send(Message& message)
+  {
+    for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
+    {
+      if(getClient() != it->first.getID()) it->second.send(message.get());
+    }
+  }
+
+  void MessageHandlerServer::sendText(Message& message)
+  {
+    for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
+    {
+      if(getClient() != it->first.getID()) it->second.sendText(message.get());
+    }
+  }
+
+  void MessageHandlerServer::sendBinary(Message& message)
+  {
+    for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
+    {
+      if(getClient() != it->first.getID()) it->second.sendBinary(message.get());
+    }
+  }
+
+  void MessageHandlerServer::sendToName(Message& message,const std::string& name)
+  {
+
+    for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
+    {
+      std::cout<<name<<"*/*/*/"<<it->first.getIdentifier().get()<<std::endl;
+      if(getClient() != it->first.getID() && name == it->first.getIdentifier().get()) it->second.sendBinary(message.get());
+    }
+  }
+
 
   void MessageHandlerServer::sendLog(Log& log)
   {
@@ -83,14 +126,6 @@ namespace yaodaq
     for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
       if( it->first.isA(CLASS::Logger) && getClient() != it->first.getID()) it->second.send(message.get());
-    }
-  }
-
-  void MessageHandlerServer::sendToAll(const Message& message)
-  {
-    for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
-    {
-      if(getClient() != it->first.getID()) it->second.send(message.get());
     }
   }
 
@@ -161,7 +196,7 @@ namespace yaodaq
     open.addKey("Value", "CONNECTED");
 
     printOpen(open);
-    sendToAll(open);
+    send(open);
   }
 
   void MessageHandlerServer::onClose(std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg)

@@ -21,7 +21,7 @@ set(ZLIB-NG_TAG "2.0.3")
 
 # IXWebSocket
 set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket.git")
-set(IXWEBSOCKET_TAG "master")
+set(IXWEBSOCKET_TAG "v11.2.4")
 
 # Fmt
 set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt.git")

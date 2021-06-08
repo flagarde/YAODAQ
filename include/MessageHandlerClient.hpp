@@ -20,6 +20,12 @@ namespace yaodaq
   public:
     MessageHandlerClient(const Identifier&);
 
+    // Send command
+    void send(Message&) final;
+    void sendText(Message&) final;
+    void sendBinary(Message&) final;
+
+
     virtual void onOwnOpen(const ix::WebSocketMessagePtr&);
     virtual void onOwnClose(const ix::WebSocketMessagePtr&);
     virtual void onOwnConnectionError(const ix::WebSocketMessagePtr&);
@@ -41,10 +47,7 @@ namespace yaodaq
 
     virtual void sendData(Data&);
 
-    // Send commands
-    void send(Message& message);
-    void sendText(Message& message);
-    void sendBinary(Message& message);
+
 
     //Send Log
     virtual void sendLog(Log& log) final;

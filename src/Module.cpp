@@ -14,8 +14,10 @@ namespace yaodaq
 
 Module::Module(const std::string& name, const std::string& type, const yaodaq::CLASS& _class) : MessageHandlerClient(Identifier(_class,type,name))
 {
-  setHeaderKey("Key", getIdentifier().get());
   setOnMessageCallback(getMessageCallback());
+  setHeaderKey("Key", getIdentifier().get());
+  getDispatcher().AddMethod("getState", &Module::sendState,*this);
+  getDispatcher().AddMethod("add", &Module::add,*this);
 }
 
 int Module::loop()
@@ -37,14 +39,18 @@ void Module::setConfigFile(const std::string& file)
 void Module::stopListening()
 {
   stop();
-  while(getReadyState()!=ix::ReadyState::Closed) std::this_thread::sleep_for(std::chrono::microseconds(10));
+  while(getReadyState()!=ix::ReadyState::Closed)
+  {
+    std::this_thread::sleep_for(std::chrono::microseconds(100));
+  }
+  std::exit(0);
 }
 
 void Module::startListening()
 {
-  logger()->info("Listening on {}.",getUrl());
   start();
-  while(getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(10));
+  logger()->info("Listening on {}.",getUrl());
+  while(getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(100));
 }
 
 void Module::setState(const STATE& state)
@@ -71,12 +77,10 @@ void Module::printParameters()
   logger()->info("Parameters :\n{}", toml::format(m_Conf));
 }
 
-/*void Module::sendState()
+void Module::sendState()
 {
-  State state(m_State);
-  MessageHandlerClient::sendBinary(state);
-  logger()->warn(state.get());
-}*/
+  MessageHandlerClient::sendState(m_State);
+}
 
 void Module::Initialize()
 {
@@ -84,8 +88,8 @@ void Module::Initialize()
   {
     if(m_UseConfigFile)LoadConfig();
     DoInitialize();
-    sendState(STATE::Initialized);
     setState(STATE::Initialized);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -100,8 +104,8 @@ void Module::Connect()
   try
   {
     CallBoardConnect();
-    sendState(STATE::Connected);
     setState(STATE::Connected);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -121,8 +125,8 @@ void Module::Configure()
       m_Conf = m_Config.getConfig(getIdentifier().getName());
     }
     DoConfigure();
-    sendState(STATE::Configured);
     setState(STATE::Configured);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -148,7 +152,7 @@ void Module::Start()
       m_IsFirstStart = false;
     }
     DoStart();
-    sendState(STATE::Started);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -169,7 +173,7 @@ void Module::Pause()
       m_LoopOnStartUsed = false;
     }
     DoPause();
-    sendState(STATE::Paused);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -196,7 +200,7 @@ void Module::Stop()
       m_LoopOnPauseUsed = false;
     }
     DoStop();
-    sendState(STATE::Stopped);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -212,7 +216,7 @@ void Module::Clear()
   {
     DoClear();
     setState(STATE::Cleared);
-    sendState(STATE::Cleared);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -228,7 +232,7 @@ void Module::Disconnect()
   {
     CallBoardDisconnect();
     setState(STATE::Disconnected);
-    sendState(STATE::Disconnected);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -245,7 +249,7 @@ void Module::Release()
     DoRelease();
     m_Config.clear();
     setState(STATE::Released);
-    sendState(STATE::Released);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -261,7 +265,7 @@ void Module::Quit()
   {
     DoQuit();
     setState(STATE::Quited);
-    sendState(STATE::Quited);
+    sendState();
   }
   catch(const Exception& exception)
   {
@@ -318,15 +322,13 @@ void Module::DoDoLoopOnPause()
 {
   while(getState() == STATE::Paused) { DoLoopOnPause(); }
 }
-
-void Module::OnCommand(Command& command) {}
-
+/*
 void Module::DoOnCommand(const Message& command)
 {
   Command m_command;
   m_command.parse(command.get());
-  if(m_command.getCommand() == "getState") sendState(m_State);
-}
+  if(m_command.getCommand() == "getState") sendState();
+}*/
 
 void Module::DoOnAction(const Action& action)
 {
@@ -360,7 +362,7 @@ void Module::DoOnAction(const Action& action)
       }
       case ACTION::Pause :
       {
-        if(m_State==STATE::Started || m_State==STATE::Paused) Start();
+        if(m_State==STATE::Started || m_State==STATE::Paused) Pause();
         else error("Module/Board \"{}\" in state {}. Cannot perform action {}",getIdentifier().getName(),std::string(magic_enum::enum_name(m_State)),action.getActionStr());
         break;
       }
@@ -414,19 +416,15 @@ void Module::onOwnMessage(const ix::WebSocketMessagePtr& msg)
   else if(message.getType() == TYPE::Close) onClose(message);
   else if(message.getType() == TYPE::State) onState(message);
   else if(message.getType() == TYPE::Data) onData(message);
-  else if(message.getType() == TYPE::Command) DoOnCommand(message);
+  else if(message.getType() == TYPE::Command) onCommand(message);
   else if(message.getType() == TYPE::Log) onLog(message);
-  else OnMessage(msg);
+  else if(message.getType() == TYPE::Response) onResponse(message);
+  else onUnknown(message);
 }
 
 void Module::skipConfigFile()
 {
   m_UseConfigFile=false;
-}
-
-void Module::OnMessage(const ix::WebSocketMessagePtr& msg)
-{
-  logger()->info("{}", msg->str);
 }
 
 };

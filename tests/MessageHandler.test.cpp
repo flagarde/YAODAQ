@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-#include "MessageHandler.hpp"
+#include "MessageHandlerClient.hpp"
 
 int main(){
 /*
 TEST_CASE("Test Message Handler")
 {*/
-  yaodaq::MessageHandler messageHandler(yaodaq::Identifier(yaodaq::CLASS::Module,"MyTestModule","Toto"));
+  yaodaq::MessageHandlerClient messageHandler(yaodaq::Identifier(yaodaq::CLASS::Module,"MyTestModule","Toto"));
   messageHandler.log(yaodaq::LEVEL::Trace,"I'm a {}","Trace");
   messageHandler.log(yaodaq::LEVEL::Info,"I'm a {}","Info");
   messageHandler.log(yaodaq::LEVEL::Debug,"I'm a {}","Debug");

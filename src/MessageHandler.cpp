@@ -17,9 +17,10 @@
 namespace yaodaq
 {
 
-  MessageHandler::MessageHandler(const Identifier& identifier) : m_LoggerHandler(identifier)
+  MessageHandler::MessageHandler(const Identifier& identifier) : m_LoggerHandler(identifier), m_JsonRPCClient(m_JsonFormatHandler)
   {
     m_Interrupt.init();
+    m_JsonRPCServer.RegisterFormatHandler(m_JsonFormatHandler);
     addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
   }
 
@@ -65,6 +66,64 @@ namespace yaodaq
         break;
       }
     }
+  }
+
+  // Command
+  void MessageHandler::onCommand(const Command& command)
+  {
+    printCommand(command);
+    if(getIdentifier().getClass()!=CLASS::Logger)
+    {
+      outputFormattedData = m_JsonRPCServer.HandleRequest(command.getContentStr());
+      Response response(outputFormattedData->GetData());
+      response.setTo(command.getFromStr());
+      send(response);
+    }
+  }
+
+  void MessageHandler::printCommand(const Command& command)
+  {
+    std::string params;
+    // std::cout<<command<<std::endl;
+    for(Json::Value::ArrayIndex i=0;i!=command.getContentAsJson()["params"].size();++i) params+=command.getContentAsJson()["params"][i].asString()+" ";
+    if(command.getFromStr()==getIdentifier().get())
+    {
+      logger()->info(
+        fmt::format(fg(fmt::color::green) | fmt::emphasis::bold,
+                    "Method : {}\nParameters : {}\nID : {}",
+                    command.getContentAsJson()["method"].asString(),
+                    params,
+                    command.getContentAsJson()["id"].asString()
+        )
+      );
+    }
+    else logger()->info(
+      "From {} : \n{}",
+      fmt::format(fmt::emphasis::bold,command.getFromStr()),
+                        fmt::format(fg(fmt::color::green) | fmt::emphasis::bold,"Method : {}\nParameters : {}\nID : {}",command.getContentAsJson()["method"].asString(),params,command.getContentAsJson()["id"].asString())
+    );
+  }
+
+
+  //Response
+  void MessageHandler::printResponse(const Response& response)
+  {
+    if(response.getFromStr()==getIdentifier().get())
+    {
+      logger()->info("ID : {}\nResult : {}",response.getContentAsJson()["id"].asString(),response.getContentAsJson()["result"].asString());
+    }
+    else logger()->info("From {} : \nID : {}\nResult : {}", fmt::format(fmt::emphasis::bold,response.getFromStr()),response.getContentAsJson()["id"].asString(),response.getContentAsJson()["result"].asString());
+  }
+
+  void MessageHandler::onResponse(const Response& response)
+  {
+    printResponse(response);
+  }
+
+
+  void MessageHandler::onUnknown(const Unknown& unknown)
+  {
+    logger()->info("{}", unknown.get());
   }
 
   //If the module is a logger then print otherwise skip (even if the server will send nothing normally)

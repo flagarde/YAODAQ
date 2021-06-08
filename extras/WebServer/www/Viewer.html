@@ -65,7 +65,7 @@
               };
               myDiv.appendChild(checkbox);
             }
-            Command("getState");
+            command("getState");
           };
 
           ws.onmessage = function(evt)
@@ -109,11 +109,13 @@
             }
           };
 
-          ws.onclose = function () {
+          ws.onclose = function()
+          {
             document.getElementById("Actions").style.display = "none";
           };
-        } else {
-          // The browser doesn't support WebSocket
+        }
+        else
+        {
           alert("WebSocket NOT supported by your Browser!");
         }
       }
@@ -142,20 +144,29 @@
         send(JSON.stringify(obj));
       }
 
-      function Command(...args) {
-        var obj = new Object();
-        var obj2 = new Object();
-        obj2.Command = arguments[0];
-        obj.Type = "Command";
-        obj.Content = obj2;
-        obj.From = "";
-        obj.To = "";
-        for (var arg = 1; arg < arguments.length; ++arg) {
-          obj[arguments[arg].toString()] = arguments[arg + 1].toString();
-          ++arg;
+      function command(...args)
+      {
+        if( typeof this.id == 'undefined')
+        {
+          id = 0;
         }
-        send(JSON.stringify(obj));
-        //alert(JSON.stringify(obj));
+        var json = new Object();
+        json.Type = "Command";
+        json.From = "";
+        json.To = "ALL";
+        var content = new Object();
+        json.Content = content;
+        json.Content.jsonrpc="2.0";
+        json.Content.id=id
+        json.Content.method=arguments[0];
+        let params = [];
+        for(var arg = 1; arg < arguments.length; ++arg)
+        {
+         params.push(arguments[arg]);
+        }
+        json.Content.params=params;
+        send(JSON.stringify(json));
+        id++;
       }
 
       function Action(action)
@@ -335,8 +346,9 @@
         else document.getElementById("myForm").style.display = "block";
       }
 
-      function startAquisition(oForm) {
-        Info("RunInfos =" + oForm.elements["Comment"].value);
+      function startAquisition(oForm)
+      {
+        //Info("RunInfos =" + oForm.elements["Comment"].value);
         Action("Start");
         closeForm();
       }

@@ -24,12 +24,19 @@ namespace yaodaq
   public:
     MessageHandlerServer(const int& port, const std::string& host, const int& backlog,const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily,const Identifier& identifier);
 
+    // Send command
+    void send(Message&) final;
+    void sendText(Message&) final;
+    void sendBinary(Message&) final;
+
+    void sendToName(Message&,const std::string&);
+
+
     //sendLog
     virtual void sendLog(Log& log) final;
 
 
     void sendToLogger(const Message& message);
-    void sendToAll(const Message& message);
 
 
     void sendClose(const Close&);

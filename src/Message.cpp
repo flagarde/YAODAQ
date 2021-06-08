@@ -59,7 +59,10 @@ void Message::setType(const TYPE& type)
 
 void Message::setContent(const std::string& content)
 {
-  m_Value["Content"] = content;
+  Json::String errs;
+  bool         ok = m_Reader->parse(&content[0], &content[content.size()], &m_Value["Content"], &errs);
+  if(!ok) { throw Exception(StatusCode::JSON_PARSING, errs); }
+ // m_Value["Content"] = content;
 }
 
 void Message::setContent(const Json::Value& content)
@@ -121,6 +124,13 @@ std::string Message::getToStr() const
 std::string Message::getTo()
 {
   return m_Value["To"].asString();
+}
+
+
+std::string Message::getContentStr() const
+{
+  m_StreamWriterBuilder.settings_["indentation"] = "";
+  return Json::writeString(m_StreamWriterBuilder, m_Value["Content"]);
 }
 
 std::string Message::getContent()
@@ -485,41 +495,31 @@ Action::Action(const Message& message)
 
 
 
-
-
-
-
-/*
-
-Info::Info(const std::string& content, const std::string& to): Message(TYPE::Info, content, to) {}*/
-
-//Action::Action(const Actions& action, const std::string& to): Message(TYPE::Action, std::string(magic_enum::enum_name(action)), to) {}
-/*
-Error::Error(const std::string& content, const std::string& to): Message(TYPE::Error, content, to) {}
-
-Trace::Trace(const std::string& content, const std::string& to): Message(TYPE::Trace, content, to) {}
-
-Debug::Debug(const std::string& content, const std::string& to): Message(TYPE::Debug, content, to) {}
-
-Warning::Warning(const std::string& content, const std::string& to): Message(TYPE::Warning, content, to) {}
-
-Critical::Critical(const std::string& content, const std::string& to): Message(TYPE::Critical, content, to) {}
-
-*/
-
-Command::Command(const std::string& content, const std::string& to): Message(TYPE::Command, std::string(""), to)
+Command::Command(const std::string& content, const std::string& to): Message(TYPE::Command, Json::Value(), to)
 {
-  m_Value["Content"]["Command"] = content;
+  Json::String errs;
+  bool         ok = m_Reader->parse(&content[0], &content[content.size()], &m_Value["Content"], &errs);
+  if(!ok) { throw Exception(StatusCode::JSON_PARSING, errs); }
+  //m_Value["Content"] = content;
 }
+
+/*
 std::string Command::getCommand()
 {
-  return m_Value["Content"]["Command"].asString();
+  return m_Value["Content"].asString();
 }
 std::string Command::getCommand() const
 {
   return getCommand();
+}*/
+Command::Command(const Message& message)
+{
+  setContent(message.getContentAsJson());
+  setFrom(message.getFromStr());
+  setTo(message.getToStr());
+  if(message.getType()!=TYPE::Command) throw Exception(StatusCode::INVALID_CONVERSION,"Impossible to convert \"{}\" to \"{}\"",getTypeStr(),"Command");
+  else setType(message.getType());
 }
-
 
 
 
@@ -536,10 +536,28 @@ Data::Data(const Message& message)
 }
 
 
+Unknown::Unknown(const std::string& content, const std::string& to): Message(TYPE::Data, content, to) {}
+
+Unknown::Unknown(const Message& message)
+{
+  setContent(message.getContentAsJson());
+  setFrom(message.getFromStr());
+  setTo(message.getToStr());
+  if(message.getType()!=TYPE::Unknown) throw Exception(StatusCode::INVALID_CONVERSION,"Impossible to convert \"{}\" to \"{}\"",getTypeStr(),"Unknown");
+  else setType(message.getType());
+}
 
 
 Response::Response(const std::string& content, const std::string& to): Message(TYPE::Response, content, to) {}
 
+Response::Response(const Message& message)
+{
+  setContent(message.getContentAsJson());
+  setFrom(message.getFromStr());
+  setTo(message.getToStr());
+  if(message.getType()!=TYPE::Response) throw Exception(StatusCode::INVALID_CONVERSION,"Impossible to convert \"{}\" to \"{}\"",getTypeStr(),"Response");
+  else setType(message.getType());
+}
 
 };
 

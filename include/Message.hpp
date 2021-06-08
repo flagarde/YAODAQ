@@ -37,13 +37,6 @@ enum class TYPE
   Log,
   Exception,
 
-
-  Trace,
-  Info,
-  Debug,
-  Warning,
-  Critical,
-  Error,
   State,
   Action,
   Command,
@@ -55,7 +48,7 @@ enum class TYPE
 class Message
 {
 public:
-  explicit Message(const TYPE& type = TYPE::Info, const std::string& content = "", const std::string& to = "ALL");
+  explicit Message(const TYPE& type = TYPE::Log, const std::string& content = "", const std::string& to = "ALL");
   explicit Message(const TYPE& type, const Json::Value& content, const std::string& to = "ALL");
   void        parse(const std::string&);
   void        setFrom(const std::string&);
@@ -81,7 +74,7 @@ public:
   std::string getToStr() const;
 
 
-
+  std::string getContentStr() const;
 
 
   std::string getStyled(const std::string& indent = "\t") const;
@@ -93,11 +86,10 @@ public:
 
 protected:
   Json::Value m_Value;
-
-private:
-  static Json::StreamWriterBuilder    m_StreamWriterBuilder;
   std::unique_ptr<Json::StreamWriter> m_Writer{nullptr};
   std::unique_ptr<Json::CharReader>   m_Reader{nullptr};
+private:
+  static Json::StreamWriterBuilder    m_StreamWriterBuilder;
   static Json::CharReaderBuilder      m_CharReaderBuilder;
 };
 
@@ -105,17 +97,8 @@ class Command: public Message
 {
 public:
   Command(const std::string& content = "", const std::string& to = "ALL");
-  std::string               getCommand() const;
-  std::string               getCommand();
-  template<typename T> void addParameter(const std::string& name, const T& value) { m_Value["Content"]["Parameters"][name] = value; }
-  Json::Value               getParameter(const std::string& parameter) const
-  {
-    if(m_Value["Content"]["Parameters"].isMember(parameter)) return m_Value["Content"]["Parameters"][parameter];
-    else
-      return Json::Value{"ERROR"};
-  }
+  Command(const Message&);
 };
-
 
 // Log
 class Log: public Message
@@ -221,66 +204,6 @@ public:
   Action(const Message&);
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-class Critical: public Message
-{
-public:
-  Critical(const std::string& content = "", const std::string& to = "ALL");
-};
-
-class Warning: public Message
-{
-public:
-  Warning(const std::string& content = "", const std::string& to = "ALL");
-};
-
-class Debug: public Message
-{
-public:
-  Debug(const std::string& content = "", const std::string& to = "ALL");
-};
-
-class Trace: public Message
-{
-public:
-  Trace(const std::string& content = "", const std::string& to = "ALL");
-};
-
-class Error: public Message
-{
-public:
-  Error(const std::string& content = "", const std::string& to = "ALL");
-};
-
-class Info: public Message
-{
-public:
-  Info(const std::string& content = "", const std::string& to = "ALL");
-};
-*/
-/*class Action: public Message
-{
-public:
-  Action(const Actions& action, const std::string& to = "ALL");
-};*/
-
 class Data: public Message
 {
 public:
@@ -293,7 +216,16 @@ class Response: public Message
 {
 public:
   Response(const std::string& content = "", const std::string& to = "ALL");
+  Response(const Message&);
 };
+
+class Unknown: public Message
+{
+public:
+  Unknown(const std::string& content = "", const std::string& to = "ALL");
+  Unknown(const Message&);
+};
+
 
 };
 

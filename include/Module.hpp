@@ -22,7 +22,7 @@ public:
 
   int loop();
   void skipConfigFile();
-
+  int add(int a,int b){return a+b;}
   void                                   Initialize();
   void                                   Connect();
   void                                   Configure();
@@ -53,8 +53,6 @@ public:
 protected:
   static ConfigurationLoader            m_Config;
   virtual void                    onOwnMessage(const ix::WebSocketMessagePtr&) override;
-  virtual void                    OnMessage(const ix::WebSocketMessagePtr&);
-  virtual void                    OnCommand(Command&);
   void                            LoadConfig();
   virtual void                    verifyParameters();
   toml::value                     m_Conf{""};
@@ -83,9 +81,9 @@ private:
   virtual void                                        DoAtFirstStart();
   bool                                                m_IsFirstStart{true};
   void                                                DoOnAction(const Action&);
-  void                                                DoOnCommand(const Message&);
+  //void                                                DoOnCommand(const Message&);
   //virtual void                                        DoOnData(const Data& data);
-  //void                                                sendState();
+  void                                                sendState();
   void                                                setState(const STATE&);
   void                                                DoOnMessage(const ix::WebSocketMessagePtr&);
 };
