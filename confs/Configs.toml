@@ -127,8 +127,8 @@ Type="Wiener"
 [Room.Rack.Crate.Board.Connector]
 Name = "SNMP_WIENER"
 Type = "SNMP"
-IP = "192.168.0.203"
-MIB_path = "/home/rpclab/YAODAQ_ANALYSIS/extras/WIENER/data"
+IP = "192.168.0.230"
+MIB_path = "/home/rpclab/Desktop/Tests/extras/WIENER/data"
 MIB_filename = "WIENER-CRATE-MIB"
 "Retries"= 3
 "Version"= "v2c"

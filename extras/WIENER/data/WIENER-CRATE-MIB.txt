@@ -1,23 +1,36 @@
 ----------------------------------------------------------------------------------------------------
--- $HeadURL: http://svn.wiener-d.com/src/enet/trunk/mibs/WIENER-CRATE-MIB.txt $                     
--- $LastChangedDate: 2012-10-24 17:44:38 +0200 (Mi, 24. Okt 2012) $                                 
--- $LastChangedRevision: 1988 $                                                                     
--- $LastChangedBy: koester (roemer)$                                                                
--- Copyright © 2005-2007 W-IE-NE-R Plein & Baus GmbH, Burscheid, Germany                            
+-- $HeadURL: http://svn.wiener-d.com/src/enet/branches/SNMPv3/snmp/mibs/WIENER-CRATE-MIB.txt $
+-- $LastChangedDate: 2020-04-15 11:15:47 +0200 (Mi, 15 Apr 2020) $
+-- $LastChangedRevision: 5704 $
+-- $LastChangedBy: koester $
+-- Copyright Â© 2005-2019 W-IE-NE-R Power Electronics GmbH, Burscheid, Germany
 ----------------------------------------------------------------------------------------------------
+
+-- Checked with smilint:
+-- smilint -m -s -l 9 \
+--   -i group-membership \
+--   -i namelength-32-object \
+--   -i namelength-32-bit \
+--   -i opaque-smiv2 \
+--   -i identifier-external-case-match \
+--   WIENER-CRATE-MIB.txt
+--
+
 WIENER-CRATE-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
     OBJECT-TYPE, MODULE-IDENTITY, OBJECT-IDENTITY,
-    IpAddress, Integer32, Opaque, enterprises
+        IpAddress, Integer32, 
+        -- Unsigned32,          Not used at the moment. This is BER-Coded to GAUGE, not INTEGER (so different encoding)
+        Opaque, enterprises
         FROM SNMPv2-SMI
 
-    TEXTUAL-CONVENTION, DisplayString
-    FROM SNMPv2-TC
-    
+    TEXTUAL-CONVENTION, DisplayString, MacAddress
+        FROM SNMPv2-TC
+
 --    Float
 --      FROM NET-SNMP-TC
---    Float 
+--    Float
 --      FROM UCD-SNMP-MIB
     ;
 
@@ -25,11 +38,11 @@ IMPORTS
 
 
 wiener MODULE-IDENTITY
-    LAST-UPDATED "200810090000Z"    -- October 9, 2008
-    ORGANIZATION "WIENER Plein & Baus GmbH"
+    LAST-UPDATED "201904030000Z"    -- April 3, 2019
+    ORGANIZATION "W-IE-NE-R Power Electronics GmbH"
     CONTACT-INFO "
-         postal:   WIENER Plein & Baus GmbH
-                   Mullersbaum 20
+         postal:   W-IE-NE-R Power Electronics GmbH
+                   Linde 18
                    D-51399 Burscheid
                    Germany
 
@@ -41,11 +54,20 @@ wiener MODULE-IDENTITY
     "Introduction of the communication.can branch.
     "
 
+    REVISION "201904030000Z"    -- April 3, 2019
+    DESCRIPTION
+    "Update the revision since 2016.
+    "
+
     REVISION "201602180000Z"
     DESCRIPTION
     "This revision introduces new OIDs for slew control:
       outputResistance.
     "
+
+    REVISION "200810090000Z"    -- October 9, 2008
+    DESCRIPTION
+    "New Stuff."
 
     REVISION "200805060000Z"    -- May 6, 2008
     DESCRIPTION
@@ -82,7 +104,7 @@ wiener MODULE-IDENTITY
     REVISION "200502010000Z"
     DESCRIPTION
     "This revision introduces new OIDs for group managment:
-      groupTable      
+      groupTable
     "
 
     REVISION "200406280000Z"
@@ -123,13 +145,32 @@ Float ::= TEXTUAL-CONVENTION
     SYNTAX Opaque (SIZE (7))
 
 -------------------------------------------------------------------------------
+--Integer16 ::= TEXTUAL-CONVENTION
+--        DISPLAY-HINT "d"
+--        STATUS  current
+--        DESCRIPTION "Represents a 16 bit signed integer value."
+--        SYNTAX  INTEGER (-32768..32767)
+
+OutputTripTime ::= TEXTUAL-CONVENTION
+        DISPLAY-HINT "d"
+        STATUS  current
+        DESCRIPTION "Special data type used for output trip time OIDs. Represents a 16 bit unsigned integer value. BER-coded as INTEGER"
+        SYNTAX  Integer32 (0..65535)
+
+OutputTripAction ::= TEXTUAL-CONVENTION
+--        DISPLAY-HINT "d"
+        STATUS  current
+        DESCRIPTION "Special data type used for outpot trip action OIDs."
+        SYNTAX  INTEGER { ignore (0), channelOff (1), specialOff (2), allOff (3) }
+
+-------------------------------------------------------------------------------
 -- crate
 -------------------------------------------------------------------------------
 
 crate   OBJECT-IDENTITY
         STATUS  current
         DESCRIPTION
-            "SNMP control for electronic crates. A crate is a complete electronic system and 
+            "SNMP control for electronic crates. A crate is a complete electronic system and
             consists of the mechanical rack, a power supply, a fan tray and a backplane.
             All this things are necessary to provide an adequate housing for electronic
             modules (e.g. VME CPU's)"
@@ -153,49 +194,49 @@ system  OBJECT-IDENTITY
     ::= { crate 1 }
 
 
-input   OBJECT-IDENTITY 
+input   OBJECT-IDENTITY
     STATUS  current
     DESCRIPTION
         "All objects which are associated with the power input of the crate"
     ::= { crate 2 }
 
-output  OBJECT-IDENTITY 
+output  OBJECT-IDENTITY
     STATUS  current
     DESCRIPTION
         "All objects which are associated with the power output of the crate"
     ::= { crate 3 }
 
-sensor  OBJECT-IDENTITY 
+sensor  OBJECT-IDENTITY
     STATUS  current
     DESCRIPTION
         "All objects which are associated with temperature sensors in the crate"
     ::= { crate 4 }
 
-communication OBJECT-IDENTITY 
+communication OBJECT-IDENTITY
     STATUS  current
     DESCRIPTION
         "All objects which affect the remote control of the crate"
     ::= { crate 5 }
 
-powersupply OBJECT-IDENTITY 
+powersupply OBJECT-IDENTITY
     STATUS  current
     DESCRIPTION
         "All objects which are specific for the power supply of the crate"
     ::= { crate 6 }
 
-fantray     OBJECT-IDENTITY 
+fantray     OBJECT-IDENTITY
     STATUS  current
     DESCRIPTION
         "All objects which are specific for the fan tray of the crate"
     ::= { crate 7 }
 
-rack        OBJECT-IDENTITY 
+rack        OBJECT-IDENTITY
     STATUS  current
     DESCRIPTION
         "All objects which are specific for the crate (BIN) of the crate"
     ::= { crate 8 }
 
-signal OBJECT-IDENTITY 
+signal OBJECT-IDENTITY
     STATUS  current
     DESCRIPTION
         "All objects which are associated with analog/digtal input/output in the crate"
@@ -207,17 +248,24 @@ signal OBJECT-IDENTITY
 -------------------------------------------------------------------------------
 System ::= SEQUENCE {
     sysMainSwitch                 INTEGER,
-    sysHardwareReset              INTEGER,
     sysStatus                     BITS,
     sysVmeSysReset                INTEGER,
+    sysHardwareReset              Integer32,
+    sysFactoryDefaults            INTEGER,
+
     sysConfigDoMeasurementCurrent BITS,
     sysOperatingTime              Integer32,
+
+    sysConfig                     OCTET STRING,
+    sysMainInterlock              INTEGER,
+    uep6Adaption                  OCTET STRING,
 
     sysDebugMemory8               Integer32,
     sysDebugMemory16              Integer32,
     sysDebugMemory32              Integer32,
     sysDebug                      OCTET STRING,
-    sysDebugDisplay               OCTET STRING
+    sysDebugDisplay               OCTET STRING,
+    sysDebugBoot                  OCTET STRING
 }
 
 sysMainSwitch OBJECT-TYPE
@@ -262,7 +310,7 @@ sysStatus OBJECT-TYPE
                 sensorFailure (6),          temperature of the external sensors too high
                 vmeSysfail(7),              VME SYSFAIL signal is active
                 plugAndPlayIncompatible (8) wrong power supply and rack connected
-                busReset (9)                The sytem bus (e.g. VME or CPCI) reset signal is active.        
+                busReset (9)                The sytem bus (e.g. VME or CPCI) reset signal is active.
                 supplyDerating (10)         The (first) system power supply has the DEG signal active.
                 supplyFailure (11)          The (first) system power supply has the FAL signal active.
                 supplyDerating2 (12)        The second system power supply has the DEG signal active.
@@ -271,7 +319,7 @@ sysStatus OBJECT-TYPE
     ::= { system 2 }
 
 
---        ERROR_BIN_CHECKSUM(?), 
+--        ERROR_BIN_CHECKSUM(?),
 
 
 
@@ -288,12 +336,22 @@ sysVmeSysReset OBJECT-TYPE
     ::= { system 3 }
 
 sysHardwareReset OBJECT-TYPE
-    SYNTAX  INTEGER --{ off (0), on (1) }
+    SYNTAX  Integer32 -- INTEGER { off (0), on (1) }
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "Triggered a Reset via Watchdog or ResetLine."
     ::= { system 4 }
+
+sysFactoryDefaults OBJECT-TYPE
+    SYNTAX  INTEGER { off (0), on (1) }
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "A set operation performs a complete factory reset of ALL data
+             stored in the controller (e.g. community names, passwords, ...).
+            "
+    ::= { system 5 }
 
 
 sysConfigDoMeasurementCurrent OBJECT-TYPE
@@ -305,7 +363,7 @@ sysConfigDoMeasurementCurrent OBJECT-TYPE
         ch4 (4) ,
         ch5 (5) ,
         ch6 (6) ,
-        ch7 (7) 
+        ch7 (7)
     }
     MAX-ACCESS  read-write
     STATUS  current
@@ -321,6 +379,151 @@ sysOperatingTime OBJECT-TYPE
     DESCRIPTION
             "The time in seconds for how long the controller was in action."
     ::= { system 11 }
+
+sysConfig OBJECT-TYPE
+    SYNTAX  OCTET STRING (SIZE(16))
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Raw read and write access to global system and user settings held inside MUSE or MPODC.
+             This OID is intended for use by WIENER system software only and may not be accessed directly.
+            "
+    ::= { system 12 }
+
+sysMainInterlock OBJECT-TYPE
+    SYNTAX  INTEGER { unlocked (0), locked (1) }
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Access to global lock to block switching on the system. Currently used in MPODC.
+             This OID is intended for use by WIENER system software only and may not be accessed directly.
+            "
+    ::= { system 15 }
+
+uep6Adaption  OBJECT-IDENTITY
+    STATUS  current
+    DESCRIPTION
+           "A list of uep6 adaption related entries."
+    ::= { system 20 }
+
+-------------------------------------------------------------------------------
+-- uep6 adaption
+-------------------------------------------------------------------------------
+
+uep6CfgMode  OBJECT-TYPE
+    SYNTAX  INTEGER { service (0), fixed (1), genRefCfg(2) }
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Read / write the internal configuration mode of the UEP6 adaption layer.
+             This OID is intended for use by WIENER system software only and may not be accessed directly.
+            "
+    ::= { uep6Adaption 1 }
+
+uep6CfgStatus  OBJECT-TYPE
+    SYNTAX OCTET STRING
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+            "This OID reflects to internal status of the UEP6 adaption configuration cache and is made up out of 2 16bit values.
+             The first part reflects the module cache state, the second part reflects the state of the configuration flags.
+             This OID is intended for use by WIENER system software only and may not be accessed directly.
+            "
+    ::= { uep6Adaption 2 }
+
+uep6ChanTable OBJECT-TYPE
+    SYNTAX  SEQUENCE OF Uep6ChanEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+            "UEP6 adaption channel reference configuration."
+    ::= { uep6Adaption 3 }
+
+uep6DevCfgFlags  OBJECT-TYPE
+    SYNTAX  BITS {
+        dcIgnoreACOff (0) ,
+        dcIgnoreSysReset (1) ,
+        dcIgnoreDisable (2) ,
+        dcNoInhibitOn (3) ,
+        dsInhibitComplement (4) ,
+        dsPlugAndPlaySet (5) ,
+        dsPlugAndPlayUse (6) ,
+        dcIgnoreInhibitPin (7),
+--        dcxxx(8) ,
+--        dcxxx (9) ,
+--        dcxxx (10) ,
+--        dcxxx (11) ,
+--        dcxxx (12) ,
+        dcDelayedPfOff (13) ,
+        dcBlockSimpleMode (14) ,
+        dcExternalOnOff (15)
+    }
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "UEP6 adaption device configuration flags:
+                dcIgnoreACOff (0)           1: ignore ac off input pin
+                dcIgnoreSysReset (1)        1: ignore sysreset input pin
+                dcIgnoreDisable (2)         1: ignore disable input pin
+                dcNoInhibitOn (3)           1: no switch on with changing inhibit/interlock signa
+                dsInhibitComplement (4)     1: complement NoInhibit signal (-> interlock)
+                dsPlugAndPlaySet (5)        1: set outputs to values stored in the BIN
+                dsPlugAndPlayUse (6)        1: use plug&play data of the BIN
+                dcIgnoreInhibitPin (7)      1: ignore inhibit input pin
+                dcDelayedPfOff (13)         1: Delay switching modules off after power fail
+                dcBlockSimpleMode (14)      1: Prevent the power supply from switching to simple communication mode when no fantray is connected
+                dcExternalOnOff (15)        1: Use INHIBIT LOW to switch off and DISABLE LOW to switch on the power supply
+                This OID is intended for use by WIENER system software only and may not be accessed directly
+            "
+    ::= { uep6Adaption 4 }
+
+uep6XTempCfgFlags  OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "This OID is intended for use by WIENER system software only and may not be accessed directly"
+    ::= { uep6Adaption 5 }
+
+
+uep6ChanEntry OBJECT-TYPE
+    SYNTAX  Uep6ChanEntry
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+            "A table row"
+    INDEX   { uep6ChanIndex }
+    ::= { uep6ChanTable 1 }
+
+Uep6ChanEntry ::= SEQUENCE {
+        uep6ChanIndex       INTEGER,
+        refCfg              OCTET STRING
+      }
+
+uep6ChanIndex OBJECT-TYPE
+    SYNTAX INTEGER {
+                     u0(1),u1(2),u2(3),u3(4),u4(5),u5(6),u6(7),u7(8)}
+    MAX-ACCESS  not-accessible
+    STATUS  current
+    DESCRIPTION
+            "A unique number for each power supply  channel. Its value
+             ranges between 1 and total number of output channels.
+             SMI index starts at 1, so index 1 corresponds to U0.
+            "
+    ::= { uep6ChanEntry 1 }
+
+refCfg  OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Reference configuration cache entry for uep6 channel.
+            This OID is intended for use by WIENER system software only and may not be accessed directly
+            "
+     ::= { uep6ChanEntry 2 }
+-------------------------------------------------------------------------------
+-- Debug objects
+-------------------------------------------------------------------------------
 
 sysDebugMemory8 OBJECT-TYPE
     SYNTAX  Integer32 (0..255)
@@ -356,7 +559,7 @@ sysDebug OBJECT-TYPE
              via USB (without SLIP/SNMP).
             "
     ::= { system 1027 }
-    
+
 sysDebugDisplay OBJECT-TYPE
     SYNTAX  OCTET STRING
     MAX-ACCESS  read-write
@@ -364,7 +567,15 @@ sysDebugDisplay OBJECT-TYPE
     DESCRIPTION
             "Debug communication with the MPOD display."
     ::= { system 1028 }
-    
+
+sysDebugBoot OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Debug communication with the simple debug interface / bootloader."
+    ::= { system 1029 }
+
 -------------------------------------------------------------------------------
 -- input
 -------------------------------------------------------------------------------
@@ -430,9 +641,9 @@ moduleNumber OBJECT-TYPE
     DESCRIPTION
             "The number of HV/LV modules of the crate."
     ::= { output 5 }
-    
+
 moduleTable OBJECT-TYPE
-    SYNTAX  SEQUENCE OF moduleEntry
+    SYNTAX  SEQUENCE OF ModuleEntry
     MAX-ACCESS  not-accessible
     STATUS  current
     DESCRIPTION
@@ -480,29 +691,53 @@ OutputEntry ::= SEQUENCE {
         outputConfigMaxTerminalVoltage      Float,
         outputConfigMaxCurrent              Float,
         outputSupervisionMaxPower           Float,
+        outputCurrentRiseRate               Float,
+        outputCurrentFallRate               Float,
+        outputTripTimeMaxCurrent            OutputTripTime,
+        outputHardwareLimitVoltage          Float,
+        outputHardwareLimitCurrent          Float,
+
         outputConfigGainSenseVoltage        Float,
         outputConfigOffsetSenseVoltage      Float,
         outputConfigGainTerminalVoltage     Float,
         outputConfigOffsetTerminalVoltage   Float,
         outputConfigGainCurrent             Float,
         outputConfigOffsetCurrent           Float,
-        
-        outputCurrentRiseRate               Float,
-        outputCurrentFallRate               Float,
-        outputTripTimeMaxCurrent            INTEGER,
+        outputUserConfig                    Integer32,
 
-        outputHardwareLimitVoltage          Float,
-        outputHardwareLimitCurrent          Float,
-    
         outputRegulationMode                INTEGER,
         outputConfigMaxTemperature          Integer32,
-        
-        outputResistance                    Float
+
+        outputResistance                    Float,
+
+        outputTripTimeMinSenseVoltage       OutputTripTime,
+        outputTripTimeMaxSenseVoltage       OutputTripTime,
+        outputTripTimeMaxTerminalVoltage    OutputTripTime,
+        outputTripTimeMaxTemperature        OutputTripTime,
+        outputTripTimeMaxPower              OutputTripTime,
+        outputTripTimeTimeout               OutputTripTime,
+
+        outputTripActionMinSenseVoltage     OutputTripAction,
+        outputTripActionMaxSenseVoltage     OutputTripAction,
+        outputTripActionMaxTerminalVoltage  OutputTripAction,
+        outputTripActionMaxCurrent          OutputTripAction,
+        outputTripActionMaxTemperature      OutputTripAction,
+        outputTripActionMaxPower            OutputTripAction,
+        outputTripActionExternalInhibit     OutputTripAction,
+        outputTripActionTimeout             OutputTripAction,
+
+        outputVoltageRampPriority           Integer32,
+        outputVoltageBottom                 Float,
+
+        outputMeasurementReturnCurrent      Float,
+
+        outputConfigDataS                   OCTET STRING,
+        outputConfigDataU                   OCTET STRING
       }
 
 
 outputIndex OBJECT-TYPE
-    SYNTAX INTEGER { 
+    SYNTAX INTEGER {
                      u0(1),u1(2),u2(3),u3(4),u4(5),u5(6),u6(7),u7(8),u8(9),u9(10),
                      u10(11),u11(12),u12(13),u13(14),u14(15),u15(16),u16(17),u17(18),u18(19),u19(20),
                      u20(21),u21(22),u22(23),u23(24),u24(25),u25(26),u26(27),u27(28),u28(29),u29(30),
@@ -707,10 +942,11 @@ outputIndex OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "A unique number for each power output channel. Its value
-            ranges between 1 and total number of output channels.
-            This value is equivalent to the output channel number at
-            the type label of the crate or power supply, but because the SMI
-            index starts at 1, index 1 corresponds to U0."
+             ranges between 1 and total number of output channels.
+             This value is equivalent to the output channel number at
+             the type label of the crate or power supply, but because the SMI
+             index starts at 1, index 1 corresponds to U0.
+            "
     ::= { outputEntry 1 }
 
 outputName OBJECT-TYPE
@@ -719,8 +955,9 @@ outputName OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "A textual string containing a short name of the
-            output. If the crate is equipped with an alphanumeric
-            display, this string is shown to identify a output channel."
+             output. If the crate is equipped with an alphanumeric
+             display, this string is shown to identify a output channel.
+            "
     ::= { outputEntry 2 }
 
 outputGroup OBJECT-TYPE
@@ -729,19 +966,19 @@ outputGroup OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "The group number (1...63) assigned to each channel.
-			If commands shall be sent to all channels with a specific group number (e.g.
-			with the groupsSwitch command defined below), additional bits can be added to
-			the group number:
+            If commands shall be sent to all channels with a specific group number (e.g.
+            with the groupsSwitch command defined below), additional bits can be added to
+            the group number:
 
             HLgggggg
-            g: Group number (1...63) 
+            g: Group number (1...63)
             L: Mask bit: 1: high voltage channels only, no low voltage channels
-            H: Mask bit: 1: low voltage channels only, no high voltage channels 
+            H: Mask bit: 1: low voltage channels only, no high voltage channels
 
             Special groups:    0: all (LV+HV) channels
                             0x40: all, but no LV channels
-							0x80: all, but no HV channels
-            "
+                            0x80: all, but no HV channels
+           "
     ::= { outputEntry 3 }
 
 
@@ -766,7 +1003,13 @@ outputStatus OBJECT-TYPE
         outputConstantVoltage (16),
         outputLowCurrentRange (17),
         outputCurrentBoundsExceeded (18),
-        outputFailureCurrentLimit (19)
+        outputFailureCurrentLimit (19),
+        outputCurrentIncreasing (20),
+        outputCurrentDecreasing (21),
+        outputConstantPower (22),
+        outputVoltageRampSpeedLimitDisabled (23),
+        outputVoltageBottomReached (24),
+        outputInitCrcCheckBad (25)
     }
     MAX-ACCESS  read-only
     STATUS  current
@@ -776,22 +1019,28 @@ outputStatus OBJECT-TYPE
                 outputOn (0),                           output channel is on
                 outputInhibit(1),                       external (hardware-)inhibit of the output channel
                 outputFailureMinSenseVoltage (2)        Supervision limit hurt: Sense voltage is too low
-                outputFailureMaxSenseVoltage (3),       Supervision limit hurt: Sense voltage is too high
-                outputFailureMaxTerminalVoltage (4),    Supervision limit hurt: Terminal voltage is too high
-                outputFailureMaxCurrent (5),            Supervision limit hurt: Current is too high
-                outputFailureMaxTemperature (6),        Supervision limit hurt: Heat sink temperature is too high
-                outputFailureMaxPower (7),              Supervision limit hurt: Output power is too high
-                outputFailureTimeout (9),               Communication timeout between output channel and main control
-                outputCurrentLimited (10),              Current limiting is active (constant current mode)
-                outputRampUp (11),                      Output voltage is increasing (e.g. after switch on)
-                outputRampDown (12),                    Output voltage is decreasing (e.g. after switch off)
-                outputEnableKill (13),                  EnableKill is active
-                outputEmergencyOff (14),                EmergencyOff event is active
-                outputAdjusting (15),                   Fine adjustment is working
-                outputConstantVoltage (16),             Voltage control (constant voltage mode)
-                outputLowCurrentRange (17),             The channel is operating in the low current measurement range
-                outputCurrentBoundsExceeded (18),       Output current is out of bounds
+                outputFailureMaxSenseVoltage (3)        Supervision limit hurt: Sense voltage is too high
+                outputFailureMaxTerminalVoltage (4)     Supervision limit hurt: Terminal voltage is too high
+                outputFailureMaxCurrent (5)             Supervision limit hurt: Current is too high
+                outputFailureMaxTemperature (6)         Supervision limit hurt: Heat sink temperature is too high
+                outputFailureMaxPower (7)               Supervision limit hurt: Output power is too high
+                outputFailureTimeout (9)                Communication timeout between output channel and main control
+                outputCurrentLimited (10)               Current limiting is active (constant current mode)
+                outputRampUp (11)                       Output voltage is increasing (e.g. after switch on)
+                outputRampDown (12)                     Output voltage is decreasing (e.g. after switch off)
+                outputEnableKill (13)                   EnableKill is active
+                outputEmergencyOff (14)                 EmergencyOff event is active
+                outputAdjusting (15)                    Fine adjustment is working
+                outputConstantVoltage (16)              Voltage control (constant voltage mode)
+                outputLowCurrentRange (17)              The channel is operating in the low current measurement range
+                outputCurrentBoundsExceeded (18)        Output current is out of bounds
                 outputFailureCurrentLimit (19)          Hardware current limit (EHS) / trip (EDS, EBS) was exceeded
+                outputCurrentIncreasing (20)            Output current is increasing
+                outputCurrentDecreasing (21)            Output current is decreasing
+                outputConstantPower (22)                Power control (constant power mode)
+                outputVoltageRampSpeedLimitDisabled (23)HV special: VoltageRampSpeed limitation is disabled, while EnableKill or delayed trip was configured
+                outputVoltageBottomReached (24)         HV special: After a current trip the voltage bottom is reached
+                outputInitCrcCheckBad (25)              Initial selftest failed
             "
 
     ::= { outputEntry 4 }
@@ -828,6 +1077,7 @@ outputMeasurementCurrent OBJECT-TYPE
 
 outputMeasurementTemperature OBJECT-TYPE
     SYNTAX  INTEGER { ok (-128), failure(127) }
+    UNITS   "deg.C"
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
@@ -842,26 +1092,27 @@ outputSwitch OBJECT-TYPE
     DESCRIPTION
             "Read: An enumerated value which shows the current state of
              the output channel.
-             
+
              Write: Change the state of the channel.
              If the channel is On, and the write value is Off, then the channel
              will switch Off.
              If the channel is Off, and the write value is On, and if no other
              signals (mainInhibit, outputInhibit, outputEmergencyOff or outputFailureMaxCurrent)
              are active, then the channel will switch on.
-             
-             If the write value is resetEmergencyOff, then the channel will 
+
+             If the write value is resetEmergencyOff, then the channel will
              leave the state EmergencyOff. A write of clearEvents is necessary
              before the voltage can ramp up again.
-             If the write value is setEmergencyOff, then the channel will have 
-             the state EmergencyOff, which means that the High Voltage will 
+             If the write value is setEmergencyOff, then the channel will have
+             the state EmergencyOff, which means that the High Voltage will
              switch off without a ramp and reset of the outputVoltage to null volt.
-             
-             If the write value is clearEvents, then all failure messages 
+
+             If the write value is clearEvents, then all failure messages
              of the outputStatus will be reset (all channel events, all module events
-             and the state emergencyOff)."
+             and the state emergencyOff).
+            "
     ::= { outputEntry 9 }
-    
+
 outputVoltage OBJECT-TYPE
     SYNTAX  Float
     UNITS   "V"
@@ -926,9 +1177,9 @@ outputSupervisionBehavior OBJECT-TYPE
                 1           switch off this channel
                 2           switch off all channels with the same group number
                 3           switch off the complete crate.
-	           iseg HV devices
+               iseg HV devices
                 0           ignore the failure
-                1           switch off this channel by ramp down the voltage 
+                1           switch off this channel by ramp down the voltage
                 2           switch off this channel by a emergencyOff
                 3           switch off the whole board of the HV module by emergencyOff.
              The position of the bit fields in the integer value are:
@@ -951,7 +1202,8 @@ outputSupervisionMinSenseVoltage OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "If the measured sense voltage is below this value, the power supply
-             performs the function defined by SupervisionAction."
+             performs the function defined by SupervisionAction.
+            "
     ::= { outputEntry 16 }
 
 outputSupervisionMaxSenseVoltage OBJECT-TYPE
@@ -961,7 +1213,8 @@ outputSupervisionMaxSenseVoltage OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "If the measured sense voltage is above this value, the power supply
-             performs the function defined by SupervisionAction."
+             performs the function defined by SupervisionAction.
+            "
     ::= { outputEntry 17 }
 
 outputSupervisionMaxTerminalVoltage OBJECT-TYPE
@@ -972,7 +1225,8 @@ outputSupervisionMaxTerminalVoltage OBJECT-TYPE
     DESCRIPTION
             "If the measured voltage at the power supply output
              terminals is above this value, the power supply
-             performs the function defined by SupervisionAction."
+             performs the function defined by SupervisionAction.
+            "
     ::= { outputEntry 18 }
 
 outputSupervisionMaxCurrent OBJECT-TYPE
@@ -982,18 +1236,20 @@ outputSupervisionMaxCurrent OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "If the measured current is above this value, the power supply
-             performs the function defined by SupervisionAction."
+             performs the function defined by SupervisionAction.
+            "
     ::= { outputEntry 19 }
 
 outputSupervisionMaxTemperature OBJECT-TYPE
 --    SYNTAX  Integer32 (-128..127)
     SYNTAX  Integer32
-    UNITS   "deg C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "If the measured module temperature is above this value, the power supply
-           performs the function defined by SupervisionAction."
+             performs the function defined by SupervisionAction.
+            "
     ::= { outputEntry 20 }
 
 outputConfigMaxSenseVoltage OBJECT-TYPE
@@ -1029,9 +1285,10 @@ outputSupervisionMaxPower OBJECT-TYPE
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
-            "If the measured power (measured current * measured terminal voltage) 
+            "If the measured power (measured current * measured terminal voltage)
              is above this value, the power supply performs the function defined
-              by SupervisionAction."
+             by SupervisionAction.
+            "
     ::= { outputEntry 24 }
 
 outputCurrentRiseRate OBJECT-TYPE
@@ -1057,17 +1314,15 @@ outputCurrentFallRate OBJECT-TYPE
              switch off or if the Current has been changed).
             "
     ::= { outputEntry 26 }
-        
+
 outputTripTimeMaxCurrent OBJECT-TYPE
-    SYNTAX  INTEGER (0..4000)
+    SYNTAX  OutputTripTime
     UNITS   "ms"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
-            "Current trip time out [ms].
-             The outputTripTimeMaxCurrent defines a span for the time out function.
-             The activity is depending from the bit field outputFailureMaxCurrent 
-             of the outputSupervisionBehavior."
+            "Minimum time the outputSupervisionMaxCurrent threshold must be violated to activate the trip action [ms].
+             The trip action is defined in outputSupervisionBehavior (bit field outputFailureMaxCurrent) or the new outputTripActionMaxCurrent."
     ::= { outputEntry 27 }
 
 outputHardwareLimitVoltage OBJECT-TYPE
@@ -1081,7 +1336,7 @@ outputHardwareLimitVoltage OBJECT-TYPE
              channels of a module).
             "
     ::= { outputEntry 28 }
-        
+
 outputHardwareLimitCurrent OBJECT-TYPE
     SYNTAX  Float
     UNITS   "A"
@@ -1096,13 +1351,12 @@ outputHardwareLimitCurrent OBJECT-TYPE
 
 outputConfigGainSenseVoltage OBJECT-TYPE
     SYNTAX  Float
-    UNITS   ""
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "The gain value of the sense voltage"
-    ::= { outputEntry 30 }        
-    
+    ::= { outputEntry 30 }
+
 outputConfigOffsetSenseVoltage OBJECT-TYPE
     SYNTAX  Float
     UNITS   "V"
@@ -1110,17 +1364,16 @@ outputConfigOffsetSenseVoltage OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "The offset value of the sense voltage"
-    ::= { outputEntry 31 }       
-    
+    ::= { outputEntry 31 }
+
 outputConfigGainTerminalVoltage OBJECT-TYPE
     SYNTAX  Float
-    UNITS   ""
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "The gain value of the sense voltage"
-    ::= { outputEntry 32 }        
-    
+    ::= { outputEntry 32 }
+
 outputConfigOffsetTerminalVoltage OBJECT-TYPE
     SYNTAX  Float
     UNITS   "V"
@@ -1128,17 +1381,16 @@ outputConfigOffsetTerminalVoltage OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "The offset value of the sense voltage"
-    ::= { outputEntry 33 }       
-    
+    ::= { outputEntry 33 }
+
 outputConfigGainCurrent OBJECT-TYPE
     SYNTAX  Float
-    UNITS   ""
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "The gain value of the sense voltage"
-    ::= { outputEntry 34 }        
-    
+    ::= { outputEntry 34 }
+
 outputConfigOffsetCurrent OBJECT-TYPE
     SYNTAX  Float
     UNITS   "V"
@@ -1146,10 +1398,10 @@ outputConfigOffsetCurrent OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "The offset value of the sense voltage"
-    ::= { outputEntry 35 }           
+    ::= { outputEntry 35 }
 
 outputUserConfig OBJECT-TYPE
-    SYNTAX  Integer32 (0..15)
+    SYNTAX  Integer32 (0..127)
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
@@ -1162,49 +1414,60 @@ outputUserConfig OBJECT-TYPE
                            1: No ramp at switch off (immediate off)
              Bit 1, 2: Set different regulation modes, dependent on the
                            cable inductance:
-			               0: fast:     short cables, up to 1 meter.
-			               1: moderate: cables from 1 to 30 meter.
-			               2: slow:     cables longer than 30 meter.
-			               3: slow (identical to 2, should not be used)
+                           0: fast:     short cables, up to 1 meter.
+                           1: moderate: cables from 1 to 30 meter.
+                           2: fast:     identical to 0 (should not be used)
+                           3: slow:     cables longer than 30 meter.
              Bit 3:    Internal sense line connection to the output (MPOD only):
                            0: The sense input at the sense connector is used
                               for regulation.
                            1: The output voltage is used for regulation.
                               Any signals at the sense connector are ignored.
-             Bit 4:    External Inhibit input.
+             Bit 4:    Enable External Inhibit input.
                            0: The external inhibit input is ignored.
                            1: The external inhibit input must be connected to
                               a voltage source to allow switch on.
+             Bit 5:    Disable Global Inhibit inputs.
+                           0: The global inhibit/interlock inputs of the system is active.
+                           1: The global inhibit/interlock inputs of the system is ignored.
+             Bit 6:    Automatic Power On.
+                           0: After switching the main system switch ON, the output is not
+                              switched on automatically. A separate outputSwitch command is
+                              required.
+                           1: After switching the main system switch ON, the output is
+                              switched on automatically. If 'Disable Global Inhibit' (bit 5)
+                              is set, the output will be switched on regardless of the global
+                              inhibit/interlock signals.
              Community required for write access: guru.
             "
-    ::= { outputEntry 37 }                
-                             
+    ::= { outputEntry 37 }
+
 outputRegulationMode OBJECT-TYPE
     SYNTAX  INTEGER { fast (0), moderate (1), slow (2) }
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "Definition of the regulation mode.
+             Deprecated, use outputUserConfig for this function in the future!
              It is possible to set different regulation modes, dependent on the
-			 cable inductance.
-			 fast:     short cables, up to 1 meter.
-			 moderate: cables from 1 to 30 meter.
-			 slow:     cables longer than 30 meter.
-             outputUserConfig in the future.
+                cable inductance.
+                fast:     short cables, up to 1 meter.
+                moderate: cables from 1 to 30 meter.
+                slow:     cables longer than 30 meter.
              Community required for write access: guru.
             "
-    ::= { outputEntry 38 }                
-                  
+    ::= { outputEntry 38 }
+
 outputConfigMaxTemperature OBJECT-TYPE
     SYNTAX  Integer32
 --    SYNTAX  Integer32 (-128..127)
-    UNITS   "deg C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "The maximum possible value of outputSupervisionMaxTemperature."
     ::= { outputEntry 39 }
-         
+
 outputResistance OBJECT-TYPE
     SYNTAX  Float
     UNITS   "Ohm"
@@ -1212,8 +1475,317 @@ outputResistance OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "Item to specify an external resistor. For instance a wire resistor or an external resistor
-	     to protect the detectot which is supplied by a cascaded HV module."
+             to protect the detectot which is supplied by a cascaded HV module.
+            "
     ::= { outputEntry 40 }
+
+outputTripTimeMinSenseVoltage OBJECT-TYPE
+    SYNTAX  OutputTripTime
+    UNITS   "ms"
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Minimum time the outputSupervisionMinSenseVoltage threshold must be violated to activate the trip action [ms].
+             The trip action is defined in outputSupervisionBehavior or the new outputTripActionMinSenseVoltage.
+            "
+    ::= { outputEntry 41 }
+
+outputTripTimeMaxSenseVoltage OBJECT-TYPE
+    SYNTAX  OutputTripTime
+    UNITS   "ms"
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Minimum time the outputSupervisionMaxSenseVoltage threshold must be violated to activate the trip action [ms].
+             The trip action is defined in outputSupervisionBehavior or the new outputTripActionMaxSenseVoltage.
+            "
+    ::= { outputEntry 42 }
+
+outputTripTimeMaxTerminalVoltage OBJECT-TYPE
+    SYNTAX  OutputTripTime
+    UNITS   "ms"
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Minimum time the outputSupervisionMaxTerminalVoltage threshold must be violated to activate the trip action [ms].
+             The trip action is defined in outputSupervisionBehavior or the new outputTripActionMaxTerminalVoltage.
+            "
+    ::= { outputEntry 43 }
+
+outputTripTimeMaxTemperature OBJECT-TYPE
+    SYNTAX  OutputTripTime
+    UNITS   "ms"
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Minimum time the outputSupervisionMaxTemperature threshold must be violated to activate the trip action [ms].
+             The trip action is defined in outputSupervisionBehavior or the new outputTripActionMaxTemperature.
+            "
+    ::= { outputEntry 44 }
+
+outputTripTimeMaxPower OBJECT-TYPE
+    SYNTAX  OutputTripTime
+    UNITS   "ms"
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Minimum time the outputSupervisionMaxPower threshold must be violated to activate the trip action [ms].
+             The trip action is defined in outputSupervisionBehavior or the new outputTripActionMaxPower.
+            "
+    ::= { outputEntry 45 }
+
+outputTripTimeTimeout OBJECT-TYPE
+    SYNTAX  OutputTripTime
+    UNITS   "ms"
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Maximum time the communication between module and controller can paused before activation the trip action [ms].
+             The trip action is defined in outputSupervisionBehavior or the new outputTripActionTimeout.
+            "
+    ::= { outputEntry 46 }
+
+outputTripActionMinSenseVoltage OBJECT-TYPE
+    SYNTAX  OutputTripAction
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Trip action if outputSuperisionMinSenseVoltage threshold has been violated.
+             The enumerated value is:
+                WIENER LV devices
+                   0           ignore the failure
+                   1           switch off this channel
+                   2           switch off all channels with the same group number
+                   3           switch off the complete crate
+                iseg HV devices
+                   0           ignore the failure
+                   1           switch off this channel by ramp down the voltage
+                   2           switch off this channel by a emergencyOff
+                   3           switch off the whole board of the HV module by emergencyOff.
+             This is a direct access of bits 0..1 of outputSupervisionBehavior.
+            "
+    ::= { outputEntry 47 }
+
+outputTripActionMaxSenseVoltage OBJECT-TYPE
+    SYNTAX  OutputTripAction
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Trip action if outputSuperisionMaxSenseVoltage threshold has been violated.
+             The enumerated value is:
+                WIENER LV devices
+                   0           ignore the failure
+                   1           switch off this channel
+                   2           switch off all channels with the same group number
+                   3           switch off the complete crate
+                iseg HV devices
+                   0           ignore the failure
+                   1           switch off this channel by ramp down the voltage
+                   2           switch off this channel by a emergencyOff
+                   3           switch off the whole board of the HV module by emergencyOff.
+             This is a direct access of bits 2..3 of outputSupervisionBehavior.
+            "
+    ::= { outputEntry 48 }
+
+outputTripActionMaxTerminalVoltage OBJECT-TYPE
+    SYNTAX  OutputTripAction
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Trip action if outputSuperisionMaxTerminalVoltage threshold has been violated.
+             The enumerated value is:
+                WIENER LV devices
+                   0           ignore the failure
+                   1           switch off this channel
+                   2           switch off all channels with the same group number
+                   3           switch off the complete crate
+                iseg HV devices
+                   0           ignore the failure
+                   1           switch off this channel by ramp down the voltage
+                   2           switch off this channel by a emergencyOff
+                   3           switch off the whole board of the HV module by emergencyOff.
+             This is a direct access of bits 4..5 of outputSupervisionBehavior.
+            "
+    ::= { outputEntry 49 }
+
+outputTripActionMaxCurrent OBJECT-TYPE
+    SYNTAX  OutputTripAction
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Trip action if outputSuperisionMaxCurrent threshold has been violated.
+             The enumerated value is:
+             WIENER LV devices
+                0           ignore the failure
+                1           switch off this channel
+                2           switch off all channels with the same group number
+                3           switch off the complete crate.
+               iseg HV devices
+                0           ignore the failure
+                1           switch off this channel by ramp down the voltage
+                2           switch off this channel by a emergencyOff
+                3           switch off the whole board of the HV module by emergencyOff.
+             This is a direct access of bits 6..7 of outputSupervisionBehavior.
+            "
+    ::= { outputEntry 50 }
+
+outputTripActionMaxTemperature OBJECT-TYPE
+    SYNTAX  OutputTripAction
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Trip action if outputSuperisionMaxTemperature threshold has been violated.
+             The enumerated value is:
+                WIENER LV devices
+                   0           ignore the failure
+                   1           switch off this channel
+                   2           switch off all channels with the same group number
+                   3           switch off the complete crate
+                iseg HV devices
+                   0           ignore the failure
+                   1           switch off this channel by ramp down the voltage
+                   2           switch off this channel by a emergencyOff
+                   3           switch off the whole board of the HV module by emergencyOff.
+             This is a direct access of bits 8..9 of outputSupervisionBehavior.
+            "
+    ::= { outputEntry 51 }
+
+outputTripActionMaxPower OBJECT-TYPE
+    SYNTAX  OutputTripAction
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Trip action if outputSuperisionMaxPower threshold has been violated.
+             The enumerated value is:
+                WIENER LV devices
+                   0           ignore the failure
+                   1           switch off this channel
+                   2           switch off all channels with the same group number
+                   3           switch off the complete crate
+                iseg HV devices
+                   0           ignore the failure
+                   1           switch off this channel by ramp down the voltage
+                   2           switch off this channel by a emergencyOff
+                   3           switch off the whole board of the HV module by emergencyOff.
+             This is a direct access of bits 10..11 of outputSupervisionBehavior.
+            "
+    ::= { outputEntry 52 }
+
+outputTripActionExternalInhibit OBJECT-TYPE
+    SYNTAX  OutputTripAction
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Trip action if the external inhibit input has been activated.
+             The enumerated value is:
+                WIENER LV devices
+                   0           ignore the failure
+                   1           switch off this channel
+                   2           switch off all channels with the same group number
+                   3           switch off the complete crate
+                iseg HV devices
+                   0           ignore the failure
+                   1           switch off this channel by ramp down the voltage
+                   2           switch off this channel by a emergencyOff
+                   3           switch off the whole board of the HV module by emergencyOff.
+             This is a direct access of bits 12..13 of outputSupervisionBehavior.
+            "
+    ::= { outputEntry 53 }
+
+outputTripActionTimeout OBJECT-TYPE
+    SYNTAX  OutputTripAction
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Trip action if the communication between module and controller has been paused longer
+             than outputTripTimeTimeout.
+             The enumerated value is:
+             WIENER LV devices
+                0           ignore the failure
+                1           switch off this channel
+                2           switch off all channels with the same group number
+                3           switch off the complete crate
+             iseg HV devices
+                0           ignore the failure
+                1           switch off this channel by ramp down the voltage
+                2           switch off this channel by a emergencyOff
+                3           switch off the whole board of the HV module by emergencyOff.
+             This is a direct access of bits 14..15 of outputSupervisionBehavior.
+            "
+    ::= { outputEntry 54 }
+
+outputVoltageRampPriority OBJECT-TYPE
+    SYNTAX  Integer32 (0..15)
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Item to set the priority of channel voltage ramp concerning to the other channels.
+             Channels with the lowest value have the highest priority and starts ramping up from zero first.
+             When all these ramps have finished, the channels with next priority follow.
+             The channels with the highest value have the highest priority and starts ramping ramping down as first.
+            "
+    ::= { outputEntry 55 }
+
+outputVoltageBottom OBJECT-TYPE
+    SYNTAX  Float
+    UNITS   "%"
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Reduce output voltage after a discharge event to the percentage value of outputVoltageBottom
+             output voltage = outputVoltageBottom * voltageSet / 100
+            "
+    ::= { outputEntry 56 }
+
+outputMeasurementReturnCurrent OBJECT-TYPE
+    SYNTAX  Float
+    UNITS   "A"
+    MAX-ACCESS  read-only
+    STATUS  current
+    DESCRIPTION
+            "The measured output return current."
+    ::= { outputEntry 60 }
+
+outputConfigDataS OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Configuration Data raw access. This allows to read / write output channel specific
+             user configuration data.
+             This OID is intended for use by WIENER system software only and my not be accessed directly.
+             snmpget: undefined behavior
+             snmpset:
+                OCTET STRING format for reading data (8 octets):
+                   offsetInOctets    4 octets / 32 bit
+                   numberOfOctets    4 octets / 32 bit
+                OCTET STRING format used for writing data, or returned from the SNMP client after read/write (8+n octets):
+                   offsetInOctets    4 octets / 32 bit
+                   numberOfOctets    4 octets / 32 bit
+                   data              numberOfOctets octets
+            "
+    ::= { outputEntry 1024 }
+
+outputConfigDataU OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Configuration Data raw access. This allows to read / write output channel specific
+             user configuration data.
+             This OID is intended for use by WIENER system software only and my not be accessed directly.
+             snmpget: undefined behavior
+             snmpset:
+                OCTET STRING format for reading data (8 octets):
+                   offsetInOctets   4 octets / 32 bit
+                   numberOfOctets   4 octets / 32 bit
+                OCTET STRING format returned from the SNMP client, or used for writing data (8+n octets):
+                   offsetInOctets   4 octets / 32 bit
+                   numberOfOctets   4 octets / 32 bit
+                   data             numberOfOctets octets
+            "
+    ::= { outputEntry 1025 }
+
 -------------------------------------------------------------------------------
 -- output->groups
 -------------------------------------------------------------------------------
@@ -1297,38 +1869,44 @@ groupsIndex OBJECT-TYPE
     ::= { groupsEntry 1 }
 
 groupsSwitch OBJECT-TYPE
-    SYNTAX  INTEGER { undefined (-1), off (0), on (1), resetEmergencyOff (2),  setEmergencyOff(3), disableKill (4), enableKill (5), disableAdjust(6), enableAdjust(7), clearEvents(10) }
+    SYNTAX  INTEGER { undefined (-1), off (0), on (1), resetEmergencyOff (2),  setEmergencyOff(3), disableKill (4), enableKill (5), disableAdjust(6), enableAdjust(7), enableVoltageRampSpeedLimit(8), disableVoltageRampSpeedLimit(9), clearEvents(10) }
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "Read: This function is not defined with groups of output channels.
-            
+
              Write: Switch the state of all channels of a group.
              If any channel is On, and the write value is Off, then all channels
              will switch off.
              If any channel is Off, and the write value is On, and if no other
              signals (mainInhibit, outputInhibit, outputEmergencyOff or  outputFailureMaxCurrent)
              are active, then all channels will switch on.
-             
-             If the write value is resetEmergencyOff, then all channels will 
+
+             If the write value is resetEmergencyOff, then all channels will
              leave the state EmergencyOff. A write of clearEvents is necessary
              before the voltage can ramp up again.
-             If the write value is setEmergencyOff, then all channels will have 
-             the state EmergencyOff, which means that the High Voltage will 
+             If the write value is setEmergencyOff, then all channels will have
+             the state EmergencyOff, which means that the High Voltage will
              switch off without a ramp and reset of the outputVoltage to null volt.
-             
-             If the write value is disableKILL, then all channels will switch 
+
+             If the write value is disableKILL, then all channels will switch
              to disableKill (outputStatus outputDisableKill).
-             If the write value is enableKILL, then all channels will switch 
+             If the write value is enableKILL, then all channels will switch
              to enableKill (outputStatus outputEnableKill).
-             
-             If the write value is clearEvents, then all failure messages 
-             of the outputStatus will be cleared (all channel events, 
+
+             If the write value is enableVoltageRampSpeedLimit, then all channels have
+             a voltage rampspeed limit under some conditions like KillEnable or delayed current trip.
+             If the write value is disableVoltageRampSpeedLimit, then all channels have no
+             voltage rampspeed limit with the effect of possible instabilities.
+             Please refer the hard and software manuals for more details.
+
+             If the write value is clearEvents, then all failure messages
+             of the outputStatus will be cleared (all channel events,
              all module events and the state outputEmergencyOff will be reset).
 
-			 For a detailed description of the different group numbers available
-			 look at the outputGroup OID above.
-             "
+             For a detailed description of the different group numbers available
+             look at the outputGroup OID above.
+            "
     ::= { groupsEntry 9 }
 
 --groupsName OBJECT-TYPE
@@ -1336,9 +1914,10 @@ groupsSwitch OBJECT-TYPE
 --    MAX-ACCESS  read-only
 --    STATUS  current
 --    DESCRIPTION
---            "A textual string containing a short name of the
+--           "A textual string containing a short name of the
 --            output. If the crate is equipped with an alphanumeric
---          display, this string is shown to identify a output channel."
+--            display, this string is shown to identify a output channel.
+--           "
 --    ::= { groupsEntry 2 }
 
 -------------------------------------------------------------------------------
@@ -1346,7 +1925,7 @@ groupsSwitch OBJECT-TYPE
 -------------------------------------------------------------------------------
 -- device related parsing of the HV data items
 --
--- advantage: 
+-- advantage:
 --    Parsing this branch the user directly recognises the structure
 --    of HV/LV devices and the hierarchie of data items,
 --    module and channel functions and their interaction.
@@ -1362,7 +1941,7 @@ groupsSwitch OBJECT-TYPE
 -------------------------------------------------------------------------------
 
 moduleEntry OBJECT-TYPE
-    SYNTAX  HvdevEntry
+    SYNTAX  ModuleEntry
     MAX-ACCESS  not-accessible
     STATUS  current
     DESCRIPTION
@@ -1370,27 +1949,29 @@ moduleEntry OBJECT-TYPE
     INDEX   { moduleIndex }
     ::= { moduleTable 1 }
 
-moduleEntry ::= SEQUENCE {
+ModuleEntry ::= SEQUENCE {
     moduleIndex                            INTEGER,
     moduleDescription                      OCTET STRING,
-    moduleChannelNumber                    INTEGER32,
+--  moduleChannelNumber                    INTEGER32,
 --  moduleAuxiliaryNumber                  INTEGER32,
-    moduleAuxiliaryTableSupplyVoltages     ModuleAuxiliaryTableSupplyVoltages,
+    moduleAuxiliaryMeasurementVoltage      Float,
     moduleHardwareLimitVoltage             Float,
     moduleHardwareLimitCurrent             Float,
     moduleRampSpeedVoltage                 Float,
     moduleRampSpeedCurrent                 Float,
     moduleStatus                           BITS,
     moduleEventStatus                      BITS,
-    moduleEventChannelStatus               INTEGER,
+    moduleEventChannelStatus               BITS,
     moduleDoClear                          INTEGER,
---    moduleAuxiliaryTemperatureSensorNumber INTEGER32,
-    moduleAuxiliaryTableTemperature        moduleAuxiliaryTableTemperature
+--  moduleAuxiliaryTemperatureSensorNumber INTEGER32,
+    moduleAuxiliaryMeasurementTemperature  Float,
+    moduleConfigDataS                      OCTET STRING,
+    moduleConfigDataU                      OCTET STRING
 }
 
 
 moduleIndex OBJECT-TYPE
-    SYNTAX INTEGER { 
+    SYNTAX INTEGER {
                     ma0(1),ma1(2),ma2(3),ma3(4),ma4(5),ma5(6),ma6(7),ma7(8),ma8(9),ma9(10)}
     MAX-ACCESS  not-accessible
     STATUS  current
@@ -1407,19 +1988,20 @@ moduleDescription OBJECT-TYPE
     STATUS  current
     DESCRIPTION
             "Vendor, FirmwareName, ChannelNumber, SerialNumber, FirmwareRelease
-            Vendor WIENER or iseg
-            FirmwareName:
-               'E16D0'  EDS 16 channels per PCB, distributor module, range of Vmax from VO max to (VO max - 1kV)
-               'E16D1'  EDS 16 channels per PCB, distributor module
-               'E08C0'  EHS  8 channels per PCB, common GND module
-               'E08F0'  EHS  8 channels per PCB, floating GND module
-               'E08F2'  EHS  8 channels per PCB, floating GND module, 2 current measurement ranges
-               'E08C2'  EHS  8 channels per PCB, common floating GND module, 2 current measurement ranges
-               'E08B0'  EBS  8 bipolars channel per PCB, distributor module
-               'H101C0' HPS  1 channel  HV high power supply
-            ChannelNumber 1 to 64
-            SerialNumber  71xxxx
-            FirmwareRelease  x.xx"
+             Vendor WIENER or iseg
+             FirmwareName:
+                'E16D0'  EDS 16 channels per PCB, distributor module, range of Vmax from VO max to (VO max - 1kV)
+                'E16D1'  EDS 16 channels per PCB, distributor module
+                'E08C0'  EHS  8 channels per PCB, common GND module
+                'E08F0'  EHS  8 channels per PCB, floating GND module
+                'E08F2'  EHS  8 channels per PCB, floating GND module, 2 current measurement ranges
+                'E08C2'  EHS  8 channels per PCB, common floating GND module, 2 current measurement ranges
+                'E08B0'  EBS  8 bipolars channel per PCB, distributor module
+                'H101C0' HPS  1 channel  HV high power supply
+             ChannelNumber 1 to 64
+             SerialNumber  71xxxx
+             FirmwareRelease  x.xx
+            "
     ::= { moduleEntry 2 }
 
 -------------------------------------------------------------------------------
@@ -1452,7 +2034,7 @@ moduleAuxiliaryMeasurementVoltage1 OBJECT-TYPE
 
 
 moduleHardwareLimitVoltage OBJECT-TYPE
-    SYNTAX  Float                                                                                                             
+    SYNTAX  Float
     UNITS   "%"
     MAX-ACCESS  read-only
     STATUS  current
@@ -1508,7 +2090,7 @@ moduleStatus OBJECT-TYPE
         moduleIsGood (12),
         moduleSupplyIsGood (13),
         moduleTemperatureIsGood (14),
-        moduleIsKillEnable (15),
+        moduleIsKillEnable (15)
     }
     MAX-ACCESS  read-only
     STATUS  current
@@ -1528,8 +2110,8 @@ moduleStatus OBJECT-TYPE
                 moduleIsGood (12),                      Module state is good.
                 moduleIsSupplyGood (13),                Power supply is good.
                 moduleIsTemperatureGood (14),           Module temperature is good.
-                moduleIsKillEnable (15),                Module state of kill enable.
-                
+                moduleIsKillEnable (15)                 Module state of kill enable.
+
             "
     ::= { moduleEntry 8 }
 
@@ -1550,7 +2132,7 @@ SYNTAX  BITS {
         -- reserved,
         -- reserved,
         moduleEventSupplyNotGood (13),
-        moduleEventTemperatureNotGood (14),
+        moduleEventTemperatureNotGood (14)
         -- reserved,
     }
     MAX-ACCESS  read-only
@@ -1567,22 +2149,71 @@ SYNTAX  BITS {
                 moduleEventSafetyLoopNotGood (10),      Module event: Safety loop is open.
                 moduleEventSupplyNotGood (13),          Module event: At least one of the supplies is not good.
                 moduleEventTemperatureNotGood (14),     Module event: Temperature was above the permitted threshold
-                                                        (for EDS/EHS temperature above 55°C)
-                
+                                                        (for EDS/EHS temperature above 55 degr.C)
+
             "
-    
+
     ::= { moduleEntry 9 }
 
 
 moduleEventChannelStatus OBJECT-TYPE
-    SYNTAX  BITS
+    SYNTAX  BITS {
+        channel0 (0),
+        channel1 (1),
+        channel2 (2),
+        channel3 (3),
+        channel4 (4),
+        channel5 (5),
+        channel6 (6),
+        channel7 (7),
+        channel8 (8),
+        channel9 (9),
+        channel10 (10),
+        channel11 (11),
+        channel12 (12),
+        channel13 (13),
+        channel14 (14),
+        channel15 (15),
+        channel16 (16),
+        channel17 (17),
+        channel18 (18),
+        channel19 (19),
+        channel20 (20),
+        channel21 (21),
+        channel22 (22),
+        channel23 (23),
+        channel24 (24),
+        channel25 (25),
+        channel26 (26),
+        channel27 (27),
+        channel28 (28),
+        channel29 (29),
+        channel30 (30),
+        channel31 (31),
+        channel32 (32),
+        channel33 (33),
+        channel34 (34),
+        channel35 (35),
+        channel36 (36),
+        channel37 (37),
+        channel38 (38),
+        channel39 (39),
+        channel40 (40),
+        channel41 (41),
+        channel42 (42),
+        channel43 (43),
+        channel44 (44),
+        channel45 (45),
+        channel46 (46),
+        channel47 (47)
+    }
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
             "Bit field that reserves one bit for every channel.
-              bit 0      HV channel 0
-              bit 1      HV channel 1
-              bit x      HV channel x
+               bit 0      HV channel 0
+               bit 1      HV channel 1
+               bit x      HV channel x
             "
     ::= { moduleEntry 10 }
 
@@ -1595,7 +2226,6 @@ moduleDoClear OBJECT-TYPE
             "All events of the module will be cleared."
     ::= { moduleEntry 11 }
 
-
 -------------------------------------------------------------------------------
 
 moduleAuxiliaryMeasurementTemperature OBJECT-IDENTITY
@@ -1603,10 +2233,10 @@ moduleAuxiliaryMeasurementTemperature OBJECT-IDENTITY
     DESCRIPTION
         "The number of auxiliary temperature sensors in the module."
     ::= { moduleEntry 12 }
-    
+
 moduleAuxiliaryMeasurementTemperature0 OBJECT-TYPE
     SYNTAX  Float
-    UNITS   "C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
@@ -1615,7 +2245,7 @@ moduleAuxiliaryMeasurementTemperature0 OBJECT-TYPE
 
 moduleAuxiliaryMeasurementTemperature1 OBJECT-TYPE
     SYNTAX  Float
-    UNITS   "C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
@@ -1624,7 +2254,7 @@ moduleAuxiliaryMeasurementTemperature1 OBJECT-TYPE
 
 moduleAuxiliaryMeasurementTemperature2 OBJECT-TYPE
     SYNTAX  Float
-    UNITS   "C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
@@ -1633,12 +2263,53 @@ moduleAuxiliaryMeasurementTemperature2 OBJECT-TYPE
 
 moduleAuxiliaryMeasurementTemperature3 OBJECT-TYPE
     SYNTAX  Float
-    UNITS   "C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
             "The measured module temperature of sensor 4."
     ::= { moduleAuxiliaryMeasurementTemperature 4 }
+
+-------------------------------------------------------------------------------
+moduleConfigDataS OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Configuration Data raw access. This allows to read / write output channel specific
+             system configuration data.
+             This OID is intended for use by WIENER system software only and my not be accessed directly.
+             snmpget: undefined behavior
+             snmpset:
+                OCTET STRING format for reading data (8 octets):
+                   offsetInOctets   4 octets / 32 bit
+                   numberOfOctets   4 octets / 32 bit
+                OCTET STRING format returned from the SNMP client, or used for writing data (8+n octets):
+                   offsetInOctets   4 octets / 32 bit
+                   numberOfOctets   4 octets / 32 bit
+                   data             numberOfOctets octets
+             "
+    ::= { moduleEntry 1024 }
+
+moduleConfigDataU OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Configuration Data raw access. This allows to read / write output channel specific
+             user configuration data.
+             This OID is intended for use by WIENER system software only and my not be accessed directly.
+             snmpget: undefined behavior
+             snmpset:
+                OCTET STRING format for reading data (8 octets):
+                   offsetInOctets   4 octets / 32 bit
+                   numberOfOctets   4 octets / 32 bit
+                OCTET STRING format returned from the SNMP client, or used for writing data (8+n octets):
+                   offsetInOctets   4 octets / 32 bit
+                   numberOfOctets   4 octets / 32 bit
+                   data             numberOfOctets octets
+             "
+    ::= { moduleEntry 1025 }
 
 -------------------------------------------------------------------------------
 -- sensor
@@ -1678,10 +2349,10 @@ SensorEntry ::= SEQUENCE {
         sensorTemperature           INTEGER,
 --      sensorOkThreshold           INTEGER, nicht implementiert (for futur)
         sensorWarningThreshold      INTEGER,
-        sensorAlarmThreshold        INTEGER,
         sensorFailureThreshold      INTEGER,
+        sensorAlarmThreshold        INTEGER,
         sensorName                  DisplayString,
-        sensorID					      OCTET STRING,
+        sensorID                    OCTET STRING,
         sensorStatus                INTEGER
     }
 
@@ -1697,7 +2368,7 @@ sensorIndex OBJECT-TYPE
 sensorTemperature OBJECT-TYPE
 -- CHECK    SYNTAX  INTEGER { UNUSED(-128), (-127..127) }
     SYNTAX  Integer32 (-128..127)
-    UNITS   "deg C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
@@ -1705,72 +2376,77 @@ sensorTemperature OBJECT-TYPE
              Unused temperature probes have the special value -128"
     ::= { sensorEntry 2 }
 
-sensorWarningThreshold OBJECT-TYPE 
+sensorWarningThreshold OBJECT-TYPE
 -- CHECK    SYNTAX  INTEGER  { (0..126), DISABLED(127) }
     SYNTAX  Integer32  (0..127)
-    UNITS   "deg C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "If the measured temperature of the sensor is higher than this
-            value, the fan speed of the connected fan tray is increased.
-            The value 127 has the special meaning: channel disabled."
+             value, the fan speed of the connected fan tray is increased.
+             The value 127 has the special meaning: channel disabled.
+            "
     ::= { sensorEntry 3}
 
 sensorFailureThreshold OBJECT-TYPE
 -- CHECK    SYNTAX  INTEGER  { (0..126), DISABLED(127) }
     SYNTAX  Integer32  (0..127)
-    UNITS   "deg C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "If the measured temperature of the sensor is higher than this
-            value, the power supply switches off.
-            The value 127 has the special meaning: channel disabled."
+             value, the power supply switches off.
+             The value 127 has the special meaning: channel disabled.
+            "
     ::= { sensorEntry 4}
 
 --sensorOkThreshold OBJECT-TYPE
 -- CHECK    SYNTAX  INTEGER  { (0..126), DISABLED(127) }
 --    SYNTAX  Integer32  (0..127)
---    UNITS   "deg C"
+--    UNITS   "deg.C"
 --    MAX-ACCESS  read-write
 --    STATUS  current
 --    DESCRIPTION
 --            "If the measured temperature of the sensor is ok,
---            so it is possible to switch of the fans.
---            The value 127 has the special meaning: channel disabled."
+--             so it is possible to switch of the fans.
+--             The value 127 has the special meaning: channel disabled.
+--            "
 --    ::= { sensorEntry 5}
-    
+
     sensorAlarmThreshold OBJECT-TYPE
 -- CHECK    SYNTAX  INTEGER  { (0..126), DISABLED(127) }
     SYNTAX  Integer32  (0..127)
-    UNITS   "deg C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "If the measured temperature of the sensor is much higher than this
-            value, the fans rotate in full speed.
-            The value 127 has the special meaning: channel disabled."
+             value, the fans rotate in full speed.
+             The value 127 has the special meaning: channel disabled.
+            "
     ::= { sensorEntry 6}
-    
+
    sensorName OBJECT-TYPE
     SYNTAX  DisplayString (SIZE (1..7))
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "A textual string containing a short name of the
-            sensor. If the crate is equipped with an alphanumeric
-            display, this string is shown to identify a sensor channel."
+             sensor. If the crate is equipped with an alphanumeric
+             display, this string is shown to identify a sensor channel.
+            "
     ::= { sensorEntry 7 }
-	
-	sensorID OBJECT-TYPE
+
+    sensorID OBJECT-TYPE
     SYNTAX  OCTET STRING (SIZE (8))
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "Shows the 1-Wire Id of the corresponding Sensor."
     ::= { sensorEntry 8}
-    
+
    sensorStatus OBJECT-TYPE
     SYNTAX  Integer32
     MAX-ACCESS  read-only
@@ -1778,11 +2454,11 @@ sensorFailureThreshold OBJECT-TYPE
     DESCRIPTION
             "A bit field packed into an integer which define the Status of the Sensors
              after failures. For each Status value, a two-bit field exists.
-              Bits-Value
-                00           Temperature is ok
-                01           Temperature is over WarningThreshold
-                10           Temperature is over AlarmThreshold
-                11           Temperature is over FailureThreshold
+                Bits-Value
+                   00           Temperature is ok
+                   01           Temperature is over WarningThreshold
+                   10           Temperature is over AlarmThreshold
+                   11           Temperature is over FailureThreshold
 
              The position of the bit fields in the integer value are:
                 Bit 0, 1:   Sensor1
@@ -1794,9 +2470,9 @@ sensorFailureThreshold OBJECT-TYPE
                 Bit 12, 13: Sensor7
                 Bit 14, 15: Sensor8"
     ::= { sensorEntry 9}
-    
-    
-    
+
+
+
 --################
 -------------------------------------------------------------------------------
 -- communication
@@ -1819,16 +2495,16 @@ snmp OBJECT-IDENTITY
         "SNMP configuration."
     ::= { communication 1 }
 
-SnmpCommunityEntry ::= SEQUENCE {
+Snmp ::= SEQUENCE {
     snmpAccessRight            INTEGER,
     snmpCommunityName          OCTET STRING,
     snmpCommunityTable         SnmpCommunityEntry,
     snmpPort                   INTEGER,
-    ipDynamicAddress           IpAddress, 
+    ipDynamicAddress           IpAddress,
     --OCTET STRING,
-    ipStaticAddress            IpAddress, 
+    ipStaticAddress            IpAddress,
     --OCTET STRING,
-    macAddress                 OCTET STRING
+    macAddress                 MacAddress
 }
 
 snmpCommunityTable OBJECT-TYPE
@@ -1847,6 +2523,14 @@ snmpCommunityEntry OBJECT-TYPE
             "One table row."
     INDEX   { snmpAccessRight }
     ::= { snmpCommunityTable 1 }
+
+
+SnmpCommunityEntry ::= SEQUENCE {
+        snmpAccessRight
+            INTEGER,
+        snmpCommunityName
+            OCTET STRING
+}
 
 snmpAccessRight OBJECT-TYPE
     SYNTAX  INTEGER { public (1), private (2), admin (3), guru (4) }
@@ -1878,8 +2562,20 @@ snmpPort OBJECT-TYPE
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
-            "The UDP port number of the SNMP protocol"
+            "The UDP port number of the SNMP protocol. A value of
+             0 disables all future SNMP communication!
+            "
     ::= { snmp 2}
+
+httpPort OBJECT-TYPE
+    SYNTAX  Integer32
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "The TCP port number of the HTTP (web) protocol. A value
+             of 0 disables all HTTP access.
+            "
+    ::= { snmp 3}
 
 firmwareUpdate OBJECT-TYPE
     SYNTAX  OCTET STRING (SIZE (0..30))
@@ -1890,8 +2586,7 @@ firmwareUpdate OBJECT-TYPE
     ::= { snmp 10}
 
 ipDynamicAddress OBJECT-TYPE
-    SYNTAX  IpAddress 
---OCTET STRING (SIZE (4))
+    SYNTAX  IpAddress
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
@@ -1899,8 +2594,7 @@ ipDynamicAddress OBJECT-TYPE
     ::= { snmp 11}
 
 ipStaticAddress OBJECT-TYPE
-    SYNTAX  IpAddress 
---OCTET STRING (SIZE (4))
+    SYNTAX  IpAddress
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
@@ -1908,7 +2602,7 @@ ipStaticAddress OBJECT-TYPE
     ::= { snmp 12}
 
 macAddress OBJECT-TYPE
-    SYNTAX  OCTET STRING (SIZE (6))
+    SYNTAX  MacAddress
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
@@ -1990,19 +2684,20 @@ canTransmitHv OBJECT-TYPE
              will switch the HV modules into a special state.
              CONTROL=0x0001 - enable SNMP CAN access, stop the refresh cycle for the data points of the name space
              CONTROL=0x0002 - disable SNMP CAN access, activate the refresh cycle for the data points of the name space
-             A write access unequal to CANID=0x600 will be transmitted to the HV CAN on the backplane. 
+             A write access unequal to CANID=0x600 will be transmitted to the HV CAN on the backplane.
              Such a message will be transmitted immediately via the CAN interface.
              The OCTET STRING data is formatted according to the CANviaSNMP structure.
             "
     ::= { can 5 }
 
 canBitRateHv OBJECT-TYPE
-    SYNTAX  Integer32
+    SYNTAX  Integer32 ( 125000..1000000 )
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
-            "Control of the bit rate of the CAN-Bus.
-             The value defines the bit rate of the CAN-bus interface
+            "Control of the bit rate of the HV CAN-Bus.
+             The value defines the bit rate of the CAN-bus interface. Possible Values are 125000 and 250000.
+             Changing this value requires MPODC slave firmware 1.10 or above.
             "
     ::= { can 6 }
 
@@ -2047,7 +2742,7 @@ Powersupply ::= SEQUENCE {
     --psFirmwareVersion           DisplayString,
     psSerialNumber              DisplayString,
     psOperatingTime             Integer32,
-    
+
     psDirectAccess              OCTET STRING
 }
 
@@ -2086,7 +2781,7 @@ psAuxiliaryNumber OBJECT-TYPE
     ::= { powersupply 4 }
 
 psAuxiliaryTable OBJECT-TYPE
-    SYNTAX  SEQUENCE OF PsAuxiliarytEntry
+    SYNTAX  SEQUENCE OF PsAuxiliaryEntry
     MAX-ACCESS  not-accessible
     STATUS  current
     DESCRIPTION
@@ -2114,7 +2809,7 @@ psAuxiliaryEntry OBJECT-TYPE
     INDEX   { psAuxiliaryIndex }
     ::= { psAuxiliaryTable 1 }
 
-OutputEntry ::= SEQUENCE {
+PsAuxiliaryEntry ::= SEQUENCE {
         psAuxiliaryIndex                    INTEGER,
         psAuxiliaryMeasurementVoltage         Float,
         psAuxiliaryMeasurementCurrent         Float
@@ -2122,14 +2817,15 @@ OutputEntry ::= SEQUENCE {
 
 
 psAuxiliaryIndex OBJECT-TYPE
-    SYNTAX INTEGER { 
+    SYNTAX INTEGER {
                      u0(1),u1(2),u2(3),u3(4),u4(5),u5(6),u6(7),u7(8)}
     MAX-ACCESS  not-accessible
     STATUS  current
     DESCRIPTION
             "A unique number for each power supply auxiliary channel. Its value
-            ranges between 1 and total number of output channels.
-            SMI index starts at 1, so index 1 corresponds to U0."
+             ranges between 1 and total number of output channels.
+             SMI index starts at 1, so index 1 corresponds to U0.
+            "
     ::= { psAuxiliaryEntry 1 }
 
 psAuxiliaryMeasurementVoltage OBJECT-TYPE
@@ -2157,12 +2853,12 @@ Fantray ::= SEQUENCE {
 --      fanFirmwareVersion         DisplayString,
         fanSerialNumber            DisplayString,
         fanOperatingTime           Integer32,
-        fanAirTemperature          INTEGER,
+        fanAirTemperature          Integer32,
         fanSwitchOffDelay          INTEGER,
-        fanNominalSpeed            INTEGER,
-        fanMaxSpeed                INTEGER,
-        fanMinSpeed                INTEGER,
-        fanNumberOfFans            INTEGER,
+        fanNominalSpeed            Integer32,
+        fanMaxSpeed                Integer32,
+        fanMinSpeed                Integer32,
+        fanNumberOfFans            Integer32,
         fanConfigMaxSpeed          Integer32,
         fanConfigMinSpeed          Integer32,
         fanSpeedTable              FanSpeedEntry
@@ -2196,7 +2892,7 @@ fanOperatingTime OBJECT-TYPE
 
 fanAirTemperature OBJECT-TYPE
     SYNTAX  Integer32
-    UNITS   "deg C"
+    UNITS   "deg.C"
     MAX-ACCESS  read-only
     STATUS  current
     DESCRIPTION
@@ -2216,9 +2912,7 @@ fanSwitchOffDelay OBJECT-TYPE
     ::= { fantray 5 }
 
 fanNominalSpeed OBJECT-TYPE
--- CHECK    SYNTAX  INTEGER { (0) , (1200..3600) }
--- SYNTAX  Integer32 (0..3600)
-    SYNTAX  Integer32 
+    SYNTAX  Integer32
     UNITS   "RPM"
     MAX-ACCESS  read-write
     STATUS  current
@@ -2226,7 +2920,8 @@ fanNominalSpeed OBJECT-TYPE
             "The nominal fan rotation speed (RPM, Revolutions Per Minute)
              Value 0 does switch off the fans (only allowed if at least
              one rack temperature sensor is present).
-             Values 1..1199 are not allowed"
+             Values 1..1199 are not allowed
+            "
     ::= { fantray 6 }
 
 fanNumberOfFans OBJECT-TYPE
@@ -2258,9 +2953,9 @@ fanSpeedEntry OBJECT-TYPE
 
 FanSpeedEntry ::= SEQUENCE {
         fanNumber
-            INTEGER,
+            Integer32,
         fanSpeed
-            INTEGER
+            Integer32
 }
 
 fanNumber OBJECT-TYPE
@@ -2281,9 +2976,7 @@ fanSpeed OBJECT-TYPE
     ::= { fanSpeedEntry 2 }
 
 fanMaxSpeed OBJECT-TYPE
--- CHECK    SYNTAX  INTEGER { (0) , (1200..5000) }
---  SYNTAX  Integer32 (2900..4000)
-    SYNTAX  INTEGER 
+    SYNTAX  Integer32
     UNITS   "RPM"
     MAX-ACCESS  read-write
     STATUS  current
@@ -2292,41 +2985,81 @@ fanMaxSpeed OBJECT-TYPE
     ::= { fantray 9 }
 
 fanMinSpeed OBJECT-TYPE
--- CHECK    SYNTAX  INTEGER { (0) , (1000..3600) }
--- SYNTAX  Integer32 (1000..1400)
-    SYNTAX  INTEGER
+    SYNTAX  Integer32
     UNITS   "RPM"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "The lowest allowed Rotationspeed of fan."
     ::= { fantray 10 }
-    
+
 fanConfigMaxSpeed OBJECT-TYPE
-    SYNTAX  Integer32 
+    SYNTAX  Integer32
     UNITS   "RPM"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "Hardwarelimits. Can only set by WIENER."
-    ::= { fantray 11 }        
-        
+    ::= { fantray 11 }
+
 fanConfigMinSpeed OBJECT-TYPE
-    SYNTAX  Integer32 
+    SYNTAX  Integer32
     UNITS   "RPM"
     MAX-ACCESS  read-write
     STATUS  current
     DESCRIPTION
             "Hardwarelimits Can only set by WIENER."
-    ::= { fantray 12 }        
-               
+    ::= { fantray 12 }
+
 -------------------------------------------------------------------------------
 -- rack
 -------------------------------------------------------------------------------
 -- this is reserved for futer items (BIN serial number, plug&play, ...)
+Rack ::= SEQUENCE {
+    binConfigDataU        OCTET STRING,
+    binConfigDataS        OCTET STRING
+    }
 
+binConfigDataU OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Configuration Data raw access. This allows to read / write output channel specific
+             user configuration data.
+             This OID is intended for use by WIENER system software only and may not be accessed directly.
+             snmpget: undefined behavior
+             snmpset:
+                OCTET STRING format for reading data (8 octets):
+                    offsetInOctets      4 octets / 32 bit
+                    numberOfOctets      4 octets / 32 bit
+                OCTET STRING format returned from the SNMP client, or used for writing data (8+n octets):
+                    offsetInOctets      4 octets / 32 bit
+                    numberOfOctets      4 octets / 32 bit
+                    data                numberOfOctets octets
+            "
+    ::= { rack 1 }
 
--- ###################
+binConfigDataS OBJECT-TYPE
+    SYNTAX  OCTET STRING
+    MAX-ACCESS  read-write
+    STATUS  current
+    DESCRIPTION
+            "Configuration Data raw access. This allows to read / write output channel specific
+             user configuration data.
+             This OID is intended for use by WIENER system software only and may not be accessed directly.
+             snmpget: undefined behavior
+             snmpset:
+                OCTET STRING format for reading data (8 octets):
+                    offsetInOctets      4 octets / 32 bit
+                    numberOfOctets      4 octets / 32 bit
+                OCTET STRING format used for writing data, or returned from the SNMP client after read/write (8+n octets):
+                   offsetInOctets       4 octets / 32 bit
+                   numberOfOctets       4 octets / 32 bit
+                   data                 numberOfOctets octets
+            "
+    ::= { rack 2 }
+
 -------------------------------------------------------------------------------
 -- signal
 -------------------------------------------------------------------------------
@@ -2365,7 +3098,8 @@ analogInputEntry OBJECT-TYPE
 
 AnalogInputEntry ::= SEQUENCE {
         analogInputIndex            INTEGER,
-        analogMeasurementVoltage          Float
+        analogMeasurementVoltage    Float,
+        analogMeasurementCurrent    Float
     }
 
 analogInputIndex OBJECT-TYPE
@@ -2404,7 +3138,7 @@ digitalInput OBJECT-TYPE
         d4 (4) ,
         d5 (5) ,
         d6 (6) ,
-        d7 (7) 
+        d7 (7)
     }
     MAX-ACCESS  read-only
     STATUS  current
@@ -2421,7 +3155,7 @@ digitalOutput OBJECT-TYPE
         d4 (4) ,
         d5 (5) ,
         d6 (6) ,
-        d7 (7) 
+        d7 (7)
     }
     MAX-ACCESS  read-only
     STATUS  current

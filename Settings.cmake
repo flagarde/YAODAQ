@@ -143,7 +143,7 @@ option(BUILD_SNMP "Build SNMP" OFF)
 option(BUILD_Serial "Build Serial" OFF)
 
 option(BUILD_LCIO "Build LCIO" OFF)
-
+option(BUILD_MPOD "Build Mpod executasble" ON)
 option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
 
 option(ENABLE_ALL_WARNINGS "Compile with all warnings for the major compilers" ON)

@@ -1,0 +1,5 @@
+add_library(Mpod "src/Mpod.cpp")
+target_include_directories(Mpod PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/WIENER> PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+set_target_properties(Mpod PROPERTIES PUBLIC_HEADER "include/Mpod.hpp")
+target_link_libraries(Mpod PUBLIC Board)
+install(TARGETS Mpod)
