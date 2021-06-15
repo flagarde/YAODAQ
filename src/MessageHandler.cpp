@@ -13,16 +13,80 @@
 #include "ixwebsocket/IXWebSocketCloseConstants.h"
 
 #include <iostream>
+#include <tuple>
 
 namespace yaodaq
 {
 
-  MessageHandler::MessageHandler(const Identifier& identifier) : m_LoggerHandler(identifier), m_JsonRPCClient(m_JsonFormatHandler)
+  std::string MessageHandler::Send(const std::string &request)
+  {
+    Command command(request);
+    send(command);
+    std::string id = command.getContentAsJson()["id"].asString();
+    while(m_Lists[id].size()!=0)
+    {
+      //Supress the client that has send a response
+      for(std::size_t i=0; i!= m_Responses[id].size();++i)
+      {
+        if(m_Lists[id].has(m_Responses[id][i].getFromStr())==true) m_Lists[id].erase(m_Responses[id][i].getFromStr());
+      }
+      std::this_thread::sleep_for(std::chrono::microseconds(10));
+    }
+    nlohmann::json j;
+    j["jsonrpc"] = "2.0";
+    j["id"] = id;
+    j["result"] = nlohmann::json::array();
+    for(std::size_t i=0;i!=m_Responses[id].size();++i)
+    {
+      nlohmann::json object;
+      object["identifier"] = m_Responses[id][i].getFromStr();
+      nlohmann::json response =  nlohmann::json::parse(m_Responses[id][i].getContent());
+      if(response.contains("result")) object["result"]=response["result"];
+      else object["error"]=response["error"];
+      j["result"].push_back(object);
+    }
+    m_Responses.erase(id);
+    return j.dump();
+  }
+
+  bool MessageHandler::AddMethod(const std::string &name, jsonrpccxx::MethodHandle callback, const jsonrpccxx::NamedParamMapping &mapping)
+  {
+    return m_RPCServer.Add(name,callback,mapping);
+  }
+
+  bool MessageHandler::AddMethod(const std::string &name, jsonrpccxx::NotificationHandle callback, const jsonrpccxx::NamedParamMapping &mapping)
+  {
+    return m_RPCServer.Add(name,callback,mapping);
+  }
+
+
+
+  MessageHandler::MessageHandler(const Identifier& identifier) : m_LoggerHandler(identifier), m_RPCClient(*this,jsonrpccxx::version::v2)/*, m_JsonRPCClient(m_JsonFormatHandler)*/
   {
     m_Interrupt.init();
-    m_JsonRPCServer.RegisterFormatHandler(m_JsonFormatHandler);
     addSink(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
   }
+
+  /*std::vector<std::string> MessageHandler::getMethodNames(const bool includeHidden)
+  {
+    for(std::size_t i=0;i!=getDispatcher().GetMethodNames(includeHidden).size();i++) std::cout<<i<<" "<<getDispatcher().GetMethodNames(includeHidden)[i]<<std::endl;
+    return getDispatcher().GetMethodNames(includeHidden);
+  }*/
+
+ /* std::string MessageHandler::help(const std::string& methodName)
+  {
+    std::vector<std::vector<jsonrpc::Value::Type>> toto = getDispatcher().GetMethod(methodName).GetSignatures();
+    std::cout<<"SSSS"<<std::endl;
+    for(std::size_t i=0;i!=toto.size();++i)
+    {
+      for(std::size_t j=0;j!=toto[i].size();++j)
+      {
+        std::cout<<i<<"  "<<j<<"  "<<static_cast<std::string>(magic_enum::enum_name(toto[i][j]))<<std::endl;
+      }
+    }
+    std::cout<<"SSSSENDL"<<std::endl;
+    return getDispatcher().GetMethod(methodName).GetHelpText();
+  }*/
 
 
   void MessageHandler::printLog(const Log& log)
@@ -71,14 +135,9 @@ namespace yaodaq
   // Command
   void MessageHandler::onCommand(const Command& command)
   {
-    printCommand(command);
-    if(getIdentifier().getClass()!=CLASS::Logger)
-    {
-      outputFormattedData = m_JsonRPCServer.HandleRequest(command.getContentStr());
-      Response response(outputFormattedData->GetData());
-      response.setTo(command.getFromStr());
-      send(response);
-    }
+    Response response(m_RPCServer.HandleRequest(command.getContentStr()));
+    response.setTo(command.getFromStr());
+    send(response);
   }
 
   void MessageHandler::printCommand(const Command& command)
@@ -108,16 +167,18 @@ namespace yaodaq
   //Response
   void MessageHandler::printResponse(const Response& response)
   {
-    if(response.getFromStr()==getIdentifier().get())
+    //std::cout<<response<<std::endl;
+    /*if(response.getFromStr()==getIdentifier().get())
     {
       logger()->info("ID : {}\nResult : {}",response.getContentAsJson()["id"].asString(),response.getContentAsJson()["result"].asString());
     }
-    else logger()->info("From {} : \nID : {}\nResult : {}", fmt::format(fmt::emphasis::bold,response.getFromStr()),response.getContentAsJson()["id"].asString(),response.getContentAsJson()["result"].asString());
+    else logger()->info("From {} : \nID : {}\nResult : {}", fmt::format(fmt::emphasis::bold,response.getFromStr()),response.getContentAsJson()["id"].asString(),response.getContentAsJson()["result"].asString());*/
   }
 
   void MessageHandler::onResponse(const Response& response)
   {
     printResponse(response);
+    m_Responses[response.getContentAsJson()["id"].asString()].push_back(response);
   }
 
 

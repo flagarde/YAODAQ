@@ -29,12 +29,17 @@ namespace yaodaq
     void sendText(Message&) final;
     void sendBinary(Message&) final;
 
+
+
+
     void sendToName(Message&,const std::string&);
 
 
     //sendLog
     virtual void sendLog(Log& log) final;
 
+
+    void sendToLogger(Message& message);
 
     void sendToLogger(const Message& message);
 
@@ -57,6 +62,8 @@ namespace yaodaq
     virtual void onFragment(std::shared_ptr<ix::ConnectionState>,ix::WebSocket&, const ix::WebSocketMessagePtr&);*/
   protected:
     std::string getClient();
+    /* This function fill the from key. All module sending message fill this so the only ones not filled are from browser or the webserver itself */
+    void addFrom(Message&) const;
     Clients m_Clients;
     std::string m_Client;
     std::function<void(std::shared_ptr<ix::ConnectionState>,ix::WebSocket&, const ix::WebSocketMessagePtr&)> getMessageCallback();

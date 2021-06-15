@@ -3,11 +3,15 @@
 #include "MessageHandlerServer.hpp"
 
 #include "GeneralParameters.hpp"
+#include "Classes.hpp"
+
+#include <string>
+#include <vector>
 
 namespace yaodaq
 {
 
-enum class  CLASS;
+
 
 class WebSocketServer : public MessageHandlerServer
 {
@@ -23,6 +27,10 @@ public:
   virtual ~WebSocketServer();
   void listen();
   int loop();
+
+  std::vector<std::string> getClientsIdentifier();
+  int getNumberOfClients();
+
 private:
   int m_BrowserNumber{1};
   std::string m_Host;

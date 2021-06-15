@@ -35,6 +35,18 @@ const Infos& Clients::getInfos(const std::string& id) const
   return found->first;
 }
 
+std::vector<std::string> Clients::getClientsIdentifier()
+{
+  std::vector<std::string> identifiers;
+  identifiers.reserve(getNumberOfClients());
+  for(std::map<Infos, ix::WebSocket&>::iterator it = m_Clients.begin(); it != m_Clients.end(); ++it)
+  {
+    identifiers.push_back(it->first.getIdentifier().get());
+  }
+  return std::move(identifiers);
+}
+
+
 std::size_t Clients::getNumberOfClients() const
 {
   return m_Clients.size();

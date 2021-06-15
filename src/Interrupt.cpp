@@ -18,7 +18,15 @@ namespace yaodaq
     std::signal(SIGABRT, [](int a) -> void { m_Signal.store(SIGNAL::ABRT) ; });
     std::signal(SIGFPE, [](int a) -> void { m_Signal.store(SIGNAL::FPE) ; });
   }
-
+  Interrupt::~Interrupt()
+  {
+    std::signal(SIGTERM,SIG_DFL);
+    std::signal(SIGSEGV,SIG_DFL);
+    std::signal(SIGINT,SIG_DFL);
+    std::signal(SIGILL,SIG_DFL);
+    std::signal(SIGABRT,SIG_DFL);
+    std::signal(SIGFPE,SIG_DFL);
+  }
   SIGNAL Interrupt::getSignal() const
   {
     return m_Signal.load();

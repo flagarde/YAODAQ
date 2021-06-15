@@ -46,6 +46,12 @@ bool Infos::operator<(const Infos& infos) const
   return this->getID() < infos.getID();
 }
 
+bool Infos::isWebBased() const
+{
+  if(magic_enum::enum_integer(m_Identifier.getClass())>=magic_enum::enum_integer(CLASS::Web)) return true;
+  else return false;
+}
+
 Identifier Infos::getIdentifier() const
 {
   return m_Identifier;
@@ -78,10 +84,6 @@ void Infos::setKey(const std::string& key)
   }
   else
   {
-    for(std::size_t i=0;i!=result.size();++i)
-    {
-      std::cout<<"*"<<result[i]<<"*"<<std::endl;
-    }
     throw Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "Number of argument in key should be 6 (RoomName/RackName/CrateName/Class/Type/Name) !");
   }
 }

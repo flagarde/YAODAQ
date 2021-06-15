@@ -8,6 +8,14 @@
 namespace yaodaq
 {
 
+//protected constructor to initialize the keys
+/*Message::Message()
+{
+  m_Value["To"] = "";
+  m_Value["From"] = "";
+  m_Value["Content"] = Json::Value{};
+}*/
+
 Json::StreamWriterBuilder Message::m_StreamWriterBuilder = Json::StreamWriterBuilder();
 
 Json::CharReaderBuilder Message::m_CharReaderBuilder = Json::CharReaderBuilder();
@@ -51,6 +59,12 @@ void Message::setTo(const std::string& to)
 {
   m_Value["To"] = to;
 }
+
+Json::Value Message::getKey(const std::string& key)
+{
+  return m_Value["Content"][key];
+}
+
 
 void Message::setType(const TYPE& type)
 {
@@ -126,6 +140,10 @@ std::string Message::getTo()
   return m_Value["To"].asString();
 }
 
+Message::Message(const Message& message)
+{
+  m_Value=message.m_Value;
+}
 
 std::string Message::getContentStr() const
 {

@@ -8,12 +8,6 @@
 
 #include "spdlog/spdlog.h"
 
-/*namespace spdlog
-{
- class logger;
- using sink_ptr = std::shared_ptr<sinks::sink>;
-}*/
-
 namespace yaodaq
 {
   class LoggerHandler
@@ -27,7 +21,7 @@ namespace yaodaq
     void clearSinks();
     void setVerbosity(const std::string&);
 
-    Identifier getIdentifier()
+    Identifier getIdentifier() const
     {
       return m_Identifier;
     }

@@ -16,3 +16,8 @@ set_target_properties(MessageHandlerTests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$
 target_link_libraries(MessageHandlerTests PRIVATE MessageHandlerClient #PRIVATE doctest_with_main
 )
 doctest_discover_tests(MessageHandlerTests COMMAND MessageHandlerTests ADD_LABELS "Test MessageHandler")
+
+add_executable(UtilitiesTests Utilities.test.cpp)
+set_target_properties(UtilitiesTests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/tests")
+target_link_libraries(UtilitiesTests PRIVATE Utilities PRIVATE doctest_with_main)
+doctest_discover_tests(UtilitiesTests COMMAND UtilitiesTests ADD_LABELS "Test Utilities")

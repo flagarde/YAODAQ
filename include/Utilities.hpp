@@ -6,7 +6,7 @@
 
 //-------------------------------------------------------------------------------------------------
 /** Convert std::string to a type
-*/
+ */
 template<class T> inline bool stringToType(const std::string& s, T& t)
 {
   std::istringstream iss(s);
@@ -15,7 +15,7 @@ template<class T> inline bool stringToType(const std::string& s, T& t)
 
 //-------------------------------------------------------------------------------------------------
 /** Convert type to std::string
-*/
+ */
 template<class T> inline std::string typeToString(const T& t)
 {
   std::ostringstream oss;
@@ -38,7 +38,7 @@ template<> inline std::string typeToString(const std::string& t)
 
 //-------------------------------------------------------------------------------------------------
 /** Tokenize string with delimiter.
-*/
+ */
 template<typename T> inline void tokenize(const std::string& inputString, std::vector<T>& tokens, const std::string& delimiter = " ")
 {
   std::string::size_type lastPos = inputString.find_first_not_of(delimiter, 0);
@@ -56,7 +56,7 @@ template<typename T> inline void tokenize(const std::string& inputString, std::v
 
 //-------------------------------------------------------------------------------------------------
 /** Tokenize string with delimiter.
-*/
+ */
 template<> inline void tokenize(const std::string& inputString, std::vector<std::string>& tokens, const std::string& delimiter)
 {
   std::string::size_type lastPos = inputString.find_first_not_of(delimiter, 0);

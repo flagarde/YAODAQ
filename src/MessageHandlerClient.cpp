@@ -3,7 +3,7 @@
 #include "ixwebsocket/IXWebSocketMessage.h"
 
 #include "StatusCode.hpp"
-
+#include "json/json.h"
 #include <iostream>
 
 namespace yaodaq
@@ -30,6 +30,8 @@ namespace yaodaq
       }
       else if(msg->type == ix::WebSocketMessageType::Error)
       {
+        m_List.clear();
+        m_Lists.clear();
         onOwnConnectionError(msg);
       }
       else if(msg->type == ix::WebSocketMessageType::Ping)
@@ -150,6 +152,30 @@ namespace yaodaq
 
   void MessageHandlerClient::onOwnMessage(const ix::WebSocketMessagePtr& msg)
   {
+    Message message;
+    message.parse(msg->str);
+    if(message.getType() == TYPE::Action) onAction(message);
+    else if(message.getType() == TYPE::Open)
+    {
+      m_List.clear();
+      m_List.update(message.getKey("All"),getIdentifier().get());
+      onOpen(message);
+    }
+    else if(message.getType() == TYPE::Close)
+    {
+      m_List.erase(message.getKey("Key").asString());
+      for(std::map<jsonrpccxx::id_type,List>::iterator it= m_Lists.begin();it != m_Lists.end();++it)
+      {
+        it->second.erase(message.getKey("Key").asString());
+      }
+      onClose(message);
+    }
+    else if(message.getType() == TYPE::State) onState(message);
+    else if(message.getType() == TYPE::Data) onData(message);
+    else if(message.getType() == TYPE::Command) onCommand(message);
+    else if(message.getType() == TYPE::Log) onLog(message);
+    else if(message.getType() == TYPE::Response) onResponse(message);
+    else onUnknown(message);
   }
 
   void MessageHandlerClient::onOwnFragment(const ix::WebSocketMessagePtr& msg)

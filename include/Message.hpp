@@ -50,6 +50,8 @@ class Message
 public:
   explicit Message(const TYPE& type = TYPE::Log, const std::string& content = "", const std::string& to = "ALL");
   explicit Message(const TYPE& type, const Json::Value& content, const std::string& to = "ALL");
+  Message(const Message&);
+  //explicit Message();
   void        parse(const std::string&);
   void        setFrom(const std::string&);
   void        setTo(const std::string&);
@@ -57,6 +59,9 @@ public:
   {
     m_Value["Content"][key] = value;
   }
+
+  Json::Value getKey(const std::string& key);
+
   void        setContent(const std::string&);
   void        setContent(const Json::Value&);
   std::string getFrom();
@@ -83,14 +88,17 @@ public:
   std::size_t getContentSize() const;
   Json::Value getContentAsJson() const;
   Json::Value getContentAsJson();
-
+  Json::Value getAsJson() const { return m_Value;}
 protected:
+
   Json::Value m_Value;
   std::unique_ptr<Json::StreamWriter> m_Writer{nullptr};
   std::unique_ptr<Json::CharReader>   m_Reader{nullptr};
 private:
   static Json::StreamWriterBuilder    m_StreamWriterBuilder;
   static Json::CharReaderBuilder      m_CharReaderBuilder;
+  //friend class MessageHandlerClient;
+  //friend class MessageHandlerServer;
 };
 
 class Command: public Message

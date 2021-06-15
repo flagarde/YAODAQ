@@ -35,36 +35,37 @@ namespace yaodaq
         }
         if(m_Message.getType() == TYPE::State)
         {
-          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           printState(m_Message);
           send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Action)
         {
-          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           printAction(m_Message);
           send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Data)
         {
-          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           printData(m_Message);
           send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Log)
         {
-          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           onLog(m_Message);
         }
         else if(m_Message.getType() == TYPE::Command)
         {
-          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
-          printCommand(m_Message);
+
+          //printCommand(m_Message);
           send(m_Message);
+          onCommand(m_Message);
+          //getFormattedData() = m_JsonRPCServer.HandleRequest(m_Message.getContentStr());
+          //Response response(getFormattedData()->GetData());
+          //response.setTo(m_Message.getFromStr());
+          //response.setFrom(getIdentifier().get());
+          //sendToName(response,response.getTo());
         }
         else if(m_Message.getType() == TYPE::Response)
         {
-          m_Message.setFrom(m_Clients.getInfos(connectionState->getId()).getIdentifier().get());
           printResponse(m_Message);
           sendToLogger(m_Message);
           sendToName(m_Message,m_Message.getTo());
@@ -79,17 +80,34 @@ namespace yaodaq
     };
   }
 
+  void MessageHandlerServer::addFrom(Message& message) const
+  {
+    if(message.getFrom().empty())
+    {
+      //If it'a a browser
+      if(m_Clients.getInfos(m_Client).isWebBased()) message.setFrom(m_Clients.getInfos(m_Client).getIdentifier().get());
+      else  message.setFrom(getIdentifier().get());
+    }
+
+
+  }
+
   // Send command
   void MessageHandlerServer::send(Message& message)
   {
+    addFrom(message);
     for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
-      if(getClient() != it->first.getID()) it->second.send(message.get());
+      if(getClient() != it->first.getID())
+      {
+        it->second.send(message.get());
+      }
     }
   }
 
   void MessageHandlerServer::sendText(Message& message)
   {
+    addFrom(message);
     for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
       if(getClient() != it->first.getID()) it->second.sendText(message.get());
@@ -98,6 +116,7 @@ namespace yaodaq
 
   void MessageHandlerServer::sendBinary(Message& message)
   {
+    addFrom(message);
     for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
       if(getClient() != it->first.getID()) it->second.sendBinary(message.get());
@@ -106,11 +125,10 @@ namespace yaodaq
 
   void MessageHandlerServer::sendToName(Message& message,const std::string& name)
   {
-
+    addFrom(message);
     for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
-      std::cout<<name<<"*/*/*/"<<it->first.getIdentifier().get()<<std::endl;
-      if(getClient() != it->first.getID() && name == it->first.getIdentifier().get()) it->second.sendBinary(message.get());
+      if(name == it->first.getIdentifier().get()) it->second.sendBinary(message.get());
     }
   }
 
@@ -121,7 +139,16 @@ namespace yaodaq
     printLog(log);
   }
 
-  void  MessageHandlerServer::sendToLogger(const Message& message)
+  void  MessageHandlerServer::sendToLogger(Message& message)
+  {
+    addFrom(message);
+    for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
+    {
+      if( it->first.isA(CLASS::Logger) && getClient() != it->first.getID()) it->second.send(message.get());
+    }
+  }
+
+  void MessageHandlerServer::sendToLogger(const Message& message)
   {
     for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
@@ -169,13 +196,15 @@ namespace yaodaq
     }
     else
     {
-      if(msg->openInfo.uri == "/logger") key += "Logger/WebLogger/Logger" + std::to_string(m_BrowserNumber);
-      else key += "WebBrowser/Default/Browser" + std::to_string(m_BrowserNumber);
+      if(msg->openInfo.uri == "/logger") key += "WebLogger/WebLogger/Logger" + std::to_string(m_BrowserNumber);
+      else key += "WebBrowser/WebBrowser/Browser" + std::to_string(m_BrowserNumber);
       ++m_BrowserNumber;
     }
     try
     {
+
       m_Clients.try_emplace(connectionState->getId(), key, webSocket);
+
     }
     catch(const Exception& exception)
     {
@@ -188,15 +217,21 @@ namespace yaodaq
       m_NotAccepted[connectionState->getId()]=key;
       return;
     }
-
     Open open(msg->openInfo.uri,headers,msg->openInfo.protocol);
-    open.setFrom(m_Clients.getInfos(m_Client).getClass()+"/"+m_Clients.getInfos(m_Client).getType()+"/"+m_Clients.getInfos(m_Client).getName());
+    std::vector<std::string> all= m_Clients.getClientsIdentifier();
+    // all.push_back(getIdentifier().get());
+    Json::Value arr =Json::Value(Json::arrayValue);
+    for(std::size_t i=0;i!=all.size();++i) arr.append(all[i]);
+    open.addKey("All",arr);
+    open.setFrom(getIdentifier().get());
     open.addKey("ID", connectionState->getId());
-    open.addKey("Key", key);
-    open.addKey("Value", "CONNECTED");
+    open.addKey("Key", m_Clients.getInfos(m_Client).getIdentifier().get());
 
+    //counter.add(key);
     printOpen(open);
     send(open);
+    sendToName(open,m_Clients.getInfos(m_Client).getIdentifier().get());
+
   }
 
   void MessageHandlerServer::onClose(std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg)
@@ -206,17 +241,26 @@ namespace yaodaq
     {
       close.setFrom(m_NotAccepted[connectionState->getId()]);
       m_NotAccepted.erase(connectionState->getId());
+      return;
     }
     else close.setFrom(m_Clients.getInfos(m_Client).getKey());
+
     //
     //std::cout<<"****"<<m_Clients.getInfos(m_Client).getClass()+"/"+m_Clients.getInfos(m_Client).getType()+"/"+m_Clients.getInfos(m_Client).getName()<<std::endl;
     //close.setFrom(m_Clients.getInfos(m_Client).getClass()+"/"+m_Clients.getInfos(m_Client).getType()+"/"+m_Clients.getInfos(m_Client).getName());
     //close.setFrom(m_Clients.getInfos(m_Client).getKey());
     close.addKey("ID", connectionState->getId());
-    close.addKey("Value", "DISCONNECTED");
-    printClose(close);
-    sendToLogger(close);
+    close.addKey("Key", m_Clients.getInfos(m_Client).getIdentifier().get());
     m_Clients.erase(m_Client);
+    std::vector<std::string> all= m_Clients.getClientsIdentifier();
+   // all.push_back(getIdentifier().get());
+    Json::Value arr =Json::Value(Json::arrayValue);
+    for(std::size_t i=0;i!=all.size();++i) arr.append(all[i]);
+    close.addKey("All",arr);
+    printClose(close);
+    send(close);
+    //sendToName(close,m_Clients.getInfos(m_Client).getIdentifier().get());
+
   }
 
   void MessageHandlerServer::onConnectionError(std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg)

@@ -32,6 +32,7 @@ public:
   bool        operator<(const Infos& infos) const;
   Infos() = default;
   bool isA(const CLASS&) const;
+  bool isWebBased() const;
   std::string getID() const;
   Identifier getIdentifier() const;
 private:

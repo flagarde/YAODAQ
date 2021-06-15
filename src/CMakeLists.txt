@@ -5,7 +5,8 @@ include(FlakedTuna)
 include(Spdlog)
 include(MagicEnum)
 include(Jsoncpp)
-include(Jsonrpc)
+#include(Jsonrpc)
+include(JsonRpcCxx)
 include(Toml11)
 include(elogpp)
 include(SourceLocation)
@@ -15,12 +16,14 @@ target_include_directories(Interrupt PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>
 set_target_properties(Interrupt PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Interrupt.hpp")
 install(TARGETS Interrupt)
 
+add_library(Exception "Exception.cpp")
+target_include_directories(Exception PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(Exception PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Exception.hpp")
+target_link_libraries(Exception PUBLIC fmt::fmt PUBLIC source_location)
+install(TARGETS Exception)
 
-
-
-
-
-
+add_library(Utilities INTERFACE)
+target_include_directories(Utilities INTERFACE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> INTERFACE $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 configure_file("ProgramInfos.hpp.in" "ProgramInfos.hpp" @ONLY)
 add_library(ProgramInfos INTERFACE)
@@ -32,7 +35,7 @@ install(TARGETS ProgramInfos)
 add_library(Identifier "Identifier.cpp")
 target_include_directories(Identifier PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(Identifier PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Identifier.hpp;${YAODAQ_INCLUDE}/Classes.hpp")
-target_link_libraries(Identifier PUBLIC magic_enum::magic_enum)
+target_link_libraries(Identifier PUBLIC magic_enum::magic_enum PUBLIC Exception)
 install(TARGETS Identifier)
 
 add_library(LoggerHandler "LoggerHandler.cpp")
@@ -50,7 +53,7 @@ install(TARGETS Message)
 add_library(MessageHandler "MessageHandler.cpp")
 target_include_directories(MessageHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 set_target_properties(MessageHandler PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandler.hpp")
-target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC Message PUBLIC Interrupt PUBLIC ixwebsocket::ixwebsocket PUBLIC jsonrpc)
+target_link_libraries(MessageHandler PUBLIC LoggerHandler PUBLIC Message PUBLIC Interrupt PUBLIC ixwebsocket::ixwebsocket PUBLIC json-rpc-cxx)
 install(TARGETS MessageHandler)
 
 add_library(Infos "Infos.cpp")
@@ -93,13 +96,6 @@ target_include_directories(MessageHandlerClient PUBLIC $<BUILD_INTERFACE:${YAODA
 set_target_properties(MessageHandlerClient PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/MessageHandlerClient.hpp")
 target_link_libraries(MessageHandlerClient PUBLIC MessageHandler PUBLIC WebSocketClient )
 install(TARGETS MessageHandlerClient)
-
-
-add_library(Exception "Exception.cpp")
-target_include_directories(Exception PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-set_target_properties(Exception PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Exception.hpp")
-target_link_libraries(Exception PUBLIC fmt::fmt PUBLIC source_location)
-install(TARGETS Exception)
 
 add_library(File "File.cpp")
 target_include_directories(File PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)

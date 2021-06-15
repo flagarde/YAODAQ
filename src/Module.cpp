@@ -16,13 +16,14 @@ Module::Module(const std::string& name, const std::string& type, const yaodaq::C
 {
   setOnMessageCallback(getMessageCallback());
   setHeaderKey("Key", getIdentifier().get());
-  getDispatcher().AddMethod("getState", &Module::sendState,*this);
-  getDispatcher().AddMethod("add", &Module::add,*this);
+  AddMethod("getState", GetHandle(&Module::getStateStr, *this));
+  //AddMethod("sendState", GetHandle(&Module::sendState, *this)); not woeking WHY!!!!!!!!!!
 }
 
 int Module::loop()
 {
   std::thread startListening(&Module::startListening,this);
+  //startListening();
   startListening.detach();
   onRaisingSignal();
   stopListening();
@@ -41,16 +42,23 @@ void Module::stopListening()
   stop();
   while(getReadyState()!=ix::ReadyState::Closed)
   {
-    std::this_thread::sleep_for(std::chrono::microseconds(100));
+    std::this_thread::sleep_for(std::chrono::microseconds(1000));
   }
   std::exit(0);
 }
 
+void Module::wait()
+{
+  while(getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(1000));
+}
+
 void Module::startListening()
 {
-  start();
+  std::thread start(&Module::start,this);
+  start.detach();
+ // start();
   logger()->info("Listening on {}.",getUrl());
-  while(getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(100));
+  while(getReadyState()!=ix::ReadyState::Open) std::this_thread::sleep_for(std::chrono::microseconds(1000));
 }
 
 void Module::setState(const STATE& state)
@@ -182,6 +190,15 @@ void Module::Pause()
     throw;
   }
 }
+
+std::string Module::getStateStr()
+{
+  sendState(); //SEEEEE AddMethod("sendState", GetHandle(&Module::sendState, *this));
+
+
+  return std::string(magic_enum::enum_name(getState()));
+}
+
 
 void Module::Stop()
 {
@@ -330,7 +347,7 @@ void Module::DoOnCommand(const Message& command)
   if(m_command.getCommand() == "getState") sendState();
 }*/
 
-void Module::DoOnAction(const Action& action)
+void Module::onAction(const Action& action)
 {
   if(getIdentifier().getClass() != CLASS::Logger && getIdentifier().getClass() != CLASS::Controller)
   {
@@ -405,13 +422,13 @@ void Module::DoOnAction(const Action& action)
 {
   printData(data);
 }*/
-
+/*
 void Module::onOwnMessage(const ix::WebSocketMessagePtr& msg)
 {
   Message message;
   message.parse(msg->str);
 
-  if(message.getType() == TYPE::Action) DoOnAction(message);
+  if(message.getType() == TYPE::Action) onAction(message);
   else if(message.getType() == TYPE::Open) onOpen(message);
   else if(message.getType() == TYPE::Close) onClose(message);
   else if(message.getType() == TYPE::State) onState(message);
@@ -420,7 +437,7 @@ void Module::onOwnMessage(const ix::WebSocketMessagePtr& msg)
   else if(message.getType() == TYPE::Log) onLog(message);
   else if(message.getType() == TYPE::Response) onResponse(message);
   else onUnknown(message);
-}
+}*/
 
 void Module::skipConfigFile()
 {

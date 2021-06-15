@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 #include "Infos.hpp"
 
@@ -22,6 +23,9 @@ public:
   std::map<Infos, ix::WebSocket&>::iterator end();
   const Infos& getInfos(const std::string& id) const;
   std::size_t getNumberOfClients() const;
+
+  std::vector<std::string> getClientsIdentifier();
+
 private:
 
   std::map<Infos, ix::WebSocket&>       m_Clients;

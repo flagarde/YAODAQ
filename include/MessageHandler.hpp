@@ -3,22 +3,97 @@
 #include "LoggerHandler.hpp"
 #include "Interrupt.hpp"
 #include "Message.hpp"
-#include "jsonrpc/server.h"
-#include "jsonrpc/client.h"
+//#include "jsonrpc/server.h"
+//#include "jsonrpc/client.h"
+
+#include <map>
+#include <jsonrpccxx/client.hpp>
+#include <jsonrpccxx/server.hpp>
+#include "List.hpp"
+#include <thread>
+#include <future>
 
 namespace yaodaq
 {
 
-  class MessageHandler
+  class MessageHandler : public jsonrpccxx::IClientConnector
   {
   public:
+
+
+
+
     MessageHandler(const Identifier&);
+
+    bool AddMethod(const std::string &name, jsonrpccxx::MethodHandle callback, const jsonrpccxx::NamedParamMapping &mapping = jsonrpccxx::NAMED_PARAM_MAPPING);
+    bool AddMethod(const std::string &name, jsonrpccxx::NotificationHandle callback, const jsonrpccxx::NamedParamMapping &mapping = jsonrpccxx::NAMED_PARAM_MAPPING);
+
+    template<typename T> std::pair<std::map<Identifier,T>,std::map<Identifier,nlohmann::json>> CallMethod(const jsonrpccxx::id_type &id, const std::string &name)
+    {
+       m_Lists[id] = m_List;
+
+      //Save the list of client + server that will answer;
+      std::map<Identifier,T> results;
+      std::map<Identifier,nlohmann::json> errors;
+
+      nlohmann::json result = m_RPCClient.CallMethod<nlohmann::json>(id,name);
+      for(std::size_t i=0; i!=result.size(); ++i)
+      {
+        //It can be an error or a result;
+        if(result[i].contains("result")) results[Identifier(result[i]["identifier"].get<std::string>())] = result[i]["result"].get<T>();
+        else errors[Identifier(result[i]["identifier"].get<std::string>())] = result[i]["error"].get<nlohmann::json>();
+      }
+      return std::move(std::pair<std::map<Identifier,T>,std::map<Identifier,nlohmann::json>>(results,errors));
+    }
+    template<typename T> std::pair<std::map<Identifier,T>,std::map<Identifier,nlohmann::json>> CallMethod(const jsonrpccxx::id_type &id, const std::string &name, const jsonrpccxx::positional_parameter &params)
+    {
+
+
+      m_Lists[id] = m_List;
+
+      std::map<Identifier,T> results;
+      std::map<Identifier,nlohmann::json> errors;
+      nlohmann::json result = m_RPCClient.CallMethod<nlohmann::json>(id,name,params);
+      for(std::size_t i=0; i!=result.size(); ++i)
+      {
+        //It can be an error or a result;
+        if(result[i].contains("result")) results[Identifier(result[i]["identifier"].get<std::string>())] = result[i]["result"].get<T>();
+        else errors[Identifier(result[i]["identifier"].get<std::string>())] = result[i]["error"].get<nlohmann::json>();
+      }
+      return std::move(std::pair<std::map<Identifier,T>,std::map<Identifier,nlohmann::json>>(results,errors));
+    }
+    template<typename T> std::pair<std::map<Identifier,T>,std::map<Identifier,nlohmann::json>> CallMethodNamed(const jsonrpccxx::id_type &id, const std::string &name, const jsonrpccxx::named_parameter &params = {})
+    {
+
+      m_Lists[id] = m_List;
+
+      std::map<Identifier,T> results;
+      std::map<Identifier,nlohmann::json> errors;
+      nlohmann::json result = m_RPCClient.CallMethodNamed<nlohmann::json>(id,name,params);
+      for(std::size_t i=0; i!=result.size(); ++i)
+      {
+        //It can be an error or a result;
+        if(result[i].contains("result")) results[Identifier(result[i]["identifier"].get<std::string>())] = result[i]["result"].get<T>();
+        else errors[Identifier(result[i]["identifier"].get<std::string>())] = result[i]["error"].get<nlohmann::json>();
+      }
+      return std::move(std::pair<std::map<Identifier,T>,std::map<Identifier,nlohmann::json>>(results,errors));
+    }
+
+    void CallNotification(const std::string &name, const jsonrpccxx::positional_parameter &params = {}) { m_RPCClient.CallNotification(name,params); }
+    void CallNotificationNamed(const std::string &name, const jsonrpccxx::named_parameter &params = {}) { m_RPCClient.CallNotificationNamed(name,params); }
+
+
 
     // Send command
     virtual void send(Message&) = 0;
     virtual void sendText(Message&) = 0;
     virtual void sendBinary(Message&) = 0;
 
+    // getMethodNames
+    //std::vector<std::string> getMethodNames(const bool includeHidden = false);
+
+    // getHelp
+   // std::string help(const std::string& methodName);
 
     //******************* LOGS ******************************//
     // Log messages
@@ -66,7 +141,7 @@ namespace yaodaq
     }
 
 
-    Command command(const std::string& methodName, const jsonrpc::Request::Parameters& params = {})
+   /* Command command(const std::string& methodName, const jsonrpc::Request::Parameters& params = {})
     {
       std::shared_ptr<jsonrpc::FormattedData> jsonRequest = m_JsonRPCClient.BuildRequestData(methodName,params);
       Command command(jsonRequest->GetData());
@@ -79,7 +154,7 @@ namespace yaodaq
       Command command(jsonRequest->GetData());
       return std::move(command);
     }
-
+*/
     //******************************************************//
     virtual void onUnknown(const Unknown&);
 
@@ -164,7 +239,7 @@ namespace yaodaq
     }
 
 
-    Identifier getIdentifier()
+    Identifier getIdentifier() const
     {
       return m_LoggerHandler.getIdentifier();
     }
@@ -175,6 +250,9 @@ namespace yaodaq
 
 
   protected:
+
+    mutable List m_List;
+    mutable std::map<jsonrpccxx::id_type,List> m_Lists;
     void printLog(const Log& log);
 
     //When it receive a Log
@@ -183,14 +261,10 @@ namespace yaodaq
     LoggerHandler m_LoggerHandler;
     Interrupt  m_Interrupt;
 
-    auto& getDispatcher()
-    {
-      return m_JsonRPCServer.GetDispatcher();
-    }
-    jsonrpc::Server m_JsonRPCServer;
-    jsonrpc::Client m_JsonRPCClient;
   private:
-    std::shared_ptr<jsonrpc::FormattedData> outputFormattedData;
-    jsonrpc::JsonFormatHandler m_JsonFormatHandler;
+    jsonrpccxx::JsonRpc2Server m_RPCServer;
+    jsonrpccxx::JsonRpcClient m_RPCClient;
+    std::string Send(const std::string &);
+    std::map<std::string,std::vector<Response>> m_Responses;
   };
 };

@@ -23,10 +23,15 @@ void Controller::sendAction(const std::string& action)
     throw Exception(StatusCode::INVALID_PARAMETER, "{} is not a valid Action", action);
 }
 
-void Controller::sendCommand(const std::string& command)
+/*void Controller::sendCommand(const std::string& command)
 {
   Command m_command(command);
   sendBinary(m_command);
-}
+}*/
+
+void Controller::onData(const Data&){};
+
+void Controller::onState(const State&){};
+
 
 };

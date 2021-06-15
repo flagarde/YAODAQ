@@ -4,14 +4,36 @@
 #include "ProgramInfos.hpp"
 #include "magic_enum.hpp"
 
-#include "jsonrpc/request.h"
+//#include "jsonrpc/request.h"
+
+#include "linenoise.hpp"
 
 #include <iostream>
+#include <future>
+#include <any>
 
 using namespace yaodaq;
 
+
+
+
 int main(int argc, char** argv)
 {
+
+  std::string path = "history.txt";
+
+  // Enable the multi-line mode
+  linenoise::SetMultiLine(true);
+
+  // Set max length of the history
+  linenoise::SetHistoryMaxLen(static_cast<int>(std::numeric_limits<int>::max()));
+
+  // Load history
+  linenoise::LoadHistory(path.c_str());
+
+
+
+
   ProgramInfos infos;
   infos.Logo();
   CLI::App  app{"Controller"};
@@ -21,26 +43,14 @@ int main(int argc, char** argv)
   app.add_option("-i,--ip", host, "IP of the server")->check(CLI::ValidIPV4);
   std::string name {"Controller"};
   app.add_option("-n,--name", name, "Name of the Controller");
-  std::string action;
-  app.add_option("-a,--action", action, "Action");
-  std::string commandName;
-  app.add_option("-c,--command", commandName, "Command");
-  std::vector<std::string> params;
-  app.add_option("--params", params, "Parameters");
   std::string verbosity{"trace"};
   app.add_option("-v,--verbosity", verbosity, "Verbosity")->check(
     [](const std::string& t) {
       if(t != "off" && t != "trace" && t != "info" && t != "debug" && t != "warning" && t != "critical") return "Wrong verbosity level";
-                                                                  else
-                                                                    return "";
+                                                                      else
+                                                                        return "";
     },
     "Verbosity level", "Verbosity level");
-
-  std::string log;
-  app.add_option("-l,--log", log, "log to send.");
-  std::string level{"Info"};
-  app.add_option("--level", level, "level of the log.");
-
   try
   {
     app.parse(argc, argv);
@@ -48,20 +58,10 @@ int main(int argc, char** argv)
   catch(const CLI::ParseError& e)
   {
     spdlog::error("{}", e.what());
-    return e.get_exit_code();
+    return app.exit(e);
   }
 
-  jsonrpc::Request::Parameters parameters;
-  for(std::size_t i=0;i!=params.size();++i)
-  {
-    std::size_t pos = params[i].find(":");
-    std::string type=params[i].substr(0,pos);
-    std::string value=params[i].substr(pos+1);
-    if(type=="int") parameters.push_back(static_cast<int>(std::stoi(value)));
-    if(type=="double") parameters.push_back(static_cast<double>(std::stod(value)));
-    if(type=="float") parameters.push_back(static_cast<float>(std::stof(value)));
-    if(type=="string") parameters.push_back(value);
-  }
+
 
 
   GeneralParameters::setPort(port);
@@ -70,30 +70,111 @@ int main(int argc, char** argv)
   Controller controller(name);
   controller.setVerbosity(verbosity);
 
-  controller.startListening();
+  //controller.startListening();
+  CLI::App  options{"Options"};
+  std::string action;
+  options.add_option("-a,--action", action, "Action");
+  std::string commandName;
+  options.add_option("-c,--command", commandName, "Command");
+  std::vector<std::string> params;
+  options.add_option<std::vector<std::string>>("--params", params, "Parameters");
 
-  if(!action.empty())
+
+  std::string log;
+  options.add_option("-l,--log", log, "log to send.");
+  std::string level{"Info"};
+  options.add_option("--level", level, "level of the log.");
+  bool quit{false};
+  options.add_flag("--quit",quit,"Quit the application.");
+  //jsonrpc::Request::Parameters parameters;
+
+  std::string line;
+  std::thread loop(&Controller::loop,&controller);
+  loop.detach();
+  controller.wait();
+  do
   {
-    controller.sendAction(action);
-  }
-  if(!commandName.empty())
-  {
-    Command command = controller.command(commandName,parameters);
-    controller.send(command);
-  }
-  if(!log.empty())
-  {
-    auto _level = magic_enum::enum_cast<yaodaq::LEVEL>(level);
-    if(_level.has_value())
+
+    if(linenoise::Readline(fmt::format("{}{}{}{}",fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold,"["),fmt::format(fg(fmt::color::green) | fmt::emphasis::bold,"要DAQ "),name,fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold," ] ")).c_str(),line))
     {
-      controller.log(_level.value(),log);
+      break;
     }
-    else
+    try
     {
-      controller.logger()->warn("{} level is unknown ! Falling back to Info",level);
-      controller.log(LEVEL::Info,log);
+      options.parse(line);
+      if(quit)
+      {
+        controller.stopListening();
+        std::exit(0);
+      }
+      if(!action.empty())
+      {
+        controller.sendAction(action);
+      }
+      if(!commandName.empty())
+      {
+
+        std::vector<nlohmann::json> parameters;
+        for(std::size_t i=0;i!=params.size();++i)
+        {
+          std::cout<<params[i]<<std::endl;
+          parameters.push_back(nlohmann::json(params[i]));
+        }
+        std::pair<std::map<Identifier,nlohmann::json>,std::map<Identifier,nlohmann::json>> responses = controller.CallMethod<nlohmann::json>("FFF",commandName,parameters);
+        fmt::print(fg(fmt::color::green),"Results :\n");
+        for(std::map<Identifier,nlohmann::json>::iterator it=responses.first.begin(); it!=responses.first.end();++it)
+        {
+          if(it->second.is_null()) fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),"");
+          else if(it->second.is_object()) fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),it->second.dump());
+          else if(it->second.is_array()) fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),it->second.dump());
+          else fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),it->second);
+        }
+        fmt::print(fg(fmt::color::red),"Errors :\n");
+        for(std::map<Identifier,nlohmann::json>::iterator it=responses.second.begin(); it!=responses.second.end();++it)
+        {
+          std::string what;
+          if(it->second.contains("data")) what = fmt::format(fg(fmt::color::red),"   code : {}, message : \"{}\", data : {}\n",it->second["code"].get<int>(),it->second["message"].get<std::string>(),it->second["data"].dump());
+          else what = fmt::format(fg(fmt::color::red),"   code : {}, message : \"{}\"\n",it->second["code"].get<int>(),it->second["message"].get<std::string>());
+          fmt::print("{} From {} :\n{}",fmt::format(fg(fmt::color::red),"X "),fmt::format(fmt::emphasis::bold,it->first.get()),what);
+        }
+
+        //Command command = controller.command(commandName,parameters);
+        //controller.send(command);
+      }
+      if(!log.empty())
+      {
+        auto _level = magic_enum::enum_cast<yaodaq::LEVEL>(level);
+        if(_level.has_value())
+        {
+          controller.log(_level.value(),log);
+        }
+        else
+        {
+          fmt::print("{}{}{}{}\n",fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold,"["),fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold,"要DAQ"),fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold,"] "),fmt::format("{} level is unknown ! Falling back to Info",level));
+          controller.log(LEVEL::Info,log);
+        }
+      }
     }
+    catch(const CLI::ParseError& e)
+    {
+      fmt::print("{}{}{}{}\n",fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold,"["),fmt::format(fg(fmt::color::red) | fmt::emphasis::bold,"要DAQ"),fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold,"] "),e.what());
+      options.exit(e);
+    }
+    catch(const Exception& e)
+    {
+      fmt::print("{}{}{}{}\n",fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold,"["),fmt::format(fg(fmt::color::red) | fmt::emphasis::bold,"要DAQ"),fmt::format(fg(fmt::color::orange) | fmt::emphasis::bold,"] "),e.what());
+    }
+    action.clear();
+    commandName.clear();
+    log.clear();
+    // Add line to history
+    linenoise::AddHistory(line.c_str());
+
+    // Save history
+    linenoise::SaveHistory(path.c_str());
   }
-  std::this_thread::sleep_for(std::chrono::microseconds(1000000));
-  controller.stopListening();
+  while(true);
+
+
+
 }

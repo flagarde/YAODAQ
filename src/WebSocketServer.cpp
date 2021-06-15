@@ -23,12 +23,23 @@ WebSocketServer::WebSocketServer(const std::string& name,const int& port, const 
 {
   ix::initNetSystem();
   setOnClientMessageCallback(getMessageCallback());
+  AddMethod("getClients", GetHandle(&WebSocketServer::getClientsIdentifier, *this), {});
 }
 
 WebSocketServer::~WebSocketServer()
 {
   stop();
   ix::uninitNetSystem();
+}
+
+int WebSocketServer::getNumberOfClients()
+{
+  return m_Clients.getNumberOfClients();
+}
+
+std::vector<std::string> WebSocketServer::getClientsIdentifier()
+{
+  return m_Clients.getClientsIdentifier();
 }
 
 void WebSocketServer::listen()

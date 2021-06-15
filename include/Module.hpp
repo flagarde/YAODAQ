@@ -21,8 +21,8 @@ public:
   virtual ~Module() = default;
 
   int loop();
+
   void skipConfigFile();
-  int add(int a,int b){return a+b;}
   void                                   Initialize();
   void                                   Connect();
   void                                   Configure();
@@ -36,7 +36,8 @@ public:
 
   void                                   LoopOnStart();
   void                                   LoopOnPause();
-  STATE                                 getState();
+  STATE                                  getState();
+  std::string                            getStateStr();
   static void                            setConfigFile(const std::string&);
   void                                   printParameters();
   void                                   stopListening();
@@ -50,9 +51,11 @@ public:
     return getIdentifier().getName();
   }
 
+  void wait();
+
 protected:
   static ConfigurationLoader            m_Config;
-  virtual void                    onOwnMessage(const ix::WebSocketMessagePtr&) override;
+  //virtual void                    onOwnMessage(const ix::WebSocketMessagePtr&) final;
   void                            LoadConfig();
   virtual void                    verifyParameters();
   toml::value                     m_Conf{""};
@@ -80,12 +83,12 @@ private:
   virtual void                                        DoLoopOnPause();
   virtual void                                        DoAtFirstStart();
   bool                                                m_IsFirstStart{true};
-  void                                                DoOnAction(const Action&);
+  void                                                onAction(const Action&) override;
   //void                                                DoOnCommand(const Message&);
   //virtual void                                        DoOnData(const Data& data);
   void                                                sendState();
   void                                                setState(const STATE&);
-  void                                                DoOnMessage(const ix::WebSocketMessagePtr&);
+  //void                                                DoOnMessage(const ix::WebSocketMessagePtr&);
 };
 
 };

@@ -12,7 +12,7 @@ namespace yaodaq
   public:
     void init() const;
     SIGNAL getSignal() const;
-
+    ~Interrupt();
   private:
     volatile static std::atomic<SIGNAL> m_Signal;
   };
