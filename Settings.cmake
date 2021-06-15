@@ -21,7 +21,7 @@ set(ZLIB-NG_TAG "2.0.3")
 
 # IXWebSocket
 set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket.git")
-set(IXWEBSOCKET_TAG "v11.2.4")
+set(IXWEBSOCKET_TAG "v11.2.8")
 
 # Fmt
 set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt.git")
@@ -137,9 +137,9 @@ option(BUILD_WEBSERVER "Build the civet webserver" ON)
 option(BUILD_CONFIGURATOR "Build Configurator" ON)
 option(BUILD_CONTROLLER "Build Controller" ON)
 option(BUILD_LOGGER "Build Logger" ON)
-
+option(BUILD_SNMP "Build SNMP" ON)
+option(BUILD_WIENER "Build WIENER" ON)
 option(BUILD_DAQ "Build DAQ" ON)
-option(BUILD_SNMP "Build SNMP" OFF)
 option(BUILD_Serial "Build Serial" OFF)
 
 option(BUILD_LCIO "Build LCIO" OFF)

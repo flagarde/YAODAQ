@@ -250,9 +250,12 @@ namespace yaodaq
 
 
   protected:
-
-    mutable List m_List;
-    mutable std::map<jsonrpccxx::id_type,List> m_Lists;
+    jsonrpccxx::JsonRpc2Server m_RPCServer;
+    jsonrpccxx::JsonRpcClient m_RPCClient;
+    std::string Send(const std::string &);
+    std::map<std::string,std::vector<Response>> m_Responses;
+    List m_List;
+    std::map<jsonrpccxx::id_type,List> m_Lists;
     void printLog(const Log& log);
 
     //When it receive a Log
@@ -262,9 +265,6 @@ namespace yaodaq
     Interrupt  m_Interrupt;
 
   private:
-    jsonrpccxx::JsonRpc2Server m_RPCServer;
-    jsonrpccxx::JsonRpcClient m_RPCClient;
-    std::string Send(const std::string &);
-    std::map<std::string,std::vector<Response>> m_Responses;
+
   };
 };

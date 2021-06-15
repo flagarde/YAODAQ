@@ -47,6 +47,16 @@ void Board::printConnectorParameters()
   m_Connector->printParameters();
 }
 
+std::shared_ptr<Connector> Board::getConnector()
+{
+  if(m_Connector!=nullptr) return m_Connector;
+  else
+  {
+    error("{} need to be connected before sending to connector !",getName());
+    return nullptr;
+  }
+}
+
 void Board::DoConnect() {}
 
 void Board::DoDisconnect() {}

@@ -19,7 +19,6 @@ public:
     for(Json::Value::const_iterator it=value.begin(); it!=value.end(); ++it)
     {
       if(it->asString()!=me) m_List.insert(it->asString());
-      std::cout<<"777777777"<<it->asString()<<std::endl;
     }
   }
 

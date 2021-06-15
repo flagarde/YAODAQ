@@ -11,17 +11,6 @@ public:
   void turnOnChannel();
   void turnOffChannel();
 
-  void DoInitialize()
-  {
-    addMethod();
-  }
-
-  virtual void addMethod()
-  {
-    std::cout<<"LLLLLLLLLLLLLLLLLLLLLLLLLLLLL"<<m_RPCServer.Add("turn", GetHandle(&Mpod::turnOnChannel,*this),{})<<std::endl;
-   // std::cout<<"LLLLLLLLLLLLLLLLLLLLLLLLLLLLL"<<m_RPCServer.Add("turn", GetHandle(&Mpod::turnOffChannel,*this),{})<<std::endl;
-
-  }
 
 
 };

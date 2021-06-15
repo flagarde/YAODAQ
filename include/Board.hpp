@@ -16,6 +16,7 @@ public:
   Board(const std::string& name = "", const std::string& type = "DefaultBoard", const yaodaq::CLASS& _class = yaodaq::CLASS::Board);
   virtual ~Board() = default;
   void printConnectorParameters();
+  std::shared_ptr<Connector> getConnector();
 
 private:
   static ConnectorFactory    m_ConnectorFactory;

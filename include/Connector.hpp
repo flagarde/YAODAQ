@@ -25,7 +25,7 @@ public:
   virtual Response sendCommand(const Command&) const { return Response(); };
 
 protected:
-  std::string  m_Type{""};
+  std::string  m_Type;
   virtual void DoConnect()    = 0;
   virtual void DoDisconnect() = 0;
   Connector()                 = default;
