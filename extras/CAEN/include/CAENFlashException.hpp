@@ -16,7 +16,7 @@ enum FLASH_API_ERROR_CODES : int_least32_t
   UNSUPPORTED_FLASH_DEVICE = -7
 };
 
-class CAENFlashException: public Exception
+class CAENFlashException: public yaodaq::Exception
 {
 public:
   CAENFlashException(const int_least32_t& code, const source_location& location = source_location::current());

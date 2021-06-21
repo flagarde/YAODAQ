@@ -25,4 +25,4 @@ private:
   std::unique_ptr<File> m_File{nullptr};
 };
 
-};
+}

@@ -302,4 +302,4 @@ void ConfigurationLoader::setFileName(const std::string& file)
   m_Filename = file;
 }
 
-};
+}

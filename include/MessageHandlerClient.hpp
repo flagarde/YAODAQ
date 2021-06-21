@@ -62,4 +62,4 @@ namespace yaodaq
   private:
     std::function<void(const ix::WebSocketMessagePtr&)> m_MessageCallback;
   };
-};
+}

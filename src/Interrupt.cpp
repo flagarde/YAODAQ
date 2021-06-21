@@ -32,4 +32,4 @@ namespace yaodaq
     return m_Signal.load();
   }
 
-};
+}

@@ -4,7 +4,7 @@ include(CPM)
 cpm()
 
 if(NOT DEFINED JSON_RPC_CXX_REPOSITORY)
-  set(JSON_RPC_CXX_REPOSITORY "https://github.com/yaodaq/json-rpc-cxx.git")
+  set(JSON_RPC_CXX_REPOSITORY "https://gitlab.com/ExternalRepositories/json-rpc-cxx.git")
 endif()
 
 if(NOT DEFINED JSON_RPC_CXX_TAG)

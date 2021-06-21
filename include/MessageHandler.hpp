@@ -20,10 +20,10 @@ namespace yaodaq
   {
   public:
 
-
-
-
     MessageHandler(const Identifier&);
+
+
+
 
     bool AddMethod(const std::string &name, jsonrpccxx::MethodHandle callback, const jsonrpccxx::NamedParamMapping &mapping = jsonrpccxx::NAMED_PARAM_MAPPING);
     bool AddMethod(const std::string &name, jsonrpccxx::NotificationHandle callback, const jsonrpccxx::NamedParamMapping &mapping = jsonrpccxx::NAMED_PARAM_MAPPING);
@@ -267,4 +267,4 @@ namespace yaodaq
   private:
 
   };
-};
+}

@@ -27,4 +27,4 @@ private:
   bool                                                        m_Loaded{false};
 };
 
-};
+}

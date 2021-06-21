@@ -26,4 +26,4 @@ namespace yaodaq
     std::string m_Name{"Unnamed"};
   };
 
-};
+}

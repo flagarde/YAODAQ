@@ -16,9 +16,10 @@ Module::Module(const std::string& name, const std::string& type, const yaodaq::C
 {
   setOnMessageCallback(getMessageCallback());
   setHeaderKey("Key", getIdentifier().get());
+  std::cout<<"Module methods"<<std::endl;
   AddMethod("getState", GetHandle(&Module::getStateStr, *this));
-  //AddMethod("sendState", GetHandle(&Module::sendState, *this)); not woeking WHY!!!!!!!!!!
 }
+
 
 int Module::loop()
 {
@@ -193,7 +194,7 @@ void Module::Pause()
 
 std::string Module::getStateStr()
 {
-  sendState(); //SEEEEE AddMethod("sendState", GetHandle(&Module::sendState, *this));
+  //sendState(); //SEEEEE AddMethod("sendState", GetHandle(&Module::sendState, *this));
 
 
   return std::string(magic_enum::enum_name(getState()));
@@ -444,4 +445,4 @@ void Module::skipConfigFile()
   m_UseConfigFile=false;
 }
 
-};
+}

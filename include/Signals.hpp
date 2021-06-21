@@ -28,4 +28,4 @@ namespace yaodaq
   };
 
   static std::map<SIGNAL,std::string> SignalName{{SIGNAL::NO,"SIGNO"},{SIGNAL::ABRT,"SIGABRT"},{SIGNAL::FPE,"SIGFPE"},{SIGNAL::ILL,"SIGILL"},{SIGNAL::SEGV,"SIGSEGV"},{SIGNAL::INT,"SIGINT"},{SIGNAL::TERM,"SIGTERM"}};
-};
+}

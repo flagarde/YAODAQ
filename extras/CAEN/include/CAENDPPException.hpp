@@ -4,7 +4,7 @@
 
 namespace CAEN
 {
-class CAENDPPException: public Exception
+class CAENDPPException: public yaodaq::Exception
 {
 public:
   CAENDPPException(const int_least32_t& code, const source_location& location = source_location::current());

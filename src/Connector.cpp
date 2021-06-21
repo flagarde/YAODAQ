@@ -52,4 +52,4 @@ bool Connector::isConnected()
     return true;
 }
 
-};
+}

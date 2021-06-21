@@ -22,4 +22,4 @@ namespace yaodaq
     static bool        m_URLIsSet;
   };
 
-};
+}

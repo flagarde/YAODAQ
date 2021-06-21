@@ -35,4 +35,4 @@ Configurator::Configurator(const int& port, const std::string& host, const int& 
   m_session.open(soci::mysql, "");
 }
 
-};
+}

@@ -2,6 +2,9 @@
 
 #include "Internal.hpp"
 
+namespace yaodaq
+{
+
 enum class StatusCode : int_least32_t
 {
   SUCCESS = 0,
@@ -19,3 +22,5 @@ enum class StatusCode : int_least32_t
   WRONG_NUMBER_PARAMETERS,
   ALREADY_PRESENT = 5000,
 };
+
+}

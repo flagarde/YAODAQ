@@ -60,7 +60,7 @@ void Message::setTo(const std::string& to)
   m_Value["To"] = to;
 }
 
-Json::Value Message::getKey(const std::string& key)
+Json::Value Message::getKey(const std::string& key) const
 {
   return m_Value["Content"][key];
 }
@@ -515,9 +515,13 @@ Action::Action(const Message& message)
 
 Command::Command(const std::string& content, const std::string& to): Message(TYPE::Command, Json::Value(), to)
 {
-  Json::String errs;
-  bool         ok = m_Reader->parse(&content[0], &content[content.size()], &m_Value["Content"], &errs);
-  if(!ok) { throw Exception(StatusCode::JSON_PARSING, errs); }
+  if(content!="")
+  {
+    Json::String errs;
+    bool         ok = m_Reader->parse(&content[0], &content[content.size()], &m_Value["Content"], &errs);
+    if(!ok) { m_Value["Content"]=content; }
+  }
+
   //m_Value["Content"] = content;
 }
 
@@ -577,7 +581,7 @@ Response::Response(const Message& message)
   else setType(message.getType());
 }
 
-};
+}
 
 std::ostream& operator<<(std::ostream& os, const yaodaq::Message& message)
 {

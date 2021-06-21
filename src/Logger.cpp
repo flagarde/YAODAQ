@@ -8,4 +8,4 @@ Logger::Logger(const std::string& name, const std::string& type) : Module(name,t
   skipConfigFile();
 }
 
-};
+}

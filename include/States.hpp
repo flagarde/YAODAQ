@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+namespace yaodaq
+{
+
 enum class STATE : std::uint_least8_t
 {
   Uninitialized,
@@ -16,3 +19,5 @@ enum class STATE : std::uint_least8_t
   Released,
   Quited
 };
+
+}

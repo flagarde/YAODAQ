@@ -19,4 +19,4 @@ private:
   bool                     m_URLIsSet{false};
 };
 
-};
+}

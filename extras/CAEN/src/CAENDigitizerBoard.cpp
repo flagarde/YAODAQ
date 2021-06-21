@@ -6,6 +6,8 @@
 #include "Flash.hpp"
 #include "Utilities.hpp"
 
+using namespace yaodaq;
+
 namespace CAEN
 {
 Json::Value parse(const CAEN_DGTZ_X742_EVENT_t* p)
@@ -1315,7 +1317,7 @@ void CAENDigitizerBoard::Read()
   if(m_BufferSize == 0)
   {
     uint32_t lstatus = ReadRegister(CAEN_DGTZ_ACQ_STATUS_ADD);
-    if(lstatus & (0x1 << 19)) Exception(StatusCode::FAILURE, "Over Temperature");
+    if(lstatus & (0x1 << 19)) yaodaq::Exception(yaodaq::StatusCode::FAILURE, "Over Temperature");
   }
 }
 
@@ -1761,7 +1763,7 @@ void CAENDigitizerBoard::verifyParameters()
     }
     catch(...)
     {
-      throw Exception(StatusCode::INVALID_PARAMETER, "WRITE_REGISTER should be of the form [[address,data,mask],...]");
+      throw yaodaq::Exception(yaodaq::StatusCode::INVALID_PARAMETER, "WRITE_REGISTER should be of the form [[address,data,mask],...]");
     }
   }
   catch(...)
@@ -1770,17 +1772,17 @@ void CAENDigitizerBoard::verifyParameters()
 
   //RECORD_LENGTH
   m_RecordLength = toml::find_or(m_Conf, "RECORD_LENGTH", 1024);
-  if(m_RecordLength > 1024) { throw Exception(StatusCode::INVALID_PARAMETER, "RECORD_LENGTH should not be > 1024"); }
+  if(m_RecordLength > 1024) { throw yaodaq::Exception(yaodaq::StatusCode::INVALID_PARAMETER, "RECORD_LENGTH should not be > 1024"); }
   else if(m_FamilyCode == "XX742")
   {
     if(m_RecordLength != 1024 && m_RecordLength != 520 && m_RecordLength != 256 && m_RecordLength != 136)
-    { throw Exception(StatusCode::INVALID_PARAMETER, "RECORD_LENGTH can be only 1024, 520, 256 or 136 for XX742 family"); }
+    { throw yaodaq::Exception(yaodaq::StatusCode::INVALID_PARAMETER, "RECORD_LENGTH can be only 1024, 520, 256 or 136 for XX742 family"); }
   }
 
   //DRS4_FREQUENCY
   m_DRS4Frequency = toml::find_or<std::string>(m_Conf, "DRS4_FREQUENCY", "5GHz");
   if(m_DRS4Frequency != "5GHz" && m_DRS4Frequency != "2.5GHz" && m_DRS4Frequency != "1GHz" && m_DRS4Frequency != "750MHz")
-  { throw Exception(StatusCode::INVALID_PARAMETER, "DRS4_FREQUENCY can be 5GHz 2.5GHz 1GHz or 750MHz"); }
+  { throw yaodaq::Exception(yaodaq::StatusCode::INVALID_PARAMETER, "DRS4_FREQUENCY can be 5GHz 2.5GHz 1GHz or 750MHz"); }
   if(PrevDRS4Freq != m_DRS4Frequency) change = true;
 
   //FIXME CORRECTION LEVEL
@@ -1810,7 +1812,7 @@ void CAENDigitizerBoard::verifyParameters()
 
   //FIXME SHOULDN'T BE HERE OUTPUT_FILE_FORMAT
   m_FileFormat = toml::find_or<std::string>(m_Conf, "OUTPUT_FILE_FORMAT", "ROOT");
-  if(m_FileFormat != "ASCII" && m_FileFormat != "ROOT" && m_FileFormat != "BINARY") { throw Exception(StatusCode::INVALID_PARAMETER, "OUTPUT_FILE_FORMAT can be ROOT, ASCII or BINARY"); }
+  if(m_FileFormat != "ASCII" && m_FileFormat != "ROOT" && m_FileFormat != "BINARY") { throw yaodaq::Exception(StatusCode::INVALID_PARAMETER, "OUTPUT_FILE_FORMAT can be ROOT, ASCII or BINARY"); }
 
   //FIXME SHOULDN'T BE HERE OUTPUT_FILE_HEADER
   m_Header = toml::find_or(m_Conf, "OUTPUT_FILE_HEADER", true);
@@ -1820,14 +1822,14 @@ void CAENDigitizerBoard::verifyParameters()
 
   //FAST_TRIGGER
   m_FastTriggerMode = toml::find_or<std::string>(m_Conf, "FAST_TRIGGER", "DISABLED");
-  if(m_FastTriggerMode != "DISABLED" && m_FastTriggerMode != "ACQ_ONLY") { throw Exception(StatusCode::INVALID_PARAMETER, "FAST_TRIGGER can be DISABLED or ACQ_ONLY"); }
+  if(m_FastTriggerMode != "DISABLED" && m_FastTriggerMode != "ACQ_ONLY") { throw yaodaq::Exception(StatusCode::INVALID_PARAMETER, "FAST_TRIGGER can be DISABLED or ACQ_ONLY"); }
 
   //ENABLED_FAST_TRIGGER_DIGITIZING
   m_FastTriggerEnabled = toml::find_or<bool>(m_Conf, "ENABLED_FAST_TRIGGER_DIGITIZING", true);
 
   //PULSE_POLARITY
   std::string pulsePolarity = toml::find_or<std::string>(m_Conf, "PULSE_POLARITY", "NEGATIVE");
-  if(pulsePolarity != "NEGATIVE" && pulsePolarity != "POSITIVE") { throw Exception(StatusCode::INVALID_PARAMETER, "PULSE_POLARITY can be POSITIVE or NEGATIVE"); }
+  if(pulsePolarity != "NEGATIVE" && pulsePolarity != "POSITIVE") { throw yaodaq::Exception(StatusCode::INVALID_PARAMETER, "PULSE_POLARITY can be POSITIVE or NEGATIVE"); }
   for(size_t i = 0; i != m_MAX_SET; ++i) m_PulsePolarity[i] = pulsePolarity;
 
   //DC_OFFSET
@@ -1906,7 +1908,7 @@ void CAENDigitizerBoard::verifyParameters()
     {
       std::vector<float> dc;
       tokenize(val, dc, ",");
-      if(dc.size() != 8) throw Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "GRP_CH_DC_OFFSET should be one the form \"0.,0.,0.,0.,0.,0.,0.,0.\"");
+      if(dc.size() != 8) throw yaodaq::Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "GRP_CH_DC_OFFSET should be one the form \"0.,0.,0.,0.,0.,0.,0.,0.\"");
       for(std::size_t i = 0; i != dc.size(); ++i)
       {
         m_DC8file[i] = dc[i];
@@ -1943,7 +1945,7 @@ void CAENDigitizerBoard::verifyParameters()
   }
 
   m_FPIOtype = toml::find_or<std::string>(m_Conf, "FPIO_LEVEL", "NIM");
-  if(m_FPIOtype != "NIM" && m_FPIOtype != "TTL") { throw Exception(StatusCode::INVALID_PARAMETER, "FPIO_LEVEL can be NIM or TTL"); }
+  if(m_FPIOtype != "NIM" && m_FPIOtype != "TTL") { throw yaodaq::Exception(StatusCode::INVALID_PARAMETER, "FPIO_LEVEL can be NIM or TTL"); }
 
   m_StartupCalibration = toml::find_or<bool>(m_Conf, "SKIP_STARTUP_CALIBRATION", false);
 }
@@ -1967,9 +1969,9 @@ void CAENDigitizerBoard::Set_calibrated_DCO(const int& ch)
       SetChannelDCOffset((uint32_t)ch, m_DCoffset[ch]);
     }
   }
-  catch(const Exception& error)
+  catch(const yaodaq::Exception& error)
   {
-    throw Exception(StatusCode::INVALID_PARAMETER, "Error setting group {} offset", ch);
+    throw yaodaq::Exception(StatusCode::INVALID_PARAMETER, "Error setting group {} offset", ch);
   }
 }
 
@@ -1990,7 +1992,7 @@ void CAENDigitizerBoard::ProgramDigitizer()
   {
     Reset();
   }
-  catch(const Exception& exception)
+  catch(const yaodaq::Exception& exception)
   {
     error("Unable to reset digitizer !\nPlease reset digitizer manually then restart the program !");
     throw;
@@ -2025,7 +2027,7 @@ void CAENDigitizerBoard::ProgramDigitizer()
         interruptConfig.setState("ENABLED");
         SetInterruptConfig(interruptConfig);
       }
-      catch(const Exception& exception)
+      catch(const yaodaq::Exception& exception)
       {
         error("Error configuring interrupts. Interrupts disabled");
         m_InterruptNumEvents = 0;
@@ -2257,7 +2259,7 @@ bool CAENDigitizerBoard::Interrupt()
     else
       IRQWait(m_INTERRUPT_TIMEOUT);
   }
-  catch(const Exception& exception)
+  catch(const yaodaq::Exception& exception)
   {
     if(exception.code() == CAEN_DGTZ_Timeout)
     {
@@ -2271,7 +2273,7 @@ bool CAENDigitizerBoard::Interrupt()
   {
     if(m_FormFactor == "VME64" || m_FormFactor == "VME64X") { boardId = VMEIACKCycle(VMEHandle, m_VME_INTERRUPT_LEVEL); }
   }
-  catch(const Exception& exception)
+  catch(const yaodaq::Exception& exception)
   {
     if((exception.code() != CAEN_DGTZ_Success) || (boardId != m_VME_INTERRUPT_STATUS_ID))
     {

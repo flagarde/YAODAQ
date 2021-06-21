@@ -4,6 +4,8 @@
 #include "StatusCode.hpp"
 #include "Exception.hpp"
 
+using namespace yaodaq;
+
 TEST_CASE("Test Exceptions")
 {
   Exception exception(StatusCode::NOT_FOUND, "This {0} the answer : {1}", "is", 42);

@@ -48,4 +48,4 @@ private:
   Identifier m_Identifier;
 };
 
-};
+}

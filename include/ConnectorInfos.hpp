@@ -30,4 +30,4 @@ private:
   std::int32_t m_Handle{0};
 };
 
-};
+}

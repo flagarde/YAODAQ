@@ -67,4 +67,4 @@ int ConnectorInfos::getNumberBoardConnected()
   return m_BoardConnected;
 }
 
-};
+}

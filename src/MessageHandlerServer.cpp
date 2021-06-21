@@ -10,7 +10,7 @@
 
 namespace yaodaq
 {
-  MessageHandlerServer::MessageHandlerServer(const int& port, const std::string& host, const int& backlog,const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily,const Identifier& identifier) : ix::WebSocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs, addressFamily) , MessageHandler(identifier)
+  MessageHandlerServer::MessageHandlerServer(const Identifier& identifier) :  MessageHandler(identifier)
   {
     m_MessageCallback=[this](std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg)
     {
@@ -54,15 +54,9 @@ namespace yaodaq
         }
         else if(m_Message.getType() == TYPE::Command)
         {
-
-          //printCommand(m_Message);
+          printCommand(m_Message);
           send(m_Message);
           onCommand(m_Message);
-          //getFormattedData() = m_JsonRPCServer.HandleRequest(m_Message.getContentStr());
-          //Response response(getFormattedData()->GetData());
-          //response.setTo(m_Message.getFromStr());
-          //response.setFrom(getIdentifier().get());
-          //sendToName(response,response.getTo());
         }
         else if(m_Message.getType() == TYPE::Response)
         {
@@ -287,4 +281,4 @@ namespace yaodaq
   {
 
   }*/
-};
+}

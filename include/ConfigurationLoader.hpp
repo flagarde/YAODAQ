@@ -52,4 +52,4 @@ private:
   std::string                           actualCrateName{""};
 };
 
-};
+}

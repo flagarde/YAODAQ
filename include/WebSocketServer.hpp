@@ -11,9 +11,7 @@
 namespace yaodaq
 {
 
-
-
-class WebSocketServer : public MessageHandlerServer
+class WebSocketServer : public ix::WebSocketServer, public MessageHandlerServer
 {
 public:
   WebSocketServer(const std::string& name,const int& port = GeneralParameters::getPort(),
@@ -29,12 +27,11 @@ public:
   int loop();
 
   std::vector<std::string> getClientsIdentifier();
-  int getNumberOfClients();
+  size_t                   getNumberOfClients();
 
 private:
-  int m_BrowserNumber{1};
   std::string m_Host;
   int m_Port;
 };
 
-};
+}

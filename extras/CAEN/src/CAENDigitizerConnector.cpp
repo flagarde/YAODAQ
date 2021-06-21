@@ -6,6 +6,8 @@
 #include "StatusCode.hpp"
 #include "toml.hpp"
 
+using namespace yaodaq;
+
 namespace CAEN
 {
 CAENDigitizerConnector::CAENDigitizerConnector(): Connector("CAENDigitizer") {}

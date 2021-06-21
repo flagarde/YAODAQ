@@ -17,4 +17,4 @@ namespace yaodaq
     volatile static std::atomic<SIGNAL> m_Signal;
   };
 
-};
+}

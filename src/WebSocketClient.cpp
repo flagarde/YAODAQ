@@ -35,4 +35,4 @@ void WebSocketClient::start()
   ix::WebSocket::start();
 }
 
-};
+}

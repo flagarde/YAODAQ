@@ -50,4 +50,4 @@ std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfo
     throw Exception(StatusCode::NOT_FOUND, "Connector {0} not loaded ! Connector loaded are : {1}", type, m_StringConnectorNames);
 }
 
-};
+}

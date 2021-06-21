@@ -67,4 +67,4 @@ void File::createDirectories()
   if(!directories.exists() && directories.path() != "") std::filesystem::create_directories(directories);
 }
 
-};
+}

@@ -18,4 +18,4 @@ private:
   soci::session m_session;
 };
 
-};
+}

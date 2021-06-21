@@ -6,6 +6,8 @@
 #include "magic_enum.hpp"
 #include "toml.hpp"
 
+using namespace yaodaq;
+
 namespace CAEN
 {
 enum class VMEBridgeModel

@@ -17,4 +17,4 @@ BoardInfos::BoardInfos(const Infos& infos, const toml::value& parameters, const 
   m_Parameters          = parameters;
 }
 
-};
+}

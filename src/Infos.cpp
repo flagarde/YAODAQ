@@ -158,4 +158,4 @@ int Infos::getIndex() const
   return m_Index;
 }
 
-};
+}

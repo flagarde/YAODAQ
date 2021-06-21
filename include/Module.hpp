@@ -20,6 +20,7 @@ public:
   Module(const std::string& name = "Unknown", const std::string& type = "Module", const CLASS& _class = CLASS::Module);
   virtual ~Module() = default;
 
+
   int loop();
 
   void skipConfigFile();
@@ -91,4 +92,4 @@ private:
   //void                                                DoOnMessage(const ix::WebSocketMessagePtr&);
 };
 
-};
+}

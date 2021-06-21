@@ -78,4 +78,4 @@ namespace yaodaq
     return getClassStr()+"/"+getType()+"/"+getName();
   }
 
-};
+}

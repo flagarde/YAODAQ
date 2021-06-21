@@ -19,10 +19,10 @@ namespace ix
 
 namespace yaodaq
 {
-  class MessageHandlerServer : public ix::WebSocketServer, public MessageHandler
+  class MessageHandlerServer :  public MessageHandler
   {
   public:
-    MessageHandlerServer(const int& port, const std::string& host, const int& backlog,const std::size_t& maxConnections, const int& handshakeTimeoutSecs,const int& addressFamily,const Identifier& identifier);
+    MessageHandlerServer(const Identifier& identifier);
 
     // Send command
     void send(Message&) final;
@@ -43,6 +43,13 @@ namespace yaodaq
 
     void sendToLogger(const Message& message);
 
+    // Command
+    void onCommand(const Command& command) override
+    {
+      Response response(m_RPCServer.HandleRequest(command.getContentStr()));
+      response.setTo(command.getFromStr());
+      sendToName(response,command.getFromStr());
+    }
 
     void sendClose(const Close&);
 
@@ -73,4 +80,4 @@ namespace yaodaq
     std::map<std::string,std::string> m_NotAccepted;
   };
 
-};
+}

@@ -31,4 +31,4 @@ private:
   std::map<Infos, ix::WebSocket&>       m_Clients;
 };
 
-};
+}

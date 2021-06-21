@@ -4,8 +4,6 @@
 #include "ProgramInfos.hpp"
 #include "magic_enum.hpp"
 
-//#include "jsonrpc/request.h"
-
 #include "linenoise.hpp"
 
 #include <iostream>
@@ -20,7 +18,7 @@ using namespace yaodaq;
 int main(int argc, char** argv)
 {
 
-  std::string path = "history.txt";
+  std::string path = ".history.txt";
 
   // Enable the multi-line mode
   linenoise::SetMultiLine(true);
@@ -60,9 +58,6 @@ int main(int argc, char** argv)
     spdlog::error("{}", e.what());
     return app.exit(e);
   }
-
-
-
 
   GeneralParameters::setPort(port);
   GeneralParameters::setHost(host);
@@ -117,26 +112,52 @@ int main(int argc, char** argv)
         std::vector<nlohmann::json> parameters;
         for(std::size_t i=0;i!=params.size();++i)
         {
+          try
+          {
+            int value = std::stoi(params[i]);
+            parameters.push_back(nlohmann::json(value));
+          }
+          catch(const std::invalid_argument& e)
+          {
+            try
+            {
+              int value = std::stod(params[i]);
+              parameters.push_back(nlohmann::json(value));
+            }
+            catch(const std::invalid_argument& e)
+            {
+              parameters.push_back(nlohmann::json(params[i]));
+            }
+          }
           std::cout<<params[i]<<std::endl;
-          parameters.push_back(nlohmann::json(params[i]));
+
         }
-        std::pair<std::map<Identifier,nlohmann::json>,std::map<Identifier,nlohmann::json>> responses = controller.CallMethod<nlohmann::json>("FFF",commandName,parameters);
-        fmt::print(fg(fmt::color::green),"Results :\n");
-        for(std::map<Identifier,nlohmann::json>::iterator it=responses.first.begin(); it!=responses.first.end();++it)
+        try
         {
-          if(it->second.is_null()) fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),"");
-          else if(it->second.is_object()) fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),it->second.dump());
-          else if(it->second.is_array()) fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),it->second.dump());
-          else fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),it->second);
+          std::pair<std::map<Identifier,nlohmann::json>,std::map<Identifier,nlohmann::json>> responses = controller.CallMethod<nlohmann::json>("FFF",commandName,parameters);
+          parameters.clear();
+          params.clear();
+          fmt::print(fg(fmt::color::green),"Results :\n");
+          for(std::map<Identifier,nlohmann::json>::iterator it=responses.first.begin(); it!=responses.first.end();++it)
+          {
+            if(it->second.is_null()) fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),"");
+            fmt::print("{} From {} : {} \n",fmt::format(fg(fmt::color::green),"* "),fmt::format(fmt::emphasis::bold,it->first.get()),it->second.dump());
+          }
+          fmt::print(fg(fmt::color::red),"Errors :\n");
+          for(std::map<Identifier,nlohmann::json>::iterator it=responses.second.begin(); it!=responses.second.end();++it)
+          {
+            std::string what;
+            if(it->second.contains("data")) what = fmt::format("   code : {}, message : \"{}\", data : {}\n",it->second["code"].get<int>(),it->second["message"].get<std::string>(),it->second["data"].dump());
+            else what = fmt::format("   code : {}, message : \"{}\"\n",it->second["code"].get<int>(),it->second["message"].get<std::string>());
+            if(it->second["code"].get<int>()==-32601) fmt::print(fg(fmt::color::orange),"X From {} :\n{}",fmt::format(fmt::emphasis::bold,it->first.get()),fmt::format(fg(fmt::color::orange),"{}",what));
+            else fmt::print(fg(fmt::color::red),"X From {} :\n{}",fmt::format(fmt::emphasis::bold,it->first.get()),fmt::format(fg(fmt::color::red),"{}",what));
+          }
         }
-        fmt::print(fg(fmt::color::red),"Errors :\n");
-        for(std::map<Identifier,nlohmann::json>::iterator it=responses.second.begin(); it!=responses.second.end();++it)
+        catch(...)
         {
-          std::string what;
-          if(it->second.contains("data")) what = fmt::format(fg(fmt::color::red),"   code : {}, message : \"{}\", data : {}\n",it->second["code"].get<int>(),it->second["message"].get<std::string>(),it->second["data"].dump());
-          else what = fmt::format(fg(fmt::color::red),"   code : {}, message : \"{}\"\n",it->second["code"].get<int>(),it->second["message"].get<std::string>());
-          fmt::print("{} From {} :\n{}",fmt::format(fg(fmt::color::red),"X "),fmt::format(fmt::emphasis::bold,it->first.get()),what);
+          controller.error("Error processing the Responses!");
         }
+
 
         //Command command = controller.command(commandName,parameters);
         //controller.send(command);

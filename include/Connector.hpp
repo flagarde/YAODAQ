@@ -33,4 +33,4 @@ protected:
   ConnectorInfos m_Infos;
 };
 
-};
+}

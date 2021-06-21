@@ -60,7 +60,7 @@ public:
     m_Value["Content"][key] = value;
   }
 
-  Json::Value getKey(const std::string& key);
+  Json::Value getKey(const std::string& key) const;
 
   void        setContent(const std::string&);
   void        setContent(const Json::Value&);
@@ -235,6 +235,6 @@ public:
 };
 
 
-};
+}
 
 std::ostream& operator<<(std::ostream& os, const yaodaq::Message& message);

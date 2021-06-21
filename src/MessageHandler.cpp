@@ -347,4 +347,4 @@ namespace yaodaq
     if(magic_enum::enum_integer(signal)>=magic_enum::enum_integer(SEVERITY::Critical)) std::exit(magic_enum::enum_integer(signal));
   }
 
-};
+}

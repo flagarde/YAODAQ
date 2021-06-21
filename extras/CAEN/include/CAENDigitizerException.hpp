@@ -4,7 +4,7 @@
 
 namespace CAEN
 {
-class CAENDigitizerException: public Exception
+class CAENDigitizerException: public yaodaq::Exception
 {
 public:
   CAENDigitizerException(const int_least32_t& code, const source_location& location = source_location::current());

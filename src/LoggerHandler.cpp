@@ -46,4 +46,4 @@ namespace yaodaq
     m_Logger->set_level(m_Verbosity);
   }
 
-};
+}

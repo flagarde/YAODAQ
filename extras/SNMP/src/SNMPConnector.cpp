@@ -10,6 +10,8 @@
 #include <memory>
 #include <bitset>
 
+using namespace yaodaq;
+
 namespace SNMP
 {
 

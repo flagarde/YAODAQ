@@ -32,4 +32,4 @@ protected:
   std::int32_t m_Handle{-1};
 };
 
-};
+}
