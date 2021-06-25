@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HV/LV Controller</title>
+  <link rel="shortcut icon" href="./imgs/YAODAQ.png" />
+  <link rel="stylesheet" type="text/css" href="css/HV.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.27.0/build/global/luxon.min.js"></script>
+<script src="./chartjs-adapter-luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0/dist/chartjs-plugin-streaming.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+
+  <script>
+
+
+
+    var ws;
+    var DEBUG = true;
+    var TableInitialized=false;
+
+
+  </script>
+  <script>
+    var ip = decodeURIComponent(window.location.search.match(/(\?|&)ip\=([^&]*)/)[2]);
+    var port = decodeURIComponent(window.location.search.match(/(\?|&)port\=([^&]*)/)[2]);
+    var address = "ws://" + ip + ":" + port + "/logger";
+  </script>
+
+</head>
+
+<body>
+  <!-- Execute when the page is opening -->
+  <script type="text/javascript">
+  window.onload = function()
+  {
+    document.body.style.background = "red";
+    document.getElementById("NotConnected").style.display = "block";
+    StartWebSocket();
+
+  };
+
+
+  function send(message)
+  {
+    ws.send(message);
+  }
+
+
+      function StartWebSocket()
+      {
+        if("WebSocket" in window)
+        {
+          ws = new WebSocket(address.toString());
+
+          ws.onopen = function()
+          {
+            document.getElementById("NotConnected").style.display = "none";
+            document.body.style.background = "#b3e0ff";
+            Command("getState");
+            //requestChannelsInfos();
+            //CreateTableFromJSON();
+          };
+
+          ws.onmessage = function(evt)
+          {
+            var obj = JSON.parse(evt.data);
+            if(obj.Type == "State")
+            {
+              STATE = obj["Content"]["State"];
+
+            }
+            else if(obj.Type == "Action")
+            {
+              ACTION = obj["Content"]["Action"];
+
+            }
+            else if(obj.Type == "Data")
+            {
+              var size = (JSON.stringify(obj["Content"]).length /1048576.0).toFixed(2);
+              //alert(size);
+
+            }
+            else if(obj.Type == "Log")
+            {
+
+            }
+            else if(obj.Type == "Command")
+            {
+
+            }
+            else if(obj.Type == "Response")
+            {
+              if(obj["Content"]["id"]=="requestChannelsInfos")
+              {
+                createDataRows(obj);
+                onReceiveData(obj);
+                CreateTableFromJSON(obj);
+                UpdateData(obj);
+              }
+            }
+          };
+
+          ws.onclose = function()
+          {
+
+          };
+        }
+        else
+        {
+          // The browser doesn't support WebSocket
+          alert("WebSocket NOT supported by your Browser!");
+        }
+      }
+    </script>
+    <script>
+
+      function Command(method,...args)
+      {
+        var obj = new Object();
+        obj.Type="Command";
+        obj.From="";
+        obj.To="";
+        var obj2 = new Object();
+        obj2.jsonrpc = "2.0";
+        obj2.method  = method;
+        obj2.id= "1";
+        obj2.params = new Array();
+        for(var arg = 1; arg < arguments.length; ++arg)
+        {
+          obj2.params.push(arguments[arg]);
+        }
+        obj.Content=obj2;
+        var jsonString= JSON.stringify(obj);
+        //alert(jsonString);
+        send(jsonString);
+      }
+
+
+
+
+
+      </script>
+
+
+  <div id="NotConnected">
+    <center>
+      <h1>WebSocket Not Connected !!!</h1>
+    </center>
+  </div>
+
+  <center><h1>HV/LV Controller</h1></center>
+
+  <div class="table-wrapper" id="showData"></div>
+
+
+  <center>
+<div id="container">
+<center>
+  <div id="inner">
+    <canvas class="child" id="Voltage"></canvas>
+    <canvas class="child" id="Current"></canvas>
+  </div>
+  </center>
+</div>
+</center>
+
+<script>
+
+
+
+function UpdateData(json)
+{
+  if(json["Content"]["result"])
+  {
+    var toto = JSON.parse(json["Content"]["result"]);
+    for(var i = 0; i < toto["modules"].length; i++)
+    {
+      for(var j = 0; j < toto["modules"][i]["channels"].length; j++)
+      {
+        for(var k = 0; k < col.length; k++)
+        {
+          //alert(json["From"]+"M"+i+"ch"+j+col[k]);
+          if(col[k]=="set_voltage") document.getElementById(json["From"]+"M"+i+"ch"+j+col[k]).value=toto["modules"][i]["channels"][j][col[k]];
+          else document.getElementById(json["From"]+"M"+i+"ch"+j+col[k]).innerHTML=toto["modules"][i]["channels"][j][col[k]];
+        }
+      }
+    }
+  }
+}
+var col = [];
+
+function CreateTableFromJSON(json)
+{
+  if(json["Content"]["result"])
+  {
+    var toto = JSON.parse(json["Content"]["result"]);
+    var divContainer = document.getElementById("showData");
+    var table = document.createElement("table");
+    table.classList.add("fl-table");
+
+    if(!document.getElementById("Head"))
+    {
+      var thead = document.createElement("thead");
+      thead.id = "Head";
+
+      for(var key in toto["modules"][0]["channels"][0])
+      {
+        if(col.indexOf(key) === -1) col.push(key);
+      }
+
+      var tr = table.insertRow(-1);
+      for(var j = 0; j < col.length; j++)
+      {
+        var th = document.createElement("th");      // TABLE HEADER.
+        th.innerHTML = col[j];
+        tr.appendChild(th);
+      }
+      th = document.createElement("th");
+      th.innerHTML = "On/Off";
+      tr.appendChild(th);
+      thead.appendChild(tr);
+      table.appendChild(thead);
+      divContainer.appendChild(table);
+    }
+    if(!document.getElementById(json["From"]))
+    {
+      var body = document.createElement("tbody");
+      body.id = json["From"];
+      for(var i = 0; i < toto["modules"].length; i++)
+      {
+        //Modifie this after for multi crate case !!!!!!!!!!!!!!!!!!!!!!!
+        //Add a line with module Name
+        if(!document.getElementById("Module : "+i))
+        {
+          var tr = body.insertRow(-1);
+          tr.id = "Module"+i;
+          var cell = tr.insertCell(0);
+          cell.classList.add("module");
+          cell.innerHTML= "Module : "+i;
+          cell.colSpan = col.length+1;
+          tr.appendChild(cell);
+          body.appendChild(tr);
+        }
+        for(var j = 0; j < toto["modules"][i]["channels"].length; j++)
+        {
+          if(!document.getElementById(json["From"]+"Module"+i+"ch"+j))
+          {
+            var tr = body.insertRow(-1);
+            tr.id=json["From"]+"Module"+i+"ch"+j;
+            for(var k = 0; k < col.length; k++)
+            {
+              var tabCell = tr.insertCell(-1);
+              tabCell.id=json["From"]+"M"+i+"ch"+j+col[k];
+              //alert("***"+tabCell.id+"***");
+              if(col[k]=="set_voltage")
+              {
+                var input = document.createElement('input');
+                input.type="number";
+                input.channel=toto["modules"][i]["channels"][j]["channel_number"];
+                input.value=toto["modules"][i]["channels"][j][col[k]];
+                input.min=0;
+                input.max=8000;
+                input.onchange = function()
+                {
+                  Command("setVoltage",parseInt(this.channel),parseFloat(this.value));
+                }
+                tabCell.appendChild(input);
+              }
+              else tabCell.innerHTML = toto["modules"][i]["channels"][j][col[k]];
+              //alert(tabCell.id);
+              tr.appendChild(tabCell);
+            }
+            if(!String(json["From"])+cell.innerHTML+"ch"+j+"ON/OFF")
+            {
+              //Add on/off buttons
+              var tabCell = tr.insertCell(-1);
+              var button = document.createElement('button');
+              button.onclick = function()
+              {
+                Command("turnOn",parseInt(this.value));
+              }
+              button.innerHTML="ON";
+              button.classList.add("on");
+              button.value=toto["modules"][i]["channels"][j]["channel_number"];
+              tabCell.appendChild(button);
+              var button = document.createElement('button');
+              button.onclick = function()
+              {
+                Command("turnOff",parseInt(this.value));
+              }
+              button.innerHTML="OFF";
+              button.classList.add("off");
+              button.value=toto["modules"][i]["channels"][j]["channel_number"];
+              tabCell.appendChild(button);
+              tr.appendChild(tabCell);
+            }
+
+
+
+            body.appendChild(tr);
+
+
+
+          }
+        }
+      }
+      table.appendChild(body);
+      divContainer.appendChild(table);
+    }
+  }
+}
+    /*
+      var body = document.createElement("tbody");
+      body.id = json["From"];
+      alert(body.id+"  "+json["From"]);
+      body.setAttribute("id","Body");
+
+      for(var i = 0; i < toto["modules"].length; i++)
+      {
+        //Modifie this after for multi crate case !!!!!!!!!!!!!!!!!!!!!!!
+        //Add a line with module Name
+        if(!document.getElementById("Module : "+i))
+        {
+          var tr = body.insertRow(-1);
+          tr.id = "Module : "+i;
+          var cell = tr.insertCell(0);
+          cell.classList.add("module");
+          cell.innerHTML= "Module : "+i;
+          cell.colSpan = col.length+1;
+          tr.appendChild(cell);
+          body.appendChild(tr);
+        }
+        //Now add the channels
+        for(var j = 0; j < toto["modules"][i]["channels"].length; j++)
+        {
+          if(!document.getElementById(json["From"]+tr.id+"ch"+j))
+          {
+            var tr = tbody.insertRow(-1);
+            tr.id=json["From"]+tr.id+"ch"+j;
+            for(var k = 0; k < col.length; k++)
+            {
+              var tabCell = tr.insertCell(-1);
+              tabCell.id=String(json["From"])+cell.innerHTML+"ch"+j+col[k];
+              if(col[k]=="set_voltage")
+              {
+                var input = document.createElement('input');
+                input.type="number";
+                input.channel=toto["modules"][i]["channels"][j]["channel_number"];
+                input.value=toto["modules"][i]["channels"][j][col[k]];
+                input.min=0;
+                input.max=8000;
+                input.onchange = function()
+                {
+                  Command("setVoltage",parseInt(this.channel),parseFloat(this.value));
+                }
+                tabCell.appendChild(input);
+              }
+              else tabCell.innerHTML = toto["modules"][i]["channels"][j][col[k]];
+            }
+            if(!String(json["From"])+cell.innerHTML+"ch"+j+"ON/OFF")
+            {
+              //Add on/off buttons
+              var tabCell = tr.insertCell(-1);
+              var button = document.createElement('button');
+              button.onclick = function()
+              {
+                Command("turnOn",parseInt(this.value));
+              }
+              button.innerHTML="ON";
+              button.classList.add("on");
+              button.value=toto["modules"][i]["channels"][j]["channel_number"];
+              tabCell.appendChild(button);
+              var button = document.createElement('button');
+              button.onclick = function()
+              {
+                Command("turnOff",parseInt(this.value));
+              }
+              button.innerHTML="OFF";
+              button.classList.add("off");
+              button.value=toto["modules"][i]["channels"][j]["channel_number"];
+              tabCell.appendChild(button);
+              tbody.appendChild(tr);
+            }
+          }
+
+
+
+          /*
+          else
+          {
+            for(var k = 0; k < col.length; k++)
+            {
+              var cell = document.getElementById(String(json["From"])+cell.innerHTML+"ch"+j+col[k]);
+              cell.innerHTML=toto["modules"][i]["channels"][j][col[k]];
+            }
+          }*/
+     // }
+   //  table.appendChild(body);
+   // }
+   // }
+   // divContainer.appendChild(table);
+ // }
+//}
+
+
+
+
+        /*
+        //divContainer.innerHTML = "";
+        if(json["Content"]["result"])
+        {
+         //var jsonString= JSON.stringify(json["Content"]["result"]);
+          //alert(jsonString);
+          var toto = JSON.parse(json["Content"]["result"]);
+          //var jsonString2= JSON.stringify(toto);
+          //alert(jsonString2);
+         // alert(json["result"]["modules"].length);
+         var thead = document.createElement("thead");
+         var col = [];
+            for(var key in toto["modules"][0]["channels"][0])
+            {
+              if(col.indexOf(key) === -1)
+              {
+                col.push(key);
+              }
+            }
+            var table = document.createElement("table");
+            table.classList.add("fl-table");
+
+
+            var tr = table.insertRow(-1);
+            for(var j = 0; j < col.length; j++)
+            {
+              //alert(col[i]);
+              var th = document.createElement("th");      // TABLE HEADER.
+
+              th.innerHTML = col[j];
+              tr.appendChild(th);
+
+            }
+            th = document.createElement("th");
+            th.innerHTML = "On/Off";
+            tr.appendChild(th);
+
+            thead.appendChild(tr);
+            table.appendChild(thead);
+
+            var tbody = document.createElement("tbody");
+            tbody.setAttribute("id","Body");
+          for(var i = 0; i < toto["modules"].length; i++)
+          {
+
+            var tr = tbody.insertRow(-1);
+            var cell = tr.insertCell(0);
+            cell.classList.add("module");
+            cell.innerHTML= "Module : "+json["From"];
+            cell.colSpan = col.length+1;
+
+            var tr = tbody.insertRow(-1);                   // TABLE ROW.
+
+
+            // ADD JSON DATA TO THE TABLE AS ROWS.
+            for(var j = 0; j < toto["modules"][i]["channels"].length; j++)
+            {
+
+              tr = tbody.insertRow(-1);
+
+              for (var k = 0; k < col.length; k++)
+              {
+                var tabCell = tr.insertCell(-1);
+                if(col[k]=="set_voltage")
+                {
+                  var input = document.createElement('input');
+                  input.type="number";
+                  input.channel=toto["modules"][i]["channels"][j]["channel_number"];
+                  input.value=toto["modules"][i]["channels"][j][col[k]];
+                  input.min=0;
+                  input.max=8000;
+                  input.onchange = function()
+                  {
+                    //var double =  parseDouble(this.value);
+                    //alert(this.value+this.channel);
+                    Command("setVoltage",parseInt(this.channel),parseFloat(this.value));
+                  }
+
+
+
+                  tabCell.appendChild(input);
+                  //<input type="number" id="quantity" name="quantity" min="1" max="5">
+                }
+                else tabCell.innerHTML = toto["modules"][i]["channels"][j][col[k]];
+              }
+
+              //Add on/off buttons
+              var tabCell = tr.insertCell(-1);
+              var button = document.createElement('button');
+              button.onclick = function()
+              {
+                //var channelll=toto["modules"][i]["channels"][j]["name"];
+               // alert(this.value);
+                Command("turnOn",parseInt(this.value));
+              }
+              button.innerHTML="ON";
+              button.classList.add("on");
+              button.value=toto["modules"][i]["channels"][j]["channel_number"];
+              //tabCell.innerHTML = "<button type='button' onclick=\"alert(\"JJ\");\">On</button><button type='button' >Off</button>";
+              tabCell.appendChild(button);
+              var button = document.createElement('button');
+              button.onclick = function()
+              {
+                Command("turnOff",parseInt(this.value));
+              }
+              button.innerHTML="OFF";
+              button.classList.add("off");
+              button.value=toto["modules"][i]["channels"][j]["channel_number"];
+              tabCell.appendChild(button);
+
+
+
+
+            }
+
+
+          }
+          table.appendChild(tbody);
+          divContainer.appendChild(table);
+        }
+
+
+*/
+
+
+
+
+
+    function UpdateTable(json)
+    {
+        var divContainer = document.getElementById("showData");
+        //divContainer.innerHTML = "";
+        if(json["Content"]["result"])
+        {
+          //var jsonString= JSON.stringify(json["Content"]["result"]);
+          //alert(jsonString);
+          var toto = JSON.parse(json["Content"]["result"]);
+          var jsonString2= JSON.stringify(toto);
+          //alert(jsonString2);
+         // alert(json["result"]["modules"].length);
+         var thead = document.createElement("thead");
+         var col = [];
+            for(var key in toto["modules"][0]["channels"][0])
+            {
+              if(col.indexOf(key) === -1)
+              {
+                col.push(key);
+              }
+            }
+            var table = document.createElement("table");
+            table.classList.add("fl-table");
+
+
+            var tr = table.insertRow(-1);
+            for(var j = 0; j < col.length; j++)
+            {
+              //alert(col[i]);
+              var th = document.createElement("th");      // TABLE HEADER.
+
+              th.innerHTML = col[j];
+              tr.appendChild(th);
+
+            }
+            th = document.createElement("th");
+            th.innerHTML = "On/Off";
+            tr.appendChild(th);
+
+            thead.appendChild(tr);
+            table.appendChild(thead);
+            var tbody = document.createElement("tbody");
+          for(var i = 0; i < toto["modules"].length; i++)
+          {
+
+            var tr = tbody.insertRow(-1);
+            var cell = tr.insertCell(0);
+            cell.classList.add("module");
+            cell.innerHTML= "Module : "+json["From"];
+            cell.colSpan = col.length+1;
+
+            var tr = tbody.insertRow(-1);                   // TABLE ROW.
+
+
+            // ADD JSON DATA TO THE TABLE AS ROWS.
+            for(var j = 0; j < toto["modules"][i]["channels"].length; j++)
+            {
+
+              tr = tbody.insertRow(-1);
+
+              for (var k = 0; k < col.length; k++)
+              {
+                var tabCell = tr.insertCell(-1);
+                //tabCell.classList.add("table-data")
+                //tabCell.classList.add(((j%2 === 0)?'odd':'even'));
+                tabCell.innerHTML = toto["modules"][i]["channels"][j][col[k]];
+              }
+              var tabCell = tr.insertCell(-1);
+              var button = document.createElement('button');
+              button.onclick = function()
+              {
+                //var channelll=toto["modules"][i]["channels"][j]["name"];
+               // alert(this.value);
+                Command("turnOn",parseInt(this.value));
+              }
+              button.innerHTML="ON";
+              button.value=toto["modules"][i]["channels"][j]["channel_number"];
+              //tabCell.innerHTML = "<button type='button' onclick=\"alert(\"JJ\");\">On</button><button type='button' >Off</button>";
+              tabCell.appendChild(button);
+              var button = document.createElement('button');
+              button.onclick = function()
+              {
+                Command("turnOff",parseInt(this.value));
+              }
+              button.innerHTML="OFF";
+              button.value=toto["modules"][i]["channels"][j]["channel_number"];
+              tabCell.appendChild(button);
+            }
+
+
+          }
+          table.appendChild(tbody);
+          divContainer.appendChild(table);
+        }
+
+
+
+
+    }
+
+
+
+
+
+  function requestChannelsInfos()
+  {
+    var obj = new Object();
+    obj.Type="Command";
+    obj.From="";
+    obj.To="";
+    var obj2 = new Object();
+    obj2.jsonrpc = "2.0";
+    obj2.method  = "getChannelsInfos";
+    obj2.id= "requestChannelsInfos";
+    obj2.param = new Array();
+    obj.Content=obj2;
+    var jsonString= JSON.stringify(obj);
+    send(jsonString);
+  };
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+const CHART_COLORS = {
+  red: 'rgb(255, 99, 132)',
+  orange: 'rgb(255, 159, 64)',
+  yellow: 'rgb(255, 205, 86)',
+  green: 'rgb(75, 192, 192)',
+  blue: 'rgb(54, 162, 235)',
+  purple: 'rgb(153, 102, 255)',
+  grey: 'rgb(201, 203, 207)'
+};
+
+const NAMED_COLORS = [
+  CHART_COLORS.red,
+  CHART_COLORS.orange,
+  CHART_COLORS.yellow,
+  CHART_COLORS.green,
+  CHART_COLORS.blue,
+  CHART_COLORS.purple,
+  CHART_COLORS.grey,
+];
+
+function namedColor(index) {
+  return NAMED_COLORS[index % NAMED_COLORS.length];
+};
+
+
+function createDataRows(json)
+{
+  //alert("LKLL");
+  if(json["Content"]["result"])
+  {
+    var toto = JSON.parse(json["Content"]["result"]);
+
+    for(var i = 0; i < toto["modules"].length; i++)
+    {
+      for(var j = 0; j < toto["modules"][i]["channels"].length; j++)
+      {
+
+        var yetIncluded = false;
+        var label = String(json["From"]) + " Module " + i +" Channel "+ j;
+        for(var k = 0; k < myChart.data.datasets.length; k++)
+        {
+          //alert(datasets[k].label);
+          if(label==myChart.data.datasets[k].label) yetIncluded = true;
+        }
+        if(yetIncluded == false)
+        {
+          //alert(i+" "+j);
+          const newDataset =
+          {
+            label: String(json["From"]) + " Module " + i +" Channel "+ j,
+
+            // backgroundColor: Utils.transparentize(dsColor, 0.5),
+            borderColor: namedColor(myChart.data.datasets.length),
+            //backgroundColor: Utils.transparentize(dsColor, 0.5),
+            data: [],
+            from: String(json["From"]),
+          //from : String(json["From"])
+          };
+          myChart.data.datasets.push(newDataset);
+          const newDataset2 =
+          {
+            label: String(json["From"]) + " Module " + i +" Channel "+ j,
+
+            // backgroundColor: Utils.transparentize(dsColor, 0.5),
+            borderColor: namedColor(myChart2.data.datasets.length),
+            //backgroundColor: Utils.transparentize(dsColor, 0.5),
+            data: [],
+            from: String(json["From"]),
+          //from : String(json["From"])
+          };
+          myChart2.data.datasets.push(newDataset2);
+        }
+
+      }
+    }
+    myChart.update();
+    myChart2.update();
+  }
+
+
+
+  //const dsColor = Utils.namedColor(datasets.length);
+
+  //datasets.push(newDataset);
+  //myChart.update();
+};
+
+
+
+const data = {
+  datasets: []
+};
+
+const data2 = {
+  datasets: []
+};
+
+
+const config2 = {
+  type: 'line',
+  data: data2,
+  options: {
+
+
+
+    plugins: {
+      zoom: {
+               limits: {
+          y: {min: -1.5, max: 1.5},
+        },
+        zoom: {
+
+          wheel: {
+            enabled: true,
+          },
+          drag: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true
+          },
+          mode: 'xy',
+        }
+      }
+    },
+
+
+
+    scales: {
+
+      x: {
+                title: {
+        display: true,
+        text: 'Time'
+      },
+        type: 'realtime',
+        realtime: {
+          duration: 300000,  // data in the past 20000 ms will be displayed
+          refresh: 500,    // onRefresh callback will be called every 1000 ms
+          delay: 20,      // delay of 1000 ms, so upcoming values are known before plotting a line
+          pause: false,     // chart is not paused
+         //ttl: 60000000,   // data will be automatically deleted as it disappears off the chart
+          frameRate: 10,    // data points are drawn 30 times every second
+          //onRefresh: requestChannelsInfos
+          }
+        },
+
+        y: {
+                title: {
+        display: true,
+        text: 'Current (μA)'
+      },
+        },
+
+
+
+
+      }
+    }
+};
+
+const config = {
+  type: 'line',
+  data: data,
+  options: {
+
+
+
+    plugins: {
+      zoom: {
+              limits: {
+          y: {min: -8100, max: 8000},
+        },
+        zoom: {
+
+          wheel: {
+            enabled: true,
+          },
+          drag: {
+            enabled: true,
+          },
+          pinch: {
+            enabled: true
+          },
+          mode: 'xy',
+        }
+      }
+    },
+
+
+    scales: {
+      x: {
+        type: 'realtime',
+        title: {
+        display: true,
+        text: 'Time'
+      },
+
+        realtime: {
+          duration: 300000,  // data in the past 20000 ms will be displayed
+          refresh: 500,    // onRefresh callback will be called every 1000 ms
+          delay: 20,      // delay of 1000 ms, so upcoming values are known before plotting a line*/
+          pause: false,     // chart is not paused
+          //ttl: 60000000,   // data will be automatically deleted as it disappears off the chart
+          frameRate: 10,    // data points are drawn 30 times every second
+          onRefresh: requestChannelsInfos
+          }
+        },
+
+         y: {
+                title: {
+        display: true,
+        text: 'Voltage (V)'
+      },
+
+
+      },
+
+
+        },
+
+
+
+  }
+
+
+
+
+};
+
+
+const myChart = new Chart(document.getElementById('Voltage'),config);
+const myChart2 = new Chart(document.getElementById('Current'),config2);
+// your event listener code - assuming the event object has the timestamp and value properties
+function onReceiveData(json)
+{
+
+  //myChart.data.datasets[0].data.push({x: now, y: Utils.rand(0, 1.0) });
+
+   if(json["Content"]["result"])
+   {
+      //var
+      var toto = JSON.parse(json["Content"]["result"]);
+      //jsonString2= JSON.stringify(toto);
+      //alert(jsonString2);
+      for(var i = 0; i < toto["modules"].length; i++)
+      {
+        for(var j = 0; j < toto["modules"][i]["channels"].length; j++)
+        {
+          var label = String(json["From"]) + " Module " + i +" Channel "+ j;
+          for(var k = 0; k < myChart.data.datasets.length; k++)
+          {
+          //alert(datasets[k].label);
+            if(label==myChart.data.datasets[k].label)
+            {
+              myChart.data.datasets[k].data.push({ x: Date.now(), y: parseFloat(toto["modules"][i]["channels"][j]["voltage"]) });
+            }
+          }
+          for(var k = 0; k < myChart2.data.datasets.length; k++)
+          {
+          //alert(datasets[k].label);
+            if(label==myChart2.data.datasets[k].label)
+            {
+              myChart2.data.datasets[k].data.push({ x: Date.now(), y: parseFloat(toto["modules"][i]["channels"][j]["current"]) });
+            }
+          }
+
+        }
+      }
+   }
+  myChart.update('quiet');
+  myChart2.update('quiet');
+}
+
+
+/*
+const config = {
+  type: 'line',
+  data: data,
+  options: {
+    scales: {
+      x: {
+        type: 'realtime',
+        realtime: {
+          duration: 20000,
+          refresh: 1000,
+          delay: 2000,
+          onRefresh: onRefresh
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Value'
+        }
+      }
+    },
+    interaction: {
+      intersect: false
+    }
+  }
+};*/
+/*
+const data = {
+  datasets: [
+    {
+      label: 'Dataset 1 (Linear Interpolation)',
+      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+      borderColor: Utils.CHART_COLORS.red,
+      borderDash: [8, 4],
+      data: []
+    },
+    {
+      label: 'Dataset 2 (Cubic Interpolation)',
+      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
+      borderColor: Utils.CHART_COLORS.blue,
+      cubicInterpolationMode: 'monotone',
+      data: []
+    }
+  ]
+};
+*/
+
+/*
+const actions = [
+  {
+    name: 'Randomize',
+    handler(chart) {
+      chart.data.datasets.forEach(dataset => {
+        dataset.data.forEach(dataObj => {
+          dataObj.y = Utils.rand(-100, 100);
+        });
+      });
+      chart.update();
+    }
+  },
+  {
+    name: 'Add Dataset',
+    handler(chart) {
+      const datasets = chart.data.datasets;
+      const dsColor = Utils.namedColor(datasets.length);
+      const newDataset = {
+        label: 'Dataset ' + (datasets.length + 1),
+        backgroundColor: Utils.transparentize(dsColor, 0.5),
+        borderColor: dsColor,
+        data: []
+      };
+      datasets.push(newDataset);
+      chart.update();
+    }
+  },
+  {
+    name: 'Add Data',
+    handler(chart) {
+      onRefresh(chart);
+      chart.update();
+    }
+  },
+  {
+    name: 'Remove Dataset',
+    handler(chart) {
+      chart.data.datasets.pop();
+      chart.update();
+    }
+  },
+  {
+    name: 'Remove Data',
+    handler(chart) {
+      chart.data.datasets.forEach(dataset => {
+        dataset.data.shift();
+      });
+      chart.update();
+    }
+  }
+];
+*/
+
+
+
+
+</script>
+
+
+
+
+
+<script>
+//setInterval(requestChannelsInfos,2000);
+
+/*
+var table = document.querySelector('table'),
+    table_meta_container = table.querySelector('thead'),
+    table_data_container = table.querySelector('tbody'),
+    data = [
+  { 'firstName': 'Scooby', 'lastName': 'Doo', 'birth': 1969 },
+  { 'firstName': 'Yogi', 'lastName': 'Bear', 'birth': 1958 },
+  { 'firstName': 'Tom', 'lastName': 'Cat', 'birth': 1940 },
+  { 'firstName': 'Jerry', 'lastName': 'Mouse', 'birth': 1940 },
+  { 'firstName': 'Fred', 'lastName': 'Flintstone', 'birth': 1960 }
+], n = data.length;
+
+var createTable = function(src)
+{
+  var frag = document.createDocumentFragment(), curr_item, curr_p;
+
+  for(var i = 0; i < n; i++)
+  {
+    curr_item = document.createElement('tr');
+    curr_item.classList.add(((i%2 === 0)?'odd':'even'));
+    data[i].el = curr_item;
+
+    for(var p in data[i]) {
+      if(p !== 'el') {
+        curr_p = document.createElement('td');
+        curr_p.classList.add('prop__value');
+        curr_p.dataset.propName = p;
+        curr_p.textContent = data[i][p];
+        curr_item.appendChild(curr_p)
+      }
+    }
+
+    frag.appendChild(curr_item);
+  }
+
+  table_data_container.appendChild(frag);
+};
+
+var sortTable = function(entries, type, dir) {
+  entries.sort(function(a, b) {
+    if(a[type] < b[type]) return -dir;
+    if(a[type] > b[type]) return dir;
+    return 0;
+  });
+
+  table.dataset.sortBy = type;
+
+  for(var i = 0; i < n; i++) {
+    entries[i].el.style.order = i + 1;
+
+    if((i%2 === 0 && entries[i].el.classList.contains('even')) ||
+       (i%2 !== 0 && entries[i].el.classList.contains('odd'))) {
+      entries[i].el.classList.toggle('odd');
+      entries[i].el.classList.toggle('even');
+    }
+  }
+};
+
+createTable(data);
+
+table_meta_container.addEventListener('click', function(e) {
+  var t = e.target;
+
+  if(t.classList.contains('prop__name')) {
+    if(!t.dataset.dir) { t.dataset.dir = 1; }
+    else { t.dataset.dir *= -1; }
+
+    sortTable(data, t.dataset.propName, t.dataset.dir);
+  }
+}, false);*/
+</script>
+
+</body>
+</html>
