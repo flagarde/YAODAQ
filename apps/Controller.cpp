@@ -7,13 +7,8 @@
 #include "linenoise.hpp"
 
 #include <iostream>
-#include <future>
-#include <any>
 
 using namespace yaodaq;
-
-
-
 
 int main(int argc, char** argv)
 {
@@ -115,21 +110,15 @@ int main(int argc, char** argv)
           try
           {
             int value = std::stoi(params[i]);
-            parameters.push_back(nlohmann::json(value));
+            if(params[i].find_first_not_of( "0123456789" ) == std::string::npos) parameters.push_back(nlohmann::json(value));
+            else parameters.push_back(nlohmann::json(std::stod(params[i])));
+
           }
           catch(const std::invalid_argument& e)
           {
-            try
-            {
-              int value = std::stod(params[i]);
-              parameters.push_back(nlohmann::json(value));
-            }
-            catch(const std::invalid_argument& e)
-            {
-              parameters.push_back(nlohmann::json(params[i]));
-            }
+            parameters.push_back(nlohmann::json(params[i]));
           }
-          std::cout<<params[i]<<std::endl;
+
 
         }
         try

@@ -32,7 +32,10 @@ if(BUILD_MPOD)
 endif()
 
 if(BUILD_CONFIGURATOR)
-  # add_executable(Configurator Configurator.cpp) add_dependencies(Configurator Configurator_) target_link_libraries(Configurator PUBLIC Configurator_) install(TARGETS Configurator RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+  #add_executable(ConfiguratorApp Configurator.cpp)
+  #target_link_libraries(ConfiguratorApp PRIVATE Configurator PRIVATE CLI11 PRIVATE ProgramInfos PUBLIC GeneralParameters)
+  #set_target_properties(ConfiguratorApp PROPERTIES OUTPUT_NAME Configurator)
+  #install(TARGETS ConfiguratorApp)
 endif()
 
 if(BUILD_DAQ AND NOT APPLE)

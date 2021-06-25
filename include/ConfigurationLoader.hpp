@@ -22,6 +22,7 @@ public:
   void           setFileName(const std::string&);
   toml::value    getConfig(const std::string&);
   ConnectorInfos getConnectorInfos(const std::string&);
+  BoardInfos     getBoardInfos(const std::string&);
   void           clear();
   /* Reload only the Module/Board parameters */
   void           reloadParameters(const std::string&);

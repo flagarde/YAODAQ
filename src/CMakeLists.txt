@@ -50,7 +50,7 @@ install(TARGETS LoggerHandler)
 add_library(Message "Message.cpp")
 target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> PRIVATE $<BUILD_INTERFACE:${jsoncpp_SOURCE_DIR}/include>)
 set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message.hpp")
-target_link_libraries(Message PUBLIC Exception PUBLIC jsoncpp::jsoncpp PUBLIC magic_enum::magic_enum)
+target_link_libraries(Message PUBLIC Exception PUBLIC jsoncpp::jsoncpp PUBLIC magic_enum::magic_enum PUBLIC nlohmann_json::nlohmann_json)
 install(TARGETS Message)
 
 add_library(MessageHandler "MessageHandler.cpp")
@@ -167,6 +167,9 @@ set_target_properties(FileWritter PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Fi
 install(TARGETS FileWritter)
 
 if(BUILD_CONFIGURATOR)
-  # include(soci) add_library(Configurator_ "${YAODAQ_SRC}/Configurator.cpp") add_dependencies(Configurator_ soci WebsocketServer Board) target_include_directories( Configurator_ PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC
-    # ${DATABASES_INCLUDE_DIR}) set_target_properties( Configurator_ PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Configurator.hpp") target_link_libraries( Configurator_ PUBLIC Board PUBLIC WebsocketServer PUBLIC Soci)
+  include(soci)
+  add_library(Configurator "Configurator.cpp")
+  target_include_directories(Configurator PRIVATE $<BUILD_INTERFACE:${YAODAQ_INCLUDE}>)
+  set_target_properties(Configurator PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Configurator.hpp")
+  target_link_libraries(Configurator PUBLIC Board PUBLIC soci::soci)
 endif()

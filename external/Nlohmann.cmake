@@ -16,7 +16,7 @@ declare_option(REPOSITORY nlohmann OPTION JSON_Install VALUE ON)
 declare_option(REPOSITORY nlohmann OPTION JSON_MultipleHeaders VALUE ON)
 declare_option(REPOSITORY nlohmann OPTION JSON_ImplicitConversions VALUE ON)
 declare_option(REPOSITORY nlohmann OPTION JSON_Diagnostics VALUE ON)
-declare_option(REPOSITORY nlohmann OPTION JSON_CI VALUE ON)
+declare_option(REPOSITORY nlohmann OPTION JSON_CI VALUE OFF)
 print_options(REPOSITORY nlohmann)
 
 CPMAddPackage(NAME nlohmann

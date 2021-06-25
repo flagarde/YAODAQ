@@ -1,72 +1,65 @@
-include(ExternalProject)
+include_guard(GLOBAL)
 
-if(NOT TARGET soci)
-  # ----- soci package -----
-  externalproject_add(
-    soci
-    GIT_REPOSITORY ${soci_repository}
-    GIT_TAG ${soci_version}
-    GIT_PROGRESS TRUE
-    GIT_SHALLOW TRUE
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
-               -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
-               -DCMAKE_CXX_STANDARD_REQUIRED=${CMAKE_CXX_STANDARD_REQUIRED}
-               -DCMAKE_CXX_EXTENSIONS=${CMAKE_CXX_EXTENSIONS}
-               -DSOCI_SHARED=OFF
-               -DSOCI_STATIC=ON
-               -DSOCI_TESTS=OFF
-               -DSOCI_HAVE_BOOST=FALSE
-               -DSOCI_HAVE_BOOST_DATE_TIME=FALSE
-               -DLIB_SUFFIX=""
-               -DWITH_BOOST=OFF
-               -DSOCI_LIBDIR=lib
-               -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
-    GIT_SUBMODULES ""
-    PREFIX ${CMAKE_BINARY_DIR}/soci-prefix
-    SOURCE_DIR ${CMAKE_BINARY_DIR}/soci
-    INSTALL_DIR ${CMAKE_INSTALL_PREFIX}
-    LOG_DOWNLOAD ON
-    )
-  add_library(Soci INTERFACE)
-  target_link_libraries(Soci INTERFACE soci_core INTERFACE soci_empty)
-  target_include_directories(Soci INTERFACE ${DATABASES_INCLUDE_DIR})
-  find_package(DB2)
-  if(${DB2_FOUND})
-    target_link_libraries(Soci INTERFACE ${DB2_LIBRARIES} INTERFACE soci_db2)
-    target_include_directories(Soci INTERFACE ${DB2_INCLUDE_DIR})
+include(CPM)
+cpm()
+
+if(NOT DEFINED SOCI_REPOSITORY)
+  set(SOCI_REPOSITORY "https://github.com/SOCI/soci.git")
+endif()
+
+if(NOT DEFINED SOCI_TAG)
+  set(SOCI_TAG "master")
+endif()
+
+declare_option(REPOSITORY soci OPTION SOCI_SHARED VALUE OFF)
+declare_option(REPOSITORY soci OPTION SOCI_STATIC VALUE ON)
+declare_option(REPOSITORY soci OPTION SOCI_TESTS VALUE OFF)
+declare_option(REPOSITORY soci OPTION SOCI_ASAN VALUE OFF)
+declare_option(REPOSITORY soci OPTION SOCI_LTO VALUE ON)
+declare_option(REPOSITORY soci OPTION SOCI_VISIBILITY VALUE OFF)
+declare_option(REPOSITORY soci OPTION WITH_BOOST VALUE OFF)
+print_options(REPOSITORY  soci)
+
+CPMAddPackage(NAME soci
+        GIT_REPOSITORY "${SOCI_REPOSITORY}"
+        GIT_TAG "${SOCI_TAG}"
+        FETCHCONTENT_UPDATES_DISCONNECTED "${IS_OFFLINE}"
+        OPTIONS "${soci_OPTIONS}")
+if(soci_ADDED)
+  add_library(soci INTERFACE)
+  get_option(VARIABLE SOCI_STATIC OPTION SOCI_STATIC REPOSITORY soci)
+  target_link_libraries(soci INTERFACE soci_core)
+  if(SOCI_EMPTY)
+    target_link_libraries(soci INTERFACE soci_empty)
   endif()
-  find_package(Firebird)
-  if(${FIREBIRD_FOUND})
-    target_link_libraries(Soci INTERFACE ${FIREBIRD_LIBRARIES} INTERFACE soci_firebird)
-    target_include_directories(Soci INTERFACE ${DATABASES_INCLUDE_DIR})
+  if(SOCI_FIREBIRD)
+    target_link_libraries(soci INTERFACE soci_firebird INTERFACE ${FIREBIRD_LIBRARIES})
+    target_include_directories(soci INTERFACE ${FIREBIRD_INCLUDE_DIR})
   endif()
-  find_package(MySQL)
-  if(${MYSQL_FOUND})
-    target_link_libraries(Soci INTERFACE ${MYSQL_LIBRARIES} INTERFACE soci_mysql)
-    target_include_directories(Soci INTERFACE ${MYSQL_INCLUDE_DIR})
+  if(SOCI_MYSQL)
+    target_link_libraries(soci INTERFACE soci_mysql INTERFACE ${MYSQL_LIBRARIES})
+    target_include_directories(soci INTERFACE ${MYSQL_INCLUDE_DIR})
   endif()
-  if(${MYSQL_EMBEDDED_FOUND})
-    target_link_libraries(Soci INTERFACE ${MYSQL_EMBEDDED_LIBRARIES} INTERFACE soci_mysql)
-    target_include_directories(Soci INTERFACE ${MYSQL_EMBEDDED_LIB_DIR})
+  if(SOCI_ODBC)
+    target_link_libraries(soci INTERFACE soci_odbc INTERFACE ${ODBC_LIBRARIES})
+    target_include_directories(soci INTERFACE ${ODBC_INCLUDE_DIRS})
   endif()
-  find_package(ODBC)
-  if(${ODBC_FOUND})
-    target_link_libraries(Soci INTERFACE ${ODBC_LIBRARIES} INTERFACE soci_odbc)
-    target_include_directories(Soci INTERFACE ${ODBC_INCLUDE_DIRS})
+  if(SOCI_POSTGRESQL)
+    target_link_libraries(soci INTERFACE soci_postgresql INTERFACE ${POSTGRESQL_LIBRARIES})
+    target_include_directories(soci INTERFACE ${POSTGRESQL_INCLUDE_DIRS})
   endif()
-  find_package(Oracle)
-  if(${ORACLE_FOUND})
-    target_link_libraries(Soci INTERFACE ${ORACLE_LIBRARIES} INTERFACE soci_oracle)
-    target_include_directories(Soci INTERFACE ${ORACLE_INCLUDE_DIR})
+  if(SOCI_SQLITE3)
+    target_link_libraries(soci INTERFACE soci_sqlite3 INTERFACE ${SQLITE3_LIBRARIES})
+    target_include_directories(soci INTERFACE ${SQLITE3_INCLUDE_DIR})
   endif()
-  find_package(PostgreSQL)
-  if(${POSTGRESQL_FOUND})
-    target_link_libraries(Soci INTERFACE ${POSTGRESQL_LIBRARIES} INTERFACE soci_postgresql)
-    target_include_directories(Soci INTERFACE ${POSTGRESQL_INCLUDE_DIRS})
+  if(SOCI_DB2)
+    target_link_libraries(soci INTERFACE soci_db2 INTERFACE ${DB2_LIBRARIES})
+    target_include_directories(soci INTERFACE ${DB2_INCLUDE_DIR})
   endif()
-  find_package(SQLite3)
-  if(${SQLITE3_FOUND})
-    target_link_libraries(Soci INTERFACE ${SQLITE3_LIBRARIES} INTERFACE soci_sqlite3)
-    target_include_directories(Soci INTERFACE ${SQLITE3_INCLUDE_DIR})
+  if(SOCI_ORACLE)
+    target_link_libraries(soci INTERFACE soci_oracle INTERFACE ${ORACLE_LIBRARIES})
+    target_include_directories(soci INTERFACE ${ORACLE_INCLUDE_DIR})
   endif()
+  target_include_directories(soci INTERFACE $<BUILD_INTERFACE:${soci_SOURCE_DIR}/include> INTERFACE $<BUILD_INTERFACE:${soci_BINARY_DIR}/include>)
+  add_library(soci::soci ALIAS soci)
 endif()
