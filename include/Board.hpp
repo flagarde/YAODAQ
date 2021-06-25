@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Connector.hpp"
+#include "DumpConnector.hpp"
 #include "ConnectorFactory.hpp"
 #include "Module.hpp"
 
@@ -16,11 +17,11 @@ public:
   Board(const std::string& name = "", const std::string& type = "DefaultBoard", const yaodaq::CLASS& _class = yaodaq::CLASS::Board);
   virtual ~Board() = default;
   void printConnectorParameters();
-  std::shared_ptr<Connector> getConnector();
+  const std::shared_ptr<Connector>& getConnector();
 
 private:
   static ConnectorFactory    m_ConnectorFactory;
-  std::shared_ptr<Connector> m_Connector{nullptr};
+  std::shared_ptr<Connector> m_Connector{std::make_shared<DumpConnector>()};
   void               CallBoardDisconnect() final;
   void               CallBoardConnect() final;
   virtual void               DoConnect();

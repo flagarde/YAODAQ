@@ -6,12 +6,12 @@
 
 #include "Exception.hpp"
 
-#include <iostream>
-
 namespace yaodaq
 {
   MessageHandlerServer::MessageHandlerServer(const Identifier& identifier) :  MessageHandler(identifier)
   {
+    try
+    {
     m_MessageCallback=[this](std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg)
     {
       m_Client = connectionState->getId();
@@ -35,17 +35,17 @@ namespace yaodaq
         }
         if(m_Message.getType() == TYPE::State)
         {
-          printState(m_Message);
+          //printState(m_Message);
           send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Action)
         {
-          printAction(m_Message);
+          //printAction(m_Message);
           send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Data)
         {
-          printData(m_Message);
+          //printData(m_Message);
           send(m_Message);
         }
         else if(m_Message.getType() == TYPE::Log)
@@ -54,15 +54,16 @@ namespace yaodaq
         }
         else if(m_Message.getType() == TYPE::Command)
         {
-          printCommand(m_Message);
+          //printCommand(m_Message);
           send(m_Message);
           onCommand(m_Message);
         }
         else if(m_Message.getType() == TYPE::Response)
         {
-          printResponse(m_Message);
+          //printResponse(m_Message);
           sendToLogger(m_Message);
-          sendToName(m_Message,m_Message.getTo());
+          send(m_Message);
+          //sendToName(m_Message,m_Message.getTo());
         }
         else
         {
@@ -72,6 +73,11 @@ namespace yaodaq
         }
       }
     };
+    }
+    catch(...)
+    {
+      std::cout<<"OUPS"<<std::endl;
+    }
   }
 
   void MessageHandlerServer::addFrom(Message& message) const
@@ -138,7 +144,7 @@ namespace yaodaq
     addFrom(message);
     for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
-      if( it->first.isA(CLASS::Logger) && getClient() != it->first.getID()) it->second.send(message.get());
+      if( it->first.isA(CLASS::Logger) && it->first.isA(CLASS::WebLogger) && getClient() != it->first.getID()) it->second.send(message.get());
     }
   }
 
@@ -146,7 +152,7 @@ namespace yaodaq
   {
     for(auto it = m_Clients.begin(); it != m_Clients.end(); ++it)
     {
-      if( it->first.isA(CLASS::Logger) && getClient() != it->first.getID()) it->second.send(message.get());
+      if( it->first.isA(CLASS::Logger) && it->first.isA(CLASS::WebLogger) && getClient() != it->first.getID()) it->second.send(message.get());
     }
   }
 
@@ -222,7 +228,7 @@ namespace yaodaq
     open.addKey("Key", m_Clients.getInfos(m_Client).getIdentifier().get());
 
     //counter.add(key);
-    printOpen(open);
+    //printOpen(open);
     send(open);
     sendToName(open,m_Clients.getInfos(m_Client).getIdentifier().get());
 
@@ -251,7 +257,7 @@ namespace yaodaq
     Json::Value arr =Json::Value(Json::arrayValue);
     for(std::size_t i=0;i!=all.size();++i) arr.append(all[i]);
     close.addKey("All",arr);
-    printClose(close);
+    //printClose(close);
     send(close);
     //sendToName(close,m_Clients.getInfos(m_Client).getIdentifier().get());
 
@@ -266,14 +272,14 @@ namespace yaodaq
   void MessageHandlerServer::onPing(std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg)
   {
     Ping ping(msg->str);
-    printPing(ping);
+    //printPing(ping);
     sendToLogger(ping);
   }
 
   void MessageHandlerServer::onPong(std::shared_ptr<ix::ConnectionState> connectionState,ix::WebSocket& webSocket, const ix::WebSocketMessagePtr& msg)
   {
     Pong pong(msg->str);
-    printPong(pong);
+   // printPong(pong);
     sendToLogger(pong);
   }
 /*

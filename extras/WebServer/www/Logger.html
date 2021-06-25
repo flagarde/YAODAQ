@@ -139,7 +139,11 @@
             }
             else if(obj.Type == "Command")
             {
-              console["Warn"]("From <span style=\"color:black;\"><em>"+obj["From"]+ "</em></span> : "+obj["Content"]);
+              console["Info"]("From <span style=\"color:black;\"><em>"+obj["From"]+ "</em></span> : "+JSON.stringify(obj["Content"]));
+            }
+            else if(obj.Type == "Command")
+            {
+              console["Info"]("From <span style=\"color:black;\"><em>"+obj["From"]+ "</em></span> : "+JSON.stringify(obj["Content"]));
             }
           };
 

@@ -65,7 +65,7 @@
               };
               myDiv.appendChild(checkbox);
             }
-            command("getState");
+            Command("getState");
           };
 
           ws.onmessage = function(evt)
@@ -80,6 +80,14 @@
             else if(obj.Type == "Action")
             {
               ACTION = obj["Content"]["Action"];
+            }
+            else if(obj.Type == "Response")
+            {
+              if(obj["Content"]["id"]=="getState")
+              {
+                STATE = obj["Content"]["result"];
+                ParseState(STATE);
+              }
             }
             else if (obj.Type == "Data")
             {
@@ -144,7 +152,7 @@
         send(JSON.stringify(obj));
       }
 
-      function command(...args)
+     /* function command(...args)
       {
         if( typeof this.id == 'undefined')
         {
@@ -167,7 +175,40 @@
         json.Content.params=params;
         send(JSON.stringify(json));
         id++;
+      }*/
+
+
+      function Command(method,...args)
+      {
+        var obj = new Object();
+        obj.Type="Command";
+        obj.From="";
+        obj.To="";
+        var obj2 = new Object();
+        obj2.jsonrpc = "2.0";
+        obj2.method  = method;
+        obj2.id= method;
+        obj2.params = new Array();
+        for(var arg = 1; arg < arguments.length; ++arg)
+        {
+          obj2.params.push(arguments[arg]);
+        }
+        obj.Content=obj2;
+        var jsonString= JSON.stringify(obj);
+        //alert(jsonString);
+        send(jsonString);
       }
+
+
+
+
+
+
+
+
+
+
+
 
       function Action(action)
       {

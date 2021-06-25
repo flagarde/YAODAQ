@@ -118,10 +118,10 @@ set_target_properties(ConnectorInfos PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}
 target_link_libraries(ConnectorInfos PUBLIC Exception PUBLIC toml11::toml11)
 install(TARGETS ConnectorInfos)
 
-add_library(Connector "Connector.cpp")
+add_library(Connector "Connector.cpp;DumpConnector.cpp")
 target_include_directories(Connector PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> PUBLIC "${jsoncpp_SOURCE_DIR}/include/json")
 target_link_libraries(Connector PUBLIC ConnectorInfos PUBLIC Message)
-set_target_properties(Connector PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Connector.hpp")
+set_target_properties(Connector PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Connector.hpp;${YAODAQ_INCLUDE}/DumpConnector.hpp")
 install(TARGETS Connector)
 
 add_library(ConnectorFactory "ConnectorFactory.cpp")

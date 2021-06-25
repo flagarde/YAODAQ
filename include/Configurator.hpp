@@ -1,9 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include "Module.hpp"
 #include "soci/session.h"
-
-#include <string>
 
 namespace yaodaq
 {

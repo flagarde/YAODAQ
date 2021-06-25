@@ -1,5 +1,7 @@
 #include "Configurator.hpp"
 
+#include <string>
+
 #include "soci/soci-config.h"
 #ifdef SOCI_HAVE_DB2
   #include "soci/db2/soci-db2.h"
@@ -29,8 +31,7 @@
 namespace yaodaq
 {
 
-Configurator::Configurator(const int& port, const std::string& host, const int& backlog, const std::size_t& maxConnections, const int& handshakeTimeoutSecs)
-    : WebsocketServer(port, host, backlog, maxConnections, handshakeTimeoutSecs)
+Configurator::Configurator(const std::string& name) : Module(name,"Configurator",CLASS::Configurator)
 {
   m_session.open(soci::mysql, "");
 }

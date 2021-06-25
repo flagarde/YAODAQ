@@ -134,7 +134,7 @@
         }
         obj.Content=obj2;
         var jsonString= JSON.stringify(obj);
-        //alert(jsonString);
+        alert(jsonString);
         send(jsonString);
       }
 
@@ -254,13 +254,14 @@ function CreateTableFromJSON(json)
             {
               var tabCell = tr.insertCell(-1);
               tabCell.id=json["From"]+"M"+i+"ch"+j+col[k];
-              //alert("***"+tabCell.id+"***");
               if(col[k]=="set_voltage")
               {
                 var input = document.createElement('input');
                 input.type="number";
+                input.size=5;
+                input.placeholder=toto["modules"][i]["channels"][j][col[k]];
                 input.channel=toto["modules"][i]["channels"][j]["channel_number"];
-                input.value=toto["modules"][i]["channels"][j][col[k]];
+                //input.value=toto["modules"][i]["channels"][j][col[k]];
                 input.min=0;
                 input.max=8000;
                 input.onchange = function()
@@ -817,9 +818,9 @@ const config2 = {
       },
         type: 'realtime',
         realtime: {
-          duration: 300000,  // data in the past 20000 ms will be displayed
+          duration: 100000,  // data in the past 20000 ms will be displayed
           refresh: 500,    // onRefresh callback will be called every 1000 ms
-          delay: 20,      // delay of 1000 ms, so upcoming values are known before plotting a line
+          delay: 600,      // delay of 1000 ms, so upcoming values are known before plotting a line
           pause: false,     // chart is not paused
          //ttl: 60000000,   // data will be automatically deleted as it disappears off the chart
           frameRate: 10,    // data points are drawn 30 times every second
@@ -879,9 +880,9 @@ const config = {
       },
 
         realtime: {
-          duration: 300000,  // data in the past 20000 ms will be displayed
+          duration: 100000,  // data in the past 20000 ms will be displayed
           refresh: 500,    // onRefresh callback will be called every 1000 ms
-          delay: 20,      // delay of 1000 ms, so upcoming values are known before plotting a line*/
+          delay: 600,      // delay of 1000 ms, so upcoming values are known before plotting a line*/
           pause: false,     // chart is not paused
           //ttl: 60000000,   // data will be automatically deleted as it disappears off the chart
           frameRate: 10,    // data points are drawn 30 times every second

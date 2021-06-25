@@ -44,13 +44,11 @@ std::string Mpod::getModuleDescription(const int& module)
 
 bool Mpod::setVoltage(const int& channel,const double& value)
 {
-  std::cout<<"SSS"<<value<<std::endl;
   yaodaq::Command command;
   command.addKey("Type","Send");
   command.addKey("method",fmt::format("outputVoltage.u{}",channel));
   command.addKey("params",std::to_string(value));
-  return true;
-  //return getConnector()->sendCommand(command).getKey("return").asBool();
+  return getConnector()->sendCommand(command).getKey("return").asBool();
 }
 
 
@@ -90,7 +88,6 @@ std::string Mpod::getChannelsInfos()
       infos["modules"].push_back(module);
     }
   }
-  //std::cout<<std::setw(2)<<infos<<std::endl;
   return infos.dump();
 }
 
