@@ -16,13 +16,19 @@ Infos::Infos(const std::string& roomName, const std::string& rackName, const std
   m_RoomName  = roomName;
   m_RackName  = rackName;
   m_CrateName = crateName;
-  m_Identifier = Identifier(_class,type,name);
   m_Slot      = slot;
+  m_Identifier = Identifier(_class,type,name);
+  m_Json="{\"room\":\""+roomName+"\",\"rack\":\""+rackName+"\",\"crate\":\""+crateName+"\",\"slot\":\""+std::to_string(slot)+"\",\"class\":\""+ static_cast<std::string>(magic_enum::enum_name(_class))+"\",\"type\":\""+type+"\",\"name\":\""+name+"\"}";
 }
 
 std::string Infos::getID() const
 {
   return m_ID;
+}
+
+std::string Infos::getJson() const
+{
+  return m_Json;
 }
 
 std::string Infos::getClass() const

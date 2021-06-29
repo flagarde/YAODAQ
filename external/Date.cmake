@@ -1,0 +1,29 @@
+include_guard(GLOBAL)
+
+include(CPM)
+cpm()
+
+if(NOT DEFINED DATE_REPOSITORY)
+    set(DATE_REPOSITORY "https://github.com/HowardHinnant/date.git")
+endif()
+
+if(NOT DEFINED DATE_TAG)
+    set(DATE_TAG "v3.0.1")
+endif()
+
+declare_option(REPOSITORY date OPTION USE_SYSTEM_TZ_DB VALUE OFF)
+declare_option(REPOSITORY date OPTION MANUAL_TZ_DB VALUE OFF)
+declare_option(REPOSITORY date OPTION USE_TZ_DB_IN_DOT VALUE OFF)
+declare_option(REPOSITORY date OPTION BUILD_SHARED_LIBS VALUE OFF)
+declare_option(REPOSITORY date OPTION ENABLE_DATE_TESTING VALUE OFF)
+declare_option(REPOSITORY date OPTION DISABLE_STRING_VIEW VALUE OFF)
+declare_option(REPOSITORY date OPTION BUILD_TZ_LIB VALUE ON)
+declare_option(REPOSITORY date OPTION COMPILE_WITH_C_LOCALE VALUE OFF)
+print_options(REPOSITORY date)
+
+CPMAddPackage(NAME date
+        GIT_REPOSITORY ${DATE_REPOSITORY}
+        GIT_TAG ${DATE_TAG}
+        FETCHCONTENT_UPDATES_DISCONNECTED ${IS_OFFLINE}
+        OPTIONS "${date_OPTIONS}"
+        )

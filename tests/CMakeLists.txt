@@ -21,3 +21,8 @@ add_executable(UtilitiesTests Utilities.test.cpp)
 set_target_properties(UtilitiesTests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/tests")
 target_link_libraries(UtilitiesTests PRIVATE Utilities PRIVATE doctest_with_main)
 doctest_discover_tests(UtilitiesTests COMMAND UtilitiesTests ADD_LABELS "Test Utilities")
+
+add_executable(MessageTest2 Message2.test.cpp)
+set_target_properties(MessageTest2 PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/tests")
+target_link_libraries(MessageTest2 PRIVATE Message2 PRIVATE doctest_with_main)
+doctest_discover_tests(MessageTest2 COMMAND MessageTest2 ADD_LABELS "Test Messages")

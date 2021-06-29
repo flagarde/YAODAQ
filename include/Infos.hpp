@@ -29,6 +29,7 @@ public:
   int         getIndex() const;
   std::string getKey() const;
   std::string getClass() const;
+  std::string getJson() const;
   bool        operator<(const Infos& infos) const;
   Infos() = default;
   bool isA(const CLASS&) const;
@@ -46,6 +47,7 @@ private:
   int         m_Index{-1};
   std::string m_ID;
   Identifier m_Identifier;
+  std::string m_Json;
 };
 
 }

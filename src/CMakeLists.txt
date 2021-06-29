@@ -13,6 +13,7 @@ include(JsonRpcCxx)
 include(Toml11)
 include(elogpp)
 include(SourceLocation)
+include(Date)
 
 add_library(Interrupt "Interrupt.cpp")
 target_include_directories(Interrupt PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
@@ -52,6 +53,12 @@ target_include_directories(Message PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> P
 set_target_properties(Message PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message.hpp")
 target_link_libraries(Message PUBLIC Exception PUBLIC jsoncpp::jsoncpp PUBLIC magic_enum::magic_enum PUBLIC nlohmann_json::nlohmann_json)
 install(TARGETS Message)
+
+add_library(Message2 "Message2.cpp")
+target_include_directories(Message2 PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+set_target_properties(Message2 PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/Message2.hpp")
+target_link_libraries(Message2 PUBLIC Exception PUBLIC magic_enum::magic_enum PUBLIC nlohmann_json::nlohmann_json PUBLIC date::date-tz PUBLIC Infos)
+install(TARGETS Message2)
 
 add_library(MessageHandler "MessageHandler.cpp")
 target_include_directories(MessageHandler PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
