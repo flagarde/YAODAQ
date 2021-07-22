@@ -17,7 +17,7 @@ set(OPENSSL_URL_HASH "SHA256=892a0875b9872acd04a9fde79b1f943075d5ea162415de3047c
 # Zlib-ng
 set(USE_SYSTEM_ZLIB OFF)
 set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng.git")
-set(ZLIB-NG_TAG "2.0.3")
+set(ZLIB-NG_TAG "2.0.5")
 
 # IXWebSocket
 set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket.git")
@@ -25,11 +25,11 @@ set(IXWEBSOCKET_TAG "v11.2.8")
 
 # Fmt
 set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt.git")
-set(FMT_TAG "7.1.3")
+set(FMT_TAG "8.0.1")
 
 # Spdlog
 set(SPDLOG_REPOSITORY "https://gitlab.com/ExternalRepositories/spdlog.git")
-set(SPDLOG_TAG "v1.8.5")
+set(SPDLOG_TAG "v1.9.0")
 
 # magic_enum
 set(MAGIC_ENUM_REPOSITORY "https://gitlab.com/ExternalRepositories/magic_enum.git")
@@ -61,7 +61,7 @@ set(DOCTEST_TAG "2.4.6")
 
 # CLI11
 set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11.git")
-set(CLI11_TAG "master")
+set(CLI11_TAG "v2.0.0")
 
 ####################################
 #          EXTRA PACKAGES          #
