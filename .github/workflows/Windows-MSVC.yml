@@ -22,7 +22,7 @@ jobs:
     steps:
 
     - name: Setup Visual Studio
-      uses: ilammy/msvc-dev-cmd@v1.8.0
+      uses: ilammy/msvc-dev-cmd@v1.9.0
       with:
         arch: amd64_x86
 
