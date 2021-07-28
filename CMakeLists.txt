@@ -11,9 +11,9 @@
 # |  \__| ▓▓                                         \▓▓▓ #
 #  \▓▓    ▓▓                                              #
 #   \▓▓▓▓▓▓                                               #
-#                                                         # 
+#                                                         #
 ###########################################################
-  
+
 cmake_minimum_required(VERSION 3.16...3.20.2)
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external")
@@ -44,6 +44,10 @@ option(BUILD_TESTS "Build the tests" TRUE)
 option(BUILD_EXAMPLES "Build the examples" TRUE)
 option(BUILD_DOCS "Build the docs" TRUE)
 option(BUILD_EXTRAS "Build the extras" TRUE)
+
+set(DEFAULT_YAODAQ_CONFIGS_PATH "${CMAKE_INSTALL_PREFIX}/configs")
+set(DEFAULT_YAODAQ_PLUGINS_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/plugins")
+set(DEFAULT_YAODAQ_DATA_PATH "${CMAKE_INSTALL_PREFIX}/data")
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #include(DefaultConfigurations)

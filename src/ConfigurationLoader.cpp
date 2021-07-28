@@ -4,6 +4,7 @@
 #include "Internal.hpp"
 #include "StatusCode.hpp"
 #include "toml.hpp"
+#include "GeneralParameters.hpp"
 
 namespace yaodaq
 {
@@ -15,8 +16,8 @@ void ConfigurationLoader::parse()
   std::lock_guard<std::mutex> guard(m_Mutex);
   if(!m_HaveBeenParsed.load())
   {
-    if(m_Filename.empty()) { throw Exception(StatusCode::NOT_FOUND, "No Configuration file given !"); }
-    m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
+    if(m_Filename.empty()) m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(GeneralParameters::getConfigsPath()+"/"+GeneralParameters::getConfigFileName());
+    else m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(GeneralParameters::getConfigsPath()+"/"+m_Filename);
     parseRooms();
     fillIndexes();
     m_HaveBeenParsed = true;
@@ -206,7 +207,8 @@ void ConfigurationLoader::parseModules(const toml::value& crate)
 
 void ConfigurationLoader::reloadParameters(const std::string& name)
 {
-  m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
+  if(m_Filename.empty()) m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(GeneralParameters::getConfigsPath()+"/"+GeneralParameters::getConfigFileName());
+  else m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(GeneralParameters::getConfigsPath()+"/"+m_Filename);
   for(const auto& room: toml::find<toml::array>(m_Conf, "Room"))
   {
     for(const auto& rack: toml::find<toml::array>(room, "Rack"))
@@ -238,7 +240,8 @@ void ConfigurationLoader::reloadParameters(const std::string& name)
 
 void ConfigurationLoader::reloadConnectorParameters(const std::string& name)
 {
-  m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(m_Filename);
+  if(m_Filename.empty()) m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(GeneralParameters::getConfigsPath()+"/"+GeneralParameters::getConfigFileName());
+  else m_Conf = toml::parse<toml::preserve_comments, std::map, std::vector>(GeneralParameters::getConfigsPath()+"/"+m_Filename);
   for(const auto& room: toml::find<toml::array>(m_Conf, "Room"))
   {
     for(const auto& rack: toml::find<toml::array>(room, "Rack"))
@@ -294,7 +297,8 @@ void ConfigurationLoader::fillIndexes()
 
 std::string ConfigurationLoader::getFileName()
 {
-  return m_Filename;
+  if(m_Filename.empty()) return GeneralParameters::getConfigFileName();
+  else return m_Filename;
 }
 
 void ConfigurationLoader::setFileName(const std::string& file)

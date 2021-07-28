@@ -43,8 +43,6 @@ int main(int argc, char** argv)
   GeneralParameters::setPort(port);
   GeneralParameters::setHost(host);
 
-  Board::setConfigFile("../confs/Configs.toml");
-
   WIENER::Mpod mpod(name);
   mpod.setVerbosity(verbosity);
   return mpod.loop();

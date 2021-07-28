@@ -43,8 +43,6 @@ int main(int argc, char** argv)
   GeneralParameters::setPort(port);
   GeneralParameters::setHost(host);
 
-  Board::setConfigFile("../confs/Configs.toml");
-
   CAEN::CAENDigitizerBoard digitizer(name);
   digitizer.setVerbosity(verbosity);
   return digitizer.loop();

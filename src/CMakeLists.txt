@@ -72,8 +72,10 @@ target_link_libraries(Clients PUBLIC Infos PUBLIC Exception)
 target_include_directories(Clients PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 install(TARGETS Clients)
 
-add_library(GeneralParameters "GeneralParameters.cpp")
+configure_file("GeneralParameters.cpp.in" "GeneralParameters.cpp" @ONLY)
+add_library(GeneralParameters "${CMAKE_CURRENT_BINARY_DIR}/GeneralParameters.cpp")
 target_include_directories(GeneralParameters PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+target_link_libraries(GeneralParameters PRIVATE laserpants::dotenv)
 set_target_properties(GeneralParameters PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/GeneralParameters.hpp")
 install(TARGETS GeneralParameters)
 
@@ -126,7 +128,7 @@ install(TARGETS Connector)
 
 add_library(ConnectorFactory "ConnectorFactory.cpp")
 target_include_directories(ConnectorFactory PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos PUBLIC FlakedTuna PUBLIC Message)
+target_link_libraries(ConnectorFactory PUBLIC ConnectorInfos PUBLIC FlakedTuna PUBLIC Message  PUBLIC GeneralParameters)
 set_target_properties(ConnectorFactory PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/ConnectorFactory.hpp")
 install(TARGETS ConnectorFactory)
 
@@ -138,7 +140,7 @@ install(TARGETS BoardInfos)
 
 add_library(ConfigurationLoader "ConfigurationLoader.cpp")
 target_include_directories(ConfigurationLoader PUBLIC $<BUILD_INTERFACE:${YAODAQ_INCLUDE}> PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(ConfigurationLoader PUBLIC ConnectorInfos PUBLIC BoardInfos)
+target_link_libraries(ConfigurationLoader PUBLIC ConnectorInfos PUBLIC BoardInfos PUBLIC GeneralParameters)
 set_target_properties(ConfigurationLoader PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/ConfigurationLoader.hpp")
 install(TARGETS ConfigurationLoader)
 

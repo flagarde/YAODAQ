@@ -44,8 +44,6 @@ int main(int argc, char** argv)
   GeneralParameters::setPort(port);
   GeneralParameters::setHost(host);
 
-  Board::setConfigFile("../confs/Configs.toml");
-
   FileWritter fileWritter(name);
   fileWritter.setVerbosity(verbosity);
   fileWritter.setFile(std::make_unique<DAQFile>("Run${ID}.root", "RECREATE", "Run${ID}", 9));

@@ -1,0 +1,99 @@
+#include "GeneralParameters.hpp"
+
+#include "Utilities.hpp"
+
+#include <dotenv.h>
+
+namespace yaodaq
+{
+
+  std::string GeneralParameters::m_Host{"127.0.0.1"};
+
+  int         GeneralParameters::m_Port{8080};
+
+  std::string GeneralParameters::m_URL{"ws://127.0.0.1:8080/"};
+
+  bool        GeneralParameters::m_URLIsSet{false};
+
+  std::string GeneralParameters::m_ConfigsPath{NormalizePath("@DEFAULT_YAODAQ_CONFIGS_PATH@")};
+
+  std::string GeneralParameters::m_PluginsPath{NormalizePath("@DEFAULT_YAODAQ_PLUGINS_PATH@")};
+
+  std::string GeneralParameters::m_DataPath{NormalizePath("@DEFAULT_YAODAQ_DATA_PATH@")};
+
+  std::string GeneralParameters::m_ConfigFileName{"Config.toml"};
+
+  std::string GeneralParameters::getConfigFileName()
+  {
+    return m_ConfigFileName;
+  }
+
+  std::string GeneralParameters::getDataPath()
+  {
+    return dotenv::getenv("YAODAQ_DATA_PATH", m_DataPath);
+  }
+
+  std::string GeneralParameters::getConfigsPath()
+  {
+    return dotenv::getenv("YAODAQ_CONFIGS_PATH", m_ConfigsPath);
+  }
+
+  std::string GeneralParameters::getPluginsPath()
+  {
+    return dotenv::getenv("YAODAQ_PLUGINS_PATH", m_PluginsPath);
+  }
+
+  void GeneralParameters::reloadParameters(const char* path)
+  {
+    dotenv::init(path);
+  }
+
+  void GeneralParameters::setHost(const std::string& host)
+  {
+    m_Host=host;
+    m_URLIsSet =  false;
+  }
+
+  std::string GeneralParameters::getHost()
+  {
+    return m_Host;
+  }
+
+  void        GeneralParameters::setPort(const int& port)
+  {
+    m_Port=port;
+    m_URLIsSet = false;
+  }
+
+  int         GeneralParameters::getPort()
+  {
+    return m_Port;
+  }
+
+  void GeneralParameters::setURL(const std::string& url)
+  {
+    m_URL = url;
+    m_URLIsSet =  true;
+  }
+
+  std::string GeneralParameters::getURL()
+  {
+    if(m_URLIsSet)
+    {
+      return m_URL;
+    }
+    else
+    {
+      return "ws://"+m_Host+":"+std::to_string(m_Port)+"/";
+    }
+  }
+
+  GeneralParameters::GeneralParameters()
+  {
+    dotenv::init((NormalizePath(getExePath())+"/"+".env").c_str());
+  }
+
+  static GeneralParameters gParameters;
+
+}
+

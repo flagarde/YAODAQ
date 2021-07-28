@@ -1,8 +1,43 @@
 #pragma once
 
+#if defined(_WIN32)
+  #include <windows.h>    //GetModuleFileNameW
+#elif defined(__APPLE__)
+  #include <mach-o/dyld.h>
+  #include <limits.h>
+#else
+  #include <limits.h>
+  #include <unistd.h>     //readlink
+#endif
+
+#include <filesystem>
 #include <sstream>
 #include <string>
 #include <vector>
+
+static inline std::filesystem::path getFullExePath()
+{
+  #if  defined(__APPLE__)
+    const std::size_t bufSize{PATH_MAX + 1};
+    char result[bufSize]{'\0'};
+    _NSGetExecutablePath(result,&bufSize)
+    return std::string(result);
+  #elif defined(_WIN32)
+    TCHAR result[MAX_PATH]{'\0'};
+    GetModuleFileName(NULL, result, MAX_PATH);
+    return result;
+  #else
+    const std::size_t bufSize{PATH_MAX + 1};
+    char result[bufSize]{'\0'};
+    ssize_t count = int(readlink("/proc/self/exe",result,bufSize - 1));
+    return std::string(result, (count>0) ? count : 0);
+  #endif
+}
+
+static inline std::filesystem::path getExePath()
+{
+  return getFullExePath().parent_path();
+}
 
 //-------------------------------------------------------------------------------------------------
 /** Convert std::string to a type
@@ -68,4 +103,12 @@ template<> inline void tokenize(const std::string& inputString, std::vector<std:
     lastPos = inputString.find_first_not_of(delimiter, pos);
     pos     = inputString.find_first_of(delimiter, lastPos);
   }
+}
+
+inline std::string NormalizePath(const std::string& path)
+{
+  std::size_t found = path.find_last_of("/\\");
+  if(found == std::string::npos) return path;
+  else if(found == path.size()-1) return path.substr(0,found);
+  else return path;
 }

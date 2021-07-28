@@ -3,6 +3,7 @@
 #include "Exception.hpp"
 #include "StatusCode.hpp"
 #include "toml.hpp"
+#include "GeneralParameters.hpp"
 
 namespace yaodaq
 {
@@ -11,8 +12,7 @@ void ConnectorFactory::loadConnectors()
 {
   if(!m_Loaded)
   {
-    checkEnvironmentVariable();
-    m_Loader.FindPluginsAtDirectory(m_Path);
+    m_Loader.FindPluginsAtDirectory(GeneralParameters::getPluginsPath());
     for(const auto& connector: m_Loader.BuildAndResolvePlugin<Connector>())
     {
       m_Plugins.emplace(connector->getType(), connector);
@@ -20,13 +20,6 @@ void ConnectorFactory::loadConnectors()
     }
     m_Loaded = true;
   }
-}
-
-void ConnectorFactory::checkEnvironmentVariable()
-{
-  if(std::getenv("YAODAQ_CONNECTOR_DIR") != nullptr) m_Path = std::string(std::getenv("YAODAQ_CONNECTOR_DIR"));
-  else
-    throw Exception(StatusCode::NOT_FOUND, "YAODAQ_CONNECTOR_DIR environmental variable not found! Can't load libraries for connectors!");
 }
 
 std::shared_ptr<Connector> ConnectorFactory::createConnector(const ConnectorInfos& infos)

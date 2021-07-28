@@ -5,6 +5,11 @@ set_target_properties(Exceptions PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_INS
 target_link_libraries(Exceptions PRIVATE Exception PRIVATE doctest_with_main)
 doctest_discover_tests(Exceptions COMMAND Exceptions ADD_LABELS "Exceptions")
 
+add_executable(GeneralParametersTest GeneralParameters.test.cpp)
+set_target_properties(GeneralParametersTest PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/tests")
+target_link_libraries(GeneralParametersTest PRIVATE GeneralParameters PRIVATE doctest_with_main)
+doctest_discover_tests(GeneralParametersTest COMMAND GeneralParametersTest ADD_LABELS "GeneralParametersTest" WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+
 
 #add_executable(MessagesTests Messages.test.cpp)
 #set_target_properties(MessagesTests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_INSTALL_PREFIX}/tests")
