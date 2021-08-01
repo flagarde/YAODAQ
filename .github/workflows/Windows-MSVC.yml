@@ -1,61 +1,42 @@
-name: Windows MSVC
+name: 'Windows MSVC'
 
 env:
-  CMAKE_VERSION: 3.16.x
-  CMAKE_BUILD_TYPE: Release
-  CMAKE_BUILD_PREFIX: "${{ github.workspace }}/build"
-  ROOT_VERSION: "6.24.00"
-  ROOT_URL: "https://root.cern/download"
+  CMAKE_VERSION: '3.16.x'
+  CMAKE_BUILD_TYPE: 'Release'
+  CMAKE_BUILD_PREFIX: './build'
 
 on:
-    push:
-    pull_request:
-    schedule:
-    #Every Sunday at midnight
-    - cron:  '0 0 * * 0'
+  push:
+  pull_request:
 
 jobs:
-  # Checkout apply clang-format and upload artifact
   build:
-    name: "Build"
     runs-on: windows-latest
+    name: '🚧 🟨 MSVC'
+
     steps:
 
-    - name: Setup Visual Studio
-      uses: ilammy/msvc-dev-cmd@v1.9.0
+    - name: '🧰 Checkout'
+      uses: actions/checkout@v2.3.4
       with:
-        arch: amd64_x86
+        fetch-depth: 0
 
-    - name: Setup CMake
+    - name: '${{ matrix.icon }} Setup CMake'
       uses: jwlawson/actions-setup-cmake@v1.9
       with:
         cmake-version: '${{env.CMAKE_VERSION}}'
+        github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Checkout
-      uses: actions/checkout@v2.3.4
+    - name: '🟨 Setup Visual Studio'
+      uses: ilammy/msvc-dev-cmd@v1.9.0
 
-    #- name: Download and unzip ROOT
-    #  shell: cmake -P {0}
-    #  run: |
-    #      if(${{ env.CMAKE_BUILD_TYPE }} STREQUAL "Debug")
-    #        set(ROOT_URL "$ENV{ROOT_URL}/root_v$ENV{ROOT_VERSION}.win32.vc16.debug.zip")
-    #      else()
-    #        set(ROOT_URL "$ENV{ROOT_URL}/root_v$ENV{ROOT_VERSION}.win32.vc16.zip")
-    #      endif()
-    #      file(DOWNLOAD "${ROOT_URL}" "./root.zip")
-    #      execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./root.zip)
-
-    #- name: Test ROOT
-    #  shell: cmd
-    #  run: .\root\bin\thisroot.bat && root --version
-
-    - name: Configure
-      run: cmake -A Win32 -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }} -DBUILD_ROOT=OFF -DBUILD_DAQ=OFF -DBUILD_CAEN=OFF
+    - name: '🔧 Configure'
+      run: cmake -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }}
       shell: cmd
 
-    - name: Build
+    - name: '⚙️ Build'
       run: cmake --build ${{ env.CMAKE_BUILD_PREFIX }} --config ${{ env.CMAKE_BUILD_TYPE }} --parallel 2
 
-    - name: Run tests
+    - name: '🧪 Run tests'
       working-directory: ${{ env.CMAKE_BUILD_PREFIX }}
       run: ctest -C ${{ env.CMAKE_BUILD_TYPE }} -j2 -VV --output-on-failure
