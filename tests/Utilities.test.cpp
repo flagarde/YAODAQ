@@ -14,4 +14,3 @@ TEST_CASE("Test Utilities")
   std::cout<<getFullExePath()<<std::endl;
   std::cout<<getExePath()<<std::endl;
 }
-

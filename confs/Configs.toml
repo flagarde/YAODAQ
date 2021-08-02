@@ -133,4 +133,3 @@ MIB_filename = "WIENER-CRATE-MIB"
 "Retries"= 3
 "Version"= "v2c"
 "ReadCommunity" = "guru"
-
