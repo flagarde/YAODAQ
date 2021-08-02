@@ -20,7 +20,7 @@ WIENER-CRATE-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
     OBJECT-TYPE, MODULE-IDENTITY, OBJECT-IDENTITY,
-        IpAddress, Integer32, 
+        IpAddress, Integer32,
         -- Unsigned32,          Not used at the moment. This is BER-Coded to GAUGE, not INTEGER (so different encoding)
         Opaque, enterprises
         FROM SNMPv2-SMI

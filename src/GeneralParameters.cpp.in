@@ -96,4 +96,3 @@ namespace yaodaq
   static GeneralParameters gParameters;
 
 }
-
