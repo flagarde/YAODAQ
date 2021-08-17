@@ -128,6 +128,17 @@ macro(compileROOT)
                     -Dccache=OFF
                     -Ddistcc=OFF
                     -Dbuiltin_zlib=OFF
+                    -Dcudnn=OFF
+                    -Ddcache=OFF
+                    -Djemalloc=OFF
+                    -Dmemstat=OFF
+                    -Dpyroot_legacy=OFF
+                    -Dtcmalloc=OFF
+                    -Dtesting=OFF
+                    -Drootbench=OFF
+                    -Droottest=OFF
+                    -Dxproofd=OFF
+                    -Ddev=OFF
                     -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
                     -S "${CMAKE_BINARY_DIR}/_deps/root-src"
                     -B "${CMAKE_BINARY_DIR}/_deps/root-build")
