@@ -116,7 +116,16 @@ macro(compileROOT)
                     -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
                     -DCXX_STANDARD_REQUIRED=ON
                     -DCXX_EXTENSIONS=OFF
+                    -Dalien=OFF
                     -Dbuiltin_pcre=OFF
+                    -Dbuiltin_openssl=OFF
+                    -Dpythia6=OFF
+                    -Dpythia8=OFF
+                    -Dfortran=OFF
+                    -Doracle=OFF
+                    -Dcoverage=OFF
+                    -Dcuda=OFF
+                    -Dbuiltin_zlib=OFF
                     -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
                     -S "${CMAKE_BINARY_DIR}/_deps/root-src"
                     -B "${CMAKE_BINARY_DIR}/_deps/root-build")
