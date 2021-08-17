@@ -21,7 +21,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: '${{ matrix.icon }} Setup CMake'
+    - name: '🟨 Setup CMake'
       uses: jwlawson/actions-setup-cmake@v1.10
       with:
         cmake-version: '${{env.CMAKE_VERSION}}'
