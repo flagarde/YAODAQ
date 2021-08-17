@@ -1,1 +1,2 @@
-include(Documentation)
+include(Documentations)
+configure_doxyfile()
