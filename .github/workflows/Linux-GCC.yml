@@ -33,6 +33,9 @@ jobs:
         cmake-version: '${{env.CMAKE_VERSION}}'
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: '${{ matrix.icon }} Install packages'
+      run: apt-get install libxpm-dev
+
     - name: '🔧 Configure'
       env:
         CC: ${{matrix.cc}}

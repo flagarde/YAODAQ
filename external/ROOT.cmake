@@ -43,7 +43,7 @@ macro(compileROOT)
   declare_option(REPOSITORY root OPTION builtin_lz4 VALUE ON)
   declare_option(REPOSITORY root OPTION builtin_lzma VALUE ON)
   declare_option(REPOSITORY root OPTION builtin_openssl VALUE OFF)
-  declare_option(REPOSITORY root OPTION builtin_pcre VALUE ON)
+  declare_option(REPOSITORY root OPTION builtin_pcre VALUE OFF)
   declare_option(REPOSITORY root OPTION builtin_tbb VALUE ON)
   declare_option(REPOSITORY root OPTION builtin_unuran VALUE ON)
   declare_option(REPOSITORY root OPTION builtin_vc VALUE ON)
@@ -116,6 +116,7 @@ macro(compileROOT)
                     -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
                     -DCXX_STANDARD_REQUIRED=ON
                     -DCXX_EXTENSIONS=OFF
+                    -Dbuiltin_pcre=OFF
                     -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
                     -S "${CMAKE_BINARY_DIR}/_deps/root-src"
                     -B "${CMAKE_BINARY_DIR}/_deps/root-build")
