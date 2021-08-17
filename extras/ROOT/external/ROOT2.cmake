@@ -11,7 +11,7 @@
 #endif()
 
 #if( USE_ROOT_SYSTEM )
-  find_package(ROOT ${ROOT_VERSION} CONFIG)
+  #find_package(ROOT ${ROOT_VERSION} CONFIG)
 #endif()
 
 #if(NOT ROOT_FOUND)
@@ -142,7 +142,7 @@
 #endif()
 
 #find_package(ROOT ${ROOT_VERSION} REQUIRED CONFIG)
-include("${ROOT_USE_FILE}")
+#include("${ROOT_USE_FILE}")
 #add_library(ROOT INTERFACE)
 #target_link_libraries(ROOT INTERFACE "${ROOT_LIBRARIES}")
 # string(REPLACE " " ";" ROOT_CXX_FLAGS ${ROOT_CXX_FLAGS}) target_compile_definitions(ROOT INTERFACE "${ROOT_CXX_FLAGS}")

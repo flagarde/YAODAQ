@@ -46,6 +46,6 @@ int main(int argc, char** argv)
 
   FileWritter fileWritter(name);
   fileWritter.setVerbosity(verbosity);
-  fileWritter.setFile(std::make_unique<DAQFile>("Run${ID}.root", "RECREATE", "Run${ID}", 9));
+  fileWritter.setFile(std::make_unique<DAQFile>(GeneralParameters::getDataPath()+"/"+"Run${ID}.root", "RECREATE", "Run${ID}", 9));
   return fileWritter.loop();
 }

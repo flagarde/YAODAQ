@@ -110,7 +110,7 @@ name = "My Configuration"
           TRIGGER_THRESHOLD_TR0=20934
           DC_OFFSET_TR1=32768
           TRIGGER_THRESHOLD_TR1=20934
-
+          GRP0_CH_DC_OFFSET="4,4,4,4,4,4,4,4" #0-4096 1.12V
           [Room.Rack.Crate.Board.Connector]
             Name = "Connector1"
             "Connection Type" = "USB"

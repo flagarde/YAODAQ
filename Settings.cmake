@@ -1,4 +1,4 @@
-####################################
+ ####################################
 #  OPTIONS FOR EXTERNAL PACKAGES.  #
 ####################################
 
@@ -29,7 +29,7 @@ set(FMT_TAG "8.0.1")
 
 # Spdlog
 set(SPDLOG_REPOSITORY "https://gitlab.com/ExternalRepositories/spdlog.git")
-set(SPDLOG_TAG "v1.9.0")
+set(SPDLOG_TAG "v1.9.1")
 
 # magic_enum
 set(MAGIC_ENUM_REPOSITORY "https://gitlab.com/ExternalRepositories/magic_enum.git")
@@ -37,7 +37,7 @@ set(MAGIC_ENUM_TAG "master")
 
 # FlakedTuna
 set(FLAKEDTUNA_REPOSITORY "https://gitlab.com/flagarde/FlakedTuna.git")
-set(FLAKEDTUNA_TAG "1.0")
+set(FLAKEDTUNA_TAG "1.1")
 
 # Jsoncpp
 set(JSONCPP_REPOSITORY "https://gitlab.com/ExternalRepositories/jsoncpp.git")
@@ -124,11 +124,11 @@ set(SNMP_version "master")
 
 
 # Compiling ROOT can be very long so :
-option(USE_ROOT_SYSTEM "Try to find a ROOT installation and use it" ON)
+option(USE_ROOT_SYSTEM "Try to find a ROOT installation and use it" OFF)
 option(BUILD_ROOT "Build ROOT Folder" ON)
-set(LOOK_FOR_ROOT_VERSION "6.20")
+#set(LOOK_FOR_ROOT_VERSION "6.20")
 # If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
-set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
+#set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
 #
 
 option(BUILD_ANALYSIS "Build the Analysis code" ON)

@@ -1,8 +1,14 @@
 if(BUILD_ROOT)
+
+find_package(ROOT ${ROOT_VERSION} COMPONENTS Core Tree CONFIG)
+
+message(WARN "${ROOT_INCLUDE_DIRS}")
+
   find_package(ROOT ${ROOT_VERSION} CONFIG)
   root_generate_dictionary(G__Channel "include/Channel.hpp" LINKDEF "include/ChannelLinkDef.hpp")
   add_library(Channel OBJECT "src/Channel.cpp" G__Channel.cxx)
   target_include_directories(Channel PRIVATE "${YAODAQ_INCLUDE}" PRIVATE "./include")
+  target_link_directories(Channel PRIVATE ${ROOT_CORE_LIBRARY})
   target_link_libraries(Channel PUBLIC ROOT::Core PUBLIC ROOT::Tree)
   add_library(Channel_static STATIC $<TARGET_OBJECTS:Channel>)
   target_link_libraries(Channel_static PUBLIC ROOT::Core PUBLIC ROOT::Tree)

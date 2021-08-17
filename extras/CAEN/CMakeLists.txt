@@ -1,3 +1,4 @@
+
 if(NOT APPLE)
 
 if(BUILD_DAQ OR CAEN_HARDWARE)
@@ -30,7 +31,7 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
     ${YAODAQ_VERSION_MAJOR}
     BASE
     yaodaq::Connector
-    CHILDS
+    CHILDREN
     CAEN::CAENVMEConnector
     CAEN::CAENDigitizerConnector
     CAEN::CAENHVConnector

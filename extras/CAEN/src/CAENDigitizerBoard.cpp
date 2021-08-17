@@ -1903,17 +1903,21 @@ void CAENDigitizerBoard::verifyParameters()
   //GRP_CH_DC_OFFSET
   for(std::size_t group = 0; group != m_MAX_SET; ++group)
   {
-    std::string val = toml::find_or<std::string>(m_Conf, "GRP_CH_DC_OFFSET", "");
+    std::string name{"GRP"+std::to_string(group)+"_CH_DC_OFFSET"};
+    std::cout<<name<<std::endl;
+    std::string val = toml::find_or<std::string>(m_Conf,name, "");
     if(val != "")
     {
+
       std::vector<float> dc;
       tokenize(val, dc, ",");
       if(dc.size() != 8) throw yaodaq::Exception(StatusCode::WRONG_NUMBER_PARAMETERS, "GRP_CH_DC_OFFSET should be one the form \"0.,0.,0.,0.,0.,0.,0.,0.\"");
       for(std::size_t i = 0; i != dc.size(); ++i)
       {
+        std::cout<<dc[i]<<"FFF"<<val<<std::endl;
         m_DC8file[i] = dc[i];
         int val2     = (int)((dc[i] + 50) * 65535 / 100);  /// DC offset (percent of the dynamic range, -50 to 50)
-        m_DCoffsetGrpCh[group][i];
+        m_DCoffsetGrpCh[group][i]=val2;
       }
     }
   }
