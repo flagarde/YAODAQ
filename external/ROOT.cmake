@@ -125,6 +125,8 @@ macro(compileROOT)
                     -Doracle=OFF
                     -Dcoverage=OFF
                     -Dcuda=OFF
+                    -Dccache=OFF
+                    -Ddistcc=OFF
                     -Dbuiltin_zlib=OFF
                     -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
                     -S "${CMAKE_BINARY_DIR}/_deps/root-src"
