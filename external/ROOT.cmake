@@ -18,6 +18,8 @@ if(NOT DEFINED ROOT_URL_HASH)
   set(ROOT_URL_HASH "SHA256=0507e1095e279ccc7240f651d25966024325179fa85a1259b694b56723ad7c1c")
 endif()
 
+message(WARN "1******************* ${ROOT_DIR}")
+
 macro(compileROOT)
   message(WARN "ROOT version ${ROOT_VERSION} not found ! Compiling it !")
   include(ProcessorCount)
@@ -112,7 +114,7 @@ macro(compileROOT)
   if(NOT ${root_POPULATED} STREQUAL "True")
     FetchContent_Populate(ROOT)
     execute_process(COMMAND ${CMAKE_COMMAND}
-                    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+                    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/root_${ROOT_VERSION}
                     -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
                     -DCXX_STANDARD_REQUIRED=ON
                     -DCXX_EXTENSIONS=OFF
@@ -143,11 +145,8 @@ macro(compileROOT)
                     -S "${CMAKE_BINARY_DIR}/_deps/root-src"
                     -B "${CMAKE_BINARY_DIR}/_deps/root-build")
   endif()
-  execute_process(COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}/_deps/root-build" -j${NUMBER_CORES})
-  execute_process(COMMAND ${CMAKE_COMMAND} --install "${CMAKE_BINARY_DIR}/_deps/root-build")
-  set(ROOT_DIR "${CMAKE_INSTALL_PREFIX}/cmake/")
-  find_package(ROOT ${ROOT_VERSION} CONFIG)
-  include("${ROOT_USE_FILE}")
+  execute_process(COMMAND ${CMAKE_COMMAND} --build "${CMAKE_BINARY_DIR}/_deps/root-build" -j${NUMBER_CORES} COMMAND_ECHO STDOUT)
+  execute_process(COMMAND ${CMAKE_COMMAND} --install "${CMAKE_BINARY_DIR}/_deps/root-build" COMMAND_ECHO STDOUT)
 endmacro()
 
 if(USE_SYSTEM_ROOT)
@@ -159,5 +158,12 @@ if(USE_SYSTEM_ROOT)
     include("${ROOT_USE_FILE}")
   endif()
 else()
+  message(WARN "2******************* ${ROOT_DIR}")
   compileROOT()
 endif()
+
+message(WARN "3******************* ${ROOT_DIR}")
+set(ROOT_DIR "${CMAKE_INSTALL_PREFIX}/root_${ROOT_VERSION}/cmake/")
+message(WARN "4******************* ${ROOT_DIR}")
+find_package(ROOT REQUIRED)
+include("${ROOT_USE_FILE}")
