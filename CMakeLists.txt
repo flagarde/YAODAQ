@@ -38,6 +38,8 @@ include(Standards)
 cxx_17()
 c_11()
 
+include(ROOT)
+
 include(GNUInstallDirs)
 
 option(BUILD_TESTS "Build the tests" TRUE)
