@@ -41,6 +41,7 @@ jobs:
         update: true
         install: >-
           git
+          libutil-linux-devel
           make
           mingw-w64-${{matrix.env}}-toolchain
           mingw-w64-${{matrix.env}}-cmake
