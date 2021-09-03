@@ -182,6 +182,7 @@ if(COMPILE_ROOT)
     declare_option(REPOSITORY ROOT OPTION CMAKE_C_FLAGS VALUE "-Wno-error=class-memaccess")
     declare_option(REPOSITORY ROOT OPTION CMAKE_CXX_FLAGS VALUE "-Wno-error=class-memaccess")
   endif()
+  declare_option(REPOSITORY ROOT OPTION OPENSSL_ROOT_DIR VALUE "${CMAKE_INSTALL_PREFIX}")
   print_options(REPOSITORY  ROOT)
 
   CPMAddPackage(NAME ROOT
