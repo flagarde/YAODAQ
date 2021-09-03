@@ -14,11 +14,12 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 static inline std::filesystem::path getFullExePath()
 {
   #if  defined(__APPLE__)
-    const std::size_t bufSize{PATH_MAX + 1};
+    const std::uint32_t bufSize{PATH_MAX + 1};
     char result[bufSize]{'\0'};
     _NSGetExecutablePath(result,&bufSize)
     return std::string(result);
