@@ -26,7 +26,7 @@ endif()
 if(COMPILE_ROOT)
 
   if(NOT DEFINED ROOT_REPOSITORY)
-    set(ROOT_REPOSITORY "https://github.com/flagarde/root.git")
+    set(ROOT_REPOSITORY "https://github.com/external-packages/root.git")
   endif()
 
   if(NOT DEFINED ROOT_TAG)
@@ -182,7 +182,7 @@ if(COMPILE_ROOT)
     declare_option(REPOSITORY ROOT OPTION CMAKE_C_FLAGS VALUE "-Wno-error=class-memaccess")
     declare_option(REPOSITORY ROOT OPTION CMAKE_CXX_FLAGS VALUE "-Wno-error=class-memaccess")
   endif()
-  declare_option(REPOSITORY ROOT OPTION OPENSSL_ROOT_DIR VALUE "${CMAKE_INSTALL_PREFIX}")
+  declare_option(REPOSITORY ROOT OPTION unset_variables VALUE FALSE)
   print_options(REPOSITORY  ROOT)
 
   CPMAddPackage(NAME ROOT
