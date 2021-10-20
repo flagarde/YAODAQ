@@ -34,7 +34,7 @@ jobs:
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: '${{ matrix.icon }} Install packages'
-      run: sudo apt-get install libxpm-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
+      run: sudo apt-get install libxpm-dev libglu1-mesa-dev freeglut3-dev
 
     - name: '🔧 Configure'
       env:
