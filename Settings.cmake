@@ -1,18 +1,39 @@
- ####################################
+####################################
+#                                  #
 #  OPTIONS FOR EXTERNAL PACKAGES.  #
+#                                  #
 ####################################
 
 ####################################
 #        NECESSARY PACKAGES        #
 ####################################
 
-# OpenSSL
-set(USE_SYSTEM_OPENSSL OFF)
-set(OPENSSLCMAKE_REPOSITORY "https://gitlab.com/flagarde/openssl-cmake.git")
+#When on github action
+if(DEFINED ENV{CI})
+  set(CMMM_PROVIDER "github")
+  set(PROVIDER_URL "https://github.com")
+else()
+  set(CMMM_PROVIDER "gitlab")
+  set(PROVIDER_URL "https://gitlab.com")
+endif()
+
+#//////////////////////////////////#
+#            CPM.CMake             #
+#//////////////////////////////////#
+set(CPM_DEFAULT_VERSION "0.34.0")
+if(NOT DEFINED ENV{CI})
+  set(CPM_URL "https://gitlab.com/external-packages/cpm.cmake/-/raw/v${CPM_DEFAULT_VERSION}/cmake/CPM.cmake")
+endif()
+
+#//////////////////////////////////#
+#             OpenSSL              #
+#//////////////////////////////////#
+set(OPENSSLCMAKE_REPOSITORY "${PROVIDER_URL}/openssl-cmake.git")
 set(OPENSSLCMAKE_TAG "v2.1")
-set(OPENSSL_VERSION "1.1.1k")
+set(USE_SYSTEM_OPENSSL OFF)
+set(OPENSSL_VERSION "1.1.1l")
 set(OPENSSL_URL "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz")
-set(OPENSSL_URL_HASH "SHA256=892a0875b9872acd04a9fde79b1f943075d5ea162415de3047c327df33fbaee5")
+set(OPENSSL_URL_HASH "SHA256=0b7a3e5e59c34827fe0c3a74b7ec8baef302b98fa80088d7f9153aa16fa76bd1")
 
 # Zlib-ng
 set(USE_SYSTEM_ZLIB OFF)
@@ -50,6 +71,11 @@ set(TOML11_TAG "master")
 # SourceLocation
 set(SOURCELOCATION_REPOSITORY "https://gitlab.com/flagarde/source_location.git")
 set(SOURCELOCATION_TAG "main")
+
+# SourceLocation
+set(NLOHMANN_REPOSITORY "https://gitlab.com/external-packages/nlohmann_json_cmake_fetchcontent")
+set(NLOHMANN_TAG "v3.10.4")
+
 
 ## FOR TESTS ##
 
