@@ -16,8 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { icon: '🟨', cc: clang-12, cxx: clang++-12, name: 'Clang 12' }
-          - { icon: '🟦', cc: clang-13, cxx: clang++-13, name: 'Clang 13' }
+          - { icon: '🟨', cc: clang, cxx: clang++, name: 'Clang 12' }
+          - { icon: '🟦', cc: $(brew --prefix llvm)/bin/clang, cxx: $(brew --prefix llvm)/bin/clang++, name: 'Clang 13' }
           
     name: '🚧 ${{ matrix.icon }} ${{ matrix.name }}'
     steps:
