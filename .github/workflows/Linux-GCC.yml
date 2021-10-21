@@ -40,6 +40,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: './build/_deps/root-build'
+        key: root-${{ matrix.cc }}
           
     - name: '🔧 Configure'
       env:
