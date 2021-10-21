@@ -46,6 +46,11 @@ jobs:
           mingw-w64-${{matrix.env}}-cmake
           mingw-w64-${{matrix.env}}-ninja
           mingw-w64-${{matrix.env}}-python-numpy
+          mingw-w64-${{matrix.env}}-postgresql
+          mingw-w64-${{matrix.env}}-libmariadbclient
+          mingw-w64-${{matrix.env}}-firebird2-git
+          mingw-w64-${{matrix.env}}-unixodbc
+          mingw-w64-${{matrix.env}}-sqlite3
           pcre
 
     - name: '${{ matrix.icon }} Cache ROOT'

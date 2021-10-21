@@ -32,6 +32,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: '${{ env.CMAKE_BUILD_PREFIX }}/_deps/root-build'
+        key: 'root'
 
     - name: '🔧 Configure'
       run: cmake -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }} -Thost=x64
