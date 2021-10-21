@@ -1,5 +1,3 @@
-include_guard(GLOBAL)
-
 include(CPM)
 cpm()
 
@@ -183,4 +181,7 @@ if(COMPILE_ROOT)
                GIT_TAG ${ROOT_TAG}
                FETCHCONTENT_UPDATES_DISCONNECTED ${IS_OFFLINE}
                OPTIONS ${ROOT_OPTIONS} "ROOT_BUILTINS ZLIB|OpenSSL|ll")
+
+  set(STAGE1 "STAGE1" CACHE INTERNAL "STAGE root.")
+
 endif()
