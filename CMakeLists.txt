@@ -105,6 +105,13 @@ include(Sanitizers)
 #cppcheck(--enable=warning,performance,portability,missingInclude --template="[{severity}][{id}] {message} {callstack} \(On {file}:{line}\)" --suppress=missingIncludeSystem --quiet --verbose --force)
 #include_what_you_use(-Xiwyu)
 
+if(BUILD_DOCS OR BUILD_ONLY_DOCS)
+  add_subdirectory(docs)
+  if(BUILD_ONLY_DOCS)
+    return()
+  endif()
+endif()
+
 if(BUILD_TESTS)
   include(Doctest)
   add_subdirectory(tests)
@@ -117,7 +124,3 @@ if(BUILD_EXTRAS)
 endif()
 
 add_subdirectory(apps)
-
-if(BUILD_DOCS)
-  add_subdirectory(docs)
-endif()
