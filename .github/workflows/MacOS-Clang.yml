@@ -12,8 +12,14 @@ on:
 jobs:
   build:
     runs-on: macos-latest
-    name: '🚧 🟨 Clang'
-
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { icon: '🟨', cc: clang-12, cxx: clang++-12, name: 'Clang 12' }
+          - { icon: '🟦', cc: clang-13, cxx: clang++-13, name: 'Clang 13' }
+          
+    name: '🚧 ${{ matrix.icon }} ${{ matrix.name }}'
     steps:
 
     - name: '🧰 Checkout'
@@ -28,6 +34,9 @@ jobs:
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: '🔧 Configure'
+      env:
+        CC: ${{matrix.cc}}
+        CXX: ${{matrix.cxx}}
       run: cmake -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }} -D CMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }}
 
     - name: '⚙️ Build'
