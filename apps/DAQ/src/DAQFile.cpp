@@ -8,24 +8,24 @@
 
 void DAQFile::createElog()
 {
-  elogpp::ElogEntry entry  = m_ElogManager.createEntry();
+ /* elogpp::ElogEntry entry  = m_ElogManager.createEntry();
   std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
   std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
   std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
   long                                  second      = now2.count() / 1000000000;
   entry.setAttribute("Begin", std::to_string(second));
-  entry.user("DAQ").to("NAS", "Runs").send("V");
+  entry.user("DAQ").to("NAS", "Runs").send("V");*/
 }
 
 void DAQFile::updateElog()
 {
-  elogpp::ElogEntry                             entry       = m_ElogManager.createEntry();
+ /* elogpp::ElogEntry                             entry       = m_ElogManager.createEntry();
   std::chrono::system_clock::time_point now         = std::chrono::system_clock::now();
   std::time_t                           currentTime = std::chrono::system_clock::to_time_t(now);
   std::chrono::nanoseconds              now2        = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch());
   long                                  second      = now2.count() / 1000000000;
   entry.setAttribute("End", std::to_string(second));
-  entry.user("DAQ").to("NAS", "Runs").edit(m_ID).send();
+  entry.user("DAQ").to("NAS", "Runs").edit(m_ID).send();*/
 }
 
 DAQFile::DAQFile(const std::string& name, const std::string& option, const std::string& title, const int& compress, const int& netopt): RootFile(name, option, title, compress, netopt) {}

@@ -8,7 +8,7 @@ if(NOT DEFINED SOCI_REPOSITORY)
 endif()
 
 if(NOT DEFINED SOCI_TAG)
-  set(SOCI_TAG "master")
+  set(SOCI_TAG "v4.0.2")
 endif()
 
 declare_option(REPOSITORY soci OPTION SOCI_SHARED VALUE OFF)

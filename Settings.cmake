@@ -1,14 +1,12 @@
-####################################
-#                                  #
-#  OPTIONS FOR EXTERNAL PACKAGES.  #
-#                                  #
-####################################
+######################################
+######################################
+##                                  ##
+##  OPTIONS FOR EXTERNAL PACKAGES.  ##
+##                                  ##
+######################################
+######################################
 
-####################################
-#        NECESSARY PACKAGES        #
-####################################
-
-#When on github action
+# When on github action CI is defined
 if(DEFINED ENV{CI})
   set(CMMM_PROVIDER "github")
   set(PROVIDER_URL "https://github.com")
@@ -17,81 +15,237 @@ else()
   set(PROVIDER_URL "https://gitlab.com")
 endif()
 
-#//////////////////////////////////#
-#            CPM.CMake             #
-#//////////////////////////////////#
+######################################
+#              TESTING               #
+######################################
+
+#////////////////////////////////////#
+#              Doctest               #
+#////////////////////////////////////#
+set(DOCTEST_TAG "2.4.6")
+if(NOT DEFINED ENV{CI})
+  set(DOCTEST_REPOSITORY "${PROVIDER_URL}/external-packages/doctest.git")
+else()
+  set(DOCTEST_REPOSITORY "${PROVIDER_URL}/onqtam/doctest.git")
+endif()
+
+######################################
+#               Apps                 #
+######################################
+
+#////////////////////////////////////#
+#               CLI11                #
+#////////////////////////////////////#
+set(CLI11_TAG "v2.1.2")
+if(NOT DEFINED ENV{CI})
+  set(CLI11_REPOSITORY "${PROVIDER_URL}/external-packages/cli11.git")
+else()
+  set(CLI11_REPOSITORY "${PROVIDER_URL}/CLIUtils/CLI11.git")
+endif()
+
+######################################
+#         NECESSARY PACKAGES         #
+######################################
+
+#////////////////////////////////////#
+#             CPM.CMake              #
+#////////////////////////////////////#
 set(CPM_DEFAULT_VERSION "0.34.0")
 if(NOT DEFINED ENV{CI})
   set(CPM_URL "https://gitlab.com/external-packages/cpm.cmake/-/raw/v${CPM_DEFAULT_VERSION}/cmake/CPM.cmake")
+else()
+  set(CPM_URL "https://github.com/cpm-cmake/CPM.cmake/releases/download/v${CPM_DEFAULT_VERSION}/CPM.cmake")
 endif()
 
-#//////////////////////////////////#
-#             OpenSSL              #
-#//////////////////////////////////#
-set(OPENSSLCMAKE_REPOSITORY "${PROVIDER_URL}/openssl-cmake.git")
-set(OPENSSLCMAKE_TAG "v2.1")
+#////////////////////////////////////#
+#              OpenSSL               #
+#////////////////////////////////////#
 set(USE_SYSTEM_OPENSSL OFF)
+set(OPENSSLCMAKE_TAG "v2.1")
+set(OPENSSLCMAKE_REPOSITORY "${PROVIDER_URL}/flagarde/openssl-cmake.git")
 set(OPENSSL_VERSION "1.1.1l")
 set(OPENSSL_URL "https://www.openssl.org/source/openssl-${OPENSSL_VERSION}.tar.gz")
 set(OPENSSL_URL_HASH "SHA256=0b7a3e5e59c34827fe0c3a74b7ec8baef302b98fa80088d7f9153aa16fa76bd1")
 
-# Zlib-ng
+#////////////////////////////////////#
+#              Zlib-ng               #
+#////////////////////////////////////#
 set(USE_SYSTEM_ZLIB OFF)
-set(ZLIB-NG_REPOSITORY "https://gitlab.com/ExternalRepositories/zlib-ng.git")
 set(ZLIB-NG_TAG "2.0.5")
+if(NOT DEFINED ENV{CI})
+  set(ZLIB-NG_REPOSITORY "${PROVIDER_URL}/external-packages/zlib-ng.git")
+else()
+  set(ZLIB-NG_REPOSITORY "${PROVIDER_URL}/zlib-ng/zlib-ng.git")
+endif()
 
-# IXWebSocket
-set(IXWEBSOCKET_REPOSITORY "https://gitlab.com/ExternalRepositories/IXWebSocket.git")
-set(IXWEBSOCKET_TAG "v11.2.8")
+#////////////////////////////////////#
+#            IXWebSocket             #
+#////////////////////////////////////#
+set(IXWEBSOCKET_TAG "master")
+if(NOT DEFINED ENV{CI})
+  set(IXWEBSOCKET_REPOSITORY "${PROVIDER_URL}/external-packages/IXWebSocket.git")
+else()
+  set(IXWEBSOCKET_REPOSITORY "${PROVIDER_URL}/machinezone/IXWebSocket.git")
+endif()
 
-# Fmt
-set(FMT_REPOSITORY "https://gitlab.com/ExternalRepositories/fmt.git")
-set(FMT_TAG "8.0.1")
-
-# Spdlog
-set(SPDLOG_REPOSITORY "https://gitlab.com/ExternalRepositories/spdlog.git")
-set(SPDLOG_TAG "v1.9.1")
-
-# magic_enum
-set(MAGIC_ENUM_REPOSITORY "https://gitlab.com/ExternalRepositories/magic_enum.git")
-set(MAGIC_ENUM_TAG "master")
-
-# FlakedTuna
-set(FLAKEDTUNA_REPOSITORY "https://gitlab.com/flagarde/FlakedTuna.git")
+#////////////////////////////////////#
+#            FlakedTuna              #
+#////////////////////////////////////#
 set(FLAKEDTUNA_TAG "1.1")
+set(FLAKEDTUNA_REPOSITORY "${PROVIDER_URL}/flagarde/FlakedTuna.git")
 
-# Jsoncpp
-set(JSONCPP_REPOSITORY "https://gitlab.com/ExternalRepositories/jsoncpp.git")
+#////////////////////////////////////#
+#                Fmt                 #
+#////////////////////////////////////#
+set(FMT_TAG "8.0.1")
+if(NOT DEFINED ENV{CI})
+  set(FMT_REPOSITORY "${PROVIDER_URL}/external-packages/fmt.git")
+else()
+  set(FMT_REPOSITORY "${PROVIDER_URL}/fmtlib/fmt.git")
+endif()
+
+#////////////////////////////////////#
+#               Spdlog               #
+#////////////////////////////////////#
+set(SPDLOG_TAG "v1.9.1")
+if(NOT DEFINED ENV{CI})
+  set(SPDLOG_REPOSITORY "${PROVIDER_URL}/external-packages/spdlog.git")
+else()
+  set(SPDLOG_REPOSITORY "${PROVIDER_URL}/gabime/spdlog.git")
+endif()
+
+#////////////////////////////////////#
+#             magic_enum             #
+#////////////////////////////////////#
+set(MAGIC_ENUM_TAG "v0.7.3")
+if(NOT DEFINED ENV{CI})
+  set(MAGIC_ENUM_REPOSITORY "${PROVIDER_URL}/external-packages/magic_enum.git")
+else()
+  set(MAGIC_ENUM_REPOSITORY "${PROVIDER_URL}/Neargye/magic_enum.git")
+endif()
+
+#////////////////////////////////////#
+#              Jsoncpp               #
+# TO REMOVE TO REMOVE TO REMOVE TO RE#
+#////////////////////////////////////#
 set(JSONCPP_TAG "master")
+if(NOT DEFINED ENV{CI})
+  set(JSONCPP_REPOSITORY "${PROVIDER_URL}/external-packages/jsoncpp.git")
+else()
+  set(JSONCPP_REPOSITORY "${PROVIDER_URL}/open-source-parsers/jsoncpp.git")
+endif()
 
-# Toml11
-set(TOML11_REPOSITORY "https://gitlab.com/ExternalRepositories/toml11.git")
-set(TOML11_TAG "master")
-
-# SourceLocation
-set(SOURCELOCATION_REPOSITORY "https://gitlab.com/flagarde/source_location.git")
-set(SOURCELOCATION_TAG "main")
-
-# SourceLocation
-set(NLOHMANN_REPOSITORY "https://gitlab.com/external-packages/nlohmann_json_cmake_fetchcontent")
+#////////////////////////////////////#
+#              nlohmann              #
+#////////////////////////////////////#
 set(NLOHMANN_TAG "v3.10.4")
+if(NOT DEFINED ENV{CI})
+  set(NLOHMANN_REPOSITORY "${PROVIDER_URL}/external-packages/nlohmann_json_cmake_fetchcontent.git")
+else()
+  set(NLOHMANN_REPOSITORY "${PROVIDER_URL}/ArthurSonzogni/nlohmann_json_cmake_fetchcontent.git")
+endif()
+
+#////////////////////////////////////#
+#            json-rpc-cxx            #
+#////////////////////////////////////#
+set(JSON_RPC_CXX_TAG "v0.3.0")
+if(NOT DEFINED ENV{CI})
+  set(JSON_RPC_CXX_REPOSITORY "${PROVIDER_URL}/external-packages/json-rpc-cxx.git")
+else()
+  set(JSON_RPC_CXX_REPOSITORY "${PROVIDER_URL}/jsonrpcx/json-rpc-cxx.git")
+endif()
+
+#////////////////////////////////////#
+#              Toml11                #
+#////////////////////////////////////#
+set(TOML11_TAG "master")
+if(NOT DEFINED ENV{CI})
+  set(TOML11_REPOSITORY "${PROVIDER_URL}/external-packages/toml11.git")
+else()
+  set(TOML11_REPOSITORY "${PROVIDER_URL}/ToruNiina/toml11.git")
+endif()
+
+#////////////////////////////////////#
+#            dotenv-cpp              #
+#////////////////////////////////////#
+set(DOTENV_TAG "master")
+set(DOTENV_REPOSITORY "${PROVIDER_URL}/flagarde/dotenv-cpp")
+
+#////////////////////////////////////#
+#          source_location           #
+#////////////////////////////////////#
+set(SOURCELOCATION_TAG "main")
+set(SOURCELOCATION_REPOSITORY "${PROVIDER_URL}/flagarde/source_location.git")
+
+######################################
+#           EXTRA PACKAGES           #
+######################################
+
+#////////////////////////////////////#
+#              elogpp                #
+#////////////////////////////////////#
+set(ELOGPP_TAG "main")
+set(ELOGPP_REPOSITORY "${PROVIDER_URL}/flagarde/elogpp.git")
+
+#////////////////////////////////////#
+#             CAENlibs               #
+#////////////////////////////////////#
+set(CAENLIBS_REPOSITORY "${PROVIDER_URL}/flagarde/CAENlibs.git")
+set(CAENLIBS_TAG "main")
+
+#////////////////////////////////////#
+#               soci                 #
+#////////////////////////////////////#
+set(SOCI_TAG "master")
+if(NOT DEFINED ENV{CI})
+  set(SOCI_REPOSITORY "${PROVIDER_URL}/external-packages/soci.git")
+else()
+  set(SOCI_REPOSITORY "${PROVIDER_URL}/SOCI/soci.git")
+endif()
+
+#////////////////////////////////////#
+#             net-snmp               #
+#////////////////////////////////////#
+set(NET-SNMP_TAG "v5.9.1")
+if(NOT DEFINED ENV{CI})
+  set(NET-SNMP_REPOSITORY "${PROVIDER_URL}/external-packages/net-snmp.git")
+else()
+  set(NET-SNMP_REPOSITORY "${PROVIDER_URL}/net-snmp/net-snmp.git")
+endif()
+
+#////////////////////////////////////#
+#              jsroot                #
+#////////////////////////////////////#
+set(JSROOT_TAG "6.2.1")
+if(NOT DEFINED ENV{CI})
+  set(JSROOT_REPOSITORY "${PROVIDER_URL}/external-packages/jsroot.git")
+else()
+  set(JSROOT_REPOSITORY "${PROVIDER_URL}/root-project/jsroot.git")
+endif()
+
+#////////////////////////////////////#
+#           cpp-linenoise            #
+#////////////////////////////////////#
+set(CPP_LINENOISE_TAG "main")
+set(CPP_LINENOISE_REPOSITORY "${PROVIDER_URL}/flagarde/cpp-linenoise.git")
 
 
-## FOR TESTS ##
 
-# Doctest
-set(DOCTEST_REPOSITORY "https://gitlab.com/ExternalRepositories/doctest.git")
-set(DOCTEST_TAG "2.4.6")
 
-## FOR APPS ##
 
-# CLI11
-set(CLI11_REPOSITORY "https://gitlab.com/ExternalRepositories/CLI11.git")
-set(CLI11_TAG "v2.0.0")
 
-####################################
-#          EXTRA PACKAGES          #
-####################################
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ####################################
@@ -105,52 +259,12 @@ option(BUILD_EXTRAS "Build the extras" TRUE)
 
 
 
-##
-
-
-
-
-
-# elogpp
-set(ELOGPP_REPOSITORY "https://gitlab.com/flagarde/elogpp")
-set(ELOGPP_TAG "main")
-
-
-
 
 set(serial_repository "https://gitlab.com/flagarde/serial")
 set(serial_version "master")
 
-# CAENlibs
-set(CAENLIBS_REPOSITORY "https://gitlab.com/flagarde/CAENlibs.git")
-set(CAENLIBS_TAG "main")
-
-
-# soci
-set(soci_repository "https://github.com/SOCI/soci.git")
-set(soci_version "master")
-
-
-# civet
-set(civet_repository "https://github.com/civetweb/civetweb.git")
-set(civet_version "master")
-
-# jsroot
-set(JSROOT_REPOSITORY "https://gitlab.com/ExternalRepositories/jsroot.git")
-set(JSROOT_TAG "6.1.0")
-
-# cereal
-set(cereal_repository "https://github.com/USCiLab/cereal.git")
-set(cereal_version "master")
-
-set(SNMP_repository "https://github.com/RPClab/net-snmp.git")
-set(SNMP_version "master")
-
-
-
-
 # Compiling ROOT can be very long so :
-option(USE_ROOT_SYSTEM "Try to find a ROOT installation and use it" OFF)
+option(USE_SYSTEM_ROOT "Try to find a ROOT installation and use it" ON)
 option(BUILD_ROOT "Build ROOT Folder" ON)
 #set(LOOK_FOR_ROOT_VERSION "6.20")
 # If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !

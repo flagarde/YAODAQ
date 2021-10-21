@@ -1,5 +1,8 @@
 if(BUILD_ROOT)
-  root_generate_dictionary(G__Channel "include/Channel.hpp" LINKDEF "include/ChannelLinkDef.hpp" STAGE1)
+  include(ROOT)
+  find_package(ROOT ${ROOT_VERSION} CONFIG REQUIRED)
+  set(STAGE1 "") #maybe STAGE1 for
+  root_generate_dictionary(G__Channel "include/Channel.hpp" LINKDEF "include/ChannelLinkDef.hpp" ${STAGE1})
   add_library(Channel OBJECT "src/Channel.cpp" G__Channel.cxx)
   target_include_directories(Channel PUBLIC "${YAODAQ_INCLUDE}" PUBLIC "include")
   target_link_libraries(Channel PUBLIC ROOT::Core)
@@ -10,7 +13,7 @@ if(BUILD_ROOT)
   add_library(ChannelStatic STATIC $<TARGET_OBJECTS:Channel>)
   add_library(ChannelShared SHARED $<TARGET_OBJECTS:Channel>)
 
-  root_generate_dictionary(G__Event "include/Event.hpp" LINKDEF "include/EventLinkDef.hpp" STAGE1)
+  root_generate_dictionary(G__Event "include/Event.hpp" LINKDEF "include/EventLinkDef.hpp" ${STAGE1})
   add_library(Event OBJECT "src/Event.cpp" G__Event.cxx)
   target_link_libraries(Event PUBLIC Channel)
   set_target_properties(Event PROPERTIES PUBLIC_HEADER "include/Event.hpp")
@@ -23,7 +26,7 @@ if(BUILD_ROOT)
   target_link_libraries(EventShared PUBLIC ChannelShared)
 
   add_library(DAQFile STATIC "src/DAQFile.cpp")
-  target_link_libraries(DAQFile PUBLIC RootFile PUBLIC EventStatic PUBLIC ChannelStatic PUBLIC elogpp::elogpp PUBLIC ROOT::Tree)
+  target_link_libraries(DAQFile PUBLIC RootFile PUBLIC EventStatic PUBLIC ChannelStatic PUBLIC ROOT::Tree) #ADD ELOGPP
   target_include_directories(DAQFile PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> PUBLIC $<INSTALL_INTERFACE:${INCLUDE_OUTPUT_DIR}>)
   set_target_properties(DAQFile PROPERTIES PUBLIC_HEADER "include/DAQFile.hpp")
   install(TARGETS DAQFile)

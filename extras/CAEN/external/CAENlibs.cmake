@@ -4,7 +4,7 @@ include(CPM)
 cpm()
 
 if(NOT DEFINED CAENLIBS_REPOSITORY)
-  set(CAENLIBS_REPOSITORY "https://gitlab.com/flagarde/CAENlibs.git")
+  set(CAENLIBS_REPOSITORY "https://github.com/flagarde/CAENlibs.git")
 endif()
 
 if(NOT DEFINED CAENLIBS_TAG)

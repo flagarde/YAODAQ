@@ -6,11 +6,11 @@ cpm()
 include(Nlohmann)
 
 if(NOT DEFINED JSON_RPC_CXX_REPOSITORY)
-  set(JSON_RPC_CXX_REPOSITORY "https://gitlab.com/ExternalRepositories/json-rpc-cxx.git")
+  set(JSON_RPC_CXX_REPOSITORY "https://github.com/jsonrpcx/json-rpc-cxx.git")
 endif()
 
 if(NOT DEFINED JSON_RPC_CXX_TAG)
-  set(JSON_RPC_CXX_TAG "master")
+  set(JSON_RPC_CXX_TAG "v0.3.0")
 endif()
 
 declare_option(REPOSITORY json-rpc-cxx OPTION COMPILE_TESTS VALUE OFF)

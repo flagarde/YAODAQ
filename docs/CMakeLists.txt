@@ -1,2 +1,7 @@
 include(Documentations)
-configure_doxyfile()
+set(DOXYGEN_TAB_SIZE 2)
+set(DOXYGEN_RECURSIVE YES)
+set(DOXYGEN_PROJECT_LOGO "${PROJECT_SOURCE_DIR}/docs/imgs/icon.png")
+set(DOXYGEN_STRIP_FROM_PATH ${PROJECT_SOURCE_DIR})
+set(DOXYGEN_STRIP_FROM_INC_PATH "${PROJECT_SOURCE_DIR}/include")
+doxyfile_docs("${PROJECT_SOURCE_DIR}/include/" "${PROJECT_SOURCE_DIR}/src/")
