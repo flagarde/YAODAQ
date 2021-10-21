@@ -1,6 +1,54 @@
 ######################################
 ######################################
 ##                                  ##
+##         GENERAL OPTIONS.         ##
+##                                  ##
+######################################
+######################################
+if(DEFINED ENV{CI})
+  option(USE_SYSTEM_ROOT "Try to find a ROOT installation and use it" OFF)
+  option(BUILD_DOCS "Build the docs" FALSE)
+  option(BUILD_TESTS "Build the tests" FALSE)
+  option(BUILD_EXAMPLES "Build the examples" FALSE)
+else()
+  option(USE_SYSTEM_ROOT "Try to find a ROOT installation and use it" ON)
+  option(BUILD_DOCS "Build the docs" TRUE)
+  option(BUILD_TESTS "Build the tests" TRUE)
+  option(BUILD_EXAMPLES "Build the examples" TRUE)
+endif()
+
+
+option(BUILD_EXTRAS "Build the extras" TRUE)
+# Compiling ROOT can be very long so :
+
+option(BUILD_ROOT "Build ROOT Folder" ON)
+
+option(BUILD_ANALYSIS "Build the Analysis code" ON)
+option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
+option(BUILD_WEBSERVER "Build the civet webserver" ON)
+option(BUILD_CONFIGURATOR "Build Configurator" ON)
+option(BUILD_CONTROLLER "Build Controller" ON)
+option(BUILD_LOGGER "Build Logger" ON)
+option(BUILD_SNMP "Build SNMP" ON)
+option(BUILD_WIENER "Build WIENER" ON)
+option(BUILD_DAQ "Build DAQ" ON)
+option(BUILD_Serial "Build Serial" OFF)
+
+option(BUILD_LCIO "Build LCIO" OFF)
+option(BUILD_MPOD "Build Mpod executasble" ON)
+option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
+
+option(ENABLE_ALL_WARNINGS "Compile with all warnings for the major compilers" ON)
+option(ENABLE_EFFECTIVE_CXX "Enable Effective C++ warnings" OFF)
+option(GENERATE_DEPENDENCY_DATA "Generates .d files with header dependencies" ON)
+
+option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
+                        Tests in tests/*.cpp will still be enabled." OFF
+       )
+
+######################################
+######################################
+##                                  ##
 ##  OPTIONS FOR EXTERNAL PACKAGES.  ##
 ##                                  ##
 ######################################
@@ -231,65 +279,5 @@ set(CPP_LINENOISE_REPOSITORY "${PROVIDER_URL}/flagarde/cpp-linenoise.git")
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-####################################
-#         GENERAL OPTIONS          #
-####################################
-option(BUILD_TESTS "Build the tests" TRUE)
-option(BUILD_EXAMPLES "Build the examples" TRUE)
-option(BUILD_DOCS "Build the docs" TRUE)
-option(BUILD_EXTRAS "Build the extras" TRUE)
-
-
-
-
-
 set(serial_repository "https://gitlab.com/flagarde/serial")
 set(serial_version "master")
-
-# Compiling ROOT can be very long so :
-option(USE_SYSTEM_ROOT "Try to find a ROOT installation and use it" ON)
-option(BUILD_ROOT "Build ROOT Folder" ON)
-#set(LOOK_FOR_ROOT_VERSION "6.20")
-# If it fails to find ROOT V${LOOK_FOR_ROOT_VERSION} or greater then Download and Install it !
-#set(ROOT_repository "https://root.cern/download/root_v${LOOK_FOR_ROOT_VERSION}.source.tar.gz")
-#
-
-option(BUILD_ANALYSIS "Build the Analysis code" ON)
-option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)
-option(BUILD_WEBSERVER "Build the civet webserver" ON)
-option(BUILD_CONFIGURATOR "Build Configurator" ON)
-option(BUILD_CONTROLLER "Build Controller" ON)
-option(BUILD_LOGGER "Build Logger" ON)
-option(BUILD_SNMP "Build SNMP" ON)
-option(BUILD_WIENER "Build WIENER" ON)
-option(BUILD_DAQ "Build DAQ" ON)
-option(BUILD_Serial "Build Serial" OFF)
-
-option(BUILD_LCIO "Build LCIO" OFF)
-option(BUILD_MPOD "Build Mpod executasble" ON)
-option(CAEN_HARDWARE "Compile CAEN Hardware library" ON)
-
-option(ENABLE_ALL_WARNINGS "Compile with all warnings for the major compilers" ON)
-option(ENABLE_EFFECTIVE_CXX "Enable Effective C++ warnings" OFF)
-option(GENERATE_DEPENDENCY_DATA "Generates .d files with header dependencies" ON)
-
-option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will remove all doctest related code.
-                        Tests in tests/*.cpp will still be enabled." OFF
-       )

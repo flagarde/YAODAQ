@@ -1,7 +1,11 @@
 if(BUILD_ROOT)
   include(ROOT)
   find_package(ROOT ${ROOT_VERSION} CONFIG REQUIRED)
-  set(STAGE1 "") #maybe STAGE1 for
+  if(COMPILE_ROOT)
+    set(STAGE1 "STAGE1")
+  else()
+    set(STAGE1 "")
+  endif()
   root_generate_dictionary(G__Channel "include/Channel.hpp" LINKDEF "include/ChannelLinkDef.hpp" ${STAGE1})
   add_library(Channel OBJECT "src/Channel.cpp" G__Channel.cxx)
   target_include_directories(Channel PUBLIC "${YAODAQ_INCLUDE}" PUBLIC "include")
