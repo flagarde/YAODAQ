@@ -32,7 +32,7 @@ jobs:
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: '${{ matrix.icon }} Install packages'
-      run: sudo apt-get install libxpm-dev freeglut3-dev
+      run: sudo apt-get install libxpm-dev freeglut3-dev libmariadb-dev firebird-dev mysql-client unixodbc-dev postgresql sqlite3
 
     - name: '${{ matrix.icon }} Cache ROOT'
       uses: actions/cache@v2
