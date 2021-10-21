@@ -17,7 +17,6 @@ else()
   option(BUILD_EXAMPLES "Build the examples" TRUE)
 endif()
 
-
 option(BUILD_EXTRAS "Build the extras" TRUE)
 # Compiling ROOT can be very long so :
 

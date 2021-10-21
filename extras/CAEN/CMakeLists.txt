@@ -57,5 +57,6 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
   if(BUILD_TESTS)
     add_subdirectory(tests)
   endif()
+
 endif()
 endif()
