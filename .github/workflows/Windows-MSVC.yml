@@ -30,6 +30,11 @@ jobs:
     - name: '🟨 Setup Visual Studio'
       uses: ilammy/msvc-dev-cmd@v1.10.0
 
+    - name: '${{ matrix.icon }} Cache ROOT'
+      uses: actions/cache@v2
+      with:
+        path: '${{ env.CMAKE_BUILD_PREFIX }}/_deps/root-build'
+
     - name: '🔧 Configure'
       run: cmake -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }} -Thost=x64
 

@@ -17,10 +17,15 @@ jobs:
       matrix:
         include:
           - { icon: '🟨', cc: clang, cxx: clang++, name: 'Clang 12' }
-          - { icon: '🟦', cc: $(brew --prefix llvm)/bin/clang, cxx: $(brew --prefix llvm)/bin/clang++, name: 'Clang 13' }
-          
+          - { icon: '🟦', cc: clang, cxx: clang++, name: 'Clang 13' }
+
     name: '🚧 ${{ matrix.icon }} ${{ matrix.name }}'
     steps:
+
+    - name: Set the value
+      if: ${{ matrix.name == 'Clang 12' }}
+      run: |
+      echo "path=$(brew --prefix llvm)/bin/" >> $GITHUB_ENV
 
     - name: '🧰 Checkout'
       uses: actions/checkout@v2.3.5
@@ -33,10 +38,16 @@ jobs:
         cmake-version: '${{env.CMAKE_VERSION}}'
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: '${{ matrix.icon }} Cache ROOT'
+      uses: actions/cache@v2
+      with:
+        path: '${{ env.CMAKE_BUILD_PREFIX }}/_deps/root-build'
+        key: root-${{ matrix.cc }}
+
     - name: '🔧 Configure'
       env:
-        CC: ${{matrix.cc}}
-        CXX: ${{matrix.cxx}}
+        CC: ${{env.path}}${{matrix.cc}}
+        CXX: ${{env.path}}${{matrix.cxx}}
       run: cmake -S ${{ github.workspace }} -B ${{ env.CMAKE_BUILD_PREFIX }} -D CMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }}
 
     - name: '⚙️ Build'

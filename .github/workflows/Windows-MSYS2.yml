@@ -50,6 +50,12 @@ jobs:
           mingw-w64-${{matrix.env}}-python-numpy
           pcre
 
+    - name: '${{ matrix.icon }} Cache ROOT'
+      uses: actions/cache@v2
+      with:
+        path: '${{ env.CMAKE_BUILD_PREFIX }}/_deps/root-build'
+        key: root-${{ matrix.env }}
+
     - name: '🔧 Configure'
       run: cmake -S . -B ${{ env.CMAKE_BUILD_PREFIX }} -D CMAKE_BUILD_TYPE=${{ env.CMAKE_BUILD_TYPE }}
 

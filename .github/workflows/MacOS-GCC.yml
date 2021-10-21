@@ -34,6 +34,12 @@ jobs:
         cmake-version: '${{env.CMAKE_VERSION}}'
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: '${{ matrix.icon }} Cache ROOT'
+      uses: actions/cache@v2
+      with:
+        path: '${{ env.CMAKE_BUILD_PREFIX }}/_deps/root-build'
+        key: root-${{ matrix.cc }}
+
     - name: '🔧 Configure'
       env:
         CC: ${{matrix.cc}}

@@ -20,7 +20,7 @@ static inline std::filesystem::path getFullExePath()
 {
   #if  defined(__APPLE__)
     std::uint32_t bufSize{PATH_MAX + 1};
-    char result[bufSize]{'\0'};
+    char result[bufSize];
     _NSGetExecutablePath(result,&bufSize);
     return std::string(result);
   #elif defined(_WIN32)
