@@ -1,8 +1,6 @@
 if(BUILD_ROOT)
   include(ROOT)
 
-  message(STATUS "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD ${STAGE1}")
-
   root_generate_dictionary(G__Channel "include/Channel.hpp" LINKDEF "include/ChannelLinkDef.hpp" ${STAGE1})
   add_library(Channel OBJECT "src/Channel.cpp" G__Channel.cxx)
   target_include_directories(Channel PUBLIC "${YAODAQ_INCLUDE}" PUBLIC "include")
