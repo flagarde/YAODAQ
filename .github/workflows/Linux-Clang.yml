@@ -18,6 +18,7 @@ jobs:
         include:
           - { icon: '🟨', cc: clang-10, cxx: clang++-10, name: 'Clang 10' }
           - { icon: '🟦', cc: clang-11, cxx: clang++-11, name: 'Clang 11' }
+          - { icon: '🟩', cc: clang-12, cxx: clang++-12, name: 'Clang 12' }
     name: '🚧 ${{ matrix.icon }} ${{ matrix.name }}'
 
     steps:
