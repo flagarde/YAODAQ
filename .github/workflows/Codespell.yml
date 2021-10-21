@@ -13,8 +13,6 @@ jobs:
 
     - name: '🧰 Checkout'
       uses: actions/checkout@v2.3.5
-      with:
-        fetch-depth: 0
 
     - name: '☑️ Run codespell'
       uses: codespell-project/actions-codespell@master

@@ -18,8 +18,6 @@ jobs:
 
     - name: '🧰 Checkout'
       uses: actions/checkout@v2.3.5
-      with:
-        fetch-depth: 0
 
     - name: '🟨 Setup CMake'
       uses: jwlawson/actions-setup-cmake@v1.11
