@@ -54,6 +54,8 @@ if(BUILD_DAQ OR CAEN_HARDWARE)
 
 
   # plugin( TARGET CAENBoards VERSION ${YAODAQ_VERSION_MAJOR} BASE Board CHILDS CAEN::CAENVMEBoard CAEN::CAENDigitizerBoard CAEN::CAENCommBoard )
-  add_subdirectory(tests)
+  if(BUILD_TESTS)
+    add_subdirectory(tests)
+  endif()
 endif()
 endif()
