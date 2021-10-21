@@ -23,13 +23,14 @@ jobs:
     steps:
 
     - name: Set the value
-      if: ${{ matrix.name == 'Clang 12' }}
+      if: ${{ matrix.name == 'Clang 13' }}
       run: echo "path=$(brew --prefix llvm)/bin/" >> $GITHUB_ENV
+           & echo ${{env.path}}
 
     - name: '🧰 Checkout'
       uses: actions/checkout@v2.3.5
 
-    - name: '🟨 Setup CMake'
+    - name: '${{ matrix.icon }} Setup CMake'
       uses: jwlawson/actions-setup-cmake@v1.11
       with:
         cmake-version: '${{env.CMAKE_VERSION}}'
