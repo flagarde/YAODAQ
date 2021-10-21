@@ -35,7 +35,12 @@ jobs:
 
     - name: '${{ matrix.icon }} Install packages'
       run: sudo apt-get install libxpm-dev freeglut3-dev
-
+      
+    - name: '${{ matrix.icon }} Cache ROOT'
+      uses: actions/cache@v2
+      with:
+        path: './build/_deps/root-build'
+          
     - name: '🔧 Configure'
       env:
         CC: ${{matrix.cc}}
