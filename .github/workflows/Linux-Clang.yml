@@ -36,7 +36,7 @@ jobs:
       run: sudo apt-get install libxpm-dev freeglut3-dev libmariadb-dev firebird-dev mysql-client unixodbc-dev postgresql sqlite3 libpq-dev
 
     - name: '${{ matrix.icon }} Cache ROOT'
-      uses: actions/cache@v2
+      uses: actions/cache@v3.0.1
       with:
         path: '${{ env.CMAKE_BUILD_PREFIX }}/_deps/root-build'
         key: root-${{ matrix.cc }}
