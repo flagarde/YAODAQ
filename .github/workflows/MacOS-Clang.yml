@@ -28,7 +28,7 @@ jobs:
            & echo ${{env.path}}
 
     - name: '🧰 Checkout'
-      uses: actions/checkout@v3.1.0
+      uses: actions/checkout@v3.2.0
 
     - name: '${{ matrix.icon }} Install by homebrew'
       run: brew install libpq mariadb postgresql
