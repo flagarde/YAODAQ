@@ -30,7 +30,7 @@ jobs:
       run: brew install libpq mariadb postgresql
 
     - name: '${{ matrix.icon }} Setup CMake'
-      uses: jwlawson/actions-setup-cmake@v1.13
+      uses: jwlawson/actions-setup-cmake@v1.14
       with:
         cmake-version: '${{env.CMAKE_VERSION}}'
         github-api-token: ${{ secrets.GITHUB_TOKEN }}
