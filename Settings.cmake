@@ -5,8 +5,9 @@
 ##                                  ##
 ######################################
 ######################################
-if(DEFINED ENV{CI})
-  option(USE_SYSTEM_ROOT "Try to find a ROOT installation and use it" OFF)
+set(CI TRUE)
+if(DEFINED ENV{CI} OR DEFINED CI)
+  option(USE_SYSTEM_ROOT "Try to find a ROOT installation and use it" ON)
   option(BUILD_DOCS "Build the docs" FALSE)
   option(BUILD_TESTS "Build the tests" FALSE)
   option(BUILD_EXAMPLES "Build the examples" FALSE)
