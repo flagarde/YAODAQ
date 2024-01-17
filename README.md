@@ -24,29 +24,17 @@ Yet An Other DAQ
 </h1>
 </h1>
 
+[L]: https://github.com/flagarde/YAODAQ/actions/workflows/linux.yml
+[LB]: https://github.com/flagarde/YAODAQ/actions/workflows/linux.yml/badge.svg
 
+[M]: https://github.com/flagarde/YAODAQ/actions/workflows/macOS.yml
+[MB]: https://github.com/flagarde/YAODAQ/actions/workflows/macOS.yml/badge.svg
 
+[W]: https://github.com/flagarde/YAODAQ/actions/workflows/windows.yml
+[WB]: https://github.com/flagarde/YAODAQ/actions/workflows/windows.yml/badge.svg
 
+## Builds
 
-[LC]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml
-[LCB]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml/badge.svg
-
-[LG]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml
-[LGB]: https://github.com/flagarde/YAODAQ/actions/workflows/Linux-Clang.yml/badge.svg
-
-[MC]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-Clang.yml
-[MCB]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-Clang.yml/badge.svg
-
-[MG]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-GCC.yml
-[MGB]: https://github.com/flagarde/YAODAQ/actions/workflows/MacOS-GCC.yml/badge.svg
-
-[MS]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSYS2.yml
-[MSB]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSYS2.yml/badge.svg
-
-[MM]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSVC.yml
-[MMB]: https://github.com/flagarde/YAODAQ/actions/workflows/Windows-MSVC.yml/badge.svg
-
-## Builds :
-|        | Linux Clang | Linux GCC | MacOS Clang | MacOS GCC | Windows M2sys | Windows MSVC |
-|--------|-------------|-----------|-------------|-----------|---------------|--------------|
-| Github |[![Linux Clang][LCB]][LC]|[![Linux GCC][LGB]][LG]|[![MacOS Clang][MCB]][MC]|[![MacOS GCC][MGB]][MG]|[![Windows MSYS2][MSB]][MS]|[![Windows MSVC][MMB]][MM]|
+|        |      Linux      |      MacOS     |     Windows     |
+|--------|----------------|----------------|------------------|
+| Github |[![Linux][LB]][L]|[![MacOS][MB]][M]|[![Windows][WB]][W]|
