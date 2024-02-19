@@ -14,7 +14,7 @@
 #                                                         #
 ###########################################################
 
-cmake_minimum_required(VERSION 3.16...3.21.3)
+cmake_minimum_required(VERSION 3.16...${CMAKE_VERSION})
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake" "${CMAKE_CURRENT_SOURCE_DIR}/external")
 
@@ -22,9 +22,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
 include("${CMAKE_CURRENT_SOURCE_DIR}/Settings.cmake")
 
 include(GetCMakeMM)
-cmmm(VERSION "2.3" REPOSITORY "flagarde/CMakeMM" PROVIDER "${CMMM_PROVIDER}" VERBOSITY VERBOSE)
+cmmm(VERSION "2.3" REPOSITORY "flagarde/CMakeMM" PROVIDER "github" VERBOSITY VERBOSE)
 
-cmmm_modules_list(REPOSITORY "flagarde/CMakeCM" PROVIDER "${CMMM_PROVIDER}")
+cmmm_modules_list(REPOSITORY "flagarde/CMakeCM" PROVIDER "github")
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "Yet An Other DAQ" HOMEPAGE_URL "https://github.com/flagarde/YAODAQ" LANGUAGES CXX)
 
