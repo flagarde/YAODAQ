@@ -53,7 +53,7 @@ option(ENABLE_DOCTESTS "Include tests in the library. Setting this to OFF will r
 #////////////////////////////////////#
 #              Doctest               #
 #////////////////////////////////////#
-set(DOCTEST_TAG "2.4.11")
+set(DOCTEST_TAG "v2.4.11")
 set(DOCTEST_REPOSITORY "https://github.com/onqtam/doctest.git")
 
 ######################################
