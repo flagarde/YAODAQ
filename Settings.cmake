@@ -96,7 +96,7 @@ set(ZLIB-NG_REPOSITORY "https://github.com/zlib-ng/zlib-ng.git")
 #////////////////////////////////////#
 #            IXWebSocket             #
 #////////////////////////////////////#
-set(IXWEBSOCKET_TAG "master")
+set(IXWEBSOCKET_TAG "v11.4.4")
 set(IXWEBSOCKET_REPOSITORY "https://github.com/machinezone/IXWebSocket.git")
 
 #////////////////////////////////////#
@@ -127,7 +127,7 @@ set(MAGIC_ENUM_REPOSITORY "https://github.com/Neargye/magic_enum.git")
 #              Jsoncpp               #
 # TO REMOVE TO REMOVE TO REMOVE TO RE#
 #////////////////////////////////////#
-set(JSONCPP_TAG "master")
+set(JSONCPP_TAG "1.9.5")
 set(JSONCPP_REPOSITORY "https://github.com/open-source-parsers/jsoncpp.git")
 
 #////////////////////////////////////#
@@ -145,14 +145,14 @@ set(JSON_RPC_CXX_REPOSITORY "https://github.com/jsonrpcx/json-rpc-cxx.git")
 #////////////////////////////////////#
 #              Toml11                #
 #////////////////////////////////////#
-set(TOML11_TAG "master")
+set(TOML11_TAG "v3.8.1")
 set(TOML11_REPOSITORY "https://github.com/ToruNiina/toml11.git")
 
 #////////////////////////////////////#
 #            dotenv-cpp              #
 #////////////////////////////////////#
 set(DOTENV_TAG "master")
-set(DOTENV_REPOSITORY "https://github.com/flagarde/dotenv-cpp")
+set(DOTENV_REPOSITORY "https://github.com/flagarde/dotenv-cpp.git")
 
 #////////////////////////////////////#
 #          source_location           #
@@ -185,7 +185,7 @@ set(SOCI_REPOSITORY "https://github.com/SOCI/soci.git")
 #////////////////////////////////////#
 #             net-snmp               #
 #////////////////////////////////////#
-set(NET-SNMP_TAG "v5.9.1")
+set(NET-SNMP_TAG "v5.9.4")
 set(NET-SNMP_REPOSITORY "https://github.com/net-snmp/net-snmp.git")
 
 #////////////////////////////////////#

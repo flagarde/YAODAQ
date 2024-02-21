@@ -6,6 +6,7 @@
 #include <exception>
 #include <string>
 #include <tuple>
+#include <cstdint>
 
 #include "fmt/color.h"
 

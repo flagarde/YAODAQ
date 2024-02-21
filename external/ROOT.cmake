@@ -1,9 +1,9 @@
-include(CPM)
-cpm()
+#include(CPM)
+#cpm()
 
-if(NOT DEFINED USE_SYSTEM_ROOT)
-  set(USE_SYSTEM_ROOT OFF)
-endif()
+#if(NOT DEFINED USE_SYSTEM_ROOT)
+  set(USE_SYSTEM_ROOT ON)
+#endif()
 
 if(NOT DEFINED ROOT_VERSION)
   set(ROOT_VERSION "6.24.02")

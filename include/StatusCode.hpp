@@ -1,5 +1,6 @@
 #pragma once
 
+#include<cstdint>
 #include "Internal.hpp"
 
 namespace yaodaq
