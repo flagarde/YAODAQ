@@ -33,7 +33,7 @@ namespace yaodaq
 
 Configurator::Configurator(const std::string& name) : Module(name,"Configurator",CLASS::Configurator)
 {
-  m_session.open(soci::mysql, "");
+  //m_session.open(soci::mysql, "");
 }
 
 }

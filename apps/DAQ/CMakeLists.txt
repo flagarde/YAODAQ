@@ -1,4 +1,4 @@
-if(BUILD_ROOT)
+
   include(ROOT)
 
   root_generate_dictionary(G__Channel "include/Channel.hpp" LINKDEF "include/ChannelLinkDef.hpp" ${STAGE1})
@@ -33,8 +33,12 @@ if(BUILD_ROOT)
   add_executable(DAQFileWritter DAQFileWritter.cpp)
   target_link_libraries(DAQFileWritter PRIVATE DAQFile PRIVATE FileWritter PRIVATE CLI11  PRIVATE ProgramInfos PUBLIC GeneralParameters)
   install(TARGETS DAQFileWritter)
-endif()
 
 add_executable(Digitizer Digitizer.cpp)
 target_link_libraries(Digitizer PRIVATE CAENBoards PRIVATE Board PRIVATE CLI11 PRIVATE ProgramInfos PUBLIC GeneralParameters)
 install(TARGETS Digitizer)
+
+
+add_executable(Viewer Viewer.cpp)
+target_link_libraries(Viewer PUBLIC CAENBoards ROOT::Core ROOT::Hist ROOT::Tree ROOT::Graf ROOT::Gpad Board CLI11 ProgramInfos  GeneralParameters)
+install(TARGETS Viewer)

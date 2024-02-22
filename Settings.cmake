@@ -13,7 +13,7 @@ option(BUILD_EXAMPLES "Build the examples" TRUE)
 option(BUILD_EXTRAS "Build the extras" TRUE)
 # Compiling ROOT can be very long so :
 
-option(BUILD_ROOT "Build ROOT Folder" ON)
+#option(BUILD_ROOT "Build ROOT Folder" ON)
 
 option(BUILD_ANALYSIS "Build the Analysis code" ON)
 option(BUILD_WEBSOCKETSERVER "Build the WebSocket Server" ON)

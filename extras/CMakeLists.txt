@@ -1,5 +1,7 @@
 include(IterateFolder)
 
+add_subdirectory(ROOT)
+
 sub_dir_list(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})
 
 foreach(subdir ${SUBDIRS})
