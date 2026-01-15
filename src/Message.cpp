@@ -3,7 +3,7 @@
 #include "Exception.hpp"
 #include "StatusCode.hpp"
 #include "json/json.h"
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 
 namespace yaodaq
 {

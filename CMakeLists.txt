@@ -22,9 +22,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
 include("${CMAKE_CURRENT_SOURCE_DIR}/Settings.cmake")
 
 include(GetCMakeMM)
-cmmm(VERSION "2.3" REPOSITORY "flagarde/CMakeMM" PROVIDER "github" VERBOSITY VERBOSE)
+cmmm(VERSION "1.0")
 
-cmmm_modules_list(REPOSITORY "flagarde/CMakeCM" PROVIDER "github")
+cmmm_modules_list(URL "gh:flagarde/CMakeCM" FILEPATH "ModulesListNew.cmake")
 
 project(YAODAQ VERSION "0.0.1.0" DESCRIPTION "Yet An Other DAQ" HOMEPAGE_URL "https://github.com/flagarde/YAODAQ" LANGUAGES CXX)
 

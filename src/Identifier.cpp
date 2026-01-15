@@ -1,6 +1,6 @@
 #include "Identifier.hpp"
 
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 #include <vector>
 #include <string>
 #include "Exception.hpp"

@@ -154,7 +154,7 @@ int  Mpod::getCrateStatus()
 
 int Mpod::getCrateStatusJson()
 {
-
+ return 0;
 }
 
   bool Mpod::turnOnCrate()

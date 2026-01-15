@@ -5,7 +5,7 @@
 
 #include "Signals.hpp"
 
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "fmt/color.h"
 

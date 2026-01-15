@@ -1,6 +1,5 @@
 include(IterateFolder)
 
-add_subdirectory(ROOT)
 
 sub_dir_list(SUBDIRS ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -20,3 +19,6 @@ foreach(subdir ${SUBDIRS})
     missive(WARN "BUILD_${subdir} set to ${Red}OFF${Default} in Setting.cmake")
   endif()
 endforeach()
+
+
+#add_subdirectory(ROOT)

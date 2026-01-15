@@ -3,7 +3,7 @@
 #include "CAENVMEException.hpp"
 #include "CAENVMElib.h"
 #include "StatusCode.hpp"
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 #include "toml.hpp"
 
 using namespace yaodaq;

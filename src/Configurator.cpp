@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "soci/soci-config.h"
+//#include "soci/soci-config.h"
 #ifdef SOCI_HAVE_DB2
   #include "soci/db2/soci-db2.h"
 #endif

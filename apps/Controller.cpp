@@ -2,7 +2,7 @@
 
 #include "CLI/CLI.hpp"
 #include "ProgramInfos.hpp"
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 
 #include "linenoise.hpp"
 

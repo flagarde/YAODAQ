@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Module.hpp"
-#include "soci/session.h"
+//#include "soci/session.h"
 
 namespace yaodaq
 {
@@ -14,7 +14,7 @@ public:
   Configurator(const std::string&);
 
 private:
-  soci::session m_session;
+  //soci::session m_session;
 };
 
 }

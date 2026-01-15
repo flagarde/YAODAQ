@@ -2,7 +2,7 @@
 
 #include "Board.hpp"
 #include "Flash.hpp"
-#include "magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 
 #include <any>
 #include <fstream>
