@@ -41,3 +41,9 @@ endif()
 if(BUILD_DAQ AND NOT APPLE)
   add_subdirectory(DAQ)
 endif()
+
+
+add_executable(Iseg Iseg.cpp)
+target_link_libraries(Iseg PRIVATE ISEG_FAST_TO_REMOVE PRIVATE CLI11 PRIVATE ProgramInfos PUBLIC GeneralParameters)
+set_target_properties(Iseg PROPERTIES OUTPUT_NAME Iseg)
+install(TARGETS Iseg)

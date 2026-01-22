@@ -168,6 +168,13 @@ target_link_libraries(FileWritter PUBLIC File PUBLIC Board)
 set_target_properties(FileWritter PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/FileWritter.hpp")
 install(TARGETS FileWritter)
 
+add_library(ISEG_FAST_TO_REMOVE "ISEG_FAST_TO_REMOVE.cpp")
+target_link_libraries(ISEG_FAST_TO_REMOVE PUBLIC File PUBLIC Board)
+set_target_properties(ISEG_FAST_TO_REMOVE PROPERTIES PUBLIC_HEADER "${YAODAQ_INCLUDE}/ISEG_FAST_TO_REMOVE.hpp")
+install(TARGETS ISEG_FAST_TO_REMOVE)
+
+
+
 if(BUILD_CONFIGURATOR)
   include(soci)
   add_library(Configurator "Configurator.cpp")
